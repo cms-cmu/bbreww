@@ -4,8 +4,8 @@ campaign:
 
   # User specific
   workArea: JMEnano
-  storageSite: T3_US_FNALLPC
-  outLFNDirBase: /store/user/<USERNAME>/JMEnano/
+  storageSite: T3_US_CMU
+  outLFNDirBase: /store/group/bbWW/
   voGroup: null # or leave empty
 
   # Campaign specific

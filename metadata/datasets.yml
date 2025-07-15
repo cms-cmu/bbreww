@@ -1,0 +1,47 @@
+#Triggers from: https://github.com/rishabhCMS/decaf/blob/new_coffea/analysis/processors/leptonic_new_coffea.py
+
+datasets:
+  GluGluToHHTo2B2VLNu2J:
+    UL18:
+      xs: 0.003384123
+      nanoAOD: bbww/metadata/GluGluToHHTo2B2VLNu2J_files.txt
+  TTToSemiLeptonic:
+    UL18:
+      xs: 365.457
+      nanoAOD: /TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9-20UL18JMENano_106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM
+  data:
+    UL18:
+      lumi: 59.83
+      trigger:
+        - Ele32_WPTight_Gsf
+        - Ele115_CaloIdVT_GsfTrkIdT
+        - Photon200
+        - IsoMu24
+    UL16_postVFP': 
+      lumi: 19.52
+      trigger:
+        - Ele27_WPTight_Gsf
+        - Ele105_CaloIdVT_GsfTrkIdT
+        - IsoMu24
+        - IsoTkMu24
+    UL16_preVFP:
+      lumi: 16.81
+      trigger:
+        - Ele27_WPTight_Gsf
+        - Ele105_CaloIdVT_GsfTrkIdT
+        - IsoMu24
+        - IsoTkMu24 
+    UL17:
+      lumi: 41.48
+      trigger:
+        - Ele35_WPTight_Gsf
+        - Ele115_CaloIdVT_GsfTrkIdT
+        - Photon200
+        - IsoMu27
+    UL18:
+      lumi: 59.83
+      trigger:
+        - Ele32_WPTight_Gsf
+        - Ele115_CaloIdVT_GsfTrkIdT
+        - Photon200
+        - IsoMu24

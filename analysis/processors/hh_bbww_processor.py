@@ -193,123 +193,127 @@ class analysis(processor.ProcessorABC):
         #Initialize physics objects
         ###
 
-
-        events.Muon['isloose'] = lepton_selection(events, "Muon", params, "loose")
-        events.Muon['id_sf'] = ak.where(
-            events.Muon.isloose, 
-            corrections.get_mu_loose_id_sf(f"{self.year_label}_UL", abs(events.Muon.eta), events.Muon.pt), 
-            ak.ones_like(events.Muon.pt)
+        mu = events.Muon
+            
+        mu['isloose'] = lepton_selection(events, "Muon", params, "loose")
+        mu['id_sf'] = ak.where(
+            mu.isloose, 
+            corrections.get_mu_loose_id_sf(f"{self.year_label}_UL", abs(mu.eta), mu.pt), 
+            ak.ones_like(mu.pt)
         )
-        events.Muon['iso_sf'] = ak.where(
-            events.Muon.isloose, 
-            corrections.get_mu_loose_iso_sf(f"{self.year_label}_UL", abs(events.Muon.eta), events.Muon.pt), 
-            ak.ones_like(events.Muon.pt)
+        mu['iso_sf'] = ak.where(
+            mu.isloose, 
+            corrections.get_mu_loose_iso_sf(f"{self.year_label}_UL", abs(mu.eta), mu.pt), 
+            ak.ones_like(mu.pt)
         )
-        events.Muon['istight'] = lepton_selection(events, "Muon", params, "tight")
-        events.Muon['id_sf'] = ak.where(
-            events.Muon.istight, 
-            corrections.get_mu_tight_id_sf(f"{self.year_label}_UL", abs(events.Muon.eta), events.Muon.pt), 
-            events.Muon.id_sf
+        mu['istight'] = lepton_selection(events, "Muon", params, "tight")
+        mu['id_sf'] = ak.where(
+            mu.istight, 
+            corrections.get_mu_tight_id_sf(f"{self.year_label}_UL", abs(mu.eta), mu.pt), 
+            mu.id_sf
         )
-        events.Muon['iso_sf'] = ak.where(
-            events.Muon.istight, 
-            corrections.get_mu_tight_iso_sf(f"{self.year_label}_UL", abs(events.Muon.eta), events.Muon.pt), 
-            events.Muon.iso_sf
+        mu['iso_sf'] = ak.where(
+            mu.istight, 
+            corrections.get_mu_tight_iso_sf(f"{self.year_label}_UL", abs(mu.eta), mu.pt), 
+            mu.iso_sf
         )
-        mu_loose = events.Muon[events.Muon.isloose]
-        mu_tight = events.Muon[events.Muon.istight]
-        mu_ntot = ak.num(events.Muon, axis=1)
+        mu_loose=mu[mu.isloose]
+        mu_tight=mu[mu.istight]
+        mu_ntot = ak.num(mu, axis=1) 
         mu_nloose = ak.num(mu_loose, axis=1)
         mu_ntight = ak.num(mu_tight, axis=1)
         leading_mu = ak.firsts(mu_tight)
 
+        e = events.Electron
+        e['isclean'] = ak.all(e.metric_table(mu_loose) > 0.3, axis=2)
+        e['reco_sf'] = ak.where(
+            (e.pt<20),
+            corrections.get_ele_reco_sf_below20(f"{self.year_label}_UL", e.eta+e.deltaEtaSC, e.pt), 
+            corrections.get_ele_reco_sf_above20(f"{self.year_label}_UL", e.eta+e.deltaEtaSC, e.pt)
+        )
+        e['isloose'] = lepton_selection(events, "Electron", params, "loose")
+        e['id_sf'] = ak.where(
+            e.isloose,
+            corrections.get_ele_loose_id_sf(f"{self.year_label}_UL", e.eta+e.deltaEtaSC, e.pt),
+            ak.ones_like(e.pt)
+        )
 
-        events.Electron['isclean'] = ak.all(events.Electron.metric_table(mu_loose) > 0.3, axis=2)
-        events.Electron['reco_sf'] = ak.where(
-            (events.Electron.pt<20),
-            corrections.get_ele_reco_sf_below20(f"{self.year_label}_UL", events.Electron.eta+events.Electron.deltaEtaSC, events.Electron.pt), 
-            corrections.get_ele_reco_sf_above20(f"{self.year_label}_UL", events.Electron.eta+events.Electron.deltaEtaSC, events.Electron.pt)
+        e['istight'] = lepton_selection(events, "Electron", params, "tight")
+        e['id_sf'] = ak.where(
+            e.istight,
+            corrections.get_ele_tight_id_sf(f"{self.year_label}_UL", e.eta+e.deltaEtaSC, e.pt),
+            e.id_sf
         )
-        events.Electron['isloose'] = lepton_selection(events, "Electron", params, "loose")
-        events.Electron['id_sf'] = ak.where(
-            events.Electron.isloose,
-            corrections.get_ele_loose_id_sf(f"{self.year_label}_UL", events.Electron.eta+events.Electron.deltaEtaSC, events.Electron.pt),
-            ak.ones_like(events.Electron.pt)
-        )
-
-        events.Electron['istight'] = lepton_selection(events, "Electron", params, "tight")
-        events.Electron['id_sf'] = ak.where(
-            events.Electron.istight,
-            corrections.get_ele_tight_id_sf(f"{self.year_label}_UL", events.Electron.eta+events.Electron.deltaEtaSC, events.Electron.pt),
-            events.Electron.id_sf
-        )
-        e_clean = events.Electron[events.Electron.isclean]
+        e_clean = e[e.isclean]
         e_loose = e_clean[e_clean.isloose]
         e_tight = e_clean[e_clean.istight]
-        e_ntot = ak.num(events.Electron, axis=1)
+        e_ntot = ak.num(e, axis=1)
         e_nloose = ak.num(e_loose, axis=1)
         e_ntight = ak.num(e_tight, axis=1)
         leading_e = ak.firsts(e_tight)
 
         ## AGE: do we really need taus?
-
-        events.Tau['isclean'] = (
-            ak.all(events.Tau.metric_table(mu_loose) > 0.4, axis=2)
-            & ak.all(events.Tau.metric_table(e_loose) > 0.4, axis=2)
+        tau = events.Tau
+        tau['isclean']=(
+            ak.all(tau.metric_table(mu_loose) > 0.4, axis=2) 
+            & ak.all(tau.metric_table(e_loose) > 0.4, axis=2)
         )
-        events.Tau['isloose'] = tau_selection(events, params, "loose")
-        tau_clean = events.Tau[events.Tau.isclean]
-        tau_loose = tau_clean[tau_clean.isloose]
-        tau_ntot = ak.num(events.Tau, axis=1)
-        tau_nloose = ak.num(tau_loose, axis=1)
+        
+        tau['isloose']= tau_selection(events, params, "loose")
+        tau_clean=tau[tau.isclean]
+        tau_loose=tau_clean[tau_clean.isloose]
+        tau_ntot=ak.num(tau, axis=1)
+        tau_nloose=ak.num(tau_loose, axis=1)
 
         ## AGE: do we really need photons?
-
-        events.Photon['isclean'] = (
-            ak.all(events.Photon.metric_table(mu_loose) > 0.5, axis=2)
-            & ak.all(events.Photon.metric_table(e_loose) > 0.5, axis=2)
-            & ak.all(events.Photon.metric_table(tau_loose) > 0.5, axis=2)
+        pho = events.Photon
+        pho['isclean']=(
+            ak.all(pho.metric_table(mu_loose) > 0.5, axis=2)
+            & ak.all(pho.metric_table(e_loose) > 0.5, axis=2)
+            & ak.all(pho.metric_table(tau_loose) > 0.5, axis=2)
         )
-        events.Photon['isloose'] = photon_selection(events, params, "loose")
-        pho_clean = events.Photon[events.Photon.isclean]
-        pho_loose = pho_clean[pho_clean.isloose]
-        pho_ntot = ak.num(events.Photon, axis=1)
-        pho_nloose = ak.num(pho_loose, axis=1)
+        pho['isloose']= photon_selection(events, params, "loose")
+        pho_clean=pho[pho.isclean]
+        pho_loose=pho_clean[pho_clean.isloose]
+        pho_ntot=ak.num(pho, axis=1)
+        pho_nloose=ak.num(pho_loose, axis=1)
+        
+        met = events.MET
 
-
-        events.Jet['isclean'] = (
-            ak.all(events.Jet.metric_table(mu_loose) > 0.4, axis=2)
-            & ak.all(events.Jet.metric_table(e_loose) > 0.4, axis=2)
-            & ak.all(events.Jet.metric_table(tau_loose) > 0.4, axis=2)
-            & ak.all(events.Jet.metric_table(pho_loose) > 0.4, axis=2)
+        j = events.Jet
+        j['isclean'] = (
+            ak.all(j.metric_table(mu_loose) > 0.4, axis=2)
+            & ak.all(j.metric_table(e_loose) > 0.4, axis=2)
+            & ak.all(j.metric_table(tau_loose) > 0.4, axis=2)
+            & ak.all(j.metric_table(pho_loose) > 0.4, axis=2)
         )
-        events.Jet['issoft'] = jet_selection(events, params, year)
-        events.Jet['isHEM'] = HEMjet_selection(events)
-        j_clean = events.Jet[events.Jet.isclean]
+        j['issoft'] = jet_selection(events, params, year)
+        j['isHEM'] = HEMjet_selection(events)
+        j_clean = j[j.isclean]
         j_soft = j_clean[j_clean.issoft]
-        j_HEM = events.Jet[events.Jet.isHEM]
-        j_nsoft = ak.num(j_soft, axis=1)
+        j_HEM = j[j.isHEM]
+        j_nsoft=ak.num(j_soft, axis=1)
         j_nHEM = ak.num(j_HEM, axis=1)
         leading_j = ak.firsts(j_clean)
 
-        j_candidates = j_soft[ak.argsort(j_soft.particleNetAK4_QvsG, axis=1, ascending=False)]
-        j_candidates = j_candidates[:, :5]
-        j_candidates = j_candidates[ak.argsort(j_candidates.particleNetAK4_B, axis=1, ascending=False)]
-
+        j_candidates = j_soft[ak.argsort(j_soft.particleNetAK4_QvsG, axis=1, ascending=False)] #particleNetAK4_QvsG btagPNetQvG
+        j_candidates = j_candidates[:, :5] #consider only the first 5
+        j_candidates = j_candidates[ak.argsort(j_candidates.particleNetAK4_B, axis=1, ascending=False)]#particleNetAK4_B btagPNetB
+        
         valid_jets = ak.num(j_candidates) >= 4
-        j_candidates = ak.mask(j_candidates, valid_jets)
+        j_candidates = ak.mask(j_candidates,valid_jets) # proceed only if we have at least 2 b-jets and 2 non b-jets
 
-        jb_candidates = ak.pad_none(j_candidates[:, :2], 2, axis=1)
-        j_candidates = j_candidates[:, 2:]
-        j_candidates = j_candidates[ak.argsort(j_candidates.pt, axis=1, ascending=False)]
-
-        jj_i = ak.argcombinations(j_candidates, 2, fields=["j1", "j2"])
+        jb_candidates = ak.pad_none(j_candidates[:,:2], 2,axis=1) # two b-jets
+        j_candidates = j_candidates[:,2:] #3 non b-jets
+        j_candidates = j_candidates[ak.argsort(j_candidates.pt, axis=1, ascending=False)] #pt sort the jets
+    
+        jj_i = ak.argcombinations(j_candidates,2,fields=["j1","j2"]) #take dijet combinations
         jj_i = jj_i[abs(j_candidates[jj_i.j1].eta - j_candidates[jj_i.j2].eta) < 2.0]
-        jj_i = jj_i[(j_candidates[jj_i.j1] + j_candidates[jj_i.j2]).mass < 120.0]
-        jj_tt_mask = ak.pad_none(j_candidates[jj_i.j2].pt > 20.0, 3, axis=1)
-
+        jj_i = jj_i[(j_candidates[jj_i.j1]+ j_candidates[jj_i.j2]).mass<120.0] #dijet cuts
+        jj_tt_mask =  ak.pad_none(j_candidates[jj_i.j2].pt>20.0, 3, axis=1) # select subleading pt > 20 for TTbar
+        
         qq = ak.pad_none(j_candidates[jj_i.j1] + j_candidates[jj_i.j2], 3, axis=1)
-        mbb = (jb_candidates[:, 0] + jb_candidates[:, 1]).mass
+        mbb = (jb_candidates[:,0]+jb_candidates[:,1]).mass
             
         #ttbar and hadronic W neutrino pz reconstruction
         def nu_pz(l,v):

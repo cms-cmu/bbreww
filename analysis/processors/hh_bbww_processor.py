@@ -97,7 +97,6 @@ class analysis(processor.ProcessorABC):
         self.processName = events.metadata['processName']
         self.isData = not hasattr(events, "genWeight")
         self.isMC = not self.isData
-        
 
         # jets = apply_jerc_corrections(
         #     events.Jet,
@@ -157,6 +156,10 @@ class analysis(processor.ProcessorABC):
         output = {}
         selection = PackedSelection(dtype="uint64")
         year = events.metadata['year']
+        if 'UL' in year:
+            year_number = year.replace('UL', '')
+            year = f'20{year_number}_UL' #make name compatible with corrections file
+
         scale = 1 if self.isData else 1000.*float(events.metadata['lumi'])*events.metadata['xs']
 
         events.metadata['genEventSumw'] = events.metadata.get('genEventSumw', 1.0)

@@ -71,11 +71,3 @@ def met_reconstr(events, e, mu):
 
     return v_mu, v_e
     
-# btagging working points
-btagWPs = OmegaConf.load('bbww/analysis/metadata/btag_WPs.yaml')
-btagWPs = {
- 'deepflav': btagWPs.deepflavWPs,
- 'deepcsv' : btagWPs.deepcsvWPs
-}
-common = {}
-common['btagWPs'] = btagWPs

@@ -166,9 +166,6 @@ class analysis(processor.ProcessorABC):
         if self.isMC: weights.add('xsec', scale*events.genWeight/events.metadata['genEventSumw'])
 
         params = OmegaConf.load(self.parameters)
-                
-        deepflavWPs = common.common['btagWPs']['deepflav'][self.year_label]
-        deepcsvWPs =  common.common['btagWPs']['deepcsv'][self.year_label]
 
         ### object preselection
 

@@ -19,7 +19,8 @@ def met_selection(events, year, isData):
     npv = events.PV.npvsGood 
     run = events.run
     events['met'] = events.MET # keep corrected met and uncorrected separate
-    events['met','pt'] , events['met','phi'] = get_met_xy_correction(year, npv, run, events.MET.pt, events.MET.phi, isData)
+    if '201' in year:
+        events['met','pt'] , events['met','phi'] = get_met_xy_correction(year, npv, run, events.MET.pt, events.MET.phi, isData)
     return events
 
 

@@ -12,11 +12,18 @@ path = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/"
 # jsonPOG: https://gitlab.cern.ch/cms-nanoAOD/jsonpog-integration/-/tree/master/POG/EGM
 # /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration
 ####
+year_keys = {
+    '2022_preEE' :  '2022_Summer22',
+    '2022_EE':      '2022_Summer22EE',
+    '2023_preBPix': '2022_Summer23',
+    '2023_BPix':    '2023_Summer23BPix'
+}
 
 def get_ele_loose_id_sf (year, eta, pt):
     '''
     We need to modify this year.split('_')[0].
     '''
+    year = year_keys[year]
     evaluator = correctionlib.CorrectionSet.from_file(f'{path}/EGM/{year}/electron.json.gz')
 
     flateta, counts = ak.flatten(eta), ak.num(eta)
@@ -29,6 +36,7 @@ def get_ele_loose_id_sf (year, eta, pt):
     return ak.unflatten(weight, counts=counts)
 
 def get_ele_tight_id_sf (year, eta, pt):
+    year = year_keys[year]
     evaluator = correctionlib.CorrectionSet.from_file(f'{path}/EGM/{year}/electron.json.gz')
 
     flateta, counts = ak.flatten(eta), ak.num(eta)
@@ -47,6 +55,7 @@ def get_ele_tight_id_sf (year, eta, pt):
 ####
 
 def get_ele_reco_sf_below20(year, eta, pt):
+    year = year_keys[year]
     evaluator = correctionlib.CorrectionSet.from_file(f'{path}/EGM/{year}/electron.json.gz')
     
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
@@ -63,7 +72,7 @@ def get_ele_reco_sf_below20(year, eta, pt):
 
 
 def get_ele_reco_sf_above20(year, eta, pt):
-    
+    year = year_keys[year]
     evaluator = correctionlib.CorrectionSet.from_file(f'{path}/EGM/{year}/electron.json.gz')
     
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
@@ -96,6 +105,7 @@ def get_ele_reco_sf_above20(year, eta, pt):
 ####
 
 def get_mu_loose_id_sf (year, eta, pt):
+    year = year_keys[year]
     evaluator = correctionlib.CorrectionSet.from_file(f'{path}/MUO/{year}/muon_Z.json.gz')
 
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
@@ -112,6 +122,7 @@ def get_mu_loose_id_sf (year, eta, pt):
     return ak.unflatten(weight, counts=counts)
 
 def get_mu_tight_id_sf (year, eta, pt):
+    year = year_keys[year]
     evaluator = correctionlib.CorrectionSet.from_file(f'{path}/MUO/{year}/muon_Z.json.gz')
     
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
@@ -138,6 +149,7 @@ def get_mu_tight_id_sf (year, eta, pt):
 ####
 
 def get_mu_loose_iso_sf (year, eta, pt):
+    year = year_keys[year]
     evaluator = correctionlib.CorrectionSet.from_file(f'{path}/MUO/{year}/muon_Z.json.gz')
 
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
@@ -151,6 +163,7 @@ def get_mu_loose_iso_sf (year, eta, pt):
     return ak.unflatten(weight, counts=counts)
 
 def get_mu_tight_iso_sf (year, eta, pt):
+    year = year_keys[year]
     evaluator = correctionlib.CorrectionSet.from_file(f'{path}/MUO/{year}/muon_Z.json.gz')
 
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
@@ -173,7 +186,7 @@ def get_mu_tight_iso_sf (year, eta, pt):
 # correction_labels = ["metphicorr_pfmet_mc", "metphicorr_puppimet_mc", "metphicorr_pfmet_data", "metphicorr_puppimet_data"]
 
 def get_met_xy_correction(year, npv, run, pt, phi, isData):
-    
+    year = year_keys[year]
     npv = ak.where((npv>200),ak.full_like(npv,200),npv)
     pt  = ak.where((pt>1000.),ak.full_like(pt,1000.),pt)
 

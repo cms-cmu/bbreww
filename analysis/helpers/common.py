@@ -1,6 +1,6 @@
-from coffea.util import save
 import numpy as np
-import os
+import awkward as ak
+from omegaconf import OmegaConf
 
 def match(a, b, val):
     combinations = a.cross(b, nested=True)
@@ -14,66 +14,68 @@ def sigmoid(x,a,b,c,d):
     return c + (d-c) / (1 + np.exp(-a * (x-b)))
 
 
-#########
-## BTag wp
-## UL18 WPs on ttbar RunIISummer19UL18MiniAOD dataset (pt>30 GeV)
-## https://indico.cern.ch/event/967689/contributions/4083041/attachments/2130779/3590310/BTagPerf_201028_UL18WPs.pdf
-## 2017 Ultra   Legacy  WPs on  RunIISummer19UL17MiniAOD    MC  production
-## https://indico.cern.ch/event/880118/contributions/3714095/attachments/1973818/3284315/BTagPerf_200121_UL17WPs.pdf
-## UL16 post-VFP WPs with RunIISummer20UL16MiniAOD* production (latest post-VPF)
-## https://indico.cern.ch/event/1053254/contributions/4425737/attachments/2271561/3857890/BTagPerf_210623_UL16WPUpdate.pdf
-## UL16 WPs separately for pre-VPF
-## https://indico.cern.ch/event/1011636/contributions/4382495/attachments/2251885/3820785/BTagPerf_210525_UL16WPs.pdf
+def update_events(events, collections):
+    """Return a shallow copy of events array with some collections swapped out"""
+    out = events
+    for name, value in collections.items():
+        out = ak.with_field(out, value, name)
+    return out
 
-deepflavWPs = {
-    '2016preVFP': {
-        'loose' : 0.0508,
-        'medium': 0.2598,
-        'tight' : 0.6502
-    },
-    '2016postVFP': {
-        'loose' : 0.0480,
-        'medium': 0.2489,
-        'tight' : 0.6377
-    },
-    '2017': {
-        'loose' : 0.0532,
-        'medium': 0.3040,
-        'tight' : 0.7476
-    },
-    '2018': {
-        'loose' : 0.0490,
-        'medium': 0.2783,
-        'tight' : 0.7100
-    },
-}
-deepcsvWPs = {
-    '2016preVFP': {
-        'loose' : 0.2027,
-        'medium': 0.6001,
-        'tight' : 0.8819
-    },
-    '2016postVFP': {
-        'loose' : 0.1918,
-        'medium': 0.5847,
-        'tight' : 0.8767
-    },
-    '2017': {
-        'loose' : 0.1355,
-        'medium': 0.4506,
-        'tight' : 0.7738
-    },
-    '2018': {
-        'loose' : 0.1208,
-        'medium': 0.4168,
-        'tight' : 0.7665
-    },
-}
+def nu_pz(l,v):
+    #ttbar and hadronic W neutrino pz reconstruction
+    m_w = 80.379
+    m_l = l.mass            
+    A = (l.px*v.pt * np.cos(v.phi)+l.py*v.pt * np.sin(v.phi)) + (m_w**2 - m_l**2)/2
+    B = l.energy**2*((v.pt * np.cos(v.phi))**2+(v.pt * np.sin(v.phi))**2)
+    C = l.energy**2 - l.pz**2
+    discriminant = (2 * A * l.pz)**2 - 4 * (B - A**2) * C
+    # avoiding imaginary solutions
+    sqrt_discriminant = ak.where(discriminant >= 0, np.sqrt(discriminant), np.nan)
+    pz_1 = (2*A*l.pz + sqrt_discriminant)/(2*C)
+    pz_2 = (2*A*l.pz - sqrt_discriminant)/(2*C)
+    return ak.where(abs(pz_1) < abs(pz_2), pz_1, pz_2)
 
-btagWPs = {
-    'deepflav': deepflavWPs,
-    'deepcsv' : deepcsvWPs
-}
+def chi_square(data,mean,std):
+    x_2 = ak.sum(data**2)
+    n = ak.count(data[~ak.is_none(data)])
+    chi2 = ((data - mean)/std)**2
+    return chi2, mean, std
+
+def met_reconstr(events, e, mu):
+    met = events.met    
+    # need "charge" here so we can add them with electrons/muons four vectors
+    v_e = ak.zip(
+        {
+            "x": met.pt * np.cos(met.phi),
+            "y": met.pt * np.sin(met.phi),
+            "z": nu_pz(e, met),
+            "t": np.sqrt(met.pt**2 + nu_pz(e, met)**2),
+            "charge" : met.pt * 0 
+        },
+        with_name="Candidate"
+    )
+
+    v_mu = ak.zip(
+        {
+            "x": met.pt * np.cos(met.phi),
+            "y": met.pt * np.sin(met.phi),
+            "z": nu_pz(mu, met),
+            "t": np.sqrt(met.pt**2+nu_pz(mu, met)**2) ,
+            "charge" : met.pt * 0 
+        },
+        with_name="Candidate"
+    )
+
+    v_mu = ak.mask(v_mu, ~np.isnan(v_mu.pz))
+    v_e = ak.mask(v_e, ~np.isnan(v_e.pz)) #avoid calculations for imaginary solutions
+
+    return v_mu, v_e
     
+# btagging working points
+btagWPs = OmegaConf.load('bbww/analysis/metadata/btag_WPs.yaml')
+btagWPs = {
+ 'deepflav': btagWPs.deepflavWPs,
+ 'deepcsv' : btagWPs.deepcsvWPs
+}
 common = {}
 common['btagWPs'] = btagWPs

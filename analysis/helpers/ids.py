@@ -8,7 +8,7 @@ import awkward as ak
 ## https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2
 ######
 
-def lepton_selection(events, lepton_flavour, params, id):
+def lepton_preselection(events, lepton_flavour, params, id):
 
     leptons = events[lepton_flavour]
     cuts = params.object_preselection[lepton_flavour][id]
@@ -67,7 +67,7 @@ def lepton_selection(events, lepton_flavour, params, id):
 ## 1 = VLoose, 2 = Loose, 4 = Medium, 8 = Tight
 ######
 
-def tau_selection(events, params, id):
+def tau_preselection(events, params, id):
 
     taus = events["Tau"]
     cuts = params.object_preselection["Tau"][id]
@@ -93,7 +93,7 @@ def tau_selection(events, params, id):
 ## Note: Photon IDs are integers, not bit masks
 ######
 
-def photon_selection(events, params, id):
+def photon_preselection(events, params, id):
 
     photons = events["Photon"]
     cuts = params.object_preselection["Photon"][id]
@@ -130,7 +130,7 @@ def photon_selection(events, params, id):
 ######
 
 
-def jet_selection(events, params, year):
+def jet_preselection(events, params, year):
 
     jets = events["Jet"]
     cuts = params.object_preselection["Jet"]
@@ -158,7 +158,7 @@ def jet_selection(events, params, year):
 
     return good_jets
 
-def HEMjet_selection(events):
+def HEMjet_preselection(events):
     jets = events["Jet"]
     passes_pt = jets.pt > 30
     passes_eta = (jets.eta > -3.0) & (jets.eta < -1.3) 

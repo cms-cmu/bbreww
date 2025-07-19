@@ -21,13 +21,16 @@ from optparse import OptionParser
 from omegaconf import OmegaConf
 
 from base_class.hist import Fill
+from base_class.physics.event_selection import apply_event_selection
 
 from bbww.analysis.helpers.common import update_events
 from bbww.analysis.helpers.object_selection import met_selection, electron_selection, muon_selection, jet_selection, tau_selection, photon_selection
 from bbww.analysis.helpers.candidate_selection import candidate_selection
 from bbww.analysis.helpers.chi_square import chi_sq
 from bbww.analysis.helpers import common
+from bbww.analysis.helpers.fill_histograms import fill_histograms
 import bbww.analysis.helpers.corrections as corrections
+
 
 warnings.filterwarnings("ignore", "Missing cross-reference index for")
 warnings.filterwarnings("ignore", "Please ensure")
@@ -47,47 +50,6 @@ class analysis(processor.ProcessorABC):
         with open(corrections_metadata, "r") as f:
             self.corrections_metadata = yaml.safe_load(f)
 
-    # def make_output():
-    #     return {
-    #         'nEvents': {},
-    #         'cutflow': {},
-    #         # 'test': {},
-    #         # 'hists' : {
-    #         #     "met": (
-    #         #         hda.Hist.new
-    #         #         .Reg(50, 0, 300, name="met", label = 'pT [GeV]')  
-    #         #         .StrCat([], name="systematic", growth = True)      
-    #         #         .StrCat([], name="dataset", growth = True)     
-    #         #         .Int(0,2, name="signal_region", overflow  = False, underflow = False) 
-    #         #         .Weight()                               
-    #         #     ),
-    #         #     "chi_hadW": (
-    #         #         hda.Hist.new
-    #         #         .Reg(50, 0, 5, name="chi_hadW", label=r'$\chi^2$')
-    #         #         .StrCat([], name="dataset", growth = True)
-    #         #         .StrCat([], name="systematic", growth = True)  
-    #         #         .Int(0,2, name="signal_region", overflow  = False, underflow = False)
-    #         #         .Weight()
-    #         #     ),
-    #         #     "chi_hadWs": (
-    #         #         hda.Hist.new
-    #         #         .Reg(50, 0, 5, name="chi_hadWs", label=r'$\chi^2$')
-    #         #         .StrCat([], name="systematic", growth = True)  
-    #         #         .StrCat([], name="dataset", growth = True)
-    #         #         .Int(0,2, name="signal_region", overflow  = False, underflow = False)
-    #         #         .Weight()
-    #         #     ),
-    #         #     "chi_tt": (
-    #         #         hda.Hist.new
-    #         #         .Reg(50, 0, 5, name="chi_tt", label=r'$\chi^2$')
-    #         #         .StrCat([], name="systematic", growth = True)  
-    #         #         .StrCat([], name="dataset", growth = True)
-    #         #         .Int(0,2, name="signal_region", overflow  = False, underflow = False)
-    #         #         .Weight()
-    #         #     ),
-    #         # }
-    #     }
-
     def process(self, events):
 
         logging.debug(f"Metadata: {events.metadata}\n")
@@ -95,13 +57,20 @@ class analysis(processor.ProcessorABC):
         self.year = events.metadata['year']
         self.year_label = self.corrections_metadata[self.year]['year_label']
         self.processName = events.metadata['processName']
-        self.isData = not hasattr(events, "genWeight")
-        self.isMC = not self.isData
+        self.is_data = not hasattr(events, "genWeight")
+        self.is_mc = not self.is_data
+        self.n_events = len(events)
+
+        events = apply_event_selection(
+            events, 
+            self.corrections_metadata[self.year], 
+            cut_on_lumimask=True if self.is_data else False
+        )
 
         # jets = apply_jerc_corrections(
         #     events.Jet,
         #     corrections_metadata=self.corrections_metadata[self.year],
-        #     isMC=self.isMC,
+        #     is_mc=self.is_mc,
         #     run_systematics=False, ###self.run_systematics,
         #     dataset=self.dataset
         # )
@@ -160,16 +129,16 @@ class analysis(processor.ProcessorABC):
             year_number = year.replace('UL', '')
             year = f'20{year_number}_UL' #make name compatible with corrections file
 
-        scale = 1 if self.isData else 1000.*float(events.metadata['lumi'])*events.metadata['xs']
+        scale = 1 if self.is_data else 1000.*float(events.metadata['lumi'])*events.metadata['xs']
 
         events.metadata['genEventSumw'] = events.metadata.get('genEventSumw', 1.0)
-        if self.isMC: weights.add('xsec', scale*events.genWeight/events.metadata['genEventSumw'])
+        if self.is_mc: weights.add('xsec', scale*events.genWeight/events.metadata['genEventSumw'])
 
         params = OmegaConf.load(self.parameters)
 
         ### object preselection
 
-        events = met_selection(events, year, isData = False) #MET ##isData is placeholder
+        events = met_selection(events, year, is_data = False) #MET ##isData is placeholder
         events = muon_selection(events, year, params) #muons
         events = electron_selection(events, year, params) #electrons
         events = tau_selection(events,params) #taus
@@ -180,7 +149,7 @@ class analysis(processor.ProcessorABC):
         events = candidate_selection(events)
         events = chi_sq(events) # chi square selection and calculation
 
-        if self.isMC:
+        if self.is_mc:
                 
             gen = events.GenPart
 
@@ -227,44 +196,37 @@ class analysis(processor.ProcessorABC):
                 #weights.add('muF',ak.ones_like(events.MET.pt, dtype='float'), nnlo_nlo['muFup']/nnlo_nlo['cen'], nnlo_nlo['muFdo']/nnlo_nlo['cen'])
                 #weights.add('muR',ak.ones_like(events.MET.pt, dtype='float'), nnlo_nlo['muRup']/nnlo_nlo['cen'], nnlo_nlo['muRdo']/nnlo_nlo['cen'])
             
-        lumimask = ak.ones_like(events.MET.pt, dtype=bool) #using events.MET.pt to get 1d array with len(events)
-        #if isData:
-            #lumimask = lumiMasks[year](events.run, events.luminosityBlock)
-        selection.add('lumimask', lumimask)
-
-        # met_filters =  ak.ones_like(events.MET.pt, dtype=bool)
-        # #if isData: met_filters = met_filters & events.Flag['eeBadScFilter'] #this filter is recommended for data only
-        # for flag in met_filters_names[year]:
-        #     met_filters = met_filters & events.Flag[flag]
-        # selection.add('met_filters',met_filters)
-
-        # triggers = dak.zeros_like(events.MET.pt, dtype=bool)
-        # for trigger_path in singleelectron_triggers[year]:
-        #     if not hasattr(events.HLT, trigger_path): continue
-        #     triggers = triggers | events.HLT[trigger_path]
-        # selection.add('singleelectron_triggers', triggers)
-        
-        # triggers = dak.zeros_like(events.MET.pt, dtype=bool)
-        # for trigger_path in singlemuon_triggers[year]:
-        #     if not hasattr(events.HLT, trigger_path): continue
-        #     triggers = triggers | events.HLT[trigger_path]
-        # selection.add('singlemuon_triggers', triggers)
+        selection.add('lumimask', events.lumimask)
+        selection.add('met_filters', events.passNoiseFilter)
+        selection.add('trigger', events.passHLT)
 
         noHEMj = ak.ones_like(events.MET.pt, dtype=bool)
         if year=='2018': noHEMj = (events.j_nHEM==0)
         noHEMmet = ak.ones_like(events.MET.pt, dtype=bool)
-        if year=='2018': noHEMmet = (events.MET.pt>470)|(events.MET.phi>-0.62)|(events.MET.phi<-1.62)    
+        if year=='2018': noHEMmet = (events.MET.pt>470)|(events.MET.phi>-0.62)|(events.MET.phi<-1.62)
         
         selection.add('isoneE', (events.e_ntight==1) & (events.mu_nloose==0) & (events.pho_nloose==0) & (events.tau_nloose==0))
         selection.add('isoneM', (events.mu_ntight==1) & (events.e_nloose==0) & (events.pho_nloose==0) & (events.tau_nloose==0))
-        selection.add('njets',  (events.j_nsoft>2))
         selection.add('noHEMj', noHEMj)
         selection.add('noHEMmet', noHEMmet)
+        selection.add('njets',  (events.j_nsoft>2))
 
-        # regions = {
-        #     'esr': ['isoneE', 'noHEMj', 'njets', 'met_filters', 'noHEMmet'],
-        #     'msr': ['isoneM', 'noHEMj', 'njets', 'met_filters', 'noHEMmet']
-        #     }
+
+        #### AGE comment: I am starting to think that we dont need to separarate channels and selection. We can just use the selection and then filter the events by channel
+        events['basic_selection'] = selection.all('lumimask', 'met_filters', 'trigger')
+        events['e_sel'] = events['basic_selection'] & selection.all('isoneE', 'noHEMj', 'noHEMmet', 'njets')
+        events['m_sel'] = events['basic_selection'] & selection.all('isoneM', 'noHEMj', 'noHEMmet', 'njets')
+        events['selection'] = ak.zip({
+            'basic_selection': events['basic_selection'],
+            'e_sel': events['e_sel'],
+            'm_sel': events['m_sel']
+        })
+
+        events['channel'] = ak.zip({
+            'e_channel': events['e_sel'],
+            'm_channel': events['m_sel'],
+            'other': ~(events['e_sel'] | events['m_sel'])
+        }) 
         
         # def normalize(val,cut):
         #     if cut is None:
@@ -300,7 +262,7 @@ class analysis(processor.ProcessorABC):
         #         )
 
 
-        #     if systematic is None and self.isMC:
+        #     if systematic is None and self.is_mc:
         #         output['nEvents'] = {
         #             'events': len(events),
         #             'genWeights': ak.sum(events.genWeight),
@@ -320,7 +282,24 @@ class analysis(processor.ProcessorABC):
 
         # fill(shift_name)
 
-        return output
+        output = {}
+        if not shift_name:
+            output['events_processed'] = {}
+            output['events_processed'][events.metadata['dataset']] = {
+                'n_events' : self.n_events,
+                'sum_genweights': np.sum(events.genWeight) if self.is_mc else self.n_events
+            }
+
+        hists = fill_histograms(
+            events,
+            processName=self.processName,
+            year=self.year_label,
+            is_mc=self.is_mc,
+            selection_list=['basic_selection', 'e_sel', 'm_sel'],
+            channel_list=['e_channel', 'm_channel', 'other'],
+        )
+
+        return hists | output
     
     def postprocess(self, accumulator):
         return accumulator

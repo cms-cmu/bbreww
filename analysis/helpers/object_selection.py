@@ -6,12 +6,12 @@ from bbww.analysis.helpers.common import apply_jet_veto_maps
 
 ## this file contains object preselection for MET, electrons, muons, taus, photons, and jets
 
-def met_selection(events, year, isData):
+def met_selection(events, year, is_Data):
     npv = events.PV.npvsGood 
     run = events.run
     events['met'] = events.MET # keep corrected met and uncorrected separate
     if '201' in year: ## only for run2
-        events['met','pt'] , events['met','phi'] = get_met_xy_correction(year, npv, run, events.MET.pt, events.MET.phi, isData)
+        events['met','pt'] , events['met','phi'] = get_met_xy_correction(year, npv, run, events.MET.pt, events.MET.phi, is_Data)
     return events
 
 
@@ -97,7 +97,7 @@ def jet_selection(events, params, year, corrections_metadata):
     return events
 
 def apply_bbWW_selection(events, year,params, isMC, corrections_metadata):
-    events = met_selection(events, year, isMC)
+    events = met_selection(events, year, not isMC)
     events = muon_selection(events, year, params) #muons
     events = electron_selection(events, year, params) #electrons
     events = tau_selection(events,params) #taus

@@ -22,6 +22,7 @@ from optparse import OptionParser
 from omegaconf import OmegaConf
 
 from base_class.hist import Fill
+from base_class.physics.event_selection import apply_event_selection
 
 from bbww.analysis.helpers.common import update_events
 from bbww.analysis.helpers.object_selection import apply_bbWW_selection
@@ -30,7 +31,9 @@ from bbww.analysis.helpers.candidate_selection import candidate_selection
 from bbww.analysis.helpers.chi_square import chi_sq
 from bbww.analysis.helpers.gen_process import gen_process
 from bbww.analysis.helpers import common
+from bbww.analysis.helpers.fill_histograms import fill_histograms
 import bbww.analysis.helpers.corrections as corrections
+
 
 warnings.filterwarnings("ignore", "Missing cross-reference index for")
 warnings.filterwarnings("ignore", "Please ensure")
@@ -60,13 +63,18 @@ class analysis(processor.ProcessorABC):
         self.processName = events.metadata['processName']
         self.isData = not hasattr(events, "genWeight")
         self.isMC = not self.isData
-        self.config = processor_config(self.processName, self.dataset, events)
-        
+        self.n_events = len(events)
+
+        events = apply_event_selection(
+            events, 
+            self.corrections_metadata[self.year], 
+            cut_on_lumimask=True if self.is_data else False
+        )
 
         # jets = apply_jerc_corrections(
         #     events.Jet,
         #     corrections_metadata=self.corrections_metadata[self.year],
-        #     isMC=self.isMC,
+        #     is_mc=self.is_mc,
         #     run_systematics=False, ###self.run_systematics,
         #     dataset=self.dataset
         # )
@@ -126,24 +134,23 @@ class analysis(processor.ProcessorABC):
             year_number = year.replace('UL', '')
             year = f'20{year_number}_UL' #make name compatible with corrections file
 
-        scale = 1 if self.isData else 1000.*float(events.metadata['lumi'])*events.metadata['xs']
+        scale = 1 if self.is_data else 1000.*float(events.metadata['lumi'])*events.metadata['xs']
 
         events.metadata['genEventSumw'] = events.metadata.get('genEventSumw', 1.0)
-        if self.isMC: weights.add('xsec', scale*events.genWeight/events.metadata['genEventSumw'])
-
-        
+        if self.is_MC: weights.add('xsec', scale*events.genWeight/events.metadata['genEventSumw'])
 
         ### object preselection   
-        events = apply_bbWW_selection( events, year = year, params = self.params,isMC=self.config["isMC"],corrections_metadata=self.params[year])
+        events = apply_bbWW_selection( events, year = year, params = self.params,isMC=self.isMC,corrections_metadata=self.params[year])
 
         ### candidate selection and chi square computation
         events = candidate_selection(events)
         events = chi_sq(events) # chi square selection and calculation
 
-        ### apply event selection and add weights
-        events = apply_event_selection(events, self.params[year], isMC = self.config["isMC"] )
-        if self.config['isMC']:
-            weights = gen_process(events, weights)
+        ### apply event selections
+        events = apply_event_selection(events, self.params[year], isMC = self.isMC)
+
+        if self.isMC:
+            weights = gen_process(events, weights) ## genweights for MC
 
         oneE =(events.e_ntight==1) & (events.mu_nloose==0) & (events.pho_nloose==0) & (events.tau_nloose==0)
         oneM = (events.mu_ntight==1) & (events.e_nloose==0) & (events.pho_nloose==0) & (events.tau_nloose==0)
@@ -152,7 +159,7 @@ class analysis(processor.ProcessorABC):
         noHEMj = ak.ones_like(events.MET.pt, dtype=bool)
         if year=='2018': noHEMj = (events.j_nHEM==0)
         noHEMmet = ak.ones_like(events.MET.pt, dtype=bool)
-        if year=='2018': noHEMmet = (events.MET.pt>470)|(events.MET.phi>-0.62)|(events.MET.phi<-1.62)    
+        if year=='2018': noHEMmet = (events.MET.pt>470)|(events.MET.phi>-0.62)|(events.MET.phi<-1.62)
         
         selection.add( "lumimask", events.lumimask)
         selection.add( "passNoiseFilter", events.passNoiseFilter)
@@ -160,8 +167,56 @@ class analysis(processor.ProcessorABC):
         selection.add('njets',  (events.j_nsoft>2))
         selection.add('noHEMj', noHEMj)
         selection.add('noHEMmet', noHEMmet)
+        selection.add('njets',  (events.j_nsoft>2))
+        selection.add('leptonic_W', events.sr_boolean == 0)
+        selection.add('hadronic_W', events.sr_boolean == 1)
 
-        return output
+        events['weight'] = weights.weight()  
+
+        #### AGE comment: I am starting to think that we dont need to separarate channels and selection. We can just use the selection and then filter the events by channel
+        selection_list = {
+            'basic_selection': ['lumimask', 'met_filters', 'trigger'],
+            'preselection': ['lumimask', 'met_filters', 'trigger', 'noHEMj', 'noHEMmet', 'njets'],
+        }
+        events['selection'] = ak.zip({
+            'basic_selection': selection.all(*selection_list['basic_selection']),
+            'preselection': selection.all(*selection_list['preselection']),
+        })
+
+        events['channel'] = ak.zip({
+            'hadronic_W': selection.all('isoneEorM') & selection.all('hadronic_W'),
+            'leptonic_W': selection.all('isoneEorM') & selection.all('leptonic_W'),
+        }) 
+
+        output = {}
+        if not shift_name:
+            output['events_processed'] = {}
+            output['events_processed'][events.metadata['dataset']] = {
+                'n_events' : self.n_events,
+                'sum_genweights': np.sum(events.genWeight) if self.is_mc else self.n_events
+            }
+            
+            output['cutflow'] = {}
+            output['cutflow'][events.metadata['dataset']] = {
+                'hadronic_W': {
+                    'basic_selection': np.sum(events.selection.basic_selection[events.channel.hadronic_W]),
+                    'preselection': np.sum(events.selection.preselection[events.channel.hadronic_W]),
+                },
+                'leptonic_W': {
+                    'basic_selection': np.sum(events.selection.basic_selection[events.channel.leptonic_W]),
+                    'preselection': np.sum(events.selection.preselection[events.channel.leptonic_W]),
+                },
+            }
+
+        hists = fill_histograms(
+            events,
+            processName=self.processName,
+            year=self.year_label,
+            is_mc=self.is_mc,
+            selection_list=['basic_selection', 'preselection']
+        )
+
+        return hists | output
     
     def postprocess(self, accumulator):
         return accumulator

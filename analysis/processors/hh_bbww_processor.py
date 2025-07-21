@@ -261,7 +261,9 @@ class analysis(processor.ProcessorABC):
         #             weight= weight
         #         )
 
-
+        ### AGE comment: weigfhts needs to be reviewed
+        ### We need to add weight to the events before filling the histograms
+        events['weight'] = weights.weight()  
 
         output = {}
         if not shift_name:
@@ -275,22 +277,36 @@ class analysis(processor.ProcessorABC):
             output['cutflow'] = {}
             output['cutflow'][events.metadata['dataset']] = {
                 'e_channel': {
-                    'basic_selection': np.sum(events.selection.basic_selection[events.channel.e_channel]),
-                    'preselection': np.sum(events.selection.preselection[events.channel.e_channel]),
+                    'events': {
+                        'basic_selection': np.sum(events.selection.basic_selection[events.channel.e_channel]),
+                        'preselection': np.sum(events.selection.preselection[events.channel.e_channel]),
+                    },
+                    'weights': {
+                        'basic_selection': np.sum(events.weight[events.selection.basic_selection[events.channel.e_channel]]),
+                        'preselection': np.sum(events.weight[events.selection.preselection[events.channel.e_channel]]),
+                    },
                 },
                 'm_channel': {
-                    'basic_selection': np.sum(events.selection.basic_selection[events.channel.m_channel]),
-                    'preselection': np.sum(events.selection.preselection[events.channel.m_channel]),
+                    'events': {
+                        'basic_selection': np.sum(events.selection.basic_selection[events.channel.m_channel]),
+                        'preselection': np.sum(events.selection.preselection[events.channel.m_channel]),
+                    },
+                    'weights': {
+                        'basic_selection': np.sum(events.weight[events.selection.basic_selection[events.channel.m_channel]]),
+                        'preselection': np.sum(events.weight[events.selection.preselection[events.channel.m_channel]]),
+                    },
                 },
                 'other': {
-                    'basic_selection': np.sum(events.selection.basic_selection[events.channel.other]),
-                    'preselection': np.sum(events.selection.preselection[events.channel.other]),
+                    'events': {
+                        'basic_selection': np.sum(events.selection.basic_selection[events.channel.other]),
+                        'preselection': np.sum(events.selection.preselection[events.channel.other]),
+                    },
+                    'weights': {
+                        'basic_selection': np.sum(events.weight[events.selection.basic_selection[events.channel.other]]),
+                        'preselection': np.sum(events.weight[events.selection.preselection[events.channel.other]]),
+                    },
                 },
             }
-
-        ### AGE comment: weigfhts needs to be reviewed
-        ### We need to add weight to the events before filling the histograms
-        events['weight'] = weights.weight()  
 
         hists = fill_histograms(
             events,

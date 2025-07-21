@@ -1,0 +1,44 @@
+GluGluToHHTo2B2VLNu2J_UL18:
+  e_channel:
+    events:
+      basic_selection: 44
+      preselection: 43
+    weights:
+      basic_selection: 2340.632568359375
+      preselection: 2288.33642578125
+  m_channel:
+    events:
+      basic_selection: 108
+      preselection: 104
+    weights:
+      basic_selection: 5751.90087890625
+      preselection: 5539.1552734375
+  other:
+    events:
+      basic_selection: 101
+      preselection: 97
+    weights:
+      basic_selection: 5403.046875
+      preselection: 5189.73291015625
+TTToSemiLeptonic_UL18:
+  e_channel:
+    events:
+      basic_selection: 34
+      preselection: 32
+    weights:
+      basic_selection: 186816970752.0
+      preselection: 175821717504.0
+  m_channel:
+    events:
+      basic_selection: 169
+      preselection: 166
+    weights:
+      basic_selection: 929271906304.0
+      preselection: 912781082624.0
+  other:
+    events:
+      basic_selection: 158
+      preselection: 153
+    weights:
+      basic_selection: 868859904000.0
+      preselection: 841363095552.0

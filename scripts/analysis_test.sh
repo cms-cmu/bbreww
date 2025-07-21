@@ -12,7 +12,7 @@ fi
 # cat $OUTPUT_DIR/HH4b.yml
 
 echo "############### Running test processor"
-cmd=(python runner.py -p bbww/analysis/processors/hh_bbww_processor.py -m bbww/metadata/datasets.yml -c bbww/analysis/metadata/HHbbWW.yml -d GluGluToHHTo2B2VLNu2J -y UL18 -op ${OUTPUT_DIR} -o test.coffea -t)
+cmd=(python runner.py -p bbww/analysis/processors/hh_bbww_processor.py -m bbww/metadata/datasets.yml -c bbww/analysis/metadata/HHbbWW.yml -d GluGluToHHTo2B2VLNu2J TTToSemiLeptonic -y UL18 -op ${OUTPUT_DIR} -o test.coffea -t)
 echo "${cmd[@]}"
 "${cmd[@]}"
 

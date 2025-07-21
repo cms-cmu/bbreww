@@ -201,3 +201,6 @@ def get_met_xy_correction(year, npv, run, pt, phi, isData):
         corrected_phi = evaluator['phi_metphicorr_pfmet_mc'].evaluate(pt,phi,npv,run)
 
     return corrected_pt, corrected_phi
+
+def get_ttbar_weight(pt):
+    return np.exp(0.0615 - 0.0005 * np.clip(pt, 0, 800))

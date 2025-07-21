@@ -166,11 +166,6 @@ class analysis(processor.ProcessorABC):
             genZs = gen[gen.isZ]
             genDYs = gen[gen.isZ&(gen.mass>30)]
             
-            nnlo_nlo = {}
-            nlo_qcd = ak.ones_like(events.MET.pt, dtype=float)
-            nlo_ewk = ak.ones_like(events.MET.pt, dtype=float)
-                                            
-
             ###
             # Isolation weights for muons
             ###
@@ -178,23 +173,28 @@ class analysis(processor.ProcessorABC):
             if hasattr(events, "L1PreFiringWeight"): 
                 weights.add('prefiring', events.L1PreFiringWeight.Nom, events.L1PreFiringWeight.Up, events.L1PreFiringWeight.Dn)
             weights.add('genw',events.genWeight)
-            weights.add('nlo_ewk',nlo_ewk)
-            #weights.add('nlo',nlo) 
-            if 'cen' in nnlo_nlo:
-                #weights.add('nnlo_nlo',nnlo_nlo['cen'])
-                weights.add('qcd1',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['qcd1up']/nnlo_nlo['cen'], nnlo_nlo['qcd1do']/nnlo_nlo['cen'])
-                weights.add('qcd2',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['qcd2up']/nnlo_nlo['cen'], nnlo_nlo['qcd2do']/nnlo_nlo['cen'])
-                weights.add('qcd3',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['qcd3up']/nnlo_nlo['cen'], nnlo_nlo['qcd3do']/nnlo_nlo['cen'])
-                weights.add('ew1',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew1up']/nnlo_nlo['cen'], nnlo_nlo['ew1do']/nnlo_nlo['cen'])
-                weights.add('ew2G',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew2Gup']/nnlo_nlo['cen'], nnlo_nlo['ew2Gdo']/nnlo_nlo['cen'])
-                weights.add('ew3G',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew3Gup']/nnlo_nlo['cen'], nnlo_nlo['ew3Gdo']/nnlo_nlo['cen'])
-                weights.add('ew2W',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew2Wup']/nnlo_nlo['cen'], nnlo_nlo['ew2Wdo']/nnlo_nlo['cen'])
-                weights.add('ew3W',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew3Wup']/nnlo_nlo['cen'], nnlo_nlo['ew3Wdo']/nnlo_nlo['cen'])
-                weights.add('ew2Z',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew2Zup']/nnlo_nlo['cen'], nnlo_nlo['ew2Zdo']/nnlo_nlo['cen'])
-                weights.add('ew3Z',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew3Zup']/nnlo_nlo['cen'], nnlo_nlo['ew3Zdo']/nnlo_nlo['cen'])
-                weights.add('mix',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['mixup']/nnlo_nlo['cen'], nnlo_nlo['mixdo']/nnlo_nlo['cen'])
-                #weights.add('muF',ak.ones_like(events.MET.pt, dtype='float'), nnlo_nlo['muFup']/nnlo_nlo['cen'], nnlo_nlo['muFdo']/nnlo_nlo['cen'])
-                #weights.add('muR',ak.ones_like(events.MET.pt, dtype='float'), nnlo_nlo['muRup']/nnlo_nlo['cen'], nnlo_nlo['muRdo']/nnlo_nlo['cen'])
+            
+            #### AGE: not sure we need this section. I commented it out for now
+            # nnlo_nlo = {}
+            # nlo_qcd = ak.ones_like(events.MET.pt, dtype=float)
+            # nlo_ewk = ak.ones_like(events.MET.pt, dtype=float)
+            # weights.add('nlo_ewk',nlo_ewk)
+            # #weights.add('nlo',nlo) 
+            # if 'cen' in nnlo_nlo:
+            #     #weights.add('nnlo_nlo',nnlo_nlo['cen'])
+            #     weights.add('qcd1',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['qcd1up']/nnlo_nlo['cen'], nnlo_nlo['qcd1do']/nnlo_nlo['cen'])
+            #     weights.add('qcd2',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['qcd2up']/nnlo_nlo['cen'], nnlo_nlo['qcd2do']/nnlo_nlo['cen'])
+            #     weights.add('qcd3',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['qcd3up']/nnlo_nlo['cen'], nnlo_nlo['qcd3do']/nnlo_nlo['cen'])
+            #     weights.add('ew1',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew1up']/nnlo_nlo['cen'], nnlo_nlo['ew1do']/nnlo_nlo['cen'])
+            #     weights.add('ew2G',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew2Gup']/nnlo_nlo['cen'], nnlo_nlo['ew2Gdo']/nnlo_nlo['cen'])
+            #     weights.add('ew3G',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew3Gup']/nnlo_nlo['cen'], nnlo_nlo['ew3Gdo']/nnlo_nlo['cen'])
+            #     weights.add('ew2W',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew2Wup']/nnlo_nlo['cen'], nnlo_nlo['ew2Wdo']/nnlo_nlo['cen'])
+            #     weights.add('ew3W',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew3Wup']/nnlo_nlo['cen'], nnlo_nlo['ew3Wdo']/nnlo_nlo['cen'])
+            #     weights.add('ew2Z',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew2Zup']/nnlo_nlo['cen'], nnlo_nlo['ew2Zdo']/nnlo_nlo['cen'])
+            #     weights.add('ew3Z',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew3Zup']/nnlo_nlo['cen'], nnlo_nlo['ew3Zdo']/nnlo_nlo['cen'])
+            #     weights.add('mix',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['mixup']/nnlo_nlo['cen'], nnlo_nlo['mixdo']/nnlo_nlo['cen'])
+            #     #weights.add('muF',ak.ones_like(events.MET.pt, dtype='float'), nnlo_nlo['muFup']/nnlo_nlo['cen'], nnlo_nlo['muFdo']/nnlo_nlo['cen'])
+            #     #weights.add('muR',ak.ones_like(events.MET.pt, dtype='float'), nnlo_nlo['muRup']/nnlo_nlo['cen'], nnlo_nlo['muRdo']/nnlo_nlo['cen'])
             
         selection.add('lumimask', events.lumimask)
         selection.add('met_filters', events.passNoiseFilter)
@@ -213,19 +213,19 @@ class analysis(processor.ProcessorABC):
 
 
         #### AGE comment: I am starting to think that we dont need to separarate channels and selection. We can just use the selection and then filter the events by channel
-        events['basic_selection'] = selection.all('lumimask', 'met_filters', 'trigger')
-        events['e_sel'] = events['basic_selection'] & selection.all('isoneE', 'noHEMj', 'noHEMmet', 'njets')
-        events['m_sel'] = events['basic_selection'] & selection.all('isoneM', 'noHEMj', 'noHEMmet', 'njets')
+        selection_list = {
+            'basic_selection': ['lumimask', 'met_filters', 'trigger'],
+            'preselection': ['lumimask', 'met_filters', 'trigger', 'noHEMj', 'noHEMmet', 'njets'],
+        }
         events['selection'] = ak.zip({
-            'basic_selection': events['basic_selection'],
-            'e_sel': events['e_sel'],
-            'm_sel': events['m_sel']
+            'basic_selection': selection.all(*selection_list['basic_selection']),
+            'preselection': selection.all(*selection_list['preselection']),
         })
 
         events['channel'] = ak.zip({
-            'e_channel': events['e_sel'],
-            'm_channel': events['m_sel'],
-            'other': ~(events['e_sel'] | events['m_sel'])
+            'e_channel': selection.all('isoneE') & ~selection.all('isoneM'),
+            'm_channel': selection.all('isoneM') & ~selection.all('isoneE'),
+            'other': ~selection.all('isoneE') & ~selection.all('isoneM')
         }) 
         
         # def normalize(val,cut):
@@ -262,25 +262,6 @@ class analysis(processor.ProcessorABC):
         #         )
 
 
-        #     if systematic is None and self.is_mc:
-        #         output['nEvents'] = {
-        #             'events': len(events),
-        #             'genWeights': ak.sum(events.genWeight),
-        #             'weights': ak.sum(weights.weight())
-        #         }
-
-        #         wgtcutflow = selection.cutflow(*regions[region], weights = weights) #, weightsmodifier = systematic) #weights  
-        #         wgtcutflow_result = wgtcutflow.result()
-        #         output['cutflow'] = {
-        #             'selections': wgtcutflow_result.labels,
-        #             'events': wgtcutflow_result.nevcutflow,
-        #             'events_min_one': wgtcutflow_result.nevonecut,
-        #             'weights': wgtcutflow_result.wgtevcutflow,
-        #             'weights_min_one': wgtcutflow_result.wgtevonecut
-        #         }
-        #         ### AGE: maybe we can save the histogram from wgtcutflow.yieldhist in hists
-
-        # fill(shift_name)
 
         output = {}
         if not shift_name:
@@ -290,12 +271,33 @@ class analysis(processor.ProcessorABC):
                 'sum_genweights': np.sum(events.genWeight) if self.is_mc else self.n_events
             }
 
+            
+            output['cutflow'] = {}
+            output['cutflow'][events.metadata['dataset']] = {
+                'e_channel': {
+                    'basic_selection': np.sum(events.selection.basic_selection[events.channel.e_channel]),
+                    'preselection': np.sum(events.selection.preselection[events.channel.e_channel]),
+                },
+                'm_channel': {
+                    'basic_selection': np.sum(events.selection.basic_selection[events.channel.m_channel]),
+                    'preselection': np.sum(events.selection.preselection[events.channel.m_channel]),
+                },
+                'other': {
+                    'basic_selection': np.sum(events.selection.basic_selection[events.channel.other]),
+                    'preselection': np.sum(events.selection.preselection[events.channel.other]),
+                },
+            }
+
+        ### AGE comment: weigfhts needs to be reviewed
+        ### We need to add weight to the events before filling the histograms
+        events['weight'] = weights.weight()  
+
         hists = fill_histograms(
             events,
             processName=self.processName,
             year=self.year_label,
             is_mc=self.is_mc,
-            selection_list=['basic_selection', 'e_sel', 'm_sel'],
+            selection_list=['basic_selection', 'preselection'],
             channel_list=['e_channel', 'm_channel', 'other'],
         )
 

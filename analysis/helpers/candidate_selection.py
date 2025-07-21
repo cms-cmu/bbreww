@@ -11,6 +11,8 @@ def candidate_selection(events):
     valid_jets = ak.num(j_candidates) >= 4
     j_candidates = ak.mask(j_candidates,valid_jets) # proceed only if we have at least 2 b-jets and 2 non b-jets
 
+    events['j_bcand'] = ak.pad_none(j_candidates[:,:2], 2,axis=1) # two b-jets
+
     j_candidates = j_candidates[:,2:] #3 non b-jets
     j_candidates = j_candidates[ak.argsort(j_candidates.pt, axis=1, ascending=False)] #pt sort the jets
 
@@ -19,7 +21,6 @@ def candidate_selection(events):
     jj_i = jj_i[(j_candidates[jj_i.j1]+ j_candidates[jj_i.j2]).mass<120.0] #dijet cuts
     
     events['j_tt_mask'] =  ak.pad_none(j_candidates[jj_i.j2].pt>20.0, 3, axis=1) # only apply for TTbar chi square
-    events['j_bcand'] = ak.pad_none(j_candidates[:,:2], 2,axis=1) # two b-jets
     events['j_nonbcand'] = j_candidates # 3 non b-jets
 
     events['qq'] = ak.pad_none(j_candidates[jj_i.j1] + j_candidates[jj_i.j2], 3, axis=1)

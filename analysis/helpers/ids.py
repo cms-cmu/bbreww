@@ -19,10 +19,12 @@ def lepton_preselection(events, lepton_flavour, params, id):
         # Requirements on SuperCluster eta, dxy, dz for barrel and endcap regions
         etaSC = abs(leptons.deltaEtaSC + leptons.eta)
         passes_SC = (
+            # barrel cuts
             (etaSC < 1.4442) 
             & (abs(leptons.dxy) < 0.05) 
             & (abs(leptons.dz) < 0.1)
         ) | (
+            # endcap cuts
             (etaSC < 2.5) & (etaSC > 1.5660)
             & (abs(leptons.dxy) < 0.1)
             & (abs(leptons.dz) < 0.2)
@@ -48,24 +50,6 @@ def lepton_preselection(events, lepton_flavour, params, id):
     
     return good_leptons
 
-######
-## Tau
-## https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendationForRun2
-## The decayModeFindingNewDMs: recommended for use with DeepTauv2p1, where decay
-## modes 5 and 6 should be explicitly rejected.
-## This should already be applied in NanoAOD.
-##
-## Tau_idDeepTau2017v2p1VSe ID working points (bitmask):
-## 1 = VVVLoose, 2 = VVLoose, 4 = VLoose, 8 = Loose,
-## 16 = Medium, 32 = Tight, 64 = VTight, 128 = VVTight
-##
-## Tau_idDeepTau2017v2p1VSjet ID working points (bitmask):
-## 1 = VVVLoose, 2 = VVLoose, 4 = VLoose, 8 = Loose,
-## 16 = Medium, 32 = Tight, 64 = VTight, 128 = VVTight
-##
-## Tau_idDeepTau2017v2p1VSmu ID working points (bitmask):
-## 1 = VLoose, 2 = Loose, 4 = Medium, 8 = Tight
-######
 
 def tau_preselection(events, params, id):
 
@@ -79,9 +63,10 @@ def tau_preselection(events, params, id):
 
     passes_pt = taus.pt > cuts["pt"]
     passes_eta = abs(taus.eta) < cuts["eta"]
-    passes_deeptauid = (taus.idDeepTau2017v2p1VSjet & 4) == 4
+    passes_dz = abs(taus.dz)
+    passes_deeptauid = (taus.idDeepTau2018v2p5VSjet & 5) == 5 #medium working point
 
-    good_taus = passes_pt & passes_eta & passes_deeptauid & passes_decayModeDMs
+    good_taus = passes_pt & passes_eta &  passes_dz & passes_deeptauid & passes_decayModeDMs
 
     return good_taus
 
@@ -135,26 +120,29 @@ def jet_preselection(events, params, year):
     jets = events["Jet"]
     cuts = params.object_preselection["Jet"]
 
-    ## custom low pT pileup Id (only valid for pT < 30 GeV)
-    def puId_cut_low_pt(jet_pt):
-        puId = (0.85-0.7)*(jet_pt-30)/(30-8) + 0.85
-        return puId
+    # pileup ID is only needed for run 2 (CHS jets)
+    if '201' in year:
+        ## custom low pT pileup Id (only valid for pT < 30 GeV)
+        def puId_cut_low_pt(jet_pt):
+            puId = (0.85-0.7)*(jet_pt-30)/(30-8) + 0.85
+            return puId
+        
+        puId_value = 4
+        if '2016' in year:
+            puId_value =1
+
+        passes_puId  = ak.where(
+            jets.pt > 30,
+            (jets.pt >= 50) | ((jets.puId & puId_value) == puId_value),
+            (jets.puIdDisc > puId_cut_low_pt(jets.pt)) # soft jets: pT < 30 GeV
+            )
+    else:
+        passes_puId = True
     
     passes_pt = jets.pt > cuts["pt"]
     passes_eta = abs(jets.eta) < cuts["eta"]
-    passes_jetId = jets.jetId > cuts["jetId"]
 
-    puId_value = 4
-    if '2016' in year:
-        puId_value =1
-
-    passes_puId  = ak.where(
-        jets.pt > 30,
-        (jets.pt >= 50) | ((jets.puId & puId_value) == puId_value),
-        (jets.puIdDisc > puId_cut_low_pt(jets.pt)) # soft jets: pT < 30 GeV
-        )
-
-    good_jets = passes_eta & passes_jetId & passes_pt & passes_puId
+    good_jets = passes_eta & passes_pt & passes_puId
 
     return good_jets
 

@@ -2,15 +2,15 @@
 
 datasets:
   GluGluToHHTo2B2VLNu2J:
-    2018_UL:
+    UL18:
       xs: 0.003384123
       nanoAOD: bbww/metadata/GluGluToHHTo2B2VLNu2J_files.txt
   TTToSemiLeptonic:
-    2018_UL:
+    UL18:
       xs: 365.457
       nanoAOD: /TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9-20UL18JMENano_106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM
   data:
-    2018_UL:
+    UL18:
       lumi: 59.83
       trigger:
         - Ele32_WPTight_Gsf
@@ -38,7 +38,7 @@ datasets:
         - Ele115_CaloIdVT_GsfTrkIdT
         - Photon200
         - IsoMu27
-    2018_UL:
+    UL18:
       lumi: 59.83
       trigger:
         - Ele32_WPTight_Gsf

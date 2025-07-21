@@ -59,7 +59,9 @@ datasets:
     xs: 408.4
   data:
     2022_preEE:
-      lumi: 1
+      lumi: 7.98
       trigger:  
+      - IsoMu24
+      - Ele30_WPTight_Gsf
   
 

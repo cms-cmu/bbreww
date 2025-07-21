@@ -1,17 +1,8 @@
 import numpy as np 
 import awkward as ak
 from bbww.analysis.helpers.ids import lepton_preselection, tau_preselection, photon_preselection, jet_preselection, HEMjet_preselection    
-from bbww.analysis.helpers.corrections import(
-    get_met_xy_correction,
-    get_ele_loose_id_sf,
-    get_mu_loose_id_sf,
-    get_mu_loose_iso_sf,
-    get_mu_tight_id_sf,
-    get_mu_tight_iso_sf,
-    get_ele_reco_sf_above20,
-    get_ele_reco_sf_below20,
-    get_ele_tight_id_sf
-)
+from bbww.analysis.helpers.corrections import get_met_xy_correction
+from bbww.analysis.helpers.common import apply_jet_veto_maps
 
 ## this file contains object preselection for MET, electrons, muons, taus, photons, and jets
 
@@ -19,35 +10,15 @@ def met_selection(events, year, isData):
     npv = events.PV.npvsGood 
     run = events.run
     events['met'] = events.MET # keep corrected met and uncorrected separate
-    if '201' in year:
+    if '201' in year: ## only for run2
         events['met','pt'] , events['met','phi'] = get_met_xy_correction(year, npv, run, events.MET.pt, events.MET.phi, isData)
     return events
 
 
 def muon_selection(events,year,params):       
-    mu = events.Muon   
     events['Muon','isloose'] = lepton_preselection(events, "Muon", params, "loose")
-    events['Muon','id_sf'] = ak.where(
-        events.Muon.isloose, 
-        get_mu_loose_id_sf(year, abs(mu.eta), mu.pt), 
-        ak.ones_like(mu.pt)
-    )
-    events['Muon','iso_sf'] = ak.where(
-        events.Muon.isloose, 
-        get_mu_loose_iso_sf(year, abs(mu.eta), mu.pt), 
-        ak.ones_like(mu.pt)
-    )
     events['Muon','istight'] = lepton_preselection(events, "Muon", params, "tight")
-    events['Muon','id_sf'] = ak.where(
-        events.Muon.istight, 
-        get_mu_tight_id_sf(year, abs(mu.eta), mu.pt), 
-        events.Muon.id_sf
-    )
-    events['Muon','iso_sf'] = ak.where(
-        events.Muon.istight, 
-        get_mu_tight_iso_sf(year, abs(mu.eta), mu.pt), 
-        events.Muon.iso_sf
-    )
+
     events['mu_nloose'] = ak.num(events.Muon[events.Muon.isloose], axis=1)
     events['mu_ntight'] = ak.num(events.Muon[events.Muon.istight], axis=1)
 
@@ -55,24 +26,10 @@ def muon_selection(events,year,params):
 
 def electron_selection(events,year, params):       
     e = events.Electron
-    events['Electron', 'reco_sf'] = ak.where(
-        (e.pt<20),
-        get_ele_reco_sf_below20(year, e.eta+e.deltaEtaSC, e.pt), 
-        get_ele_reco_sf_above20(year, e.eta+e.deltaEtaSC, e.pt)
-    )
+    
     events['Electron', 'isloose'] = lepton_preselection(events, "Electron", params, "loose")
-    events['Electron', 'id_sf'] = ak.where(
-        events.Electron.isloose,
-        get_ele_loose_id_sf(year, e.eta+e.deltaEtaSC, e.pt),
-        ak.ones_like(e.pt)
-    )
 
     events['Electron', 'istight'] = lepton_preselection(events, "Electron", params, "tight")
-    events['Electron', 'id_sf'] = ak.where(
-        events.Electron.istight,
-        get_ele_tight_id_sf(year, e.eta+e.deltaEtaSC, e.pt),
-        events.Electron.id_sf
-    )
     events['Electron','isclean'] = ak.all(e.metric_table(events.Muon[events.Muon.isloose]) > 0.3, axis=2)
 
     e_clean = events.Electron[events.Electron.isclean]
@@ -113,10 +70,15 @@ def photon_selection(events, params):
 
     return events
 
-def jet_selection(events, params, year):
+def jet_selection(events, params, year, corrections_metadata):
     e_clean = events.Electron[events.Electron.isclean]
     tau_clean = events.Tau[events.Tau.isclean]
     pho_clean = events.Photon[events.Photon.isclean]
+
+    # jet veto maps are mandatory for run 3
+    if '202' in year:
+        events['Jet', 'jet_veto_maps'] = apply_jet_veto_maps(corrections_metadata['jet_veto_maps'], events.Jet)
+        events['Jet'] = events.Jet[events.Jet.jet_veto_maps]
 
     events['Jet','isclean'] = (
         ak.all(events.Jet.metric_table(events.Muon[events.Muon.isloose]) > 0.4, axis=2)
@@ -134,6 +96,16 @@ def jet_selection(events, params, year):
 
     return events
 
+def apply_bbWW_selection(events, year,params, isMC, corrections_metadata):
+    events = met_selection(events, year, isMC)
+    events = muon_selection(events, year, params) #muons
+    events = electron_selection(events, year, params) #electrons
+    events = tau_selection(events,params) #taus
+    events = photon_selection(events,params) #photon
+    events = jet_selection(events,params,year,corrections_metadata) #jets
+    
+    return events
+        
 
 
 

@@ -15,12 +15,12 @@ from bbww.analysis.helpers.corrections import(
 
 ## this file contains object preselection for MET, electrons, muons, taus, photons, and jets
 
-def met_selection(events, year, isData):
+def met_selection(events, year, is_data):
     npv = events.PV.npvsGood 
     run = events.run
     events['met'] = events.MET # keep corrected met and uncorrected separate
     if '201' in year:
-        events['met','pt'] , events['met','phi'] = get_met_xy_correction(year, npv, run, events.MET.pt, events.MET.phi, isData)
+        events['met','pt'] , events['met','phi'] = get_met_xy_correction(year, npv, run, events.MET.pt, events.MET.phi, is_data)
     return events
 
 

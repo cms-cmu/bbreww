@@ -21,13 +21,16 @@ from optparse import OptionParser
 from omegaconf import OmegaConf
 
 from base_class.hist import Fill
+from base_class.physics.event_selection import apply_event_selection
 
 from bbww.analysis.helpers.common import update_events
 from bbww.analysis.helpers.object_selection import met_selection, electron_selection, muon_selection, jet_selection, tau_selection, photon_selection
 from bbww.analysis.helpers.candidate_selection import candidate_selection
 from bbww.analysis.helpers.chi_square import chi_sq
 from bbww.analysis.helpers import common
+from bbww.analysis.helpers.fill_histograms import fill_histograms
 import bbww.analysis.helpers.corrections as corrections
+
 
 warnings.filterwarnings("ignore", "Missing cross-reference index for")
 warnings.filterwarnings("ignore", "Please ensure")
@@ -47,47 +50,6 @@ class analysis(processor.ProcessorABC):
         with open(corrections_metadata, "r") as f:
             self.corrections_metadata = yaml.safe_load(f)
 
-    # def make_output():
-    #     return {
-    #         'nEvents': {},
-    #         'cutflow': {},
-    #         # 'test': {},
-    #         # 'hists' : {
-    #         #     "met": (
-    #         #         hda.Hist.new
-    #         #         .Reg(50, 0, 300, name="met", label = 'pT [GeV]')  
-    #         #         .StrCat([], name="systematic", growth = True)      
-    #         #         .StrCat([], name="dataset", growth = True)     
-    #         #         .Int(0,2, name="signal_region", overflow  = False, underflow = False) 
-    #         #         .Weight()                               
-    #         #     ),
-    #         #     "chi_hadW": (
-    #         #         hda.Hist.new
-    #         #         .Reg(50, 0, 5, name="chi_hadW", label=r'$\chi^2$')
-    #         #         .StrCat([], name="dataset", growth = True)
-    #         #         .StrCat([], name="systematic", growth = True)  
-    #         #         .Int(0,2, name="signal_region", overflow  = False, underflow = False)
-    #         #         .Weight()
-    #         #     ),
-    #         #     "chi_hadWs": (
-    #         #         hda.Hist.new
-    #         #         .Reg(50, 0, 5, name="chi_hadWs", label=r'$\chi^2$')
-    #         #         .StrCat([], name="systematic", growth = True)  
-    #         #         .StrCat([], name="dataset", growth = True)
-    #         #         .Int(0,2, name="signal_region", overflow  = False, underflow = False)
-    #         #         .Weight()
-    #         #     ),
-    #         #     "chi_tt": (
-    #         #         hda.Hist.new
-    #         #         .Reg(50, 0, 5, name="chi_tt", label=r'$\chi^2$')
-    #         #         .StrCat([], name="systematic", growth = True)  
-    #         #         .StrCat([], name="dataset", growth = True)
-    #         #         .Int(0,2, name="signal_region", overflow  = False, underflow = False)
-    #         #         .Weight()
-    #         #     ),
-    #         # }
-    #     }
-
     def process(self, events):
 
         logging.debug(f"Metadata: {events.metadata}\n")
@@ -95,13 +57,20 @@ class analysis(processor.ProcessorABC):
         self.year = events.metadata['year']
         self.year_label = self.corrections_metadata[self.year]['year_label']
         self.processName = events.metadata['processName']
-        self.isData = not hasattr(events, "genWeight")
-        self.isMC = not self.isData
+        self.is_data = not hasattr(events, "genWeight")
+        self.is_mc = not self.is_data
+        self.n_events = len(events)
+
+        events = apply_event_selection(
+            events, 
+            self.corrections_metadata[self.year], 
+            cut_on_lumimask=True if self.is_data else False
+        )
 
         # jets = apply_jerc_corrections(
         #     events.Jet,
         #     corrections_metadata=self.corrections_metadata[self.year],
-        #     isMC=self.isMC,
+        #     is_mc=self.is_mc,
         #     run_systematics=False, ###self.run_systematics,
         #     dataset=self.dataset
         # )
@@ -160,16 +129,16 @@ class analysis(processor.ProcessorABC):
             year_number = year.replace('UL', '')
             year = f'20{year_number}_UL' #make name compatible with corrections file
 
-        scale = 1 if self.isData else 1000.*float(events.metadata['lumi'])*events.metadata['xs']
+        scale = 1 if self.is_data else 1000.*float(events.metadata['lumi'])*events.metadata['xs']
 
         events.metadata['genEventSumw'] = events.metadata.get('genEventSumw', 1.0)
-        if self.isMC: weights.add('xsec', scale*events.genWeight/events.metadata['genEventSumw'])
+        if self.is_mc: weights.add('xsec', scale*events.genWeight/events.metadata['genEventSumw'])
 
         params = OmegaConf.load(self.parameters)
 
         ### object preselection
 
-        events = met_selection(events, year, isData = False) #MET ##isData is placeholder
+        events = met_selection(events, year, is_data = False) #MET ##isData is placeholder
         events = muon_selection(events, year, params) #muons
         events = electron_selection(events, year, params) #electrons
         events = tau_selection(events,params) #taus
@@ -180,7 +149,7 @@ class analysis(processor.ProcessorABC):
         events = candidate_selection(events)
         events = chi_sq(events) # chi square selection and calculation
 
-        if self.isMC:
+        if self.is_mc:
                 
             gen = events.GenPart
 
@@ -197,11 +166,6 @@ class analysis(processor.ProcessorABC):
             genZs = gen[gen.isZ]
             genDYs = gen[gen.isZ&(gen.mass>30)]
             
-            nnlo_nlo = {}
-            nlo_qcd = ak.ones_like(events.MET.pt, dtype=float)
-            nlo_ewk = ak.ones_like(events.MET.pt, dtype=float)
-                                            
-
             ###
             # Isolation weights for muons
             ###
@@ -209,62 +173,60 @@ class analysis(processor.ProcessorABC):
             if hasattr(events, "L1PreFiringWeight"): 
                 weights.add('prefiring', events.L1PreFiringWeight.Nom, events.L1PreFiringWeight.Up, events.L1PreFiringWeight.Dn)
             weights.add('genw',events.genWeight)
-            weights.add('nlo_ewk',nlo_ewk)
-            #weights.add('nlo',nlo) 
-            if 'cen' in nnlo_nlo:
-                #weights.add('nnlo_nlo',nnlo_nlo['cen'])
-                weights.add('qcd1',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['qcd1up']/nnlo_nlo['cen'], nnlo_nlo['qcd1do']/nnlo_nlo['cen'])
-                weights.add('qcd2',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['qcd2up']/nnlo_nlo['cen'], nnlo_nlo['qcd2do']/nnlo_nlo['cen'])
-                weights.add('qcd3',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['qcd3up']/nnlo_nlo['cen'], nnlo_nlo['qcd3do']/nnlo_nlo['cen'])
-                weights.add('ew1',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew1up']/nnlo_nlo['cen'], nnlo_nlo['ew1do']/nnlo_nlo['cen'])
-                weights.add('ew2G',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew2Gup']/nnlo_nlo['cen'], nnlo_nlo['ew2Gdo']/nnlo_nlo['cen'])
-                weights.add('ew3G',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew3Gup']/nnlo_nlo['cen'], nnlo_nlo['ew3Gdo']/nnlo_nlo['cen'])
-                weights.add('ew2W',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew2Wup']/nnlo_nlo['cen'], nnlo_nlo['ew2Wdo']/nnlo_nlo['cen'])
-                weights.add('ew3W',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew3Wup']/nnlo_nlo['cen'], nnlo_nlo['ew3Wdo']/nnlo_nlo['cen'])
-                weights.add('ew2Z',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew2Zup']/nnlo_nlo['cen'], nnlo_nlo['ew2Zdo']/nnlo_nlo['cen'])
-                weights.add('ew3Z',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew3Zup']/nnlo_nlo['cen'], nnlo_nlo['ew3Zdo']/nnlo_nlo['cen'])
-                weights.add('mix',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['mixup']/nnlo_nlo['cen'], nnlo_nlo['mixdo']/nnlo_nlo['cen'])
-                #weights.add('muF',ak.ones_like(events.MET.pt, dtype='float'), nnlo_nlo['muFup']/nnlo_nlo['cen'], nnlo_nlo['muFdo']/nnlo_nlo['cen'])
-                #weights.add('muR',ak.ones_like(events.MET.pt, dtype='float'), nnlo_nlo['muRup']/nnlo_nlo['cen'], nnlo_nlo['muRdo']/nnlo_nlo['cen'])
             
-        lumimask = ak.ones_like(events.MET.pt, dtype=bool) #using events.MET.pt to get 1d array with len(events)
-        #if isData:
-            #lumimask = lumiMasks[year](events.run, events.luminosityBlock)
-        selection.add('lumimask', lumimask)
-
-        # met_filters =  ak.ones_like(events.MET.pt, dtype=bool)
-        # #if isData: met_filters = met_filters & events.Flag['eeBadScFilter'] #this filter is recommended for data only
-        # for flag in met_filters_names[year]:
-        #     met_filters = met_filters & events.Flag[flag]
-        # selection.add('met_filters',met_filters)
-
-        # triggers = dak.zeros_like(events.MET.pt, dtype=bool)
-        # for trigger_path in singleelectron_triggers[year]:
-        #     if not hasattr(events.HLT, trigger_path): continue
-        #     triggers = triggers | events.HLT[trigger_path]
-        # selection.add('singleelectron_triggers', triggers)
-        
-        # triggers = dak.zeros_like(events.MET.pt, dtype=bool)
-        # for trigger_path in singlemuon_triggers[year]:
-        #     if not hasattr(events.HLT, trigger_path): continue
-        #     triggers = triggers | events.HLT[trigger_path]
-        # selection.add('singlemuon_triggers', triggers)
+            #### AGE: not sure we need this section. I commented it out for now
+            # nnlo_nlo = {}
+            # nlo_qcd = ak.ones_like(events.MET.pt, dtype=float)
+            # nlo_ewk = ak.ones_like(events.MET.pt, dtype=float)
+            # weights.add('nlo_ewk',nlo_ewk)
+            # #weights.add('nlo',nlo) 
+            # if 'cen' in nnlo_nlo:
+            #     #weights.add('nnlo_nlo',nnlo_nlo['cen'])
+            #     weights.add('qcd1',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['qcd1up']/nnlo_nlo['cen'], nnlo_nlo['qcd1do']/nnlo_nlo['cen'])
+            #     weights.add('qcd2',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['qcd2up']/nnlo_nlo['cen'], nnlo_nlo['qcd2do']/nnlo_nlo['cen'])
+            #     weights.add('qcd3',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['qcd3up']/nnlo_nlo['cen'], nnlo_nlo['qcd3do']/nnlo_nlo['cen'])
+            #     weights.add('ew1',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew1up']/nnlo_nlo['cen'], nnlo_nlo['ew1do']/nnlo_nlo['cen'])
+            #     weights.add('ew2G',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew2Gup']/nnlo_nlo['cen'], nnlo_nlo['ew2Gdo']/nnlo_nlo['cen'])
+            #     weights.add('ew3G',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew3Gup']/nnlo_nlo['cen'], nnlo_nlo['ew3Gdo']/nnlo_nlo['cen'])
+            #     weights.add('ew2W',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew2Wup']/nnlo_nlo['cen'], nnlo_nlo['ew2Wdo']/nnlo_nlo['cen'])
+            #     weights.add('ew3W',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew3Wup']/nnlo_nlo['cen'], nnlo_nlo['ew3Wdo']/nnlo_nlo['cen'])
+            #     weights.add('ew2Z',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew2Zup']/nnlo_nlo['cen'], nnlo_nlo['ew2Zdo']/nnlo_nlo['cen'])
+            #     weights.add('ew3Z',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['ew3Zup']/nnlo_nlo['cen'], nnlo_nlo['ew3Zdo']/nnlo_nlo['cen'])
+            #     weights.add('mix',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['mixup']/nnlo_nlo['cen'], nnlo_nlo['mixdo']/nnlo_nlo['cen'])
+            #     #weights.add('muF',ak.ones_like(events.MET.pt, dtype='float'), nnlo_nlo['muFup']/nnlo_nlo['cen'], nnlo_nlo['muFdo']/nnlo_nlo['cen'])
+            #     #weights.add('muR',ak.ones_like(events.MET.pt, dtype='float'), nnlo_nlo['muRup']/nnlo_nlo['cen'], nnlo_nlo['muRdo']/nnlo_nlo['cen'])
+            
+        selection.add('lumimask', events.lumimask)
+        selection.add('met_filters', events.passNoiseFilter)
+        selection.add('trigger', events.passHLT)
 
         noHEMj = ak.ones_like(events.MET.pt, dtype=bool)
         if year=='2018': noHEMj = (events.j_nHEM==0)
         noHEMmet = ak.ones_like(events.MET.pt, dtype=bool)
-        if year=='2018': noHEMmet = (events.MET.pt>470)|(events.MET.phi>-0.62)|(events.MET.phi<-1.62)    
+        if year=='2018': noHEMmet = (events.MET.pt>470)|(events.MET.phi>-0.62)|(events.MET.phi<-1.62)
         
         selection.add('isoneE', (events.e_ntight==1) & (events.mu_nloose==0) & (events.pho_nloose==0) & (events.tau_nloose==0))
         selection.add('isoneM', (events.mu_ntight==1) & (events.e_nloose==0) & (events.pho_nloose==0) & (events.tau_nloose==0))
-        selection.add('njets',  (events.j_nsoft>2))
         selection.add('noHEMj', noHEMj)
         selection.add('noHEMmet', noHEMmet)
+        selection.add('njets',  (events.j_nsoft>2))
 
-        # regions = {
-        #     'esr': ['isoneE', 'noHEMj', 'njets', 'met_filters', 'noHEMmet'],
-        #     'msr': ['isoneM', 'noHEMj', 'njets', 'met_filters', 'noHEMmet']
-        #     }
+
+        #### AGE comment: I am starting to think that we dont need to separarate channels and selection. We can just use the selection and then filter the events by channel
+        selection_list = {
+            'basic_selection': ['lumimask', 'met_filters', 'trigger'],
+            'preselection': ['lumimask', 'met_filters', 'trigger', 'noHEMj', 'noHEMmet', 'njets'],
+        }
+        events['selection'] = ak.zip({
+            'basic_selection': selection.all(*selection_list['basic_selection']),
+            'preselection': selection.all(*selection_list['preselection']),
+        })
+
+        events['channel'] = ak.zip({
+            'e_channel': selection.all('isoneE') & ~selection.all('isoneM'),
+            'm_channel': selection.all('isoneM') & ~selection.all('isoneE'),
+            'other': ~selection.all('isoneE') & ~selection.all('isoneM')
+        }) 
         
         # def normalize(val,cut):
         #     if cut is None:
@@ -300,27 +262,46 @@ class analysis(processor.ProcessorABC):
         #         )
 
 
-        #     if systematic is None and self.isMC:
-        #         output['nEvents'] = {
-        #             'events': len(events),
-        #             'genWeights': ak.sum(events.genWeight),
-        #             'weights': ak.sum(weights.weight())
-        #         }
 
-        #         wgtcutflow = selection.cutflow(*regions[region], weights = weights) #, weightsmodifier = systematic) #weights  
-        #         wgtcutflow_result = wgtcutflow.result()
-        #         output['cutflow'] = {
-        #             'selections': wgtcutflow_result.labels,
-        #             'events': wgtcutflow_result.nevcutflow,
-        #             'events_min_one': wgtcutflow_result.nevonecut,
-        #             'weights': wgtcutflow_result.wgtevcutflow,
-        #             'weights_min_one': wgtcutflow_result.wgtevonecut
-        #         }
-        #         ### AGE: maybe we can save the histogram from wgtcutflow.yieldhist in hists
+        output = {}
+        if not shift_name:
+            output['events_processed'] = {}
+            output['events_processed'][events.metadata['dataset']] = {
+                'n_events' : self.n_events,
+                'sum_genweights': np.sum(events.genWeight) if self.is_mc else self.n_events
+            }
 
-        # fill(shift_name)
+            
+            output['cutflow'] = {}
+            output['cutflow'][events.metadata['dataset']] = {
+                'e_channel': {
+                    'basic_selection': np.sum(events.selection.basic_selection[events.channel.e_channel]),
+                    'preselection': np.sum(events.selection.preselection[events.channel.e_channel]),
+                },
+                'm_channel': {
+                    'basic_selection': np.sum(events.selection.basic_selection[events.channel.m_channel]),
+                    'preselection': np.sum(events.selection.preselection[events.channel.m_channel]),
+                },
+                'other': {
+                    'basic_selection': np.sum(events.selection.basic_selection[events.channel.other]),
+                    'preselection': np.sum(events.selection.preselection[events.channel.other]),
+                },
+            }
 
-        return output
+        ### AGE comment: weigfhts needs to be reviewed
+        ### We need to add weight to the events before filling the histograms
+        events['weight'] = weights.weight()  
+
+        hists = fill_histograms(
+            events,
+            processName=self.processName,
+            year=self.year_label,
+            is_mc=self.is_mc,
+            selection_list=['basic_selection', 'preselection'],
+            channel_list=['e_channel', 'm_channel', 'other'],
+        )
+
+        return hists | output
     
     def postprocess(self, accumulator):
         return accumulator

@@ -23,7 +23,7 @@ def get_ele_loose_id_sf (year, eta, pt):
     '''
     We need to modify this year.split('_')[0].
     '''
-    year = year_keys[year]
+    #year = year_keys[year]
     evaluator = correctionlib.CorrectionSet.from_file(f'{path}/EGM/{year}/electron.json.gz')
 
     flateta, counts = ak.flatten(eta), ak.num(eta)
@@ -36,7 +36,7 @@ def get_ele_loose_id_sf (year, eta, pt):
     return ak.unflatten(weight, counts=counts)
 
 def get_ele_tight_id_sf (year, eta, pt):
-    year = year_keys[year]
+    #year = year_keys[year]
     evaluator = correctionlib.CorrectionSet.from_file(f'{path}/EGM/{year}/electron.json.gz')
 
     flateta, counts = ak.flatten(eta), ak.num(eta)
@@ -55,7 +55,7 @@ def get_ele_tight_id_sf (year, eta, pt):
 ####
 
 def get_ele_reco_sf_below20(year, eta, pt):
-    year = year_keys[year]
+    #year = year_keys[year]
     evaluator = correctionlib.CorrectionSet.from_file(f'{path}/EGM/{year}/electron.json.gz')
     
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
@@ -72,7 +72,7 @@ def get_ele_reco_sf_below20(year, eta, pt):
 
 
 def get_ele_reco_sf_above20(year, eta, pt):
-    year = year_keys[year]
+    #year = year_keys[year]
     evaluator = correctionlib.CorrectionSet.from_file(f'{path}/EGM/{year}/electron.json.gz')
     
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
@@ -105,7 +105,7 @@ def get_ele_reco_sf_above20(year, eta, pt):
 ####
 
 def get_mu_loose_id_sf (year, eta, pt):
-    year = year_keys[year]
+    #year = year_keys[year]
     evaluator = correctionlib.CorrectionSet.from_file(f'{path}/MUO/{year}/muon_Z.json.gz')
 
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
@@ -122,7 +122,7 @@ def get_mu_loose_id_sf (year, eta, pt):
     return ak.unflatten(weight, counts=counts)
 
 def get_mu_tight_id_sf (year, eta, pt):
-    year = year_keys[year]
+    #year = year_keys[year]
     evaluator = correctionlib.CorrectionSet.from_file(f'{path}/MUO/{year}/muon_Z.json.gz')
     
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
@@ -149,7 +149,7 @@ def get_mu_tight_id_sf (year, eta, pt):
 ####
 
 def get_mu_loose_iso_sf (year, eta, pt):
-    year = year_keys[year]
+    #year = year_keys[year]
     evaluator = correctionlib.CorrectionSet.from_file(f'{path}/MUO/{year}/muon_Z.json.gz')
 
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
@@ -163,7 +163,7 @@ def get_mu_loose_iso_sf (year, eta, pt):
     return ak.unflatten(weight, counts=counts)
 
 def get_mu_tight_iso_sf (year, eta, pt):
-    year = year_keys[year]
+    #year = year_keys[year]
     evaluator = correctionlib.CorrectionSet.from_file(f'{path}/MUO/{year}/muon_Z.json.gz')
 
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
@@ -186,7 +186,7 @@ def get_mu_tight_iso_sf (year, eta, pt):
 # correction_labels = ["metphicorr_pfmet_mc", "metphicorr_puppimet_mc", "metphicorr_pfmet_data", "metphicorr_puppimet_data"]
 
 def get_met_xy_correction(year, npv, run, pt, phi, isData):
-    year = year_keys[year]
+    #year = year_keys[year]
     npv = ak.where((npv>200),ak.full_like(npv,200),npv)
     pt  = ak.where((pt>1000.),ak.full_like(pt,1000.),pt)
 
@@ -201,3 +201,6 @@ def get_met_xy_correction(year, npv, run, pt, phi, isData):
         corrected_phi = evaluator['phi_metphicorr_pfmet_mc'].evaluate(pt,phi,npv,run)
 
     return corrected_pt, corrected_phi
+
+def get_ttbar_weight(pt):
+    return np.exp(0.0615 - 0.0005 * np.clip(pt, 0, 800))

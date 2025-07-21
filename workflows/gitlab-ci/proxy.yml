@@ -1,5 +1,5 @@
 voms_proxy:
-  stage: build
+  stage: setup
   image: gitlab-registry.cern.ch/cms-cloud/cmssw-docker/al9-cms:latest
   tags:
     - k8s-cvmfs

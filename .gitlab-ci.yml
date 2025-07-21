@@ -30,7 +30,7 @@ workflow:
     - when: never
 
 variables:
-  COFFEA4BEES_REPO: 'https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.cern.ch:8443/cms-cmu/coffea4bees.git'
+  COFFEA4BEES_REPO: 'https://${DEPLOY_TOKEN_USERNAME}:${DEPLOY_TOKEN_PASSWORD}@gitlab.cern.ch:8443/cms-cmu/coffea4bees.git'
   COFFEA4BEES_BRANCH: 'major_changes'
 
 stages:  

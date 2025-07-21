@@ -39,13 +39,16 @@ stages:
   - analysis
   - test
 
-# Setup job that clones coffea4bees once
 setup_workspace:
   stage: setup
   image: alpine/git:latest
   script:
+    - echo ${CI_JOB_TOKEN}
     - echo "Setting up coffea4bees workspace"
-    - git clone --recursive --depth=1 --branch=$COFFEA4BEES_BRANCH $COFFEA4BEES_REPO coffea4bees_framework
+    # Construct URL explicitly for debugging
+    - REPO_URL="https://${DEPLOY_TOKEN_USERNAME}:${DEPLOY_TOKEN_PASSWORD}@gitlab.cern.ch:8443/cms-cmu/coffea4bees.git"
+    - echo "Attempting to clone from repository..."
+    - git clone --recursive --depth=1 --branch=$COFFEA4BEES_BRANCH "$REPO_URL" coffea4bees_framework
     - cd coffea4bees_framework
     # Create the bbww directory and copy current repository content
     - mkdir -p python/bbww

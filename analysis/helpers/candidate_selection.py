@@ -1,13 +1,15 @@
 import awkward as ak
 
-def candidate_selection(events):
+def candidate_selection(events , year):
     j_clean = events.Jet[events.Jet.isclean]
     j_soft = j_clean[j_clean.issoft]
 
-    j_candidates = j_soft[ak.argsort(j_soft.particleNetAK4_QvsG, axis=1, ascending=False)] #particleNetAK4_QvsG btagPNetQvG
+    QvG_key = 'btagPNetQvG' if '202' in year else 'particleNetAK4_QvsG'
+    bTag_key = 'btagPNetB' if '202' in year else 'particleNetAK4_B'
+    j_candidates = j_soft[ak.argsort(getattr(j_soft,QvG_key), axis=1, ascending=False)] #particleNetAK4_QvsG btagPNetQvG
     j_candidates = j_candidates[:, :5] #consider only the first 5
-    j_candidates = j_candidates[ak.argsort(j_candidates.particleNetAK4_B, axis=1, ascending=False)]#particleNetAK4_B btagPNetB
-    
+    j_candidates = j_candidates[ak.argsort(getattr(j_candidates,bTag_key), axis=1, ascending=False)]#particleNetAK4_B btagPNetB
+
     valid_jets = ak.num(j_candidates) >= 4
     j_candidates = ak.mask(j_candidates,valid_jets) # proceed only if we have at least 2 b-jets and 2 non b-jets
 

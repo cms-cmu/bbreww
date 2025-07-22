@@ -30,7 +30,5 @@ def apply_event_selection(events, corrections_metadata:dict, isMC):
             list_to_skip=['BadPFMuonDzFilter', 'hfNoisyHitsFilter']
         )
     )
-
-    ######## need to add single electron and single muon trigger masks here 
-    ###### (need to add run3 triggers to datasets_run3.yml first)
+    
     return events

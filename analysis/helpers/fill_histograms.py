@@ -8,7 +8,7 @@ def fill_histograms(
     year: str = 'UL18',
     is_mc: bool = False,
     selection_list: list = ['basic_selection', 'preselection'],
-    channel_list: list = ["e_channel", "m_channel", "other"],  ### AGE: feel free to change this 
+    channel_list: list = ["hadronic_W","leptonic_W"]
 ):
 
     fill = Fill(

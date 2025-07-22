@@ -61,14 +61,13 @@ class analysis(processor.ProcessorABC):
         self.year = events.metadata['year']
         self.year_label = self.params[self.year].year_label
         self.processName = events.metadata['processName']
-        self.isData = not hasattr(events, "genWeight")
-        self.isMC = not self.isData
+        self.is_mc = hasattr(events, "genWeight")
         self.n_events = len(events)
 
         events = apply_event_selection(
             events, 
-            self.corrections_metadata[self.year], 
-            cut_on_lumimask=True if self.is_data else False
+            self.params[self.year], 
+            self.is_mc
         )
 
         # jets = apply_jerc_corrections(
@@ -128,28 +127,23 @@ class analysis(processor.ProcessorABC):
 
         output = {}
         selection = PackedSelection(dtype="uint64")
-        year = events.metadata['year']
 
-        if 'UL' in year:
-            year_number = year.replace('UL', '')
-            year = f'20{year_number}_UL' #make name compatible with corrections file
-
-        scale = 1 if self.is_data else 1000.*float(events.metadata['lumi'])*events.metadata['xs']
+        scale = 1 if (not self.is_mc) else 1000.*float(events.metadata['lumi'])*events.metadata['xs']
 
         events.metadata['genEventSumw'] = events.metadata.get('genEventSumw', 1.0)
-        if self.is_MC: weights.add('xsec', scale*events.genWeight/events.metadata['genEventSumw'])
+        if self.is_mc: weights.add('xsec', scale*events.genWeight/events.metadata['genEventSumw'])
 
         ### object preselection   
-        events = apply_bbWW_selection( events, year = year, params = self.params,isMC=self.isMC,corrections_metadata=self.params[year])
+        events = apply_bbWW_selection( events, year = self.year, params = self.params, isMC=self.is_mc,corrections_metadata=self.params[self.year])
 
         ### candidate selection and chi square computation
-        events = candidate_selection(events)
+        events = candidate_selection(events, self.year)
         events = chi_sq(events) # chi square selection and calculation
 
         ### apply event selections
-        events = apply_event_selection(events, self.params[year], isMC = self.isMC)
+        events = apply_event_selection(events, self.params[self.year], isMC = self.is_mc)
 
-        if self.isMC:
+        if self.is_mc:
             weights = gen_process(events, weights) ## genweights for MC
 
         oneE =(events.e_ntight==1) & (events.mu_nloose==0) & (events.pho_nloose==0) & (events.tau_nloose==0)
@@ -157,26 +151,31 @@ class analysis(processor.ProcessorABC):
 
         # these selections are only required for 2018 samples
         noHEMj = ak.ones_like(events.MET.pt, dtype=bool)
-        if year=='2018': noHEMj = (events.j_nHEM==0)
+        if '18' in self.year: noHEMj = (events.j_nHEM==0)
         noHEMmet = ak.ones_like(events.MET.pt, dtype=bool)
-        if year=='2018': noHEMmet = (events.MET.pt>470)|(events.MET.phi>-0.62)|(events.MET.phi<-1.62)
+        if '18' in self.year: noHEMmet = (events.MET.pt>470)|(events.MET.phi>-0.62)|(events.MET.phi<-1.62)
         
         selection.add( "lumimask", events.lumimask)
         selection.add( "passNoiseFilter", events.passNoiseFilter)
+        selection.add("trigger", events.passHLT)
         selection.add('isoneEorM', oneE|oneM )
         selection.add('njets',  (events.j_nsoft>2))
         selection.add('noHEMj', noHEMj)
         selection.add('noHEMmet', noHEMmet)
         selection.add('njets',  (events.j_nsoft>2))
+
+        jet_veto_maps = (ak.any(events.Jet.jet_veto_maps,axis=1) if '202' in self.year 
+                         else ak.ones_like(events.MET.pt,dtype=bool))
+        
+        selection.add('jet_veto_mask', jet_veto_maps)
         selection.add('leptonic_W', events.sr_boolean == 0)
         selection.add('hadronic_W', events.sr_boolean == 1)
 
         events['weight'] = weights.weight()  
 
-        #### AGE comment: I am starting to think that we dont need to separarate channels and selection. We can just use the selection and then filter the events by channel
         selection_list = {
-            'basic_selection': ['lumimask', 'met_filters', 'trigger'],
-            'preselection': ['lumimask', 'met_filters', 'trigger', 'noHEMj', 'noHEMmet', 'njets'],
+            'basic_selection': ['lumimask', 'passNoiseFilter', 'trigger'],
+            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'noHEMj', 'noHEMmet', 'njets', 'jet_veto_mask'],
         }
         events['selection'] = ak.zip({
             'basic_selection': selection.all(*selection_list['basic_selection']),

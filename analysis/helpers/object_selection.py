@@ -78,7 +78,7 @@ def jet_selection(events, params, year, corrections_metadata):
     # jet veto maps are mandatory for run 3
     if '202' in year:
         events['Jet', 'jet_veto_maps'] = apply_jet_veto_maps(corrections_metadata['jet_veto_maps'], events.Jet)
-        events['Jet'] = events.Jet[events.Jet.jet_veto_maps]
+        # events['Jet'] = events.Jet[events.Jet.jet_veto_maps] uncomment to apply on individual jets
 
     events['Jet','isclean'] = (
         ak.all(events.Jet.metric_table(events.Muon[events.Muon.isloose]) > 0.4, axis=2)

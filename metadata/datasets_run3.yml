@@ -1,7 +1,7 @@
 datasets:
   GluGluToHHTo2B2VLNu2J:
     2022_preEE:
-      nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv13-133X_mcRun3_2022_realistic_ForNanov13_v1-v2/NANOAODSIM
+      nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-1p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
       picoAOD:
         count: 
         files:
@@ -10,14 +10,32 @@ datasets:
         sumw: 
         sumw2: 
         total_events:
-      xs: 0.08349
-  GluGlutoHHto2B2Tau:
-    2022_preEE:
-      nanoAOD: /GluGlutoHHto2B2Tau_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv13-ggHH_powheg_bugfix_133X_mcRun3_2022_realistic_ForNanov13_v1-v2/NANOAODSIM
+    2022_EE:
+      nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-1p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v3/NANOAODSIM
       picoAOD:
         count: 
         files:
-
+        
+        saved_events: 
+        sumw: 
+        sumw2: 
+        total_events:
+    xs: 0.08349
+  GluGlutoHHto2B2Tau:
+    2022_preEE:
+      nanoAOD: /GluGlutoHHto2B2Tau_kl-1p00_kt-1p00_c2-m2p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
+      picoAOD:
+        count: 
+        files:
+        saved_events: 
+        sumw: 
+        sumw2: 
+        total_events:
+    2022_EE:
+      nanoAOD: /GluGlutoHHto2B2Tau_kl-1p00_kt-1p00_c2-m2p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-Poisson60KeepRAW_130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
+      picoAOD:
+        count: 
+        files:
         saved_events: 
         sumw: 
         sumw2: 
@@ -26,6 +44,16 @@ datasets:
   TTToSemiLeptonic:
     2022_preEE:
       nanoAOD: /TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5_ext1-v2/NANOAODSIM
+      picoAOD:
+        count: 
+        files:
+
+        saved_events: 
+        sumw: 
+        sumw2: 
+        total_events:
+    2022_EE:
+      nanoAOD: /TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
       picoAOD:
         count: 
         files:
@@ -46,10 +74,28 @@ datasets:
         sumw: 
         sumw2: 
         total_events: 
+    2022_EE:
+      nanoAOD: /TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
+      picoAOD:
+        count: 
+        files:
+
+        saved_events: 
+        sumw: 
+        sumw2: 
+        total_events: 
     xs: 101.8  
   TTto4Q:
     2022_preEE':
       nanoAOD: /TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5_ext1-v2/NANOAODSIM
+      picoAOD:
+        files:
+
+        sumw: 
+        sumw2: 
+        total_events: 
+    2022_EE':
+      nanoAOD: /TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
       picoAOD:
         files:
 
@@ -61,6 +107,11 @@ datasets:
     2022_preEE:
       lumi: 7.98
       trigger:  
+      - IsoMu24
+      - Ele30_WPTight_Gsf
+    2022_EE:
+      lumi: 26.67
+      trigger:
       - IsoMu24
       - Ele30_WPTight_Gsf
   

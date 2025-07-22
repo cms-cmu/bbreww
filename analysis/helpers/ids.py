@@ -63,8 +63,11 @@ def tau_preselection(events, params, id):
 
     passes_pt = taus.pt > cuts["pt"]
     passes_eta = abs(taus.eta) < cuts["eta"]
-    passes_dz = abs(taus.dz)
-    passes_deeptauid = (taus.idDeepTau2018v2p5VSjet & 5) == 5 #medium working point
+    passes_dz = abs(taus.dz) < cuts["dz"]
+    try:
+        passes_deeptauid = (taus.idDeepTau2018v2p5VSjet & 5) == 5 #medium working point
+    except:
+        passes_deeptauid = (taus.idDeepTau2017v2p1VSjet & 4) == 4 # fall back to older collection if newer not available
 
     good_taus = passes_pt & passes_eta &  passes_dz & passes_deeptauid & passes_decayModeDMs
 

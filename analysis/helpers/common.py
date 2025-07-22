@@ -1,6 +1,8 @@
 import numpy as np
 import awkward as ak
 from omegaconf import OmegaConf
+import logging
+import correctionlib
 
 def match(a, b, val):
     combinations = a.cross(b, nested=True)
@@ -70,4 +72,33 @@ def met_reconstr(events, e, mu):
     v_e = ak.mask(v_e, ~np.isnan(v_e.pz)) #avoid calculations for imaginary solutions
 
     return v_mu, v_e
+
+### placeholder: wanna use apply_jet_veto_maps from the base framework common.py, not bbww
+def apply_jet_veto_maps( corrections_metadata, jets ):
+    '''
+    taken from https://github.com/PocketCoffea/PocketCoffea/blob/main/pocket_coffea/lib/cut_functions.py#L65
+    modified to veto jets not events
+    '''
+
+    mask_for_VetoMap = (
+        ((jets.jetId & 2)==2) # Must fulfill tight jetId
+        & (abs(jets.eta) < 5.19) # Must be within HCal acceptance
+        & ((jets.neEmEF + jets.chEmEF) < 0.9) # Energy fraction not dominated by ECal
+    )
+    if 'muonSubtrFactor' in jets.fields:  ### AGE: this should be temporary for old picos. New skims should have this field
+        mask_for_VetoMap = mask_for_VetoMap & (jets.muonSubtrFactor < 0.8) # May no be Muons misreconstructed as jets
+    else: logging.warning("muonSubtrFactor NOT in jets fields. This is correct only for mixeddata and old picos.")
+
+    corr = correctionlib.CorrectionSet.from_file(corrections_metadata['file'])[corrections_metadata['tag']]
+
+    etaFlat, phiFlat, etaCounts = ak.flatten(jets.eta), ak.flatten(jets.phi), ak.num(jets.eta)
+    phiFlat = np.clip(phiFlat, -3.14159, 3.14159) # Needed since no overflow included in phi binning
+    weight = ak.unflatten(
+        corr.evaluate("jetvetomap", etaFlat, phiFlat),
+        counts=etaCounts,
+    )
+    jetMask = ak.where( weight == 0, True, False, axis=1 )  # if 0 is not vetoed, then True
+
+    return jetMask & mask_for_VetoMap
+
     

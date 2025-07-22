@@ -1,7 +1,3 @@
-import os
-import sys
-import json
-import yaml
 import warnings
 import logging
 
@@ -10,30 +6,18 @@ import awkward as ak
 import vector
 
 from coffea import processor
-from coffea.nanoevents import NanoAODSchema
-from coffea.nanoevents.methods import candidate
-from coffea.util import load, save
 from coffea.analysis_tools import Weights, PackedSelection
-from coffea.lumi_tools import LumiMask
-from analysis.helpers.processor_config import processor_config
 
-import hist
-from optparse import OptionParser
 from omegaconf import OmegaConf
 
-from base_class.hist import Fill
 from base_class.physics.event_selection import apply_event_selection
 
 from bbww.analysis.helpers.common import update_events
 from bbww.analysis.helpers.object_selection import apply_bbWW_selection
-from bbww.analysis.helpers.event_selection import apply_event_selection
 from bbww.analysis.helpers.candidate_selection import candidate_selection
 from bbww.analysis.helpers.chi_square import chi_sq
 from bbww.analysis.helpers.gen_process import gen_process
-from bbww.analysis.helpers import common
 from bbww.analysis.helpers.fill_histograms import fill_histograms
-import bbww.analysis.helpers.corrections as corrections
-
 
 warnings.filterwarnings("ignore", "Missing cross-reference index for")
 warnings.filterwarnings("ignore", "Please ensure")
@@ -141,7 +125,7 @@ class analysis(processor.ProcessorABC):
         events = chi_sq(events) # chi square selection and calculation
 
         ### apply event selections
-        events = apply_event_selection(events, self.params[self.year], isMC = self.is_mc)
+        events = apply_event_selection(events, self.params[self.year], cut_on_lumimask = not self.is_mc)
 
         if self.is_mc:
             weights = gen_process(events, weights) ## genweights for MC
@@ -170,6 +154,7 @@ class analysis(processor.ProcessorABC):
         selection.add('jet_veto_mask', jet_veto_maps)
         selection.add('leptonic_W', events.sr_boolean == 0)
         selection.add('hadronic_W', events.sr_boolean == 1)
+        selection.add('null_region', events.sr_boolean==5) # events where the selected two W jets don't have a matching genjet
 
         events['weight'] = weights.weight()  
 
@@ -185,6 +170,7 @@ class analysis(processor.ProcessorABC):
         events['channel'] = ak.zip({
             'hadronic_W': selection.all('isoneEorM') & selection.all('hadronic_W'),
             'leptonic_W': selection.all('isoneEorM') & selection.all('leptonic_W'),
+            'null' : selection.all('isoneEorM') & selection.all('null_region')
         }) 
 
         output = {}
@@ -198,13 +184,35 @@ class analysis(processor.ProcessorABC):
             output['cutflow'] = {}
             output['cutflow'][events.metadata['dataset']] = {
                 'hadronic_W': {
-                    'basic_selection': np.sum(events.selection.basic_selection[events.channel.hadronic_W]),
-                    'preselection': np.sum(events.selection.preselection[events.channel.hadronic_W]),
+                    'events': {
+                        'basic_selection': np.sum(events.selection.basic_selection[events.channel.hadronic_W]),
+                        'preselection': np.sum(events.selection.preselection[events.channel.hadronic_W]),
+                    },
+                    'weights': {
+                        'basic_selection': np.sum(events.weight[events.selection.basic_selection[events.channel.hadronic_W]]),
+                        'preselection': np.sum(events.weight[events.selection.preselection[events.channel.hadronic_W]]),
+                    },
                 },
                 'leptonic_W': {
-                    'basic_selection': np.sum(events.selection.basic_selection[events.channel.leptonic_W]),
-                    'preselection': np.sum(events.selection.preselection[events.channel.leptonic_W]),
+                    'events': {
+                        'basic_selection': np.sum(events.selection.basic_selection[events.channel.leptonic_W]),
+                        'preselection': np.sum(events.selection.preselection[events.channel.leptonic_W]),
+                    },
+                    'weights': {
+                        'basic_selection': np.sum(events.weight[events.selection.basic_selection[events.channel.leptonic_W]]),
+                        'preselection': np.sum(events.weight[events.selection.preselection[events.channel.leptonic_W]]),
+                    },
                 },
+                'null': {
+                    'events': {
+                        'basic_selection': np.sum(events.selection.basic_selection[events.channel.null]),
+                        'preselection': np.sum(events.selection.preselection[events.channel.null]),
+                    },
+                    'weights': {
+                        'basic_selection': np.sum(events.weight[events.selection.basic_selection[events.channel.null]]),
+                        'preselection': np.sum(events.weight[events.selection.preselection[events.channel.null]]),
+                    },
+                }
             }
 
         hists = fill_histograms(

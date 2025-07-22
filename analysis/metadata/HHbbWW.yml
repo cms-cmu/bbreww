@@ -9,6 +9,8 @@ runner:
     - analysis
     - skimmer
     - data
+    - bbww
+
   # rucio_regex_sites: 'T[123]_(US|CH|DE|UK)'
   allowlist_sites:
     - T3_US_FNALLPC

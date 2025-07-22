@@ -6,7 +6,7 @@ from omegaconf import OmegaConf
 from analysis.helpers.mc_weight_outliers import OutlierByMedian
 from analysis.helpers.processor_config import processor_config
 from bbww.analysis.helpers.object_selection import apply_bbWW_selection
-from bbww.analysis.helpers.event_selection import apply_event_selection
+from base_class.physics.event_selection import apply_event_selection
 from coffea.analysis_tools import PackedSelection, Weights
 from skimmer.processor.picoaod import PicoAOD
 
@@ -17,8 +17,9 @@ class Skimmer(PicoAOD):
             kwargs["pico_base_name"] = f'picoAOD_bbWW'
         super().__init__(*args, **kwargs)
         self.loosePtForSkim = loosePtForSkim
-        self.corrections_metadata = yaml.safe_load(open('analysis/metadata/corrections.yml', 'r'))
-        self.params = OmegaConf.load("bbww/analysis/metadata/object_preselection.yaml")
+        corrections = yaml.safe_load(open('analysis/metadata/corrections.yml', 'r'))
+        parameters = OmegaConf.load("bbww/analysis/metadata/object_preselection.yaml")
+        self.params = OmegaConf.merge(corrections, parameters)
         self.mc_outlier_threshold = mc_outlier_threshold
 
 
@@ -27,6 +28,7 @@ class Skimmer(PicoAOD):
         year    = event.metadata['year']
         dataset = event.metadata['dataset']
         processName = event.metadata['processName']
+        is_mc = hasattr(event, "genWeight")
 
         #
         # Set process and datset dependent flags
@@ -34,8 +36,8 @@ class Skimmer(PicoAOD):
         config = processor_config(processName, dataset, event)
         logging.debug(f'config={config}\n')
 
-        event = apply_bbWW_selection( event, year = year, params = self.params,isMC=config["isMC"],corrections_metadata=self.corrections_metadata[year])
-        event = apply_event_selection( event, self.corrections_metadata[year], isMC = config["isMC"] )
+        event = apply_bbWW_selection( event, year = year, params = self.params,isMC=config["isMC"],corrections_metadata=self.params[year])
+        event = apply_event_selection( event, self.params[year], cut_on_lumimask= not is_mc )
   
         weights = Weights(len(event), storeIndividual=True)
         
@@ -51,9 +53,10 @@ class Skimmer(PicoAOD):
         selections = PackedSelection()
         selections.add( "lumimask", event.lumimask)
         selections.add( "passNoiseFilter", event.passNoiseFilter)
+        selections.add("trigger", event.passHLT)
         selections.add('isoneEorM', oneE|oneM )
         selections.add('njets',  (event.j_nsoft>2))
-        final_selection = selections.require( lumimask=True, passNoiseFilter=True, isoneEorM = True, njets = True)
+        final_selection = selections.require(lumimask=True, passNoiseFilter=True, trigger = True, isoneEorM = True, njets = True)
 
         event["weight"] = weights.weight()
 

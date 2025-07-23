@@ -1,0 +1,14 @@
+analysis_test_cutflow:
+  stage: test
+  extends:
+    - .base_bbww_job
+  needs:
+    - analysis_test
+  image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest
+  script:
+    - echo "Running cutflow test for analysis_test"
+    - source bbww/scripts/analysis_test_cutflows.sh output/
+  artifacts:
+    paths:
+      - coffea4bees_framework/python/output/
+    expire_in: 1 day

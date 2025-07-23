@@ -1,4 +1,4 @@
-analysis_test_cutflow:
+analysis_test_cutflows:
   stage: test
   extends:
     - .base_bbww_job
@@ -10,5 +10,5 @@ analysis_test_cutflow:
     - source bbww/scripts/analysis_test_cutflows.sh output/
   artifacts:
     paths:
-      - coffea4bees_framework/python/output/
+      - coffea4bees_framework/python/output/analysis_test_cutflows/
     expire_in: 1 day

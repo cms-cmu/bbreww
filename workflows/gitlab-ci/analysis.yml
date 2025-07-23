@@ -8,5 +8,5 @@ analysis_test:
     - source bbww/scripts/analysis_test.sh output/
   artifacts:
     paths:
-      - coffea4bees_framework/python/output/
+      - coffea4bees_framework/python/output/analysis_test/
     expire_in: 1 day

@@ -1,0 +1,31 @@
+config = {
+    "default_dir": "bbww/CI_output",
+    "analysis_container": "/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest",
+}
+
+rule all:
+    input: 
+        # f"{config['default_dir']}/analysis_test/test.coffea",
+        f"{config['default_dir']}/analysis_test_cutflows/test_cutflow.yml"
+
+rule analysis_test:
+    output: 
+        f"{config['default_dir']}/analysis_test/test.coffea"
+    container: 
+        config["analysis_container"]
+    log: 
+        f"{config['default_dir']}/analysis_test/analysis_test.log"
+    shell:
+        "source bbww/scripts/analysis_test.sh {config[default_dir]} 2>&1 | tee {log}"
+
+rule analysis_test_cutflows:
+    input: 
+        f"{config['default_dir']}/analysis_test/test.coffea"
+    output: 
+        f"{config['default_dir']}/analysis_test_cutflows/test_cutflow.yml"
+    container: 
+        config["analysis_container"]
+    log: 
+        f"{config['default_dir']}/analysis_test_cutflows/test_cutflow.log"
+    shell:
+        "source bbww/scripts/analysis_test_cutflows.sh {config[default_dir]} 2>&1 | tee {log}"

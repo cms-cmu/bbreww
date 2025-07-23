@@ -1,12 +1,14 @@
 analysis_test_cutflows:
   stage: test
+  extends:
+    - .base_bbww_job
   needs:
+    - setup_workspace
     - analysis_test
   image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest
   script:
-    - pwd & ls -la
     - echo "Running cutflow test for analysis_test"
-    - source scripts/analysis_test_cutflows.sh output/
+    - source bbww/scripts/analysis_test_cutflows.sh output/
   artifacts:
     paths:
       - coffea4bees_framework/python/output/analysis_test_cutflows/

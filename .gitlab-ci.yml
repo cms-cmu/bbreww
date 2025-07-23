@@ -1,0 +1,75 @@
+workflow:
+  rules:
+    # This rule explicitly allows manual triggers (from the web UI)
+    # as long as they are not on a tag or a 'test' branch.
+    - if: $CI_PIPELINE_SOURCE == 'web' && $CI_COMMIT_TAG == null && $CI_COMMIT_BRANCH !~ /test/
+      when: always
+
+    # Do not run for tags (this will catch both push and manual if not already excluded)
+    - if: $CI_COMMIT_TAG
+      when: never
+
+    # Do not run for branches with 'test' in the name (likewise)
+    - if: $CI_COMMIT_BRANCH =~ /test/
+      when: never
+
+    # Do not run if only markdown files changed (for pushes/MRs, not typically for manual)
+    - changes:
+        - "**/*.md"
+      when: never
+
+    # Run for merge request events
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: always
+
+    # Run for all other branch pushes (the default push behavior)
+    - if: $CI_COMMIT_BRANCH
+      when: always
+
+    # Default to never if no other rule matches
+    - when: never
+
+variables:
+  COFFEA4BEES_REPO: 'https://${DEPLOY_TOKEN_USERNAME}:${DEPLOY_TOKEN_PASSWORD}@gitlab.cern.ch/cms-cmu/coffea4bees.git'
+  COFFEA4BEES_BRANCH: 'major_changes'
+
+stages:  
+  - setup
+  - proxy
+  - analysis
+  - test
+
+# Setup job that clones coffea4bees once
+setup_workspace:
+  stage: setup
+  image: alpine/git:latest
+  script:
+    - echo "Setting up coffea4bees workspace"
+    - git clone --recursive --depth=1 --branch=$COFFEA4BEES_BRANCH $COFFEA4BEES_REPO coffea4bees_framework
+    - cd coffea4bees_framework
+    # Create the bbww directory and copy current repository content
+    - mkdir -p python/bbww
+    - cp -r $CI_PROJECT_DIR/* python/bbww/ 2>/dev/null || true
+    - ls -la python/bbww/
+  artifacts:
+    paths:
+      - coffea4bees_framework/
+    expire_in: 2 hours
+  tags:
+    - k8s-cvmfs
+
+# Base template for all jobs that need the framework
+.base_bbww_job:
+  needs:
+    - setup_workspace
+    - voms_proxy
+  before_script:
+    - cp -r proxy/ coffea4bees_framework/python/
+    - cd coffea4bees_framework/python/
+    - pwd && ls -la
+    - ls -la bbww/
+  tags:
+    - k8s-cvmfs
+
+include:
+  - local: 'workflows/gitlab-ci/*.yml'

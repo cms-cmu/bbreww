@@ -60,8 +60,9 @@ setup_workspace:
 
 # Base template for all jobs that need the framework
 .base_bbww_job:
-  dependencies:
+  needs:
     - setup_workspace
+    - voms_proxy
   before_script:
     - cd coffea4bees_framework/python/
     - pwd && ls -la

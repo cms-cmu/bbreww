@@ -4,21 +4,21 @@ import numpy as np
 import yaml
 from omegaconf import OmegaConf
 from analysis.helpers.mc_weight_outliers import OutlierByMedian
-from analysis.helpers.processor_config import processor_config
-from bbww.analysis.helpers.object_selection import apply_bbWW_selection
+from bbww.analysis.helpers.object_selection import muon_selection, electron_selection
 from base_class.physics.event_selection import apply_event_selection
 from coffea.analysis_tools import PackedSelection, Weights
 from skimmer.processor.picoaod import PicoAOD
 
 
 class Skimmer(PicoAOD):
-    def __init__(self, loosePtForSkim=False, skim4b=False, mc_outlier_threshold:int|None=200, *args, **kwargs):
-        if skim4b:
-            kwargs["pico_base_name"] = f'picoAOD_bbWW'
+    def __init__(
+        self, 
+        corrections_file: str = "analysis/metadata/corrections.yml",
+        params_file: str = "bbww/analysis/metadata/object_preselection.yaml",
+        mc_outlier_threshold:int|None=200, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.loosePtForSkim = loosePtForSkim
-        corrections = yaml.safe_load(open('analysis/metadata/corrections.yml', 'r'))
-        parameters = OmegaConf.load("bbww/analysis/metadata/object_preselection.yaml")
+        corrections = yaml.safe_load(open(corrections_file, 'r'))
+        parameters = OmegaConf.load(params_file)
         self.params = OmegaConf.merge(corrections, parameters)
         self.mc_outlier_threshold = mc_outlier_threshold
 
@@ -28,52 +28,37 @@ class Skimmer(PicoAOD):
         year    = event.metadata['year']
         dataset = event.metadata['dataset']
         processName = event.metadata['processName']
-        is_mc = hasattr(event, "genWeight")
+        self.is_mc = hasattr(event, "genWeight")
 
         #
         # Set process and datset dependent flags
         #
-        config = processor_config(processName, dataset, event)
-        logging.debug(f'config={config}\n')
+        event = muon_selection(event, year, self.params)
+        event = electron_selection(event, year, self.params)
+        event = apply_event_selection( event, self.params[year], cut_on_lumimask= not self.is_mc )
 
-        event = apply_bbWW_selection( event, year = year, params = self.params,isMC=config["isMC"],corrections_metadata=self.params[year])
-        event = apply_event_selection( event, self.params[year], cut_on_lumimask= not is_mc )
-  
-        weights = Weights(len(event), storeIndividual=True)
-        
-        # general event weights
-        
-        if config["isMC"]:
-            weights.add( "genweight_", event.genWeight )
-
-        oneE =(event.e_ntight==1) & (event.mu_nloose==0) & (event.pho_nloose==0) & (event.tau_nloose==0)
-        oneM = (event.mu_ntight==1) & (event.e_nloose==0) & (event.pho_nloose==0) & (event.tau_nloose==0)
-
+        oneE =(event.e_nloose==1) & (event.mu_nloose==0)
+        oneM = (event.mu_nloose==1) & (event.e_nloose==0)
         
         selections = PackedSelection()
         selections.add( "lumimask", event.lumimask)
         selections.add( "passNoiseFilter", event.passNoiseFilter)
         selections.add("trigger", event.passHLT)
         selections.add('isoneEorM', oneE|oneM )
-        selections.add('njets',  (event.j_nsoft>2))
-        final_selection = selections.require(lumimask=True, passNoiseFilter=True, trigger = True, isoneEorM = True, njets = True)
+        final_selection = selections.require(lumimask=True, passNoiseFilter=True, trigger = True, isoneEorM = True)
 
+        weights = Weights(len(event), storeIndividual=True)
+        if self.is_mc:
+            weights.add( "genweight_", event.genWeight )
         event["weight"] = weights.weight()
 
-        self._cutFlow.fill( "all",             event, allTag=True )
+        self._cutFlow.fill( "all", event, allTag=True )
         cumulative_cuts = []
         for cut in selections.names:
             cumulative_cuts.append(cut)
             self._cutFlow.fill( cut, event[selections.all(*cumulative_cuts)], allTag=True )
 
-        # debug_mask = ((event.event == 110614) & (event.run == 275890) & (event.luminosityBlock == 1))
-        # debug_event = event[debug_mask]
-        # print(f"debug {debug_event.fourTag} {debug_event.threeTag} {debug_event.nJet_tagged} {debug_event.nJet_tagged_loose} {debug_event.nJet_selected} {debug_event.Jet.tagged} {debug_event.Jet.selected} {debug_event.Jet.btagScore}")
-        # print(f"debug {debug_event.passHLT} {debug_event.passJetMult} {debug_event.passPreSel} {debug_event.Jet.pt} {debug_event.Jet.pt_raw} \n\n\n")
-
         processOutput = {}
-        #from analysis.helpers.write_debug_info import add_debug_Run3_data_skim
-        #add_debug_Run3_data_skim(event, processOutput, selection)
 
         return final_selection, None, processOutput
 
@@ -81,6 +66,5 @@ class Skimmer(PicoAOD):
     def preselect(self, event):
         dataset = event.metadata['dataset']
         processName = event.metadata['processName']
-        config = processor_config(processName, dataset, event)
-        if config["isMC"] and self.mc_outlier_threshold is not None and "genWeight" in event.fields:
+        if self.mc_outlier_threshold is not None and "genWeight" in event.fields:
             return OutlierByMedian(self.mc_outlier_threshold)(event.genWeight)

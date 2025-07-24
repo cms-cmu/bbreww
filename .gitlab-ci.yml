@@ -26,8 +26,6 @@ workflow:
     - if: $CI_COMMIT_BRANCH
       when: always
 
-    # Default to never if no other rule matches
-    - when: never
 
 variables:
   COFFEA4BEES_REPO: 'https://${DEPLOY_TOKEN_USERNAME}:${DEPLOY_TOKEN_PASSWORD}@gitlab.cern.ch/cms-cmu/coffea4bees.git'

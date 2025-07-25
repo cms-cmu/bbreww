@@ -20,7 +20,7 @@ runner:
   allowlist_sites:
     - T3_US_FNALLPC
     - T2_US_Nebraska
-    - T3_US_NotreDame
+  #  - T3_US_NotreDame
     - T2_US_Caltech
     - T1_US_FNAL_Disk
     - T2_US_MIT
@@ -31,8 +31,8 @@ runner:
 
 
 config:
-  # base_path: root://cmseos.fnal.gov//store/user/algomez/XbbWW/2025_v1/   ### for example in EOS
-  base_path: /srv/python/bbww/output/skimmer/test/   ### local
+  base_path: root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/   ### for example in EOS
+  #base_path: /srv/python/bbww/output/skimmer/test/   ### local
   step: 100000
   skip_collections:
     - LHEPart

@@ -1,0 +1,1028 @@
+TTToSemiLeptonic_2022_EE:
+  count: 267007920
+  cutFlowFourTag:
+    all: 89266972672.59961
+    isoneEorM: 29587678726.945312
+    lumimask: 89266972672.59961
+    passNoiseFilter: 89218580138.85425
+    trigger: 33905669371.786377
+  cutFlowFourTagUnitWeight:
+    all: 267007920
+    isoneEorM: 88467646
+    lumimask: 267007920
+    passNoiseFilter: 266862112
+    trigger: 101369712
+  cutFlowThreeTag:
+    all: 89266972672.59961
+    isoneEorM: 29587678726.945312
+    lumimask: 89266972672.59961
+    passNoiseFilter: 89218580138.85425
+    trigger: 33905669371.786377
+  cutFlowThreeTagUnitWeight:
+    all: 267007920
+    isoneEorM: 88467646
+    lumimask: 267007920
+    passNoiseFilter: 266862112
+    trigger: 101369712
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk1.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk2.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk3.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk4.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk5.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk6.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk7.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk8.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk9.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk10.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk11.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk12.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk13.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk14.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk15.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk16.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk17.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk18.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk19.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk20.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk21.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk22.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk23.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk24.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk25.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk26.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk27.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk28.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk29.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk30.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk31.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk32.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk33.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk34.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk35.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk36.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk37.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk38.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk39.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk40.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk41.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk42.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk43.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk44.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk45.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk46.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk47.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk48.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk49.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk50.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk51.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk52.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk53.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk54.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk55.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk56.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk57.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk58.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk59.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk60.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk61.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk62.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk63.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk64.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk65.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk66.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk67.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk68.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk69.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk70.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk71.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk72.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk73.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk74.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk75.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk76.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk77.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk78.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk79.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk80.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk81.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk82.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk83.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk84.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk85.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk86.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk87.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk88.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk89.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk90.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk91.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk92.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk93.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk94.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk95.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk96.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk97.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk98.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk99.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk100.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk101.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk102.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk103.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk104.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk105.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk106.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk107.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk108.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk109.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk110.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk111.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk112.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk113.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk114.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk115.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk116.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk117.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk118.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk119.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk120.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk121.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk122.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk123.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk124.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk125.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk126.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk127.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk128.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk129.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk130.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk131.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk132.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk133.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk134.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk135.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk136.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk137.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk138.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk139.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk140.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk141.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk142.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk143.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk144.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk145.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk146.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk147.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk148.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk149.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk150.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk151.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk152.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk153.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk154.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk155.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk156.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk157.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk158.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk159.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk160.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk161.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk162.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk163.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk164.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk165.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk166.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk167.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk168.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk169.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk170.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk171.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk172.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk173.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk174.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk175.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk176.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk177.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk178.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk179.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk180.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk181.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk182.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk183.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk184.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk185.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk186.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk187.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk188.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk189.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk190.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk191.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk192.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk193.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk194.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk195.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk196.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk197.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk198.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk199.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk200.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk201.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk202.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk203.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk204.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk205.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk206.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk207.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk208.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk209.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk210.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk211.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk212.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk213.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk214.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk215.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk216.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk217.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk218.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk219.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk220.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk221.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk222.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk223.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk224.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk225.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk226.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk227.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk228.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk229.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk230.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk231.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk232.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk233.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk234.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk235.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk236.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk237.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk238.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk239.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk240.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk241.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk242.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk243.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk244.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk245.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk246.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk247.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk248.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk249.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk250.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk251.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk252.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk253.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk254.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk255.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk256.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk257.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk258.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk259.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk260.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk261.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk262.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk263.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk264.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk265.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk266.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk267.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk268.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk269.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk270.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk271.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk272.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk273.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk274.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk275.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk276.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk277.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk278.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk279.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk280.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk281.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk282.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk283.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk284.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk285.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk286.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk287.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk288.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk289.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk290.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk291.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk292.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk293.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk294.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk295.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk296.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk297.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk298.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk299.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk300.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk301.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk302.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk303.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk304.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk305.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk306.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk307.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk308.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk309.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk310.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk311.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk312.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk313.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk314.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk315.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk316.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk317.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk318.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk319.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk320.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk321.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk322.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk323.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk324.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk325.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk326.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk327.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk328.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk329.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk330.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk331.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk332.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk333.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk334.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk335.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk336.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk337.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk338.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk339.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk340.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk341.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk342.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk343.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk344.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk345.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk346.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk347.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk348.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk349.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk350.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk351.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk352.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk353.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk354.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk355.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk356.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk357.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk358.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk359.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk360.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk361.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk362.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk363.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk364.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk365.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk366.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk367.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk368.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk369.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk370.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk371.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk372.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk373.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk374.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk375.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk376.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk377.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk378.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk379.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk380.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk381.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk382.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk383.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk384.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk385.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk386.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk387.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk388.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk389.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk390.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk391.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk392.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk393.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk394.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk395.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk396.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk397.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk398.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk399.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk400.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk401.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk402.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk403.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk404.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk405.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk406.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk407.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk408.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk409.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk410.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk411.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk412.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk413.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk414.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk415.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk416.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk417.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk418.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk419.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk420.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk421.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk422.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk423.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk424.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk425.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk426.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk427.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk428.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk429.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk430.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk431.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk432.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk433.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk434.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk435.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk436.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk437.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk438.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk439.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk440.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk441.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk442.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk443.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk444.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk445.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk446.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk447.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk448.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk449.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk450.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk451.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk452.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk453.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk454.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk455.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk456.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk457.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk458.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk459.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk460.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk461.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk462.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk463.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk464.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk465.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk466.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk467.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk468.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk469.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk470.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk471.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk472.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk473.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk474.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk475.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk476.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk477.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk478.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk479.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk480.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk481.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk482.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk483.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk484.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk485.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk486.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk487.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk488.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk489.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk490.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk491.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk492.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk493.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk494.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk495.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk496.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk497.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk498.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk499.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk500.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk501.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk502.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk503.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk504.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk505.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk506.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk507.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk508.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk509.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk510.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk511.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk512.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk513.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk514.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk515.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk516.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk517.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk518.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk519.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk520.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk521.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk522.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk523.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk524.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk525.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk526.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk527.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk528.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk529.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk530.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk531.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk532.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk533.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk534.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk535.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk536.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk537.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk538.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk539.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk540.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk541.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk542.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk543.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk544.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk545.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk546.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk547.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk548.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk549.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk550.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk551.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk552.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk553.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk554.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk555.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk556.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk557.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk558.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk559.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk560.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk561.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk562.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk563.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk564.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk565.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk566.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk567.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk568.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk569.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk570.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk571.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk572.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk573.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk574.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk575.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk576.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk577.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk578.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk579.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk580.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk581.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk582.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk583.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk584.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk585.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk586.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk587.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk588.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk589.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk590.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk591.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk592.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk593.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk594.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk595.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk596.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk597.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk598.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk599.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk600.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk601.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk602.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk603.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk604.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk605.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk606.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk607.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk608.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk609.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk610.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk611.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk612.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk613.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk614.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk615.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk616.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk617.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk618.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk619.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk620.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk621.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk622.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk623.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk624.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk625.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk626.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk627.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk628.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk629.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk630.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk631.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk632.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk633.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk634.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk635.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk636.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk637.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk638.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk639.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk640.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk641.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk642.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk643.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk644.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk645.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk646.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk647.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk648.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk649.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk650.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk651.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk652.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk653.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk654.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk655.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk656.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk657.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk658.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk659.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk660.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk661.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk662.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk663.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk664.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk665.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk666.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk667.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk668.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk669.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk670.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk671.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk672.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk673.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk674.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk675.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk676.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk677.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk678.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk679.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk680.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk681.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk682.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk683.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk684.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk685.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk686.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk687.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk688.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk689.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk690.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk691.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk692.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk693.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk694.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk695.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk696.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk697.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk698.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk699.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk700.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk701.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk702.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk703.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk704.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk705.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk706.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk707.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk708.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk709.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk710.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk711.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk712.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk713.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk714.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk715.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk716.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk717.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk718.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk719.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk720.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk721.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk722.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk723.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk724.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk725.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk726.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk727.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk728.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk729.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk730.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk731.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk732.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk733.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk734.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk735.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk736.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk737.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk738.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk739.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk740.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk741.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk742.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk743.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk744.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk745.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk746.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk747.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk748.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk749.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk750.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk751.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk752.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk753.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk754.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk755.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk756.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk757.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk758.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk759.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk760.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk761.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk762.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk763.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk764.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk765.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk766.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk767.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk768.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk769.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk770.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk771.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk772.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk773.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk774.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk775.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk776.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk777.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk778.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk779.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk780.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk781.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk782.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk783.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk784.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk785.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk786.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk787.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk788.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk789.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk790.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk791.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk792.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk793.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk794.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk795.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk796.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk797.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk798.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk799.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk800.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk801.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk802.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk803.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk804.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk805.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk806.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk807.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk808.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk809.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk810.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk811.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk812.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk813.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk814.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk815.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk816.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk817.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk818.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk819.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk820.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk821.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk822.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk823.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk824.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk825.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk826.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk827.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk828.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk829.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk830.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk831.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk832.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk833.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk834.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk835.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk836.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk837.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk838.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk839.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk840.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk841.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk842.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk843.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk844.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk845.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk846.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk847.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk848.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk849.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk850.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk851.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk852.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk853.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk854.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk855.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk856.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk857.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk858.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk859.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk860.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk861.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk862.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk863.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk864.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk865.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk866.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk867.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk868.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk869.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk870.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk871.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk872.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk873.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk874.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk875.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk876.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk877.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk878.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk879.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk880.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk881.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk882.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk883.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/TTToSemiLeptonic_2022_EE/picoAOD.chunk884.root
+  missing: {}
+  reproducible:
+    args: Namespace(test=False, output_file='picoaod_datasets_TTToSemiLeptonic_2022EE.yml',
+      processor='bbww/skimmer/processors/skimmer_bbWW.py', configs='bbww//skimmer/metadata/HHbbWW.yml',
+      metadata='bbww/metadata/datasets_run3.yml', output_path='bbww/output/skimmer/',
+      years=['2022_EE'], datasets=['TTToSemiLeptonic'], era=['A', 'B', 'C', 'D', 'E',
+      'F', 'G', 'H'], skimming=True, run_dask=True, condor=True, debug=False, githash='',
+      gitdiff='', check_input_files=False)
+    date: '2025-07-25 15:23:41'
+    diff: "diff --git a/python/analysis/metadata/corrections.yml b/python/analysis/metadata/corrections.yml\n\
+      index a4625bf8..0b6d8435 100644\n--- a/python/analysis/metadata/corrections.yml\n\
+      +++ b/python/analysis/metadata/corrections.yml\n@@ -2,7 +2,9 @@\n   year_label:\
+      \ '2016'\n   goldenJSON: 'data/goldenJSON/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt'\n\
+      \   PU: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2016preVFP_UL/puWeights.json.gz'\n\
+      -  ele_sf: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2016preVFP_UL/electron.json.gz'\n\
+      +  ele_sf: \n+    file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2016preVFP_UL/electron.json.gz'\n\
+      +    tag: 2016preVFP\n   mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2016preVFP_UL/muon_Z.json.gz'\n\
+      \   jet_veto_maps: \n     file: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2016preVFP_UL/jetvetomaps.json.gz\n\
+      @@ -60,7 +62,9 @@\n   year_label: '2016'\n   goldenJSON: 'data/goldenJSON/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt'\n\
+      \   PU: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2016postVFP_UL/puWeights.json.gz'\n\
+      -  ele_sf: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2016postVFP_UL/electron.json.gz'\n\
+      +  ele_sf: \n+    file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2016postVFP_UL/electron.json.gz'\n\
+      +    tag: 2016postVFP\n   mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2016postVFP_UL/muon_Z.json.gz'\n\
+      \   jet_veto_maps: \n     file: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2016postVFP_UL/jetvetomaps.json.gz\n\
+      @@ -115,7 +119,9 @@\n   year_label: '2017'\n   goldenJSON: 'data/goldenJSON/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt'\n\
+      \   PU: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2017_UL/puWeights.json.gz'\n\
+      -  ele_sf: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2017_UL/electron.json.gz'\n\
+      +  ele_sf: \n+    file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2017_UL/electron.json.gz'\n\
+      +    tag: '2017'\n   mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2017_UL/muon_Z.json.gz'\n\
+      \   jet_veto_maps: \n     file: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2017_UL/jetvetomaps.json.gz\n\
+      @@ -173,7 +179,9 @@\n   year_label: '2018'\n   goldenJSON: 'data/goldenJSON/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt'\n\
+      \   PU: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2018_UL/puWeights.json.gz'\n\
+      -  ele_sf: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2018_UL/electron.json.gz'\n\
+      +  ele_sf: \n+    file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2018_UL/electron.json.gz'\n\
+      +    tag: '2018'\n   mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2018_UL/muon_Z.json.gz'\n\
+      \   jet_veto_maps: \n     file: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2018_UL/jetvetomaps.json.gz\n\
+      @@ -235,7 +243,9 @@\n   year_label: '2022'\n   goldenJSON: 'data/goldenJSON/Cert_Collisions2022_355100_362760_Golden.json'\n\
+      \   PU: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2022_Summer22/puWeights.json.gz'\n\
+      -  ele_sf: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2022_Summer22/electron.json.gz'\n\
+      +  ele_sf: \n+    file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2022_Summer22/electron.json.gz'\n\
+      +    tag: 2022Re-recoBCD\n   mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2022_Summer22/muon_Z.json.gz'\n\
+      \   jet_veto_maps: \n     file: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2022_Summer22/jetvetomaps.json.gz\n\
+      @@ -276,7 +286,9 @@\n   year_label: '2022'\n   goldenJSON: 'data/goldenJSON/Cert_Collisions2022_355100_362760_Golden.json'\n\
+      \   PU: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2022_Summer22EE/puWeights.json.gz'\n\
+      -  ele_sf: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2022_Summer22EE/electron.json.gz'\n\
+      +  ele_sf: \n+    file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2022_Summer22EE/electron.json.gz'\n\
+      +    tag:  2022Re-recoE+PromptFG\n   mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2022_Summer22EE/muon_Z.json.gz'\n\
+      \   jet_veto_maps: \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2022_Summer22EE/jetvetomaps.json.gz'\n\
+      @@ -317,7 +329,9 @@\n   year_label: '2023'\n   goldenJSON: 'data/goldenJSON/Cert_Collisions2023_366442_370790_Golden.json'\n\
+      \   PU: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23/puWeights.json.gz'\n\
+      -  ele_sf: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23/electron.json.gz'\n\
+      +  ele_sf: \n+    file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23/electron.json.gz'\n\
+      +    tag: 2023PromptC\n   mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2023_Summer23/muon_Z.json.gz'\n\
+      \   jet_veto_maps: \n     file: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2023_Summer23/jetvetomaps.json.gz\n\
+      @@ -360,8 +374,12 @@\n '2023_BPix':\n   year_label: '2023'\n   goldenJSON: 'data/goldenJSON/Cert_Collisions2023_366442_370790_Golden.json'\n\
+      -  PU: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23BPix/puWeights.json.gz'\n\
+      -  ele_sf: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23BPix/electron.json.gz'\n\
+      +  PU: \n+    file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23BPix/puWeights.json.gz'\n\
+      +    tag: Collisions2023_369803_370790_eraD_GoldenJson\n+  ele_sf: \n+    file:\
+      \ '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23BPix/electron.json.gz'\n\
+      +    tag: 2023PromptD\n   mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2023_Summer23BPix/muon_Z.json.gz'\n\
+      \   jet_veto_maps: \n     file: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2023_Summer23BPix/jetvetomaps.json.gz\n\
+      diff --git a/python/base_class/hist/hist.py b/python/base_class/hist/hist.py\n\
+      index fb4c7a6a..b602d7a3 100644\n--- a/python/base_class/hist/hist.py\n+++ b/python/base_class/hist/hist.py\n\
+      @@ -273,6 +273,8 @@ class _Fill(Generic[HistType], Configurable, namespace=\"\
+      hist.Fill\"):\n                 hist_args = {}\n                 for k, v in\
+      \ fills.items():\n                     fill = fill_values[v]\n+            \
+      \        if isinstance(fill, ak.Array):\n+                        fill = ak.fill_none(fill,\
+      \ np.nan)\n                     if shape is None:\n                        \
+      \ ...\n                     elif self._is_jagged(fill):\ndiff --git a/python/base_class/hist/object/jet.py\
+      \ b/python/base_class/hist/object/jet.py\nindex 3a7167c5..9e79adf0 100644\n\
+      --- a/python/base_class/hist/object/jet.py\n+++ b/python/base_class/hist/object/jet.py\n\
+      @@ -17,7 +17,6 @@ class _PlotJet(_PlotCommon, _PlotLorentzVector):\n class _PlotDiJet(_PlotCommon,\
+      \ _PlotDiLorentzVector):\n     ...\n \n-\n class Jet:\n     plot = _PlotJet\n\
+      \     plot_pair = _PlotDiJet\ndiff --git a/python/scripts/skimmer-test-job.sh\
+      \ b/python/scripts/skimmer-test-job.sh\nindex f80a945d..4da91158 100644\n---\
+      \ a/python/scripts/skimmer-test-job.sh\n+++ b/python/scripts/skimmer-test-job.sh\n\
+      @@ -9,20 +9,23 @@ fi\n \n echo \"############### Changing metadata\"\n if [[\
+      \ $(hostname) = *fnal* ]]; then\n-    sed -e \"s#base_path.*#base_path: \\/srv\\\
+      /output\\/skimmer_test_job\\/#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files:\
+      \ 1/\" -e \"s/2024_.*/tmp\\//\" skimmer/metadata/HH4b.yml > $OUTPUT_DIR/HH4b.yml\n\
+      +    sed -e \"s#base_path.*#base_path: \\/srv\\/output\\/skimmer_test_job\\\
+      /#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files: 1/\" -e \"\
+      s/2024_.*/tmp\\//\" bbww/skimmer/metadata/HHbbWW.yml > $OUTPUT_DIR/HHbbWW.yml\n\
+      \ else\n-    sed -e \"s#base_path.*#base_path: /builds/${CI_PROJECT_PATH}/python/output\\\
+      /skimmer_test_job\\/#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files:\
+      \ 1/\" -e \"s/2024_.*/tmp\\//\" -e \"s/T3_US_FNALLPC/T3_CH_PSI/\" skimmer/metadata/HH4b.yml\
+      \ > $OUTPUT_DIR/HH4b.yml\n+    sed -e \"s#base_path.*#base_path: /builds/${CI_PROJECT_PATH}/python/output\\\
+      /skimmer_test_job\\/#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files:\
+      \ 1/\" -e \"s/2024_.*/tmp\\//\" -e \"s/T3_US_FNALLPC/T3_CH_PSI/\" bbww/skimmer/metadata/HHbbWW.yml\
+      \ > $OUTPUT_DIR/HHbbWW.yml\n fi\n-cat $OUTPUT_DIR/HH4b.yml\n+cat $OUTPUT_DIR/HHbbWW.yml\n\
+      +\n \n #nanoAOD_file=\"root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/70000/92D0BDF3-91AE-514F-88B5-8F591450B8AD.root\"\
+      \n #sed -e \"s#/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9.*#[\
+      \ '${nanoAOD_file}' ]#\" metadata/datasets_HH4b.yml > $OUTPUT_DIR/datasets_HH4b.yml\n\
+      \ #python runner.py -s -p skimmer/processor/skimmer_4b.py -c $OUTPUT_DIR/datasets_HH4b.yml\
+      \ -y UL18 -d TTToSemiLeptonic -op $OUTPUT_DIR -o picoaod_datasets_TTToSemiLeptonic_UL18.yml\
+      \ -m $OUTPUT_DIR/datasets_HH4b.yml  -t \n \n-nanoAOD_file=\"root://cmseos.fnal.gov//store/mc/RunIISummer20UL18NanoAODv9/GluGluToHHTo4B_cHHH0_TuneCP5_PSWeights_13TeV-powheg-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/70000/3F95108D-84D2-CD4D-A0D2-324A7D15E691.root\"\
+      \n-sed -e \"s#/GluGluToHHTo4B_cHHH0_TuneCP5_PSWeights_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9.*#[\
+      \ '${nanoAOD_file}' ]#\" metadata/datasets_HH4b.yml > $OUTPUT_DIR/datasets_HH4b.yml\n\
+      +nanoAOD_file=\"root://cmseos.fnal.gov//store/mc/Run3Summer22NanoAODv13/GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/133X_mcRun3_2022_realistic_ForNanov13_v1-v2/2830000/1ee1335c-a70a-4fba-9c2d-5ab8d5cd0287.root\"\
+      \n+sed -e \"s#/GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv13-133X_mcRun3_2022_realistic_ForNanov13_v1-v2.*#[\
+      \ '${nanoAOD_file}' ]#\" bbww/metadata/datasets_run3.yml > $OUTPUT_DIR/datasets_run3.yml\n\
+      +\n+\n echo \"############### Running test processor\"\n-python runner.py -s\
+      \ -p skimmer/processor/skimmer_4b.py -c $OUTPUT_DIR/HH4b.yml -y UL18 -d GluGluToHHTo4B_cHHH0\
+      \ -op $OUTPUT_DIR -o picoaod_datasets_GluGluToHHTo4B_cHHH0_UL18.yml -m $OUTPUT_DIR/datasets_HH4b.yml\
+      \  -t \n+python runner.py -s -p bbww/skimmer/processors/skimmer_bbWW.py -c bbww/skimmer/metadata/HHbbWW.yml\
+      \ -y 2022_preEE -d GluGluToHHTo2B2VLNu2J -op $OUTPUT_DIR -o picoaod_datasets_GluGluToHHtobbWW_test.yml\
+      \ -m bbww/metadata/datasets_run3.yml  -t \n ls -R $OUTPUT_DIR\n \n if [ \"$return_to_base\"\
+      \ = true ]; then\n"
+    hash: aa2667d15965f05c5d72ff7cf3863b817c7323f9
+  saved_events: 88467646
+  sumw: 89266958667.60938
+  sumw2: 30332269910792.0
+  sumw2_raw: 30332281333190.297
+  sumw_raw: 89266973448.52798
+  total_events: 267007920

@@ -24,6 +24,10 @@ def add_gen_info(events, is_mc):
         except: 
             events['Jet', 'isQfromW'] = ak.zeros_like(events.Jet.pt, dtype=bool)
     
+    ## non-bjets gen matched with W jets decaying to quarks
+    gen_qFromW = gen_match(events.GenPart, [1,2,3,4], [24])
+    events['Jet', 'isQfromW']= ak.any(gen_qFromW.metric_table(events.Jet)< 0.4,axis=1)
+
     return events
 
 def gen_process(events, weights):

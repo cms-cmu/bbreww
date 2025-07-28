@@ -17,7 +17,7 @@ def candidate_selection(events, params, year, is_mc):
     j_bcand_pool = j_bcand_pool[getattr(j_bcand_pool,bTag_key) > btag_threshold]
 
     events['has_2_bjets'] = ak.num(j_bcand_pool, axis=1) >= 2
-    events['has_1_bjet'] = ak.num(j_bcand_pool, axis=1) >= 1
+    events['has_1_bjet'] = ak.num(j_bcand_pool, axis=1) >= 1 #add for cutflow plot
 
     # Mask the entire event if not enough jets or b-jets
     j_candidates = ak.mask(j_candidates,ak.num(j_candidates) >= 4) # proceed only if we have at least 4 ak4 jets    

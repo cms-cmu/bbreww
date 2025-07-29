@@ -5,7 +5,7 @@ analysis_test:
   image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest
   script:
     - echo "Running bbww analysis in coffea4bees framework"
-    - source bbww/scripts/analysis_test.sh output/
+    - source bbww/scripts/analysis_test.sh --output-base output/
   artifacts:
     paths:
       - coffea4bees_framework/python/output/analysis_test/

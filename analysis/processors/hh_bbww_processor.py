@@ -11,8 +11,9 @@ from coffea.analysis_tools import Weights, PackedSelection
 from omegaconf import OmegaConf
 
 from base_class.physics.event_selection import apply_event_selection
+from base_class.physics.objects.jet_corrections import apply_jerc_corrections
 
-from bbww.analysis.helpers.common import update_events
+from base_class.physics.common import update_events
 from bbww.analysis.helpers.object_selection import apply_bbWW_selection
 from bbww.analysis.helpers.candidate_selection import candidate_selection
 from bbww.analysis.helpers.chi_square import chi_sq
@@ -54,34 +55,17 @@ class analysis(processor.ProcessorABC):
             self.is_mc
         )
 
-        # jets = apply_jerc_corrections(
-        #     events.Jet,
-        #     corrections_metadata=self.corrections_metadata[self.year],
-        #     is_mc=self.is_mc,
-        #     run_systematics=False, ###self.run_systematics,
-        #     dataset=self.dataset
-        # )
+        jets = apply_jerc_corrections(
+            events,
+            corrections_metadata=self.params[self.year],
+            isMC=self.is_mc,
+            run_systematics=False, ###self.run_systematics,
+            dataset=self.dataset
+        )
 
         shifts = [({"Jet": events.Jet}, None)]
-        #need to work on a new way of loading corrections centrally from CMS
-        '''corrections = load(f'{path}/corrections.coffea')
-
-        jet_factory              = corrections['jet_factory']
-        met_factory              = corrections['met_factory']
-
-        nojer = "NOJER" if skipJER else ""
-        if 'year' in events.metadata:
-            year = events.metadata['year'].replace('UL','20').replace("_", "")
-        thekey = f"{year}mc{nojer}"
-
-        def add_jec_variables(jets, event_rho):
-            jets["pt_raw"] = (1 - jets.rawFactor)*jets.pt
-            jets["mass_raw"] = (1 - jets.rawFactor)*jets.mass
-            jets["pt_gen"] = ak.values_astype(ak.fill_none(jets.matched_gen.pt, 0), np.float32)
-            jets["event_rho"] = ak.broadcast_arrays(event_rho, jets.pt)[0]
-            return jets
-        
-        jets = jet_factory[thekey].build(add_jec_variables(events.Jet, events.fixedGridRhoFastjetAll))
+        '''
+        ## AGE comment: we need to add MET corrections 
         met = met_factory.build(events.MET, jets)
 
         shifts = [({"Jet": jets,"MET": met}, None)]
@@ -97,10 +81,7 @@ class analysis(processor.ProcessorABC):
                     ({"Jet": jets.JER.up, "MET": met.JER.up}, "JERUp"),
                     ({"Jet": jets.JER.down, "MET": met.JER.down}, "JERDown"),
                 ])
-
-        # fill histograms separately for each systematic key
-        for collections, name in shifts:
-            selection(update(events, collections), output, name)'''
+        '''
 
         weights = Weights(None, storeIndividual=True)
         list_weight_names = []

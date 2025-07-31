@@ -10,6 +10,7 @@ OUTPUT_BASE_DIR=$(parse_output_base_arg "bbww/output/" "$@") || exit 1
 
 INPUT_DIR="$OUTPUT_BASE_DIR/skimmer_test"
 OUTPUT_DIR="$OUTPUT_BASE_DIR/skimmer_analysis_test"
+create_output_directory "$OUTPUT_DIR"
 
 display_section_header "Printing input yml file"
 cat $INPUT_DIR/picoaod_datasets_GluGluToHHTo2B2VLNu2J_2022_preEE.yml

@@ -1,0 +1,11 @@
+luminosities:
+  UL16_postVFP: 19.52
+  UL16_preVFP: 16.81
+  UL17: 41.48
+  UL18: 59.83
+
+  # Run3 luminosities (in pb^-1)
+  2022_EE: 26.77e3
+  2022_preEE: 7.98e3
+  2023_BPix: 9.451e3
+  2023_preBPix: 17.794e3

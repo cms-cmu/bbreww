@@ -1,0 +1,22 @@
+GluGluToHHTo2B2VLNu2J_2022_EE:
+  hadronic_W:
+    events:
+      basic_selection: 10585
+      preselection: 10585
+    weights:
+      basic_selection: 26015292.705810547
+      preselection: 26015292.705810547
+  leptonic_W:
+    events:
+      basic_selection: 4448
+      preselection: 4448
+    weights:
+      basic_selection: 10933952.344970703
+      preselection: 10933952.344970703
+  'null':
+    events:
+      basic_selection: 37834
+      preselection: 32212
+    weights:
+      basic_selection: 92983412.07910156
+      preselection: 79166897.06347656

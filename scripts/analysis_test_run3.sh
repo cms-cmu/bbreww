@@ -1,19 +1,21 @@
 #!/bin/bash
-source scripts/set_initial_variables.sh --output ${1:-"bbww/output/"} --do_proxy
 
-OUTPUT_DIR="${DEFAULT_DIR}/analysis_test_run3_job"
-echo "############### Checking and creating output directory"
-if [ ! -d $OUTPUT_DIR ]; then
-    mkdir -p $OUTPUT_DIR
+# Source common functions
+source "bbww/scripts/common.sh"
+
+# Parse output base argument
+OUTPUT_BASE_DIR=$(parse_output_base_arg "bbww/output/" "$@")
+if [ $? -ne 0 ]; then
+    exit 1
 fi
 
-# echo "############### Modifying config"
-# sed -e "s|hist_cuts: .*|hist_cuts: [ passPreSel, passSvB, failSvB ]|" analysis/metadata/HH4b.yml > $OUTPUT_DIR/HH4b.yml
-# cat $OUTPUT_DIR/HH4b.yml
-
-echo "############### Running test processor"
-cmd=(python runner.py -p bbww/analysis/processors/hh_bbww_processor.py -m bbww/metadata/datasets_run3.yml -c bbww/analysis/metadata/HHbbWW.yml -d GluGluToHHTo2B2VLNu2J TTToSemiLeptonic -y 2022_EE -op ${OUTPUT_DIR} -o test.coffea -t)
-echo "${cmd[@]}"
-"${cmd[@]}"
-
-ls $OUTPUT_DIR
+# Call the main analysis_test.sh script with Run3-specific parameters
+bash bbww/scripts/analysis_test.sh \
+    --output-base "$OUTPUT_BASE_DIR" \
+    --processor "bbww/analysis/processors/hh_bbww_processor.py" \
+    --metadata "bbww/metadata/datasets_run3.yml" \
+    --config "bbww/analysis/metadata/HHbbWW.yml" \
+    --datasets "GluGluToHHTo2B2VLNu2J TTToSemiLeptonic" \
+    --year "2022_EE" \
+    --output-filename "test.coffea" \
+    --output-subdir "analysis_test_run3"

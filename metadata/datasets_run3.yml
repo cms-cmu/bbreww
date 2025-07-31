@@ -103,16 +103,6 @@ datasets:
         sumw2: 
         total_events: 
     xs: 408.4
-  data:
-    2022_preEE:
-      lumi: 7.98
-      trigger:  
-      - IsoMu24
-      - Ele30_WPTight_Gsf
-    2022_EE:
-      lumi: 26.67
-      trigger:
-      - IsoMu24
-      - Ele30_WPTight_Gsf
+
   
 

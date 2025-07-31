@@ -1,0 +1,25 @@
+#Triggers from: https://github.com/rishabhCMS/decaf/blob/new_coffea/analysis/processors/leptonic_new_coffea.py
+triggers:
+  '2016': &triggers_UL16
+    - Ele27_WPTight_Gsf
+    - Ele105_CaloIdVT_GsfTrkIdT
+    - IsoMu24
+    - IsoTkMu24
+  UL16_postVFP: *triggers_UL16
+  UL16_preVFP: *triggers_UL16
+  UL17: &triggers_UL17
+    - Ele35_WPTight_Gsf
+    - Ele115_CaloIdVT_GsfTrkIdT
+    - Photon200
+    - IsoMu27
+  '2017': *triggers_UL17
+  UL18: &triggers_UL18
+    - Ele32_WPTight_Gsf
+    - Ele115_CaloIdVT_GsfTrkIdT
+    - Photon200
+    - IsoMu24
+  '2018': *triggers_UL18
+  2022_preEE: &triggers_2022
+    - IsoMu24
+    - Ele30_WPTight_Gsf
+  2022_EE: *triggers_2022

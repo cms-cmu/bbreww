@@ -150,7 +150,7 @@ display_config
 OUTPUT_DIR="${OUTPUT_BASE}/${OUTPUT_SUBDIR}/"
 create_output_directory "$OUTPUT_DIR"
 
-echo "############### Changing metadata"
+display_section_header "Changing metadata"
 if [[ $(hostname) == *fnal* ]]; then
     BASE_PATH="/srv/python/${OUTPUT_DIR}/"
 else

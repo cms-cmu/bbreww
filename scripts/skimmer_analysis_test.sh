@@ -4,27 +4,17 @@
 source "bbww/scripts/common.sh"
 
 # Parse output base argument
-OUTPUT_BASE_DIR=$(parse_output_base_arg "bbww/output/" "$@")
-if [ $? -ne 0 ]; then
-    exit 1
-fi
+OUTPUT_BASE_DIR=$(parse_output_base_arg "bbww/output/" "$@") || exit 1
 
-INPUT_DIR=$OUTPUT_BASE_DIR/skimmer_test
-OUTPUT_DIR=$OUTPUT_BASE_DIR/skimmer_analysis_test
-echo "hostname: $(hostname)"
+[[ $(hostname) = *runner* ]] && OUTPUT_BASE_DIR="/builds/$CI_PROJECT_PATH/coffea4bees_framework/python/output"
 
-if [[ $(hostname) = *fnal* ]]; then
-    echo "No changing files"
-else
-    echo "############### Modifying previous dataset file (to read local files)"
-    OUTPUT_BASE_DIR="/builds/$CI_PROJECT_PATH/coffea4bees_framework/python/output"
-    INPUT_DIR=$OUTPUT_BASE_DIR/skimmer_test
-    OUTPUT_DIR=$OUTPUT_BASE_DIR/skimmer_analysis_test
-    sed -i "s|${OUTPUT_BASE_DIR}||g" $INPUT_DIR/picoaod_datasets_GluGluToHHTo2B2VLNu2J_2022_preEE.yml
-    cat $INPUT_DIR/picoaod_datasets_GluGluToHHTo2B2VLNu2J_2022_preEE.yml
-fi
-echo "############### Modifying dataset file with skimmer ci output"
-echo "hostname: $(hostname)"
+INPUT_DIR="$OUTPUT_BASE_DIR/skimmer_test"
+OUTPUT_DIR="$OUTPUT_BASE_DIR/skimmer_analysis_test"
+
+display_section_header "Printing input yml file"
+cat $INPUT_DIR/picoaod_datasets_GluGluToHHTo2B2VLNu2J_2022_preEE.yml
+
+display_section_header "Modifying dataset file with skimmer ci output"
 cmd=(python metadata/merge_yaml_datasets.py -m $INPUT_DIR/datasets.yml -f $INPUT_DIR/picoaod_datasets_GluGluToHHTo2B2VLNu2J_2022_preEE.yml -o $OUTPUT_DIR/datasets.yml)
 echo "${cmd[@]}"
 "${cmd[@]}"

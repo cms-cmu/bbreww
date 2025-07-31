@@ -16,7 +16,7 @@ if [[ $(hostname) = *fnal* ]]; then
     echo "No changing files"
 else
     echo "############### Modifying previous dataset file (to read local files)"
-    OUTPUT_BASE_DIR="/builds/$CI_PROJECT_PATH/python/"
+    OUTPUT_BASE_DIR="/builds/$CI_PROJECT_PATH/bbww/coffea4bees_framework/python/"
     INPUT_DIR=$OUTPUT_BASE_DIR/skimmer_test
     OUTPUT_DIR=$OUTPUT_BASE_DIR/skimmer_analysis_test
     sed -i "s|${OUTPUT_BASE_DIR}||g" $INPUT_DIR/picoaod_datasets_GluGluToHHTo2B2VLNu2J_2022_preEE.yml

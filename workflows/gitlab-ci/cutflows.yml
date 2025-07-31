@@ -4,7 +4,6 @@ analysis_test_cutflows:
     - .base_bbww_job
   needs:
     - setup_workspace
-    - voms_proxy
     - analysis_test
   image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest
   script:
@@ -21,7 +20,6 @@ analysis_test_cutflows_run3:
     - .base_bbww_job
   needs:
     - setup_workspace
-    - voms_proxy
     - analysis_test_run3
   image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest
   script:
@@ -38,7 +36,6 @@ skimmer_analysis_test_cutflows:
     - .base_bbww_job
   needs:
     - setup_workspace
-    - voms_proxy
     - skimmer_analysis_test
   image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest
   script:

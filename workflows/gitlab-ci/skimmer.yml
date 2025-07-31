@@ -1,4 +1,4 @@
-analysis_test_run3:
+skimmer_test:
   stage: skimmer
   extends:
     - .base_bbww_job

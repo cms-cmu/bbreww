@@ -5,8 +5,38 @@ analysis_test:
   image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest
   script:
     - echo "Running bbww analysis in coffea4bees framework"
-    - source bbww/scripts/analysis_test.sh output/
+    - source bbww/scripts/analysis_test.sh --output-base output/
   artifacts:
     paths:
       - coffea4bees_framework/python/output/analysis_test/
+    expire_in: 1 day
+
+analysis_test_run3:
+  stage: analysis
+  extends:
+    - .base_bbww_job
+  image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest
+  script:
+    - echo "Running bbww analysis in coffea4bees framework"
+    - source bbww/scripts/analysis_test_run3.sh --output-base output/
+  artifacts:
+    paths:
+      - coffea4bees_framework/python/output/analysis_test_run3/
+    expire_in: 1 day
+
+skimmer_analysis_test:
+  stage: analysis
+  extends:
+    - .base_bbww_job
+  needs:
+    - setup_workspace
+    - voms_proxy
+    - skimmer_test
+  image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest
+  script:
+    - echo "Running skimmer analysis test"
+    - source bbww/scripts/skimmer_analysis_test.sh --output-base output/
+  artifacts:
+    paths:
+      - coffea4bees_framework/python/output/skimmer_analysis_test/
     expire_in: 1 day

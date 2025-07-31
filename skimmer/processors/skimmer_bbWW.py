@@ -7,7 +7,7 @@ from analysis.helpers.mc_weight_outliers import OutlierByMedian
 from bbww.analysis.helpers.object_selection import muon_selection, electron_selection
 from base_class.physics.event_selection import apply_event_selection
 from coffea.analysis_tools import PackedSelection, Weights
-from skimmer.processor.picoaod import PicoAOD
+from base_class.skimmer.picoaod import PicoAOD
 
 
 class Skimmer(PicoAOD):

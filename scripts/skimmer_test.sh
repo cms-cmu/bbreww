@@ -154,7 +154,7 @@ echo "############### Changing metadata"
 if [[ $(hostname) == *fnal* ]]; then
     BASE_PATH="/srv/python/${OUTPUT_DIR}/"
 else
-    BASE_PATH="/builds/${CI_PROJECT_PATH}/python/output/${OUTPUT_SUBDIR}/"
+    BASE_PATH="/builds/${CI_PROJECT_PATH}/bbww/coffea4bees_framework/python/output/${OUTPUT_SUBDIR}/"
 fi
 
 sed -e "s#base_path.*#base_path: ${BASE_PATH}#" \

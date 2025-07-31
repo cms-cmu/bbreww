@@ -99,9 +99,6 @@ declare -A SAVED_VARS=(
     ["KNOWN_CUTFLOW"]="$KNOWN_CUTFLOW"
 )
 
-# Setup proxy (no proxy needed for cutflow analysis)
-setup_proxy ""
-
 # Restore our configuration variables after setup
 OUTPUT_BASE="${SAVED_VARS[OUTPUT_BASE]}"
 INPUT_SUBDIR="${SAVED_VARS[INPUT_SUBDIR]}"

@@ -6,7 +6,7 @@ object_preselection:
       iso: 0.25  #PFIsoLoose
       id: looseId
     tight:
-      pt: 30.0
+      pt: 24.0
       eta: 2.4
       iso: 0.15  #PFIsoTight
       id: tightId
@@ -19,10 +19,10 @@ object_preselection:
   # need to find run3 recommendations for electrons, these are from run2
   Electron:
     loose:
-      pt: 40.0
+      pt: 10.0
       cutBased: 2
     tight:
-      pt: 15.0
+      pt: 28.0
       cutBased: 4
   
   Tau:
@@ -37,6 +37,6 @@ object_preselection:
       cutBased: 1
 
   Jet:
-    pt: 8.0
+    pt: 15.0
     eta: 2.4
     jetId: 1

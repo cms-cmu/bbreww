@@ -12,12 +12,13 @@ from omegaconf import OmegaConf
 
 from base_class.physics.event_selection import apply_event_selection
 from base_class.physics.objects.jet_corrections import apply_jerc_corrections
+from base_class.physics.event_weights import add_weights
 
-from base_class.physics.common import update_events
+from bbww.analysis.helpers.common import update_events, add_lepton_sfs
 from bbww.analysis.helpers.object_selection import apply_bbWW_selection
 from bbww.analysis.helpers.candidate_selection import candidate_selection
-from bbww.analysis.helpers.chi_square import chi_sq
-from bbww.analysis.helpers.gen_process import gen_process
+from bbww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
+from bbww.analysis.helpers.gen_process import gen_process, add_gen_info, gen_studies
 from bbww.analysis.helpers.fill_histograms import fill_histograms
 
 warnings.filterwarnings("ignore", "Missing cross-reference index for")
@@ -30,14 +31,15 @@ class analysis(processor.ProcessorABC):
     def __init__(
         self,
         path: str = "bbww/analysis/data",
-        parameters: str = "bbww/analysis/metadata/object_preselection.yaml",
+        parameters: str = "bbww/analysis/metadata/object_preselection_run3.yaml",
         corrections_metadata: str = "analysis/metadata/corrections.yml",
     ):
         self.path = path
         self.parameters = parameters
         corrections= OmegaConf.load(corrections_metadata)
         parameters = OmegaConf.load(self.parameters)
-        self.params = OmegaConf.merge(corrections, parameters)
+        btagWPs = OmegaConf.load("bbww/analysis/metadata/btag_WPs.yaml")
+        self.params = OmegaConf.merge(corrections, parameters, btagWPs)
 
     def process(self, events):
 
@@ -100,16 +102,16 @@ class analysis(processor.ProcessorABC):
 
         ### object preselection   
         events = apply_bbWW_selection( events, year = self.year, params = self.params, isMC=self.is_mc,corrections_metadata=self.params[self.year])
-
+        events = add_gen_info(events) if self.is_mc else events # add gen level info before candidate seleciton
         ### candidate selection and chi square computation
-        events = candidate_selection(events, self.year)
+        events = candidate_selection(events, self.params, self.year)
+        
+        if self.is_mc:
+            events = gen_studies(events)
         events = chi_sq(events) # chi square selection and calculation
 
         ### apply event selections
         events = apply_event_selection(events, self.params[self.year], cut_on_lumimask = not self.is_mc)
-
-        if self.is_mc:
-            weights = gen_process(events, weights) ## genweights for MC
 
         oneE =(events.e_ntight==1) & (events.mu_nloose==0) & (events.pho_nloose==0) & (events.tau_nloose==0)
         oneM = (events.mu_ntight==1) & (events.e_nloose==0) & (events.pho_nloose==0) & (events.tau_nloose==0)
@@ -127,7 +129,8 @@ class analysis(processor.ProcessorABC):
         selection.add('njets',  (events.j_nsoft>2))
         selection.add('noHEMj', noHEMj)
         selection.add('noHEMmet', noHEMmet)
-        selection.add('njets',  (events.j_nsoft>2))
+        selection.add('njets',  (events.j_nsoft>3))
+        selection.add('twoBjets', events.has_2_bjets)
 
         jet_veto_maps = (ak.any(events.Jet.jet_veto_maps,axis=1) if '202' in self.year 
                          else ak.ones_like(events.MET.pt,dtype=bool))
@@ -137,7 +140,19 @@ class analysis(processor.ProcessorABC):
         selection.add('hadronic_W', events.sr_boolean == 1)
         selection.add('null_region', events.sr_boolean==5) # events where the selected two W jets don't have a matching genjet
 
-        events['weight'] = weights.weight()  
+        weights, list_weight_names = add_weights(
+            events,
+            do_MC_weights=self.is_mc,
+            dataset=self.dataset,
+            year_label=self.year_label,
+            friend_trigWeight=None,
+            corrections_metadata=self.params[self.year],
+            apply_trigWeight=False,
+            isTTForMixed=False
+        )
+
+        weights = add_lepton_sfs(events, events.Electron, events.Muon, weights, self.year)
+        events['weight'] = weights.weight() 
 
         selection_list = {
             'basic_selection': ['lumimask', 'passNoiseFilter', 'trigger'],
@@ -201,7 +216,8 @@ class analysis(processor.ProcessorABC):
             processName=self.processName,
             year=self.year_label,
             is_mc=self.is_mc,
-            selection_list=['basic_selection', 'preselection']
+            selection_list=['basic_selection', 'preselection'],
+            channel_list=['hadronic_W', 'leptonic_W', 'null']
         )
 
         return hists | output

@@ -19,4 +19,5 @@ bash bbww/scripts/analysis_test.sh \
     --year "2022_EE" \
     --output-filename "test_data.coffea" \
     --output-subdir "analysis_test_run3" \
-    --no-proxy
+    --no-proxy \
+    # --additional-flags "--debug"

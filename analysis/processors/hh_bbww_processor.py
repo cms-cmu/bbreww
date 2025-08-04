@@ -62,7 +62,8 @@ class analysis(processor.ProcessorABC):
             corrections_metadata=self.params[self.year],
             isMC=self.is_mc,
             run_systematics=False, ###self.run_systematics,
-            dataset=self.dataset
+            dataset=self.dataset,
+            jet_type='AK4PFPuppi.txt',
         )
 
         shifts = [({"Jet": events.Jet}, None)]
@@ -104,7 +105,7 @@ class analysis(processor.ProcessorABC):
         events = apply_bbWW_selection( events, year = self.year, params = self.params, isMC=self.is_mc,corrections_metadata=self.params[self.year])
         events = add_gen_info(events) if self.is_mc else events # add gen level info before candidate seleciton
         ### candidate selection and chi square computation
-        events = candidate_selection(events, self.params, self.year)
+        events = candidate_selection(events, self.params, self.year, self.is_mc)
         
         if self.is_mc:
             events = gen_studies(events)

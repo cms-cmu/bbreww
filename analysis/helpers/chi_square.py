@@ -34,7 +34,7 @@ def chi_sq(events):
 
     #individual chi squares for hadronic W* signal selection
     chi1_hadWs = chi_square(events.mbb,116.02, 45.04) # H -> bb            
-    chi2_hadWs = chi_square(mlvqq_hadWs, 150.0, 48.67) # H -> lvqq
+    chi2_hadWs = chi_square(mlvqq_hadWs, 177.51, 42.76) # H -> lvqq
     chi3_hadWs = chi_square(events.qq.mass,41.77, 14.92) #hadronic W*    
 
     #total chi square
@@ -55,8 +55,9 @@ def chi_sq(events):
     chi1_hadW = chi_square(events.mbb,112.46, 46.61) # H -> bb
     chi2_hadW = chi_square(events.mT_leading_lep, 58.87, 37.35) #transverse mass             
     chi3_hadW = chi_square(events.qq.mass,66.89, 10.98) #hadronic W
+    chi4_hadW = chi_square(events.bb_dr,1.77, 0.82) #delta R between b-jets
 
-    chi_sq_hadW = np.sqrt(chi1_hadW + chi2_hadW + chi3_hadW)
+    chi_sq_hadW = np.sqrt(chi1_hadW + chi2_hadW + chi3_hadW + chi4_hadW)
     min_chi_sq_hadW= ak.argmin(chi_sq_hadW, axis=1, keepdims = True) #index of the minimum chi square non-bjet pair
     events['chi_sq_hadW'] = chi_sq_hadW[min_chi_sq_hadW]
 
@@ -94,7 +95,7 @@ def chi_sq(events):
     chi1_tt = chi_square(tt.t1,165.55 , 35.49 ) #leptonic top
     chi2_tt = chi_square(tt.t2, 171.55, 44.95 ) #hadronic top
     chi3_tt = chi_square(events.qq.mass,73.9, 23.56) #hadronic W
-    chi4_tt = chi_square(ak.singletons(events.bb_dr),2.32, 0.88) #delta R between b-jets
+    chi4_tt = chi_square(events.bb_dr,2.32, 0.88) #delta R between b-jets
 
     chi_sq_tt = np.sqrt(chi1_tt + chi2_tt + chi3_tt + chi4_tt)
     min_chi_sq_tt = ak.argmin(chi_sq_tt, axis=1, keepdims = True) #get index of the minimum chi square 
@@ -120,7 +121,7 @@ def chi_sq(events):
     
     events['e_region'] = events.Electron[(events.Electron.istight) & (events.lepton_choice ==0)]
     events['mu_region'] = events.Muon[(events.Muon.istight) & (events.lepton_choice ==1)]
-    events['mlvqq_hadWs'] = mlvqq_hadWs ##( TEMP:  change to plot this variable before running chi square
+    events['mlvqq_hadWs'] = mlvqq_hadWs[min_chi_sq_hadWs] ##( TEMP:  change to plot this variable before running chi square
     events['top_cand1'] = tt.t1
     
     events['ak4_sel1'] = events.j_nonbcand[events.dijet_combs.j1[events.qq_sel_index]]

@@ -1,7 +1,7 @@
 runner:
   workers: 4
   condor_memory: 4GB
-  data_tier: nanoAOD
+  data_tier: picoAOD
   condor_cores: 1
   condor_memory: 4GB
   condor_transfer_input_files:
@@ -13,9 +13,10 @@ runner:
 
   # rucio_regex_sites: 'T[123]_(US|CH|DE|UK)'
   allowlist_sites:
+    - T3_US_CMU
     - T3_US_FNALLPC
     - T2_US_Nebraska
-    #- T3_US_NotreDame
+    - T3_US_NotreDame
     - T2_US_Caltech
     - T1_US_FNAL_Disk
     - T2_US_MIT

@@ -1,6 +1,6 @@
 import awkward as ak
 
-def candidate_selection(events, params, year):
+def candidate_selection(events, params, year, is_mc):
     j_clean = events.Jet[events.Jet.isclean]
     j_soft = j_clean[j_clean.issoft]
 
@@ -35,7 +35,7 @@ def candidate_selection(events, params, year):
     events['j_sublead'] =  j_candidates[jj_i.j2] # subleading jet
 
     events['qq'] = ak.pad_none(j_candidates[jj_i.j1] + j_candidates[jj_i.j2], 3, axis=1)
-    events['qq_gen_mass'] = ak.pad_none((j_candidates[jj_i.j1].matched_gen + j_candidates[jj_i.j2].matched_gen).mass, 3, axis=1)
+    if is_mc: events['qq_gen_mass'] = ak.pad_none((j_candidates[jj_i.j1].matched_gen + j_candidates[jj_i.j2].matched_gen).mass, 3, axis=1)
     events['mbb'] = (events.j_bcand[:,0]+events.j_bcand[:,1]).mass
 
     return events

@@ -172,3 +172,41 @@ def apply_jet_veto_maps( corrections_metadata, jets ):
 
     return jetMask & mask_for_VetoMap
 
+def get_sequential_cutflow(selection, events, selection_list, channels=['hadronic_W', 'leptonic_W', 'null']):
+    """
+    Create a sequential cutflow dictionary by progressively applying cuts from preselection list.
+    
+    Parameters:
+    -----------
+    selection : PackedSelection object
+        The selection object containing all cuts
+    events : awkward array
+        Events array with weights
+    selection_list : dict
+        Dictionary containing the list of cuts
+    channels : list
+        List of channel names to track
+    """
+    
+    sequential_cutflow = {}
+    preselection_cuts = selection_list['preselection']
+
+    for channel in channels:
+        sequential_cutflow[channel] = {
+            'events': {},
+            'weights': {}
+        }    
+        # Build cumulative selections
+        for i in range(len(preselection_cuts)):
+            # Get cuts up to current index
+            cuts_so_far = preselection_cuts[:i+1]
+            cuts_with_lepton = ['isoneEorM'] + cuts_so_far
+            cumulative_mask = selection.all(*cuts_with_lepton)
+            final_mask = cumulative_mask & selection.all(channel)
+            
+            # Store results with the name of the last cut applied
+            cut_name = preselection_cuts[i]
+            sequential_cutflow[channel]['events'][cut_name] = np.sum(final_mask)
+            sequential_cutflow[channel]['weights'][cut_name] = np.sum(events.weight[final_mask])
+    
+    return sequential_cutflow

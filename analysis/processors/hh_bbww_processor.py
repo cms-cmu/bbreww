@@ -134,11 +134,11 @@ class analysis(processor.ProcessorABC):
 
         jet_veto_maps = (ak.any(events.Jet.jet_veto_maps,axis=1) if '202' in self.year 
                          else ak.ones_like(events.MET.pt,dtype=bool))
-        
+
         selection.add('jet_veto_mask', jet_veto_maps)
-        selection.add('leptonic_W', events.sr_boolean == 0)
-        selection.add('hadronic_W', events.sr_boolean == 1)
-        selection.add('null_region', events.sr_boolean==5) # events where the selected two W jets don't have a matching genjet
+        selection.add('leptonic_W',  ak.firsts(events.sr_boolean) == 0)
+        selection.add('hadronic_W',  ak.firsts(events.sr_boolean) == 1)
+        selection.add('null_region', ak.firsts(events.sr_boolean)==5) # events where the selected two W jets don't have a matching genjet
 
         weights, list_weight_names = add_weights(
             events,

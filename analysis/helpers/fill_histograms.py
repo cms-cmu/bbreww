@@ -52,12 +52,22 @@ def fill_histograms(
     fill += hist.add("qq", (50, -0.5, 140, ("qq_sel_mass", "selected W->qq candidate mass [GeV]")))
     fill += hist.add("mT", (60, -0.5, 250, ("mT_leading_lep", "transverse mass W->lv [GeV]")))
     fill += hist.add("leading_lep", (60, -0.5, 250, ("leading_lep.pt", "H-> lvqq candidate mass [GeV]")))
-    fill += hist.add("chi_sq_hadW", (30, -0.5, 6, ("chi_sq_hadW", "hadronic W region chi square")))
-    fill += hist.add("chi_sq_hadWs", (30, -0.5, 6, ("chi_sq_hadWs", "leptonic W region chi square")))
-    fill += hist.add("chi_sq_tt", (30, -0.5, 6, ("chi_sq_tt", "ttbar chi square")))
+    fill += hist.add("chi_sq_hadW", (50, -0.5, 6, ("chi_sq_hadW", "hadronic W region chi square")))
+    fill += hist.add("chi_sq_hadWs", (50, -0.5, 6, ("chi_sq_hadWs", "leptonic W region chi square")))
+    fill += hist.add("chi_sq_tt", (50, -0.5, 6, ("chi_sq_tt", "ttbar chi square")))
 
     fill += hist.add("top_cand1", (60, -0.5, 250, ("top_cand1", "top candidate 1 mass [GeV]")))
     fill += hist.add("jetHT", (60, -0.5, 400, ("SoftActivityJetHT", "jet HT")))
+    fill += hist.add("nonbjet1pz", (120, -300, 300, ("true_ak4_1.pz", "leading W-jet pz [GeV]")))
+    fill += hist.add("nonbjet2pz", (120, -300, 300, ("true_ak4_2.pz", "subleading W-jet pz [GeV]")))
+    fill += hist.add("nonbjet1E", (60, -0.5, 300, ("true_ak4_1.energy", "leading W-jet energy [GeV]")))
+    fill += hist.add("nonbjet2E", (60, -0.5, 300, ("true_ak4_2.energy", "subleading W-jet energy [GeV]")))
+
+    fill += hist.add("nonb_sublead", (60, -0.5, 300, ("j_sublead.pt", "subleading non-bjet pT [GeV]")))
+    fill += hist.add("e_energy", (60, -0.5, 300,  ("e_region.energy", "leading lepton energy [GeV]")))
+    fill += hist.add("e_pz", (100, -250, 250, ("e_region.pz", "leading lepton pz [GeV]")))
+    fill += hist.add("mu_energy", (60, -0.5, 300,  ("mu_region.energy", "leading lepton energy [GeV]")))
+    fill += hist.add("mu_pz", (100, -250, 250,      ("mu_region.pz", "leading lepton pz [GeV]")))
 
     #fill += hist.add("Hbb_vs_HWW", 
     #                (50, 0, 250, ('mbb', 'H->bb Candidate Mass [GeV]')),

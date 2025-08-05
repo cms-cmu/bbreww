@@ -137,4 +137,7 @@ def gen_studies(events):
         recojet_from_b = ak.pad_none(events.j_bcand[events.j_bcand.isbFromH], 2, axis=1)
         events['mass_reco_b_gen_match'] = recojet_from_b [:,0] + recojet_from_b[:,1]
 
+    events['true_ak4_1'] = matched_jets_pre[:,0]
+    events['true_ak4_2'] = matched_jets_pre[:,1]
+
     return events

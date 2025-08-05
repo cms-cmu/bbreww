@@ -18,6 +18,7 @@ usage() {
     echo "  --output-filename FILE    Output filename (default: test.coffea)"
     echo "  --no-test                 Disable test mode"
     echo "  --no-proxy                Disable proxy setup"
+    echo "  --condor                  Enable condor submission"
     echo "  --output-subdir DIR       Output subdirectory (default: analysis_test)"
     echo "  --additional-flags FLAGS  Additional flags to pass to runner.py"
     echo "  --help                    Show this help message"
@@ -37,6 +38,7 @@ display_config() {
     echo "Output filename:  $OUTPUT_FILENAME"
     echo "Test mode:        $([ -n "$TEST_MODE" ] && echo "enabled" || echo "disabled")"
     echo "Proxy setup:      $([ -n "$DO_PROXY" ] && echo "enabled" || echo "disabled")"
+    echo "Condor mode:      $([ -n "$CONDOR_MODE" ] && echo "enabled" || echo "disabled")"
     echo "Output subdir:    $OUTPUT_SUBDIR"
     echo "Additional flags: ${ADDITIONAL_FLAGS:-"(none)"}"
     echo ""
@@ -55,6 +57,7 @@ declare -A DEFAULTS=(
     ["OUTPUT_FILENAME"]="test.coffea"
     ["TEST_MODE"]="-t"
     ["DO_PROXY"]="--do_proxy"
+    ["CONDOR_MODE"]=""
     ["OUTPUT_SUBDIR"]="analysis_test"
     ["ADDITIONAL_FLAGS"]=""
 )
@@ -71,6 +74,7 @@ YEAR="${DEFAULTS[YEAR]}"
 OUTPUT_FILENAME="${DEFAULTS[OUTPUT_FILENAME]}"
 TEST_MODE="${DEFAULTS[TEST_MODE]}"
 DO_PROXY="${DEFAULTS[DO_PROXY]}"
+CONDOR_MODE="${DEFAULTS[CONDOR_MODE]}"
 OUTPUT_SUBDIR="${DEFAULTS[OUTPUT_SUBDIR]}"
 ADDITIONAL_FLAGS="${DEFAULTS[ADDITIONAL_FLAGS]}"
 
@@ -121,6 +125,10 @@ while [[ $# -gt 0 ]]; do
             DO_PROXY=""
             shift
             ;;
+        --condor)
+            CONDOR_MODE="--condor"
+            shift
+            ;;
         --output-subdir)
             OUTPUT_SUBDIR="$2"
             shift 2
@@ -152,6 +160,7 @@ declare -A SAVED_VARS=(
     ["OUTPUT_FILENAME"]="$OUTPUT_FILENAME"
     ["TEST_MODE"]="$TEST_MODE"
     ["DO_PROXY"]="$DO_PROXY"
+    ["CONDOR_MODE"]="$CONDOR_MODE"
     ["OUTPUT_SUBDIR"]="$OUTPUT_SUBDIR"
     ["ADDITIONAL_FLAGS"]="$ADDITIONAL_FLAGS"
 )
@@ -171,6 +180,7 @@ YEAR="${SAVED_VARS[YEAR]}"
 OUTPUT_FILENAME="${SAVED_VARS[OUTPUT_FILENAME]}"
 TEST_MODE="${SAVED_VARS[TEST_MODE]}"
 DO_PROXY="${SAVED_VARS[DO_PROXY]}"
+CONDOR_MODE="${SAVED_VARS[CONDOR_MODE]}"
 OUTPUT_SUBDIR="${SAVED_VARS[OUTPUT_SUBDIR]}"
 ADDITIONAL_FLAGS="${SAVED_VARS[ADDITIONAL_FLAGS]}"
 
@@ -191,6 +201,7 @@ cmd=(python runner.py
     -y "$YEAR" 
     -op "$OUTPUT_DIR" 
     -o "$OUTPUT_FILENAME" 
+    $CONDOR_MODE
     $TEST_MODE 
     $ADDITIONAL_FLAGS
 )

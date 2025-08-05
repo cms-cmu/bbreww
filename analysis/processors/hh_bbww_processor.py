@@ -11,7 +11,7 @@ from coffea.analysis_tools import Weights, PackedSelection
 from omegaconf import OmegaConf
 
 from base_class.physics.event_selection import apply_event_selection
-from base_class.physics.objects.jet_corrections import apply_jerc_corrections
+from base_class.physics.objects.jet_corrections import apply_jerc_corrections, apply_met_corrections_after_jec
 from base_class.physics.event_weights import add_weights
 
 from bbww.analysis.helpers.common import update_events, add_lepton_sfs
@@ -62,16 +62,16 @@ class analysis(processor.ProcessorABC):
             corrections_metadata=self.params[self.year],
             isMC=self.is_mc,
             run_systematics=False, ###self.run_systematics,
-            dataset=self.dataset
+            dataset=self.dataset,
+            jet_type='AK4PFPuppi.txt',
         )
 
-        shifts = [({"Jet": events.Jet}, None)]
-        '''
-        ## AGE comment: we need to add MET corrections 
-        met = met_factory.build(events.MET, jets)
+        met = apply_met_corrections_after_jec(events, jets)
 
-        shifts = [({"Jet": jets,"MET": met}, None)]
-        if systematics:
+        shifts = [({"Jet": jets, "MET":met}, None)]
+
+        
+        '''if systematics:
             shifts.extend([
                 ({"Jet": jets.JES_jes.up, "MET": met.JES_jes.up}, "JESUp"),
                 ({"Jet": jets.JES_jes.down, "MET": met.JES_jes.down}, "JESDown"),
@@ -104,7 +104,7 @@ class analysis(processor.ProcessorABC):
         events = apply_bbWW_selection( events, year = self.year, params = self.params, isMC=self.is_mc,corrections_metadata=self.params[self.year])
         events = add_gen_info(events) if self.is_mc else events # add gen level info before candidate seleciton
         ### candidate selection and chi square computation
-        events = candidate_selection(events, self.params, self.year)
+        events = candidate_selection(events, self.params, self.year, self.is_mc)
         
         if self.is_mc:
             events = gen_studies(events)
@@ -126,7 +126,6 @@ class analysis(processor.ProcessorABC):
         selection.add( "passNoiseFilter", events.passNoiseFilter)
         selection.add("trigger", events.passHLT)
         selection.add('isoneEorM', oneE|oneM )
-        selection.add('njets',  (events.j_nsoft>2))
         selection.add('noHEMj', noHEMj)
         selection.add('noHEMmet', noHEMmet)
         selection.add('njets',  (events.j_nsoft>3))
@@ -156,7 +155,7 @@ class analysis(processor.ProcessorABC):
 
         selection_list = {
             'basic_selection': ['lumimask', 'passNoiseFilter', 'trigger'],
-            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'noHEMj', 'noHEMmet', 'njets', 'jet_veto_mask'],
+            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'noHEMj', 'noHEMmet', 'njets', 'jet_veto_mask', 'twoBjets'],
         }
         events['selection'] = ak.zip({
             'basic_selection': selection.all(*selection_list['basic_selection']),
@@ -210,6 +209,14 @@ class analysis(processor.ProcessorABC):
                     },
                 }
             }
+
+        #    output['sequential_cutflow'] = {}
+        #    output['sequential_cutflow'][events.metadata['dataset']] = get_sequential_cutflow(
+        #        selection,
+        #        events,
+        #        selection_list,
+        #        channels=['hadronic_W', 'leptonic_W', 'null_region']
+        #    )
 
         hists = fill_histograms(
             events,

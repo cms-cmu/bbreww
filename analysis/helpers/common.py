@@ -43,10 +43,8 @@ def nu_pz(l,v):
     return ak.where(abs(pz_1) < abs(pz_2), pz_1, pz_2)
 
 def chi_square(data,mean,std):
-    x_2 = ak.sum(data**2)
-    n = ak.count(data[~ak.is_none(data)])
     chi2 = ((data - mean)/std)**2
-    return chi2, mean, std
+    return chi2
 
 def met_reconstr(events, e, mu):
     met = events.met    

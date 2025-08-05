@@ -18,4 +18,4 @@ bash bbww/scripts/analysis_test.sh \
     --datasets "GluGluToHHTo2B2VLNu2J TTToSemiLeptonic" \
     --year "2022_EE" \
     --output-filename "test.coffea" \
-    --output-subdir "analysis_test_run3"
+    --output-subdir "analysis_test_run3" 

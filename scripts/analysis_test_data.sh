@@ -15,8 +15,7 @@ bash bbww/scripts/analysis_test.sh \
     --processor "bbww/analysis/processors/hh_bbww_processor.py" \
     --metadata "bbww/metadata/datasets_run3.yml" \
     --config "bbww/analysis/metadata/HHbbWW.yml" \
-    --datasets "SingleMuon EGamma" \
-    --year "2022_EE" \
+    --datasets "data__SingleMuon" \
+    --year "2022_preEE" \
     --output-filename "test_data.coffea" \
-    --output-subdir "analysis_test_run3" \
-    --no-proxy
+    --output-subdir "analysis_test_run3" 

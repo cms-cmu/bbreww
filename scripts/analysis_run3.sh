@@ -16,7 +16,8 @@ bash bbww/scripts/analysis_test.sh \
     --metadata "bbww/metadata/datasets_run3.yml" \
     --config "bbww/analysis/metadata/HHbbWW.yml" \
     --datasets "GluGluToHHTo2B2VLNu2J TTToSemiLeptonic" \
-    --year "2022_EE" \
+    --year "2022_preEE 2022_EE" \
     --output-filename "output.coffea" \
     --output-subdir "full_run" \
-    --no-test
+    --no-test \
+    --no-proxy

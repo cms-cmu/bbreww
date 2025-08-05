@@ -198,7 +198,7 @@ cmd=(python runner.py
     --triggers "$TRIGGERS_PATH"
     --luminosities "$LUMINOSITIES_PATH"
     -d $DATASETS 
-    -y "$YEAR" 
+    -y $YEAR
     -op "$OUTPUT_DIR" 
     -o "$OUTPUT_FILENAME" 
     $CONDOR_MODE

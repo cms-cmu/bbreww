@@ -1,0 +1,44 @@
+data__SingleMuon_2022_preEEC:
+  hadronic_W:
+    events:
+      basic_selection: 79
+      preselection: 79
+    weights:
+      basic_selection: 78.46780585333778
+      preselection: 78.46780585333778
+  leptonic_W:
+    events:
+      basic_selection: 22
+      preselection: 22
+    weights:
+      basic_selection: 21.85469935746491
+      preselection: 21.85469935746491
+  'null':
+    events:
+      basic_selection: 0
+      preselection: 0
+    weights:
+      basic_selection: 0.0
+      preselection: 0.0
+data__SingleMuon_2022_preEED:
+  hadronic_W:
+    events:
+      basic_selection: 45
+      preselection: 45
+    weights:
+      basic_selection: 44.68309429348763
+      preselection: 44.68309429348763
+  leptonic_W:
+    events:
+      basic_selection: 17
+      preselection: 17
+    weights:
+      basic_selection: 16.880173852519636
+      preselection: 16.880173852519636
+  'null':
+    events:
+      basic_selection: 0
+      preselection: 0
+    weights:
+      basic_selection: 0.0
+      preselection: 0.0

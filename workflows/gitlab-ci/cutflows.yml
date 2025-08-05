@@ -1,20 +1,3 @@
-analysis_test_cutflows:
-  stage: test
-  extends:
-    - .base_bbww_job
-  needs:
-    - setup_workspace
-    - analysis_test
-    - voms_proxy
-  image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest
-  script:
-    - echo "Running cutflow test for analysis_test"
-    - source bbww/scripts/analysis_test_cutflows.sh --output-base output/
-  artifacts:
-    paths:
-      - coffea4bees_framework/python/output/analysis_test_cutflows/
-    expire_in: 1 day
-
 analysis_test_cutflows_run3:
   stage: test
   extends:
@@ -32,19 +15,19 @@ analysis_test_cutflows_run3:
       - coffea4bees_framework/python/output/analysis_test_cutflows_run3/
     expire_in: 1 day
 
-skimmer_analysis_test_cutflows:
+analysis_test_data_cutflows:
   stage: test
   extends:
     - .base_bbww_job
   needs:
     - setup_workspace
-    - skimmer_analysis_test
+    - analysis_test_run3
     - voms_proxy
   image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest
   script:
-    - echo "Running cutflow test for skimmer_analysis_test"
-    - source bbww/scripts/skimmer_analysis_test_cutflows.sh --output-base output/
+    - echo "Running cutflow test for analysis_test"
+    - source bbww/scripts/analysis_test_cutflows_data.sh --output-base output/
   artifacts:
     paths:
-      - coffea4bees_framework/python/output/skimmer_analysis_test_cutflows/
+      - coffea4bees_framework/python/output/analysis_test_cutflows_run3/
     expire_in: 1 day

@@ -1,18 +1,18 @@
 GluGluToHHTo2B2VLNu2J_2022_EE:
   hadronic_W:
     events:
-      basic_selection: 28
-      preselection: 28
+      basic_selection: 81
+      preselection: 81
     weights:
-      basic_selection: 0.005955342195329158
-      preselection: 0.005955342195329158
+      basic_selection: 0.018140614622333174
+      preselection: 0.018140614622333174
   leptonic_W:
     events:
-      basic_selection: 14
-      preselection: 14
+      basic_selection: 55
+      preselection: 55
     weights:
-      basic_selection: 0.003189054152069828
-      preselection: 0.003189054152069828
+      basic_selection: 0.011960075524579237
+      preselection: 0.011960075524579237
   'null':
     events:
       basic_selection: 0
@@ -23,18 +23,18 @@ GluGluToHHTo2B2VLNu2J_2022_EE:
 TTToSemiLeptonic_2022_EE:
   hadronic_W:
     events:
-      basic_selection: 41
-      preselection: 41
+      basic_selection: 122
+      preselection: 122
     weights:
-      basic_selection: 1.5094192164777893
-      preselection: 1.5094192164777893
+      basic_selection: 4.846409604509434
+      preselection: 4.846409604509434
   leptonic_W:
     events:
-      basic_selection: 27
-      preselection: 27
+      basic_selection: 43
+      preselection: 43
     weights:
-      basic_selection: 1.0451090461700672
-      preselection: 1.0451090461700672
+      basic_selection: 1.579160273361065
+      preselection: 1.579160273361065
   'null':
     events:
       basic_selection: 0

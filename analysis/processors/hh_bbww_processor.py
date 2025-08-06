@@ -56,18 +56,18 @@ class analysis(processor.ProcessorABC):
             events, 
             self.params[self.year], 
             self.is_mc
-        )
-
-        jets = apply_jerc_corrections(
-            events,
-            corrections_metadata=self.params[self.year],
-            isMC=self.is_mc,
-            run_systematics=False, ###self.run_systematics,
-            dataset=self.dataset,
-            jet_type='AK4PFPuppi.txt',
-        )
-        met = apply_met_corrections_after_jec(events, jets)
-
+        )         
+        jets = events.Jet
+        #jets = apply_jerc_corrections(
+        #    events,
+        #    corrections_metadata=self.params[self.year],
+        #    isMC=self.is_mc,
+        #    run_systematics=False, ###self.run_systematics,
+        #    dataset=self.dataset,
+        #    jet_type='AK4PFPuppi.txt',
+        #)
+        #met = apply_met_corrections_after_jec(events, jets)
+        met = events.MET
         shifts = [({"Jet": jets, "MET":met}, None)]
 
         
@@ -137,6 +137,9 @@ class analysis(processor.ProcessorABC):
                          else ak.ones_like(events.MET.pt,dtype=bool))
 
         selection.add('jet_veto_mask', jet_veto_maps)
+        #selection.add('leptonic_W',  ak.ones_like(events.MET.pt) ==1)
+        #selection.add('hadronic_W',  ak.ones_like(events.MET.pt) ==1)
+        #selection.add('null_region', ak.ones_like(events.MET.pt) ==1)
         selection.add('leptonic_W',  ak.firsts(events.sr_boolean) == 0)
         selection.add('hadronic_W',  ak.firsts(events.sr_boolean) == 1)
         selection.add('null_region', ak.firsts(events.sr_boolean)==5) # events where the selected two W jets don't have a matching genjet
@@ -169,6 +172,7 @@ class analysis(processor.ProcessorABC):
             'leptonic_W': selection.all('isoneEorM') & selection.all('leptonic_W'),
             'null' : selection.all('isoneEorM') & selection.all('null_region')
         }) 
+
 
         output = {}
         if not shift_name:

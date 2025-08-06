@@ -34,13 +34,13 @@ def nu_pz(l,v):
     discriminant = (2 * A * l.pz)**2 - 4 * (B - A**2) * C
 
     # avoiding imaginary solutions
-    sqrt_discriminant = ak.where(discriminant >= 0, 
+    sqrt_discriminant = ak.where(discriminant >= 0.0, 
                                  np.sqrt(discriminant), 
-                                 np.sqrt(-discriminant) * 1j)
+                                 0.0)
     
     pz_1 = np.real(ak.fill_none((2*A*l.pz + sqrt_discriminant)/(2*C), np.nan))
     pz_2 = np.real(ak.fill_none((2*A*l.pz - sqrt_discriminant)/(2*C), np.nan))
-    return ak.where(abs(pz_1) < abs(pz_2), pz_1, pz_2)
+    return ak.where(abs(pz_1) <= abs(pz_2), pz_1, pz_2)
 
 def chi_square(data,mean,std):
     chi2 = ((data - mean)/std)**2

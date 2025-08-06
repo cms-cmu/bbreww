@@ -1,4 +1,5 @@
 import awkward as ak
+import numpy as np
 
 def candidate_selection(events, params, year, is_mc):
     j_clean = events.Jet[events.Jet.isclean]
@@ -9,7 +10,8 @@ def candidate_selection(events, params, year, is_mc):
     bTag_key = 'btagPNetB' if '202' in year else 'particleNetAK4_B'
     btag_threshold = params.bTagWPs[bTag_key][year]['loose'] # using loose working point
 
-    j_candidates = j_soft[ak.argsort(getattr(j_soft,bTag_key), axis=1, ascending=False)]#particleNetAK4_B btagPNetB
+    j_candidates = j_soft[ak.argsort(j_soft.pt, axis=1, ascending=False)]
+    j_candidates = j_candidates[ak.argsort(getattr(j_candidates,bTag_key), axis=1, ascending=False)]#particleNetAK4_B btagPNetB
     j_candidates = ak.mask(j_candidates,ak.num(j_candidates) >= 4) # proceed only if we have at least 4 ak4 jets
     j_bcand_pool = j_candidates[j_candidates.pt > 25.0]  # Only jets > 25 GeV for b-jets
     j_bcand_pool = j_bcand_pool[getattr(j_bcand_pool,bTag_key) > btag_threshold]

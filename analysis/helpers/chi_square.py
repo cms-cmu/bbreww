@@ -24,6 +24,7 @@ def chi_sq(events):
                             ak.where(l_mu, 1,      # only mu: 1
                                     ak.where(l_e, 0, -1)))  # only e: 0, neither: -1
 
+
     ### TEMP: studying reconstructed MET pz resolution
     events['rec_met'] = ak.where(events.lepton_choice == 1, v_mu, v_e) #select leading lepton combination
     events['rec_W'] = ak.where(events.lepton_choice == 1, (leading_mu + v_mu).mass, (leading_e+v_e).mass)
@@ -34,9 +35,9 @@ def chi_sq(events):
 
     #individual chi squares for hadronic W* signal selection
     chi1_hadWs = chi_square(events.mbb,116.02, 45.04) # H -> bb            
-    chi2_hadWs = chi_square(mlvqq_hadWs, 150.70, 35.94) # H -> lvqq
+    chi2_hadWs = chi_square(mlvqq_hadWs, 161.15, 34.23) # H -> lvqq
     chi3_hadWs = chi_square(events.qq.mass,39.13, 10.02) #hadronic W*   
-    chi4_hadWs = chi_square(events.bb_dr,1.77, 0.82) #delta R between b-jets 
+    chi4_hadWs = chi_square(events.bb_dr,1.79, 0.79) #delta R between b-jets 
 
     #total chi square
     chi_sq_hadWs = np.sqrt(chi1_hadWs + chi2_hadWs + chi3_hadWs + chi4_hadWs)
@@ -56,7 +57,7 @@ def chi_sq(events):
     chi1_hadW = chi_square(events.mbb,112.46, 46.61) # H -> bb
     chi2_hadW = chi_square(events.mT_leading_lep, 58.87, 37.35) #transverse mass             
     chi3_hadW = chi_square(events.qq.mass,76.84, 10.98) #hadronic W
-    chi4_hadW = chi_square(events.bb_dr,1.77, 0.82) #delta R between b-jets
+    chi4_hadW = chi_square(events.bb_dr,1.76, 0.81) #delta R between b-jets
 
     chi_sq_hadW = np.sqrt(chi1_hadW + chi2_hadW + chi3_hadW + chi4_hadW)
     min_chi_sq_hadW= ak.argmin(chi_sq_hadW, axis=1, keepdims = True) #index of the minimum chi square non-bjet pair
@@ -96,20 +97,20 @@ def chi_sq(events):
     chi1_tt = chi_square(tt.t1,165.55 , 35.49 ) #leptonic top
     chi2_tt = chi_square(tt.t2, 171.55, 44.95 ) #hadronic top
     chi3_tt = chi_square(events.qq.mass,73.9, 23.56) #hadronic W
-    chi4_tt = chi_square(events.bb_dr,2.32, 0.88) #delta R between b-jets
+    chi4_tt = chi_square(events.bb_dr,2.36, 0.81) #delta R between b-jets
 
     chi_sq_tt = np.sqrt(chi1_tt + chi2_tt + chi3_tt + chi4_tt)
     min_chi_sq_tt = ak.argmin(chi_sq_tt, axis=1, keepdims = True) #get index of the minimum chi square 
     events['chi_sq_tt'] = ak.firsts(chi_sq_tt[min_chi_sq_tt])
-    
+
     # select jets with lower chi square across two signal regions
     events['qq_sel_index'] = ak.where(
-        ak.fill_none(events.chi_sq_hadW,100) < ak.fill_none(events.chi_sq_hadWs,100) , 
+        ak.fill_none(events.chi_sq_hadW,100.0) < ak.fill_none(events.chi_sq_hadWs,100.0) , 
         min_chi_sq_hadW, ak.where(~ak.is_none(events.chi_sq_hadWs),min_chi_sq_hadWs, -1))
 
 
     events['qq_sel_mass'] = ak.where(
-        ak.fill_none(events.chi_sq_hadW,100) < ak.fill_none(events.chi_sq_hadWs,100) , 
+        ak.fill_none(events.chi_sq_hadW,100.0) < ak.fill_none(events.chi_sq_hadWs,100.0) , 
         ak.firsts(events.qq[min_chi_sq_hadW].mass), 
         ak.where(~ak.is_none(events.chi_sq_hadWs),ak.firsts(events.qq[min_chi_sq_hadWs].mass), -1))
 

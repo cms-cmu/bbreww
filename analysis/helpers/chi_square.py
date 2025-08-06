@@ -34,11 +34,12 @@ def chi_sq(events):
 
     #individual chi squares for hadronic W* signal selection
     chi1_hadWs = chi_square(events.mbb,116.02, 45.04) # H -> bb            
-    chi2_hadWs = chi_square(mlvqq_hadWs, 177.51, 42.76) # H -> lvqq
-    chi3_hadWs = chi_square(events.qq.mass,41.77, 14.92) #hadronic W*    
+    chi2_hadWs = chi_square(mlvqq_hadWs, 150.70, 35.94) # H -> lvqq
+    chi3_hadWs = chi_square(events.qq.mass,39.13, 10.02) #hadronic W*   
+    chi4_hadWs = chi_square(events.bb_dr,1.77, 0.82) #delta R between b-jets 
 
     #total chi square
-    chi_sq_hadWs = np.sqrt(chi1_hadWs + chi2_hadWs + chi3_hadWs)
+    chi_sq_hadWs = np.sqrt(chi1_hadWs + chi2_hadWs + chi3_hadWs + chi4_hadWs)
     min_chi_sq_hadWs = ak.argmin(chi_sq_hadWs, axis=1, keepdims = True) #index of the minimum chi square non-bjet pair
     #events['mlvqq_hadWs'] = ak.firsts(mlvqq_hadWs[min_chi_sq_hadWs]) ## TEMP : comment out for now
     events['chi_sq_hadWs'] = chi_sq_hadWs[min_chi_sq_hadWs]
@@ -54,7 +55,7 @@ def chi_sq(events):
     #individual chi squares for hadronic W signal selection
     chi1_hadW = chi_square(events.mbb,112.46, 46.61) # H -> bb
     chi2_hadW = chi_square(events.mT_leading_lep, 58.87, 37.35) #transverse mass             
-    chi3_hadW = chi_square(events.qq.mass,66.89, 10.98) #hadronic W
+    chi3_hadW = chi_square(events.qq.mass,76.84, 10.98) #hadronic W
     chi4_hadW = chi_square(events.bb_dr,1.77, 0.82) #delta R between b-jets
 
     chi_sq_hadW = np.sqrt(chi1_hadW + chi2_hadW + chi3_hadW + chi4_hadW)

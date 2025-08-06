@@ -119,13 +119,13 @@ def gen_studies(events):
     ## check if both jets are gen matched after quark vs. gluon selection
     true_dijet_mask = (ak.count(matched_jets_post.pt,axis=1) == 2) 
     events['dijets_post_lead'] = ak.mask(matched_jets_post,true_dijet_mask)[:,0]
-    events['dijets_post_sublead'] = ak.mask(matched_jets_post,true_dijet_mask)[:,1]
+    events['dijets_post_sublead'] = ak.mask(matched_jets_post,true_dijet_mask)[:,1]'''
 
     ## met and W mass resolution
     events['met_pt_res'] = gen_nu.pt - events.MET.pt 
     events['met_pz_res'] = gen_nu.pz - events.rec_met.pz
     events['W_mass_res'] = ak.firsts(gen_W.mass[gen_W.mass < 55.0]) - events.qq_sel_mass
-    events['genW_mass'] = ak.firsts(gen_W.mass[gen_W.mass > 55.0]) '''
+    events['genW_mass'] = ak.firsts(gen_W.mass[gen_W.mass > 55.0]) 
     #####################
 
     ### study input parameters to chi square 

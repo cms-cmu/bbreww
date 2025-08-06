@@ -1,0 +1,19 @@
+ele_keys:
+  2022_preEE :  2022Re-recoBCD
+  2022_EE:      2022Re-recoE+PromptFG
+  2023_preBPix: 2023PromptC
+  2023_BPix:    2023PromptD
+  UL18:         '2018'
+  UL17:         '2017'
+  UL_16preVFP:  2016preVFP
+  UL_16postVFP: 2016postVFP
+
+pu_keys: 
+  2022_preEE:    Collisions2022_355100_357900_eraBCD_GoldenJson
+  2022_EE:       Collisions2022_359022_362760_eraEFG_GoldenJson
+  2023_preBPix:  Collisions2023_366403_369802_eraBC_GoldenJson
+  2023_BPix:     Collisions2023_369803_370790_eraD_GoldenJson
+  UL18:          Collisions18_UltraLegacy_goldenJSON
+  UL17:          Collisions17_UltraLegacy_goldenJSON
+  UL_16preVFP:   Collisions16_UltraLegacy_goldenJSON
+  UL_16postVFP:  Collisions16_UltraLegacy_goldenJSON

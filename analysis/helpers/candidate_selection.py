@@ -3,6 +3,7 @@ import awkward as ak
 def candidate_selection(events, params, year, is_mc):
     j_clean = events.Jet[events.Jet.isclean]
     j_soft = j_clean[j_clean.issoft]
+    events['j_init'] = j_soft ## TEMP: initial preselected jets
 
     QvG_key = 'btagPNetQvG' if '202' in year else 'particleNetAK4_QvsG'
     bTag_key = 'btagPNetB' if '202' in year else 'particleNetAK4_B'

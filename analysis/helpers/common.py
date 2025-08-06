@@ -50,7 +50,6 @@ def met_reconstr(events, e, mu):
     met = events.met    
     pz_e = nu_pz(e, met)
     pz_mu = nu_pz(mu,met)
-    # need "charge"
     v_e = ak.zip({
             "x": met.pt * np.cos(met.phi),
             "y": met.pt * np.sin(met.phi),
@@ -196,6 +195,11 @@ def get_sequential_cutflow(selection, events, selection_list, channels=['hadroni
             'events': {},
             'weights': {}
         }    
+
+        isoneEorM_mask = selection.all('isoneEorM') & selection.all(channel)
+        sequential_cutflow[channel]['events']['isoneEorM'] = np.sum(isoneEorM_mask)
+        sequential_cutflow[channel]['weights']['isoneEorM'] = np.sum(events.weight[isoneEorM_mask])
+        
         # Build cumulative selections
         for i in range(len(preselection_cuts)):
             # Get cuts up to current index

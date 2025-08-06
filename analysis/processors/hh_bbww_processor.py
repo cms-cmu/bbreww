@@ -11,10 +11,11 @@ from coffea.analysis_tools import Weights, PackedSelection
 from omegaconf import OmegaConf
 
 from base_class.physics.event_selection import apply_event_selection
-from base_class.physics.objects.jet_corrections import apply_jerc_corrections, apply_met_corrections_after_jec
+from base_class.physics.objects.jet_corrections import apply_jerc_corrections
 from base_class.physics.event_weights import add_weights
 
-from bbww.analysis.helpers.common import update_events, add_lepton_sfs
+from bbww.analysis.helpers.common import update_events, add_lepton_sfs, get_sequential_cutflow
+from bbww.analysis.helpers.corrections import apply_met_corrections_after_jec
 from bbww.analysis.helpers.object_selection import apply_bbWW_selection
 from bbww.analysis.helpers.candidate_selection import candidate_selection
 from bbww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
@@ -65,7 +66,6 @@ class analysis(processor.ProcessorABC):
             dataset=self.dataset,
             jet_type='AK4PFPuppi.txt',
         )
-
         met = apply_met_corrections_after_jec(events, jets)
 
         shifts = [({"Jet": jets, "MET":met}, None)]
@@ -106,10 +106,12 @@ class analysis(processor.ProcessorABC):
         ### candidate selection and chi square computation
         events = candidate_selection(events, self.params, self.year, self.is_mc)
         
+
+        events = chi_sq(events) # chi square selection and calculation
+        events = chi_sq_cut(events) # apply cuts on signal chi square values
+
         if self.is_mc:
             events = gen_studies(events)
-        events = chi_sq(events) # chi square selection and calculation
-
         ### apply event selections
         events = apply_event_selection(events, self.params[self.year], cut_on_lumimask = not self.is_mc)
 
@@ -159,7 +161,7 @@ class analysis(processor.ProcessorABC):
         }
         events['selection'] = ak.zip({
             'basic_selection': selection.all(*selection_list['basic_selection']),
-            'preselection': selection.all(*selection_list['preselection']),
+            'preselection': selection.all(*selection_list['preselection'])
         })
 
         events['channel'] = ak.zip({
@@ -173,7 +175,7 @@ class analysis(processor.ProcessorABC):
             output['events_processed'] = {}
             output['events_processed'][events.metadata['dataset']] = {
                 'n_events' : self.n_events,
-                'sum_genweights': np.sum(events.genWeight) if self.is_mc else self.n_events
+                'sum_genweights': np.sum(events.genWeight) if self.is_mc else self.n_events,
             }
             
             output['cutflow'] = {}
@@ -210,13 +212,13 @@ class analysis(processor.ProcessorABC):
                 }
             }
 
-        #    output['sequential_cutflow'] = {}
-        #    output['sequential_cutflow'][events.metadata['dataset']] = get_sequential_cutflow(
-        #        selection,
-        #        events,
-        #        selection_list,
-        #        channels=['hadronic_W', 'leptonic_W', 'null_region']
-        #    )
+            output['sequential_cutflow'] = {}
+            output['sequential_cutflow'][events.metadata['dataset']] = get_sequential_cutflow(
+                selection,
+                events,
+                selection_list,
+                channels=['hadronic_W', 'leptonic_W', 'null_region']
+            )
 
         hists = fill_histograms(
             events,

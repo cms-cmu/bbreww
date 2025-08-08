@@ -94,14 +94,10 @@ class analysis(processor.ProcessorABC):
         output = {}
         selection = PackedSelection(dtype="uint64")
 
-        scale = 1 if (not self.is_mc) else 1000.*float(events.metadata['lumi'])*events.metadata['xs']
-
-        events.metadata['genEventSumw'] = events.metadata.get('genEventSumw', 1.0)
         if self.is_mc:
             events = add_gen_info(events) if self.is_mc else events # add gen level info
-            weights.add('xsec', scale*events.genWeight/events.metadata['genEventSumw']) # add gen weights
 
-        events = apply_bbWW_preselection(events, self.year, self.params, self.is_mc,self.params[self.year]) #preselection
+        events = apply_bbWW_preselection(events, self.year, self.params, self.is_mc) #preselection
         events = candidate_selection(events, self.params, self.year) # select HH->bbWW candidates
         events = chi_sq(events) # chi square selection and calculation
         ##events = chi_sq_cut(events) # (DON'T APPLY ANY CHI SQUARE CUTS FOR NOW)
@@ -129,7 +125,7 @@ class analysis(processor.ProcessorABC):
 
         jet_veto_maps = (ak.all(events.Jet.jet_veto_maps,axis=1) if '202' in self.year 
                          else ak.ones_like(events.MET.pt,dtype=bool))
-
+        
         selection.add('jet_veto_mask', jet_veto_maps)
         selection.add('leptonic_W',  ak.firsts(events.sr_boolean) == 0)
         selection.add('hadronic_W',  ak.firsts(events.sr_boolean) == 1)
@@ -211,7 +207,7 @@ class analysis(processor.ProcessorABC):
                     },
                 }
             }
-            full_sel_list = ['trigger', 'lumimask', 'passNoiseFilter', 'twoBjets', 'isoneEorM','njets','jet_veto_mask']
+            full_sel_list = ['lumimask', 'passNoiseFilter', 'trigger', 'twoBjets', 'isoneEorM','njets','jet_veto_mask']
             output['sequential_cutflow'] = {}
             output['sequential_cutflow'][events.metadata['dataset']] = get_sequential_cutflow(
                 selection,

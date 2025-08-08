@@ -38,8 +38,8 @@ def nu_pz(l,v):
                                  np.sqrt(discriminant), 
                                  0.0)
     
-    pz_1 = np.real(ak.fill_none((2*A*l.pz + sqrt_discriminant)/(2*C), np.nan))
-    pz_2 = np.real(ak.fill_none((2*A*l.pz - sqrt_discriminant)/(2*C), np.nan))
+    pz_1 = ak.fill_none((2*A*l.pz + sqrt_discriminant)/(2*C), np.nan)
+    pz_2 = ak.fill_none((2*A*l.pz - sqrt_discriminant)/(2*C), np.nan)
     return ak.where(abs(pz_1) <= abs(pz_2), pz_1, pz_2)
 
 def chi_square(data,mean,std):
@@ -76,44 +76,44 @@ def met_reconstr(events, e, mu):
 
     return v_mu, v_e
 
-def get_ele_sfs(electron, year):
+def get_ele_sfs(params, electron, year):
     reco_sf =  ak.where(
             (electron.pt<20),
-            get_ele_sf(year, electron.eta+electron.deltaEtaSC, electron.pt, "RecoBelow20"), 
-            get_ele_sf(year, electron.eta+electron.deltaEtaSC, electron.pt, "Reco20to75")
+            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "RecoBelow20"), 
+            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "Reco20to75")
         )
     id_sf = ak.where(
             electron.isloose,
-            get_ele_sf(year, electron.eta+electron.deltaEtaSC, electron.pt, "Loose"),
+            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "Loose"),
             ak.ones_like(electron.pt)
         )
     id_sf = ak.where(
             electron.istight,
-            get_ele_sf(year, electron.eta+electron.deltaEtaSC, electron.pt, "Tight"),
+            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "Tight"),
             id_sf
         )
 
     return reco_sf, id_sf
 
-def get_mu_sfs(muon, year):
+def get_mu_sfs(params, muon, year):
     id_sf = ak.where(
             muon.isloose, 
-            get_mu_id_sf(year, abs(muon.eta), muon.pt, "Loose"), 
+            get_mu_id_sf(params, year, abs(muon.eta), muon.pt, "Loose"), 
             ak.ones_like(muon.pt)
         )
     id_sf = ak.where(
             muon.istight, 
-            get_mu_id_sf(year, abs(muon.eta), muon.pt, "Tight"), 
+            get_mu_id_sf(params, year, abs(muon.eta), muon.pt, "Tight"), 
             id_sf
         )
     iso_sf = ak.where(
             muon.isloose, 
-            get_mu_iso_sf(year, abs(muon.eta), muon.pt, "Loose"), 
+            get_mu_iso_sf(params, year, abs(muon.eta), muon.pt, "Loose"), 
             ak.ones_like(muon.pt)
         )
     iso_sf = ak.where(
         muon.istight, 
-        get_mu_iso_sf(year, abs(muon.eta), muon.pt, "Tight"), 
+        get_mu_iso_sf(params, year, abs(muon.eta), muon.pt, "Tight"), 
         iso_sf
     )
 
@@ -121,10 +121,10 @@ def get_mu_sfs(muon, year):
 
 #combined electron and muon scale factors
 # 0: electron, 1: muon
-def add_lepton_sfs(events, electron, muon, weights, year):
-    ele_reco_sf, ele_id_sf = get_ele_sfs(electron, year)
+def add_lepton_sfs(params, events, electron, muon, weights, year):
+    ele_reco_sf, ele_id_sf = get_ele_sfs(params, electron, year)
     mu_reco_sf = ak.ones_like(events.Muon.pt, dtype = float)
-    mu_iso_sf, mu_id_sf = get_mu_sfs(muon, year)
+    mu_iso_sf, mu_id_sf = get_mu_sfs(params, muon, year)
     ele_iso_sf = ak.ones_like(events.Electron.pt, dtype = float)
     leading_lep = events.lepton_choice == 0 # electron: 0, muon : 1
 
@@ -172,45 +172,18 @@ def apply_jet_veto_maps( corrections_metadata, jets ):
     return jetMask & mask_for_VetoMap
 
 def get_sequential_cutflow(selection, events, selection_list, channels=['hadronic_W', 'leptonic_W', 'null']):
-    """
-    Create a sequential cutflow dictionary by progressively applying cuts from preselection list.
-    
-    Parameters:
-    -----------
-    selection : PackedSelection object
-        The selection object containing all cuts
-    events : awkward array
-        Events array with weights
-    selection_list : dict
-        Dictionary containing the list of cuts
-    channels : list
-        List of channel names to track
-    """
-    
-    sequential_cutflow = {}
-    preselection_cuts = selection_list['preselection']
+    sequential_cutflow = {
+        'events': {},
+        'weights': {}
+    }
+    cumulative_cuts = []
 
-    for channel in channels:
-        sequential_cutflow[channel] = {
-            'events': {},
-            'weights': {}
-        }    
-
-        isoneEorM_mask = selection.all('isoneEorM') & selection.all(channel)
-        sequential_cutflow[channel]['events']['isoneEorM'] = np.sum(isoneEorM_mask)
-        sequential_cutflow[channel]['weights']['isoneEorM'] = np.sum(events.weight[isoneEorM_mask])
+    for cut_name in selection_list:
+        # Add the cuts in sequence
+        cumulative_cuts.append(cut_name)
+        current_mask = selection.all(*cumulative_cuts)
         
-        # Build cumulative selections
-        for i in range(len(preselection_cuts)):
-            # Get cuts up to current index
-            cuts_so_far = preselection_cuts[:i+1]
-            cuts_with_lepton = ['isoneEorM'] + cuts_so_far
-            cumulative_mask = selection.all(*cuts_with_lepton)
-            final_mask = cumulative_mask & selection.all(channel)
-            
-            # Store results with the name of the last cut applied
-            cut_name = preselection_cuts[i]
-            sequential_cutflow[channel]['events'][cut_name] = np.sum(final_mask)
-            sequential_cutflow[channel]['weights'][cut_name] = np.sum(events.weight[final_mask])
-    
+        sequential_cutflow['events'][cut_name] = np.sum(current_mask)
+        sequential_cutflow['weights'][cut_name] = np.sum(events.weight[current_mask])
+
     return sequential_cutflow

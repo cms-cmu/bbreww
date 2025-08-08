@@ -1,14 +1,14 @@
 import awkward as ak
 import numpy as np
 
-def candidate_selection(events, params, year, is_mc):
+def candidate_selection(events, params, year):
     j_clean = events.Jet[events.Jet.isclean]
     j_soft = j_clean[j_clean.issoft]
-    events['j_init'] = j_soft ## TEMP: initial preselected jets
+    events['j_init'] = j_soft # initial preselected jets
 
-    QvG_key = 'btagPNetQvG' if '202' in year else 'particleNetAK4_QvsG'
-    bTag_key = 'btagPNetB' if '202' in year else 'particleNetAK4_B'
-    btag_threshold = params.bTagWPs[bTag_key][year]['loose'] # using loose working point
+    QvG_key = 'btagPNetQvG' if '202' in year else 'particleNetAK4_QvsG' # use particleNET for quark vs. gluon tagging
+    bTag_key = 'btagPNetB' if '202' in year else 'particleNetAK4_B' # use particleNET b-tagging
+    btag_threshold = params[year].btagWP.L # using loose working point
 
     j_candidates = j_soft[ak.argsort(j_soft.pt, axis=1, ascending=False)]
     j_candidates = j_candidates[ak.argsort(getattr(j_candidates,bTag_key), axis=1, ascending=False)]#particleNetAK4_B btagPNetB
@@ -38,7 +38,26 @@ def candidate_selection(events, params, year, is_mc):
     events['j_sublead'] =  j_candidates[jj_i.j2] # subleading jet
 
     events['qq'] = ak.pad_none(j_candidates[jj_i.j1] + j_candidates[jj_i.j2], 3, axis=1)
-    if is_mc: events['qq_gen_mass'] = ak.pad_none((j_candidates[jj_i.j1].matched_gen + j_candidates[jj_i.j2].matched_gen).mass, 3, axis=1)
     events['mbb'] = (events.j_bcand[:,0]+events.j_bcand[:,1]).mass
+
+    return events
+
+## function only for skimmer
+def bjet_flag(events,params,year):
+    j_clean = events.Jet[events.Jet.isclean]
+    j_soft = j_clean[j_clean.issoft]
+    events['j_init'] = j_soft # initial preselected jets
+
+    QvG_key = 'btagPNetQvG' if '202' in year else 'particleNetAK4_QvsG' # use particleNET for quark vs. gluon tagging
+    bTag_key = 'btagPNetB' if '202' in year else 'particleNetAK4_B' # use particleNET b-tagging
+    btag_threshold = params[year].btagWP.L # using loose working point
+
+    j_candidates = j_soft[ak.argsort(j_soft.pt, axis=1, ascending=False)]
+    j_candidates = j_candidates[ak.argsort(getattr(j_candidates,bTag_key), axis=1, ascending=False)]#particleNetAK4_B btagPNetB
+    j_candidates = ak.mask(j_candidates,ak.num(j_candidates) >= 4) # proceed only if we have at least 4 ak4 jets
+    j_bcand_pool = j_candidates[j_candidates.pt > 25.0]  # Only jets > 25 GeV for b-jets
+    j_bcand_pool = j_bcand_pool[getattr(j_bcand_pool,bTag_key) > btag_threshold]
+
+    events['has_2_bjets'] = ak.num(j_bcand_pool, axis=1) >= 2
 
     return events

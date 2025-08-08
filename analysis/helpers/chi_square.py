@@ -43,7 +43,7 @@ def chi_sq(events):
     chi_sq_hadWs = np.sqrt(chi1_hadWs + chi2_hadWs + chi3_hadWs + chi4_hadWs)
     min_chi_sq_hadWs = ak.argmin(chi_sq_hadWs, axis=1, keepdims = True) #index of the minimum chi square non-bjet pair
     #events['mlvqq_hadWs'] = ak.firsts(mlvqq_hadWs[min_chi_sq_hadWs]) ## TEMP : comment out for now
-    events['chi_sq_hadWs'] = chi_sq_hadWs[min_chi_sq_hadWs]
+    chi_sq_hadWs = chi_sq_hadWs[min_chi_sq_hadWs]
 
     #transverse mass
     mT = {
@@ -61,7 +61,7 @@ def chi_sq(events):
 
     chi_sq_hadW = np.sqrt(chi1_hadW + chi2_hadW + chi3_hadW + chi4_hadW)
     min_chi_sq_hadW= ak.argmin(chi_sq_hadW, axis=1, keepdims = True) #index of the minimum chi square non-bjet pair
-    events['chi_sq_hadW'] = chi_sq_hadW[min_chi_sq_hadW]
+    chi_sq_hadW = chi_sq_hadW[min_chi_sq_hadW]
 
     ## ttbar reconstruction
 
@@ -105,14 +105,14 @@ def chi_sq(events):
 
     # select jets with lower chi square across two signal regions
     events['qq_sel_index'] = ak.where(
-        ak.fill_none(events.chi_sq_hadW,100.0) < ak.fill_none(events.chi_sq_hadWs,100.0) , 
-        min_chi_sq_hadW, ak.where(~ak.is_none(events.chi_sq_hadWs),min_chi_sq_hadWs, -1))
+        ak.fill_none(chi_sq_hadW,100.0) < ak.fill_none(chi_sq_hadWs,100.0) , 
+        min_chi_sq_hadW, ak.where(~ak.is_none(chi_sq_hadWs),min_chi_sq_hadWs, -1))
 
 
     events['qq_sel_mass'] = ak.where(
-        ak.fill_none(events.chi_sq_hadW,100.0) < ak.fill_none(events.chi_sq_hadWs,100.0) , 
+        ak.fill_none(chi_sq_hadW,100.0) < ak.fill_none(chi_sq_hadWs,100.0) , 
         ak.firsts(events.qq[min_chi_sq_hadW].mass), 
-        ak.where(~ak.is_none(events.chi_sq_hadWs),ak.firsts(events.qq[min_chi_sq_hadWs].mass), -1))
+        ak.where(~ak.is_none(chi_sq_hadWs),ak.firsts(events.qq[min_chi_sq_hadWs].mass), -1))
 
     events['sr_boolean'] = ak.where(events.qq_sel_mass > 55.0, 1, 
                                     ak.where(events.qq_sel_mass > 0, 0, 5))
@@ -128,6 +128,8 @@ def chi_sq(events):
     
     events['ak4_sel1'] = events.j_nonbcand[events.dijet_combs.j1[events.qq_sel_index]]
     events['ak4_sel2'] = events.j_nonbcand[events.dijet_combs.j2[events.qq_sel_index]]
+    events['chi_sq_hadWs'] = ak.firsts(chi_sq_hadWs)
+    events['chi_sq_hadW'] = ak.firsts(chi_sq_hadW)
 
     return events
 

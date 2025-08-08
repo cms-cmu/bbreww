@@ -1,6 +1,5 @@
 runner:
-  #chunksize: 100000
-  #maxchunks: 50
+  max_workers: 200 
   skipbadfiles: True
   workers: 4
   condor_memory: 4GB
@@ -19,7 +18,7 @@ runner:
     - T3_US_CMU
     - T3_US_FNALLPC
     - T2_US_Nebraska
-    - #T3_US_NotreDame
+    - T3_US_NotreDame
     - T3_US_Rutgers
     - T2_US_Caltech
     - T1_US_FNAL_Disk

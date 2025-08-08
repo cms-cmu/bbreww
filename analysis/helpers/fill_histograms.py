@@ -47,7 +47,7 @@ def fill_histograms(
     fill += hist.add("bb_dr", (30, 0.5, 8, ("bb_dr", "delta r between two b-candidates")))
     fill += hist.add("mbb", (60, -0.5, 250, ("mbb", "H-> bb candidate mass[GeV]")))
     
-    fill += hist.add("qq", (50, -0.5, 140, ("qq_sel_mass", "selected W->qq candidate mass [GeV]")))
+    fill += hist.add("qq", (50, -0.5, 140, ("j_nonbcand.pt", "non-bjets pT [GeV]")))
     fill += hist.add("mT", (60, -0.5, 250, ("mT_leading_lep", "transverse mass W->lv [GeV]")))
     fill += hist.add("leading_lep", (60, -0.5, 250, ("leading_lep.pt", "H-> lvqq candidate mass [GeV]")))
 

@@ -6,16 +6,15 @@ import json
 from omegaconf import OmegaConf
 
 path = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/"
-corrections= OmegaConf.load("analysis/metadata/corrections.yml")
 
 ### weights, scale factors keys taken from https://cms-nanoaod-integration.web.cern.ch/commonJSONSFs/
 
 ### Electron and Muon Scale Factors
 
 # retrieve electron scale factors for id = Loose, Tight, RecoBelow20, Reco20to75, etc
-def get_ele_sf (year, eta, pt, id):
-    evaluator = list(correctionlib.CorrectionSet.from_file(corrections[year]['ele_sf']['file']).values())[0]
-    year_label = corrections[year]['ele_sf']['tag']
+def get_ele_sf (params,year, eta, pt, id):
+    evaluator = list(correctionlib.CorrectionSet.from_file(params[year].ele_sf.file).values())[0]
+    year_label = params[year].ele_sf.tag
 
     if 'Reco' in id:
         eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
@@ -42,8 +41,8 @@ def get_ele_sf (year, eta, pt, id):
     return ak.unflatten(weight, counts=counts)
 
 
-def get_mu_id_sf (year, eta, pt, id):
-    evaluator = correctionlib.CorrectionSet.from_file(corrections[year]['mu_sf'])
+def get_mu_id_sf (params,year, eta, pt, id):
+    evaluator = correctionlib.CorrectionSet.from_file(params[year].mu_sf)
 
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
     flateta, counts = ak.flatten(eta), ak.num(eta)
@@ -58,8 +57,8 @@ def get_mu_id_sf (year, eta, pt, id):
 
     return ak.unflatten(weight, counts=counts)
 
-def get_mu_iso_sf (year, eta, pt, id):
-    evaluator = correctionlib.CorrectionSet.from_file(corrections[year]['mu_sf'])
+def get_mu_iso_sf (params,year, eta, pt, id):
+    evaluator = correctionlib.CorrectionSet.from_file(params[year].mu_sf)
 
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
     flateta, counts = ak.flatten(eta), ak.num(eta)

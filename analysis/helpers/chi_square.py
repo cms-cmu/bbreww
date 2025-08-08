@@ -123,8 +123,7 @@ def chi_sq(events):
     
     events['e_region'] = events.Electron[(events.Electron.istight) & (events.lepton_choice ==0)]
     events['mu_region'] = events.Muon[(events.Muon.istight) & (events.lepton_choice ==1)]
-    events['mlvqq_hadWs'] = mlvqq_hadWs[min_chi_sq_hadWs] ##( TEMP:  change to plot this variable before running chi square
-    events['top_cand1'] = tt.t1
+    events['mlvqq_hadWs'] = ak.firsts(mlvqq_hadWs[min_chi_sq_hadWs]) ##( TEMP:  change to plot this variable before running chi square
     
     events['ak4_sel1'] = events.j_nonbcand[events.dijet_combs.j1[events.qq_sel_index]]
     events['ak4_sel2'] = events.j_nonbcand[events.dijet_combs.j2[events.qq_sel_index]]

@@ -41,9 +41,9 @@ def fill_histograms(
     #fill += hist.add("dijets_post_lead",   (15, 15 , 30, ("dijets_post_lead.pt", r"$jet pT$[GeV]")))
     #fill += hist.add("dijets_pre_sublead", (15, 15 , 30,  ("dijets_pre_sublead.pt", r"$jet pT$[GeV]")))
     #fill += hist.add("dijets_post_sublead",(15, 15 , 30, ("dijets_post_sublead.pt", r"$jet pT$[GeV]")))
-    fill += hist.add("gen_bb", (60, -0.5, 250, ("gen_bb.mass", "gen bb mass [GeV]")))
-    fill += hist.add("genjet_from_b", (60, -0.5, 250, ("genjet_from_b.mass", "gen bb mass [GeV]")))
-    fill += hist.add("mass_reco_b_gen_match", (60, -0.5, 250, ("mass_reco_b_gen_match.mass", "gen bb mass [GeV]")))
+    #fill += hist.add("gen_bb", (60, -0.5, 250, ("gen_bb.mass", "gen bb mass [GeV]")))
+    #fill += hist.add("genjet_from_b", (60, -0.5, 250, ("genjet_from_b.mass", "gen bb mass [GeV]")))
+    #fill += hist.add("mass_reco_b_gen_match", (60, -0.5, 250, ("mass_reco_b_gen_match.mass", "gen bb mass [GeV]")))
     fill += hist.add("bb_dr", (30, 0.5, 8, ("bb_dr", "delta r between two b-candidates")))
     fill += hist.add("mbb", (60, -0.5, 250, ("mbb", "H-> bb candidate mass[GeV]")))
     
@@ -54,16 +54,8 @@ def fill_histograms(
     fill += hist.add("chi_sq_hadW", (30, -0.5, 6, ("chi_sq_hadW", "hadronic W region chi square")))
     fill += hist.add("chi_sq_hadWs", (30, -0.5, 6, ("chi_sq_hadWs", "leptonic W region chi square")))
     fill += hist.add("chi_sq_tt", (30, -0.5, 6, ("chi_sq_tt", "ttbar chi square")))
-    fill += hist.add("top_cand1", (60, -0.5, 250, ("top_cand1", "top candidate 1 mass [GeV]")))
-    fill += hist.add("jetHT", (60, -0.5, 400, ("SoftActivityJetHT", "jet HT")))
     fill += hist.add("nonbjet1pt", (120, -300, 300, ("true_ak4_1.pt", "leading W-jet pt [GeV]")))
     fill += hist.add("nonbjet2pt", (120, -300, 300, ("true_ak4_2.pt", "subleading W-jet pt [GeV]")))
-
-    fill += hist.add("nonb_sublead", (20, -0.5, 50, ("j_sublead.pt", "subleading non-bjet pT [GeV]")))
-    fill += hist.add("e_energy", (60, -0.5, 300,  ("e_region.energy", "leading lepton energy [GeV]")))
-    fill += hist.add("e_pz", (100, -250, 250, ("e_region.pz", "leading lepton pz [GeV]")))
-    fill += hist.add("mu_energy", (60, -0.5, 300,  ("mu_region.energy", "leading lepton energy [GeV]")))
-    fill += hist.add("mu_pz", (100, -250, 250,      ("mu_region.pz", "leading lepton pz [GeV]")))
 
     fill += hist.add("Hbb_vs_HWW", 
                     (50, 0, 250, ('mbb', 'H->bb Candidate Mass [GeV]')),

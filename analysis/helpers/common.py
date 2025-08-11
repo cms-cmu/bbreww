@@ -1,8 +1,9 @@
 import numpy as np
 import awkward as ak
-from omegaconf import OmegaConf
 import logging
 import correctionlib
+from coffea.nanoevents.methods import vector
+from bbww.analysis.helpers.corrections import get_ele_sf, get_mu_id_sf, get_mu_iso_sf
 
 def match(a, b, val):
     combinations = a.cross(b, nested=True)
@@ -31,47 +32,116 @@ def nu_pz(l,v):
     B = l.energy**2*((v.pt * np.cos(v.phi))**2+(v.pt * np.sin(v.phi))**2)
     C = l.energy**2 - l.pz**2
     discriminant = (2 * A * l.pz)**2 - 4 * (B - A**2) * C
+
     # avoiding imaginary solutions
-    sqrt_discriminant = ak.where(discriminant >= 0, np.sqrt(discriminant), np.nan)
-    pz_1 = (2*A*l.pz + sqrt_discriminant)/(2*C)
-    pz_2 = (2*A*l.pz - sqrt_discriminant)/(2*C)
-    return ak.where(abs(pz_1) < abs(pz_2), pz_1, pz_2)
+    sqrt_discriminant = ak.where(discriminant >= 0.0, 
+                                 np.sqrt(discriminant), 
+                                 0.0)
+    
+    pz_1 = ak.fill_none((2*A*l.pz + sqrt_discriminant)/(2*C), np.nan)
+    pz_2 = ak.fill_none((2*A*l.pz - sqrt_discriminant)/(2*C), np.nan)
+    return ak.where(abs(pz_1) <= abs(pz_2), pz_1, pz_2)
 
 def chi_square(data,mean,std):
-    x_2 = ak.sum(data**2)
-    n = ak.count(data[~ak.is_none(data)])
     chi2 = ((data - mean)/std)**2
-    return chi2, mean, std
+    return chi2
 
 def met_reconstr(events, e, mu):
     met = events.met    
-    # need "charge" here so we can add them with electrons/muons four vectors
-    v_e = ak.zip(
-        {
+    pz_e = nu_pz(e, met)
+    pz_mu = nu_pz(mu,met)
+    v_e = ak.zip({
             "x": met.pt * np.cos(met.phi),
             "y": met.pt * np.sin(met.phi),
-            "z": nu_pz(e, met),
-            "t": np.sqrt(met.pt**2 + nu_pz(e, met)**2),
-            "charge" : met.pt * 0 
+            "z": pz_e,
+            "t": np.sqrt(met.pt**2 + pz_e**2),
         },
-        with_name="Candidate"
+        with_name="LorentzVector",
+        behavior=vector.behavior,
     )
 
     v_mu = ak.zip(
         {
             "x": met.pt * np.cos(met.phi),
             "y": met.pt * np.sin(met.phi),
-            "z": nu_pz(mu, met),
-            "t": np.sqrt(met.pt**2+nu_pz(mu, met)**2) ,
-            "charge" : met.pt * 0 
+            "z": pz_mu,
+            "t": np.sqrt(met.pt**2+pz_mu**2) ,
         },
-        with_name="Candidate"
+        with_name="LorentzVector",
+        behavior=vector.behavior,
     )
 
     v_mu = ak.mask(v_mu, ~np.isnan(v_mu.pz))
     v_e = ak.mask(v_e, ~np.isnan(v_e.pz)) #avoid calculations for imaginary solutions
 
     return v_mu, v_e
+
+def get_ele_sfs(params, electron, year):
+    reco_sf =  ak.where(
+            (electron.pt<20),
+            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "RecoBelow20"), 
+            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "Reco20to75")
+        )
+    id_sf = ak.where(
+            electron.isloose,
+            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "Loose"),
+            ak.ones_like(electron.pt)
+        )
+    id_sf = ak.where(
+            electron.istight,
+            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "Tight"),
+            id_sf
+        )
+
+    return reco_sf, id_sf
+
+def get_mu_sfs(params, muon, year):
+    id_sf = ak.where(
+            muon.isloose, 
+            get_mu_id_sf(params, year, abs(muon.eta), muon.pt, "Loose"), 
+            ak.ones_like(muon.pt)
+        )
+    id_sf = ak.where(
+            muon.istight, 
+            get_mu_id_sf(params, year, abs(muon.eta), muon.pt, "Tight"), 
+            id_sf
+        )
+    iso_sf = ak.where(
+            muon.isloose, 
+            get_mu_iso_sf(params, year, abs(muon.eta), muon.pt, "Loose"), 
+            ak.ones_like(muon.pt)
+        )
+    iso_sf = ak.where(
+        muon.istight, 
+        get_mu_iso_sf(params, year, abs(muon.eta), muon.pt, "Tight"), 
+        iso_sf
+    )
+
+    return iso_sf, id_sf 
+
+#combined electron and muon scale factors
+# 0: electron, 1: muon
+def add_lepton_sfs(params, events, electron, muon, weights, year):
+    ele_reco_sf, ele_id_sf = get_ele_sfs(params, electron, year)
+    mu_reco_sf = ak.ones_like(events.Muon.pt, dtype = float)
+    mu_iso_sf, mu_id_sf = get_mu_sfs(params, muon, year)
+    ele_iso_sf = ak.ones_like(events.Electron.pt, dtype = float)
+    leading_lep = events.lepton_choice == 0 # electron: 0, muon : 1
+
+    reco_sf = ak.where(leading_lep, # select leading lepton out of leading electrons and leading muons
+                       ak.firsts(ele_reco_sf[electron.istight]),# leading electrons
+                       ak.firsts(mu_reco_sf[muon.istight])) # leading muons
+    id_sf = ak.where(leading_lep, 
+                    ak.firsts(ele_id_sf[electron.istight]), 
+                    ak.firsts(mu_id_sf[muon.istight]))
+    iso_sf = ak.where(leading_lep, 
+                      ak.firsts(ele_iso_sf[electron.istight]), 
+                      ak.firsts(mu_iso_sf[muon.istight]))
+
+    weights.add('reco_sf', reco_sf)
+    weights.add('id_sf', id_sf)
+    weights.add('iso_sf', iso_sf)
+    return weights
 
 ### placeholder: wanna use apply_jet_veto_maps from the base framework common.py, not bbww
 def apply_jet_veto_maps( corrections_metadata, jets ):
@@ -101,4 +171,19 @@ def apply_jet_veto_maps( corrections_metadata, jets ):
 
     return jetMask & mask_for_VetoMap
 
-    
+def get_sequential_cutflow(selection, events, selection_list, channels=['hadronic_W', 'leptonic_W', 'null']):
+    sequential_cutflow = {
+        'events': {},
+        'weights': {}
+    }
+    cumulative_cuts = []
+
+    for cut_name in selection_list:
+        # Add the cuts in sequence
+        cumulative_cuts.append(cut_name)
+        current_mask = selection.all(*cumulative_cuts)
+        
+        sequential_cutflow['events'][cut_name] = np.sum(current_mask)
+        sequential_cutflow['weights'][cut_name] = np.sum(events.weight[current_mask])
+
+    return sequential_cutflow

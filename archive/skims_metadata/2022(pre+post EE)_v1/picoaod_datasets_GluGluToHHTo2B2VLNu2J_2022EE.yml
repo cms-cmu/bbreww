@@ -1,0 +1,91 @@
+GluGluToHHTo2B2VLNu2J_2022_EE:
+  count: 307250
+  cutFlowFourTag:
+    all: 9112.808556839824
+    isoneEorM: 2103.638083461672
+    lumimask: 9112.808556839824
+    passNoiseFilter: 9108.264678761363
+    trigger: 2519.1629564017057
+  cutFlowFourTagUnitWeight:
+    all: 307250
+    isoneEorM: 71026
+    lumimask: 307250
+    passNoiseFilter: 307093
+    trigger: 85116
+  cutFlowThreeTag:
+    all: 9112.808556839824
+    isoneEorM: 2103.638083461672
+    lumimask: 9112.808556839824
+    passNoiseFilter: 9108.264678761363
+    trigger: 2519.1629564017057
+  cutFlowThreeTagUnitWeight:
+    all: 307250
+    isoneEorM: 71026
+    lumimask: 307250
+    passNoiseFilter: 307093
+    trigger: 85116
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/GluGluToHHTo2B2VLNu2J_2022_EE/picoAOD.root
+  missing: {}
+  reproducible:
+    args: Namespace(test=False, output_file='picoaod_datasets_GluGluToHHTo2B2VLNu2J_2022EE.yml',
+      processor='bbww/skimmer/processors/skimmer_bbWW.py', configs='bbww//skimmer/metadata/HHbbWW.yml',
+      metadata='bbww/metadata/datasets_run3.yml', output_path='bbww/output/skimmer/',
+      years=['2022_EE'], datasets=['GluGluToHHTo2B2VLNu2J'], era=['A', 'B', 'C', 'D',
+      'E', 'F', 'G', 'H'], skimming=True, run_dask=False, condor=False, debug=False,
+      githash='', gitdiff='', check_input_files=False)
+    date: '2025-07-25 10:53:30'
+    diff: "diff --git a/python/base_class/hist/hist.py b/python/base_class/hist/hist.py\n\
+      index fb4c7a6a..b602d7a3 100644\n--- a/python/base_class/hist/hist.py\n+++ b/python/base_class/hist/hist.py\n\
+      @@ -273,6 +273,8 @@ class _Fill(Generic[HistType], Configurable, namespace=\"\
+      hist.Fill\"):\n                 hist_args = {}\n                 for k, v in\
+      \ fills.items():\n                     fill = fill_values[v]\n+            \
+      \        if isinstance(fill, ak.Array):\n+                        fill = ak.fill_none(fill,\
+      \ np.nan)\n                     if shape is None:\n                        \
+      \ ...\n                     elif self._is_jagged(fill):\ndiff --git a/python/base_class/hist/object/jet.py\
+      \ b/python/base_class/hist/object/jet.py\nindex 3a7167c5..9e79adf0 100644\n\
+      --- a/python/base_class/hist/object/jet.py\n+++ b/python/base_class/hist/object/jet.py\n\
+      @@ -17,7 +17,6 @@ class _PlotJet(_PlotCommon, _PlotLorentzVector):\n class _PlotDiJet(_PlotCommon,\
+      \ _PlotDiLorentzVector):\n     ...\n \n-\n class Jet:\n     plot = _PlotJet\n\
+      \     plot_pair = _PlotDiJet\ndiff --git a/python/scripts/skimmer-test-job.sh\
+      \ b/python/scripts/skimmer-test-job.sh\nindex f80a945d..4da91158 100644\n---\
+      \ a/python/scripts/skimmer-test-job.sh\n+++ b/python/scripts/skimmer-test-job.sh\n\
+      @@ -9,20 +9,23 @@ fi\n \n echo \"############### Changing metadata\"\n if [[\
+      \ $(hostname) = *fnal* ]]; then\n-    sed -e \"s#base_path.*#base_path: \\/srv\\\
+      /output\\/skimmer_test_job\\/#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files:\
+      \ 1/\" -e \"s/2024_.*/tmp\\//\" skimmer/metadata/HH4b.yml > $OUTPUT_DIR/HH4b.yml\n\
+      +    sed -e \"s#base_path.*#base_path: \\/srv\\/output\\/skimmer_test_job\\\
+      /#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files: 1/\" -e \"\
+      s/2024_.*/tmp\\//\" bbww/skimmer/metadata/HHbbWW.yml > $OUTPUT_DIR/HHbbWW.yml\n\
+      \ else\n-    sed -e \"s#base_path.*#base_path: /builds/${CI_PROJECT_PATH}/python/output\\\
+      /skimmer_test_job\\/#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files:\
+      \ 1/\" -e \"s/2024_.*/tmp\\//\" -e \"s/T3_US_FNALLPC/T3_CH_PSI/\" skimmer/metadata/HH4b.yml\
+      \ > $OUTPUT_DIR/HH4b.yml\n+    sed -e \"s#base_path.*#base_path: /builds/${CI_PROJECT_PATH}/python/output\\\
+      /skimmer_test_job\\/#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files:\
+      \ 1/\" -e \"s/2024_.*/tmp\\//\" -e \"s/T3_US_FNALLPC/T3_CH_PSI/\" bbww/skimmer/metadata/HHbbWW.yml\
+      \ > $OUTPUT_DIR/HHbbWW.yml\n fi\n-cat $OUTPUT_DIR/HH4b.yml\n+cat $OUTPUT_DIR/HHbbWW.yml\n\
+      +\n \n #nanoAOD_file=\"root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/70000/92D0BDF3-91AE-514F-88B5-8F591450B8AD.root\"\
+      \n #sed -e \"s#/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9.*#[\
+      \ '${nanoAOD_file}' ]#\" metadata/datasets_HH4b.yml > $OUTPUT_DIR/datasets_HH4b.yml\n\
+      \ #python runner.py -s -p skimmer/processor/skimmer_4b.py -c $OUTPUT_DIR/datasets_HH4b.yml\
+      \ -y UL18 -d TTToSemiLeptonic -op $OUTPUT_DIR -o picoaod_datasets_TTToSemiLeptonic_UL18.yml\
+      \ -m $OUTPUT_DIR/datasets_HH4b.yml  -t \n \n-nanoAOD_file=\"root://cmseos.fnal.gov//store/mc/RunIISummer20UL18NanoAODv9/GluGluToHHTo4B_cHHH0_TuneCP5_PSWeights_13TeV-powheg-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/70000/3F95108D-84D2-CD4D-A0D2-324A7D15E691.root\"\
+      \n-sed -e \"s#/GluGluToHHTo4B_cHHH0_TuneCP5_PSWeights_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9.*#[\
+      \ '${nanoAOD_file}' ]#\" metadata/datasets_HH4b.yml > $OUTPUT_DIR/datasets_HH4b.yml\n\
+      +nanoAOD_file=\"root://cmseos.fnal.gov//store/mc/Run3Summer22NanoAODv13/GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/133X_mcRun3_2022_realistic_ForNanov13_v1-v2/2830000/1ee1335c-a70a-4fba-9c2d-5ab8d5cd0287.root\"\
+      \n+sed -e \"s#/GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv13-133X_mcRun3_2022_realistic_ForNanov13_v1-v2.*#[\
+      \ '${nanoAOD_file}' ]#\" bbww/metadata/datasets_run3.yml > $OUTPUT_DIR/datasets_run3.yml\n\
+      +\n+\n echo \"############### Running test processor\"\n-python runner.py -s\
+      \ -p skimmer/processor/skimmer_4b.py -c $OUTPUT_DIR/HH4b.yml -y UL18 -d GluGluToHHTo4B_cHHH0\
+      \ -op $OUTPUT_DIR -o picoaod_datasets_GluGluToHHTo4B_cHHH0_UL18.yml -m $OUTPUT_DIR/datasets_HH4b.yml\
+      \  -t \n+python runner.py -s -p bbww/skimmer/processors/skimmer_bbWW.py -c bbww/skimmer/metadata/HHbbWW.yml\
+      \ -y 2022_preEE -d GluGluToHHTo2B2VLNu2J -op $OUTPUT_DIR -o picoaod_datasets_GluGluToHHtobbWW_test.yml\
+      \ -m bbww/metadata/datasets_run3.yml  -t \n ls -R $OUTPUT_DIR\n \n if [ \"$return_to_base\"\
+      \ = true ]; then\n"
+    hash: aa2667d15965f05c5d72ff7cf3863b817c7323f9
+  saved_events: 71026
+  sumw: 9112.809677124023
+  sumw2: 337.8800603747368
+  sumw2_raw: 337.8800436638791
+  sumw_raw: 9112.8088042
+  total_events: 307250

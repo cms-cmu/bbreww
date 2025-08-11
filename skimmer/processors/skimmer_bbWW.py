@@ -4,7 +4,8 @@ import numpy as np
 import yaml
 from omegaconf import OmegaConf
 from analysis.helpers.mc_weight_outliers import OutlierByMedian
-from bbww.analysis.helpers.object_selection import muon_selection, electron_selection
+from bbww.analysis.helpers.object_selection import apply_bbWW_preselection
+from bbww.analysis.helpers.candidate_selection import bjet_flag
 from base_class.physics.event_selection import apply_event_selection
 from coffea.analysis_tools import PackedSelection, Weights
 from base_class.skimmer.picoaod import PicoAOD
@@ -33,19 +34,21 @@ class Skimmer(PicoAOD):
         #
         # Set process and datset dependent flags
         #
-        event = muon_selection(event, year, self.params)
-        event = electron_selection(event, year, self.params)
+        event = apply_bbWW_preselection(event, year, self.params, self.is_mc )
+        event = bjet_flag(event, self.params, year)  
         event = apply_event_selection( event, self.params[year], cut_on_lumimask= not self.is_mc )
 
-        oneE =(event.e_nloose==1) & (event.mu_nloose==0)
-        oneM = (event.mu_nloose==1) & (event.e_nloose==0)
+        oneE =(event.e_ntight==1) & (event.mu_nloose==0)
+        oneM = (event.mu_ntight==1) & (event.e_nloose==0)
         
         selections = PackedSelection()
         selections.add( "lumimask", event.lumimask)
         selections.add( "passNoiseFilter", event.passNoiseFilter)
         selections.add("trigger", event.passHLT)
         selections.add('isoneEorM', oneE|oneM )
-        final_selection = selections.require(lumimask=True, passNoiseFilter=True, trigger = True, isoneEorM = True)
+        selections.add('twoBjets', event.has_2_bjets)
+        final_selection = selections.require(lumimask=True, passNoiseFilter=True, trigger = True, 
+                                             twoBjets = True, isoneEorM = True)
 
         weights = Weights(len(event), storeIndividual=True)
         if self.is_mc:

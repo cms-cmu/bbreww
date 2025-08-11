@@ -70,14 +70,14 @@ def photon_selection(events, params):
 
     return events
 
-def jet_selection(events, params, year, corrections_metadata):
+def jet_selection(events, params, year):
     e_clean = events.Electron[events.Electron.isclean]
     tau_clean = events.Tau[events.Tau.isclean]
     pho_clean = events.Photon[events.Photon.isclean]
 
     # jet veto maps are mandatory for run 3
     if '202' in year:
-        events['Jet', 'jet_veto_maps'] = apply_jet_veto_maps(corrections_metadata['jet_veto_maps'], events.Jet)
+        events['Jet', 'jet_veto_maps'] = apply_jet_veto_maps(params[year]['jet_veto_maps'], events.Jet)
         # events['Jet'] = events.Jet[events.Jet.jet_veto_maps] uncomment to apply on individual jets
 
     events['Jet','isclean'] = (
@@ -96,13 +96,13 @@ def jet_selection(events, params, year, corrections_metadata):
 
     return events
 
-def apply_bbWW_selection(events, year,params, isMC, corrections_metadata):
+def apply_bbWW_preselection(events, year,params, isMC):
     events = met_selection(events, year, not isMC)
     events = muon_selection(events, year, params) #muons
     events = electron_selection(events, year, params) #electrons
     events = tau_selection(events,params) #taus
     events = photon_selection(events,params) #photon
-    events = jet_selection(events,params,year,corrections_metadata) #jets
+    events = jet_selection(events,params,year) #jets
     
     return events
         

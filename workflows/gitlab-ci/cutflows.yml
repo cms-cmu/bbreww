@@ -22,12 +22,11 @@ analysis_test_data_cutflows:
     - .base_bbww_job
   needs:
     - setup_workspace
-    - analysis_test_run3
+    - analysis_test_data_run3
     - voms_proxy
   image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest
   script:
     - echo "Running cutflow test for analysis_test"
-    - cd coffea4bees_framework/python/
     - source bbww/scripts/analysis_test_cutflows_data.sh --output-base output/
   artifacts:
     paths:

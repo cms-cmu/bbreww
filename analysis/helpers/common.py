@@ -34,25 +34,22 @@ def nu_pz(l,v):
     discriminant = (2 * A * l.pz)**2 - 4 * (B - A**2) * C
 
     # avoiding imaginary solutions
-    sqrt_discriminant = ak.where(discriminant >= 0, 
+    sqrt_discriminant = ak.where(discriminant >= 0.0, 
                                  np.sqrt(discriminant), 
-                                 np.sqrt(-discriminant) * 1j)
+                                 0.0)
     
-    pz_1 = np.real(ak.fill_none((2*A*l.pz + sqrt_discriminant)/(2*C), np.nan))
-    pz_2 = np.real(ak.fill_none((2*A*l.pz - sqrt_discriminant)/(2*C), np.nan))
-    return ak.where(abs(pz_1) < abs(pz_2), pz_1, pz_2)
+    pz_1 = ak.fill_none((2*A*l.pz + sqrt_discriminant)/(2*C), np.nan)
+    pz_2 = ak.fill_none((2*A*l.pz - sqrt_discriminant)/(2*C), np.nan)
+    return ak.where(abs(pz_1) <= abs(pz_2), pz_1, pz_2)
 
 def chi_square(data,mean,std):
-    x_2 = ak.sum(data**2)
-    n = ak.count(data[~ak.is_none(data)])
     chi2 = ((data - mean)/std)**2
-    return chi2, mean, std
+    return chi2
 
 def met_reconstr(events, e, mu):
     met = events.met    
     pz_e = nu_pz(e, met)
     pz_mu = nu_pz(mu,met)
-    # need "charge"
     v_e = ak.zip({
             "x": met.pt * np.cos(met.phi),
             "y": met.pt * np.sin(met.phi),
@@ -79,44 +76,44 @@ def met_reconstr(events, e, mu):
 
     return v_mu, v_e
 
-def get_ele_sfs(electron, year):
+def get_ele_sfs(params, electron, year):
     reco_sf =  ak.where(
             (electron.pt<20),
-            get_ele_sf(year, electron.eta+electron.deltaEtaSC, electron.pt, "RecoBelow20"), 
-            get_ele_sf(year, electron.eta+electron.deltaEtaSC, electron.pt, "Reco20to75")
+            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "RecoBelow20"), 
+            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "Reco20to75")
         )
     id_sf = ak.where(
             electron.isloose,
-            get_ele_sf(year, electron.eta+electron.deltaEtaSC, electron.pt, "Loose"),
+            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "Loose"),
             ak.ones_like(electron.pt)
         )
     id_sf = ak.where(
             electron.istight,
-            get_ele_sf(year, electron.eta+electron.deltaEtaSC, electron.pt, "Tight"),
+            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "Tight"),
             id_sf
         )
 
     return reco_sf, id_sf
 
-def get_mu_sfs(muon, year):
+def get_mu_sfs(params, muon, year):
     id_sf = ak.where(
             muon.isloose, 
-            get_mu_id_sf(year, abs(muon.eta), muon.pt, "Loose"), 
+            get_mu_id_sf(params, year, abs(muon.eta), muon.pt, "Loose"), 
             ak.ones_like(muon.pt)
         )
     id_sf = ak.where(
             muon.istight, 
-            get_mu_id_sf(year, abs(muon.eta), muon.pt, "Tight"), 
+            get_mu_id_sf(params, year, abs(muon.eta), muon.pt, "Tight"), 
             id_sf
         )
     iso_sf = ak.where(
             muon.isloose, 
-            get_mu_iso_sf(year, abs(muon.eta), muon.pt, "Loose"), 
+            get_mu_iso_sf(params, year, abs(muon.eta), muon.pt, "Loose"), 
             ak.ones_like(muon.pt)
         )
     iso_sf = ak.where(
         muon.istight, 
-        get_mu_iso_sf(year, abs(muon.eta), muon.pt, "Tight"), 
+        get_mu_iso_sf(params, year, abs(muon.eta), muon.pt, "Tight"), 
         iso_sf
     )
 
@@ -124,10 +121,10 @@ def get_mu_sfs(muon, year):
 
 #combined electron and muon scale factors
 # 0: electron, 1: muon
-def add_lepton_sfs(events, electron, muon, weights, year):
-    ele_reco_sf, ele_id_sf = get_ele_sfs(electron, year)
+def add_lepton_sfs(params, events, electron, muon, weights, year):
+    ele_reco_sf, ele_id_sf = get_ele_sfs(params, electron, year)
     mu_reco_sf = ak.ones_like(events.Muon.pt, dtype = float)
-    mu_iso_sf, mu_id_sf = get_mu_sfs(muon, year)
+    mu_iso_sf, mu_id_sf = get_mu_sfs(params, muon, year)
     ele_iso_sf = ak.ones_like(events.Electron.pt, dtype = float)
     leading_lep = events.lepton_choice == 0 # electron: 0, muon : 1
 
@@ -174,3 +171,19 @@ def apply_jet_veto_maps( corrections_metadata, jets ):
 
     return jetMask & mask_for_VetoMap
 
+def get_sequential_cutflow(selection, events, selection_list, channels=['hadronic_W', 'leptonic_W', 'null']):
+    sequential_cutflow = {
+        'events': {},
+        'weights': {}
+    }
+    cumulative_cuts = []
+
+    for cut_name in selection_list:
+        # Add the cuts in sequence
+        cumulative_cuts.append(cut_name)
+        current_mask = selection.all(*cumulative_cuts)
+        
+        sequential_cutflow['events'][cut_name] = np.sum(current_mask)
+        sequential_cutflow['weights'][cut_name] = np.sum(events.weight[current_mask])
+
+    return sequential_cutflow

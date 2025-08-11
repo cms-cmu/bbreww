@@ -6,16 +6,15 @@ import json
 from omegaconf import OmegaConf
 
 path = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/"
-corrections= OmegaConf.load("analysis/metadata/corrections.yml")
 
 ### weights, scale factors keys taken from https://cms-nanoaod-integration.web.cern.ch/commonJSONSFs/
 
 ### Electron and Muon Scale Factors
 
 # retrieve electron scale factors for id = Loose, Tight, RecoBelow20, Reco20to75, etc
-def get_ele_sf (year, eta, pt, id):
-    evaluator = list(correctionlib.CorrectionSet.from_file(corrections[year]['ele_sf']['file']).values())[0]
-    year_label = corrections[year]['ele_sf']['tag']
+def get_ele_sf (params,year, eta, pt, id):
+    evaluator = list(correctionlib.CorrectionSet.from_file(params[year].ele_sf.file).values())[0]
+    year_label = params[year].ele_sf.tag
 
     if 'Reco' in id:
         eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
@@ -42,8 +41,8 @@ def get_ele_sf (year, eta, pt, id):
     return ak.unflatten(weight, counts=counts)
 
 
-def get_mu_id_sf (year, eta, pt, id):
-    evaluator = correctionlib.CorrectionSet.from_file(corrections[year]['mu_sf'])
+def get_mu_id_sf (params,year, eta, pt, id):
+    evaluator = correctionlib.CorrectionSet.from_file(params[year].mu_sf)
 
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
     flateta, counts = ak.flatten(eta), ak.num(eta)
@@ -58,8 +57,8 @@ def get_mu_id_sf (year, eta, pt, id):
 
     return ak.unflatten(weight, counts=counts)
 
-def get_mu_iso_sf (year, eta, pt, id):
-    evaluator = correctionlib.CorrectionSet.from_file(corrections[year]['mu_sf'])
+def get_mu_iso_sf (params,year, eta, pt, id):
+    evaluator = correctionlib.CorrectionSet.from_file(params[year].mu_sf)
 
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
     flateta, counts = ak.flatten(eta), ak.num(eta)
@@ -147,3 +146,26 @@ def add_mu_sf(events,year):
     
 def get_ttbar_weight(pt):
     return np.exp(0.0615 - 0.0005 * np.clip(pt, 0, 800))
+
+### might move this to base_class
+def apply_met_corrections_after_jec(events, jets):
+    from coffea.jetmet_tools import CorrectedMETFactory
+    jec_name_map = {
+        'JetPt': 'pt',
+        'JetMass': 'mass',
+        'JetEta': 'eta',
+        'JetA': 'area',
+        'ptGenJet': 'pt_gen',
+        'ptRaw': 'pt_raw',
+        'massRaw': 'mass_raw',
+        'Rho': 'event_rho',
+        'METpt': 'pt',
+        'METphi': 'phi',
+        'JetPhi': 'phi',
+        'UnClusteredEnergyDeltaX': 'MetUnclustEnUpDeltaX',
+        'UnClusteredEnergyDeltaY': 'MetUnclustEnUpDeltaY',
+    }
+
+    met_factory = CorrectedMETFactory(jec_name_map)
+    met_variations = met_factory.build(events.MET, jets, {})
+    return met_variations

@@ -15,11 +15,14 @@ def add_gen_info(events):
 
     ## non-bjets gen matched with W jets decaying to quarks
     gen_qFromW = gen_match(events.GenPart, [1,2,3,4], [24])
-    events['Jet', 'isQfromW']= ak.any(gen_qFromW.metric_table(events.Jet)< 0.2,axis=1)
     events['gen_bFromH'] = gen_match(events.GenPart, [5], [25] )
 
-    if 'HH' in events.metadata['dataset']:
-        events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
+    try:
+        events['Jet', 'isQfromW']= ak.any(gen_qFromW.metric_table(events.Jet)< 0.2,axis=1)
+        if 'HH' in events.metadata['dataset']:
+            events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
+    except: 
+        events['Jet', 'isQfromW'] = ak.zeros_like(events.Jet.pt, dtype=bool)
     
     return events
 
@@ -98,9 +101,14 @@ def gen_studies(events):
     gen_W= events.GenPart[events.GenPart.isW]
     gen_b = ak.pad_none(events.gen_bFromH, 2,axis=1)
 
-    ## non-bjets gen matched with W jets decaying to quarks
-    matched_jets_pre = ak.mask(events.j_init,events.j_init.isQfromW)
-    matched_jets_pre = matched_jets_pre[ak.argsort(matched_jets_pre.pt, axis=1, ascending=False)]
+    try:
+        ## non-bjets gen matched with W jets decaying to quarks
+        matched_jets_pre = ak.mask(events.j_init,events.j_init.isQfromW)
+        matched_jets_pre = matched_jets_pre[ak.argsort(matched_jets_pre.pt, axis=1, ascending=False)]
+        events['true_ak4_1'] = matched_jets_pre[:,0]
+        events['true_ak4_2'] = matched_jets_pre[:,1]
+    except: 
+        pass #above sequence will fail for datasets that don't have jets in every event
 
     '''events['Wjets_pre_lead'] = ak.pad_none(matched_jets_pre,2,axis=1)[:,0]
     events['Wjets_pre_sublead'] = ak.pad_none(matched_jets_pre,2,axis=1)[:,1]
@@ -119,13 +127,13 @@ def gen_studies(events):
     ## check if both jets are gen matched after quark vs. gluon selection
     true_dijet_mask = (ak.count(matched_jets_post.pt,axis=1) == 2) 
     events['dijets_post_lead'] = ak.mask(matched_jets_post,true_dijet_mask)[:,0]
-    events['dijets_post_sublead'] = ak.mask(matched_jets_post,true_dijet_mask)[:,1]
+    events['dijets_post_sublead'] = ak.mask(matched_jets_post,true_dijet_mask)[:,1]'''
 
     ## met and W mass resolution
     events['met_pt_res'] = gen_nu.pt - events.MET.pt 
     events['met_pz_res'] = gen_nu.pz - events.rec_met.pz
     events['W_mass_res'] = ak.firsts(gen_W.mass[gen_W.mass < 55.0]) - events.qq_sel_mass
-    events['genW_mass'] = ak.firsts(gen_W.mass[gen_W.mass > 55.0]) '''
+    events['genW_mass'] = ak.firsts(gen_W.mass[gen_W.mass > 55.0]) 
     #####################
 
     ### study input parameters to chi square 

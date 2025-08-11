@@ -15,7 +15,9 @@ bash bbww/scripts/analysis_test.sh \
     --processor "bbww/analysis/processors/hh_bbww_processor.py" \
     --metadata "bbww/metadata/datasets_run3.yml" \
     --config "bbww/analysis/metadata/HHbbWW.yml" \
-    --datasets "data__SingleMuon" \
-    --year "2022_preEE" \
-    --output-filename "test_data.coffea" \
-    --output-subdir "analysis_test_run3" 
+    --datasets "GluGluToHHTo2B2VLNu2J TTToSemiLeptonic" \
+    --year "2022_preEE 2022_EE" \
+    --output-filename "output.coffea" \
+    --output-subdir "full_run" \
+    --no-test \
+    --no-proxy

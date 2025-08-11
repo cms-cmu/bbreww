@@ -24,6 +24,7 @@ def chi_sq(events):
                             ak.where(l_mu, 1,      # only mu: 1
                                     ak.where(l_e, 0, -1)))  # only e: 0, neither: -1
 
+
     ### TEMP: studying reconstructed MET pz resolution
     events['rec_met'] = ak.where(events.lepton_choice == 1, v_mu, v_e) #select leading lepton combination
     events['rec_W'] = ak.where(events.lepton_choice == 1, (leading_mu + v_mu).mass, (leading_e+v_e).mass)
@@ -33,15 +34,16 @@ def chi_sq(events):
     events['bb_dr'] = events.j_bcand[:,0].delta_r(events.j_bcand[:,1])
 
     #individual chi squares for hadronic W* signal selection
-    chi1_hadWs, mean1_hadWs, std1_hadWs = chi_square(events.mbb,116.02, 45.04) # H -> bb            
-    chi2_hadWs, mean2_hadWs, std2_hadWs = chi_square(mlvqq_hadWs, 150.0, 48.67) # H -> lvqq
-    chi3_hadWs, mean3_hadWs, std3_hadWs = chi_square(events.qq.mass,41.77, 14.92) #hadronic W*    
+    chi1_hadWs = chi_square(events.mbb,116.02, 45.04) # H -> bb            
+    chi2_hadWs = chi_square(mlvqq_hadWs, 161.15, 34.23) # H -> lvqq
+    chi3_hadWs = chi_square(events.qq.mass,39.13, 10.02) #hadronic W*   
+    chi4_hadWs = chi_square(events.bb_dr,1.79, 0.79) #delta R between b-jets 
 
     #total chi square
-    chi_sq_hadWs = np.sqrt(chi1_hadWs + chi2_hadWs + chi3_hadWs)
+    chi_sq_hadWs = np.sqrt(chi1_hadWs + chi2_hadWs + chi3_hadWs + chi4_hadWs)
     min_chi_sq_hadWs = ak.argmin(chi_sq_hadWs, axis=1, keepdims = True) #index of the minimum chi square non-bjet pair
     #events['mlvqq_hadWs'] = ak.firsts(mlvqq_hadWs[min_chi_sq_hadWs]) ## TEMP : comment out for now
-    events['chi_sq_hadWs'] = ak.firsts(chi_sq_hadWs[min_chi_sq_hadWs])
+    chi_sq_hadWs = chi_sq_hadWs[min_chi_sq_hadWs]
 
     #transverse mass
     mT = {
@@ -52,13 +54,14 @@ def chi_sq(events):
     events['mT_leading_lep'] = ak.where(events.lepton_choice==1, mT['msr'], mT['esr'])
 
     #individual chi squares for hadronic W signal selection
-    chi1_hadW, mean1_hadW, std1_hadW = chi_square(events.mbb,115.33, 46.29) # H -> bb
-    chi2_hadW, mean2_hadW, std2_hadW = chi_square(events.mT_leading_lep, 58.87, 37.35) #transverse mass             
-    chi3_hadW, mean3_hadW, std3_hadW = chi_square(events.bb_dr,66.89, 10.98) #hadronic W
+    chi1_hadW = chi_square(events.mbb,112.46, 46.61) # H -> bb
+    chi2_hadW = chi_square(events.mT_leading_lep, 58.87, 37.35) #transverse mass             
+    chi3_hadW = chi_square(events.qq.mass,76.84, 10.98) #hadronic W
+    chi4_hadW = chi_square(events.bb_dr,1.76, 0.81) #delta R between b-jets
 
-    chi_sq_hadW = np.sqrt(chi1_hadW + chi2_hadW + chi3_hadW)
+    chi_sq_hadW = np.sqrt(chi1_hadW + chi2_hadW + chi3_hadW + chi4_hadW)
     min_chi_sq_hadW= ak.argmin(chi_sq_hadW, axis=1, keepdims = True) #index of the minimum chi square non-bjet pair
-    events['chi_sq_hadW'] = ak.firsts(chi_sq_hadW[min_chi_sq_hadW])
+    chi_sq_hadW = chi_sq_hadW[min_chi_sq_hadW]
 
     ## ttbar reconstruction
 
@@ -91,24 +94,25 @@ def chi_sq(events):
     #final ttbar candidates
     tt = ak.pad_none(ak.where( c1 & c2, ak.where(b_sel, tt1 , tt2), ak.where(c1, tt1, tt2)),3,axis=1)
 
-    chi1_tt, mean1_tt, std1_tt = chi_square(tt.t1,194.93 , 47.59 ) #leptonic top
-    chi2_tt, mean2_tt, std2_tt = chi_square(tt.t2, 171.55, 44.95 ) #hadronic top
-    chi3_tt, mean3_tt, std3_tt = chi_square(events.qq.mass,73.9, 23.56) #hadronic W
+    chi1_tt = chi_square(tt.t1,165.55 , 35.49 ) #leptonic top
+    chi2_tt = chi_square(tt.t2, 171.55, 44.95 ) #hadronic top
+    chi3_tt = chi_square(events.qq.mass,73.9, 23.56) #hadronic W
+    chi4_tt = chi_square(events.bb_dr,2.36, 0.81) #delta R between b-jets
 
-    chi_sq_tt = np.sqrt(chi1_tt + chi2_tt + chi3_tt)
+    chi_sq_tt = np.sqrt(chi1_tt + chi2_tt + chi3_tt + chi4_tt)
     min_chi_sq_tt = ak.argmin(chi_sq_tt, axis=1, keepdims = True) #get index of the minimum chi square 
     events['chi_sq_tt'] = ak.firsts(chi_sq_tt[min_chi_sq_tt])
-    
+
     # select jets with lower chi square across two signal regions
     events['qq_sel_index'] = ak.where(
-        ak.fill_none(events.chi_sq_hadW,100) < ak.fill_none(events.chi_sq_hadWs,100) , 
-        min_chi_sq_hadW, ak.where(~ak.is_none(events.chi_sq_hadWs),min_chi_sq_hadWs, -1))
+        ak.fill_none(chi_sq_hadW,100.0) < ak.fill_none(chi_sq_hadWs,100.0) , 
+        min_chi_sq_hadW, ak.where(~ak.is_none(chi_sq_hadWs),min_chi_sq_hadWs, -1))
 
 
     events['qq_sel_mass'] = ak.where(
-        ak.fill_none(events.chi_sq_hadW,100) < ak.fill_none(events.chi_sq_hadWs,100) , 
+        ak.fill_none(chi_sq_hadW,100.0) < ak.fill_none(chi_sq_hadWs,100.0) , 
         ak.firsts(events.qq[min_chi_sq_hadW].mass), 
-        ak.where(~ak.is_none(events.chi_sq_hadWs),ak.firsts(events.qq[min_chi_sq_hadWs].mass), -1))
+        ak.where(~ak.is_none(chi_sq_hadWs),ak.firsts(events.qq[min_chi_sq_hadWs].mass), -1))
 
     events['sr_boolean'] = ak.where(events.qq_sel_mass > 55.0, 1, 
                                     ak.where(events.qq_sel_mass > 0, 0, 5))
@@ -116,8 +120,15 @@ def chi_sq(events):
     events['leading_lep'] = ak.where(events.lepton_choice == 0, 
                                      events.Electron[events.Electron.istight], 
                                      events.Muon[events.Muon.istight]) 
-    events['mlvqq_hadWs'] = mlvqq_hadWs ## TEMP:  change to plot this variable before running chi square
-    events['top_cand1'] = tt.t1
+    
+    events['e_region'] = events.Electron[(events.Electron.istight) & (events.lepton_choice ==0)]
+    events['mu_region'] = events.Muon[(events.Muon.istight) & (events.lepton_choice ==1)]
+    events['mlvqq_hadWs'] = ak.firsts(mlvqq_hadWs[min_chi_sq_hadWs]) ##( TEMP:  change to plot this variable before running chi square
+    
+    events['ak4_sel1'] = events.j_nonbcand[events.dijet_combs.j1[events.qq_sel_index]]
+    events['ak4_sel2'] = events.j_nonbcand[events.dijet_combs.j2[events.qq_sel_index]]
+    events['chi_sq_hadWs'] = ak.firsts(chi_sq_hadWs)
+    events['chi_sq_hadW'] = ak.firsts(chi_sq_hadW)
 
     return events
 

@@ -5,14 +5,12 @@
 # Source common functions
 source "bbww/scripts/common.sh"
 
-# Parse output base argument
 if [ $? -ne 0 ]; then
     exit 1
 fi
 
 # Call the main analysis_test.sh script with Run3-specific parameters
 bash bbww/scripts/analysis_test_cutflows.sh \
-    --output-base "bbww/output/" \
     --input-file "test.coffea" \
     --input-subdir "analysis_test_run3" \
     --output-filename "test_cutflow.yml" \

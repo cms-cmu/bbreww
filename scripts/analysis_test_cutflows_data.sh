@@ -11,7 +11,6 @@ fi
 
 # Call the main analysis_test.sh script with Run3-specific parameters
 bash bbww/scripts/analysis_test_cutflows.sh \
-    --output-base "bbww/output/" \
     --input-file "test_data.coffea" \
     --input-subdir "analysis_test_run3" \
     --output-filename "test_cutflow_data.yml" \

@@ -9,7 +9,7 @@ analysis_test_cutflows_run3:
   image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest
   script:
     - echo "Running cutflow test for analysis_test"
-    - source bbww/scripts/analysis_test_cutflows_run3.sh --output-base bbww/CI_output/
+    - source bbww/scripts/analysis_test_cutflows_run3.sh
   artifacts:
     paths:
       - coffea4bees_framework/python/output/analysis_test_cutflows_run3/
@@ -26,7 +26,7 @@ analysis_test_data_cutflows:
   image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest
   script:
     - echo "Running cutflow test for analysis_test"
-    - source bbww/scripts/analysis_test_cutflows_data.sh --output-base bbww/CI_output
+    - source bbww/scripts/analysis_test_cutflows_data.sh
   artifacts:
     paths:
       - coffea4bees_framework/python/output/analysis_test_cutflows_run3/

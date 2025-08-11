@@ -22,8 +22,8 @@ def fill_histograms(
         selection=selection_list,
     )
 
-    #fill += hist.add("nPVs", (101, -0.5, 100.5, ("PV.npvs", "Number of Primary Vertices")))
-    #fill += hist.add("nPVsGood", (101, -0.5, 100.5, ("PV.npvsGood", "Number of Good Primary Vertices")))
+    fill += hist.add("nPVs", (101, -0.5, 100.5, ("PV.npvs", "Number of Primary Vertices")))
+    fill += hist.add("nPVsGood", (101, -0.5, 100.5, ("PV.npvsGood", "Number of Good Primary Vertices")))
 
     ### gen studies plots ###
     #fill += hist.add("met_pt_res", (50, -100, 100, ("met_pt_res", r"MET $p_T$ [GeV]")))

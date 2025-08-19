@@ -1,12 +1,6 @@
 runner:
-<<<<<<< HEAD
   max_workers: 200 
   skipbadfiles: True
-=======
-  #chunksize: 100000
-  #maxchunks: 50
-  #test_files: 15
->>>>>>> b089641 (use skims instead of nanoAOD)
   workers: 4
   condor_memory: 4GB
   data_tier: picoAOD

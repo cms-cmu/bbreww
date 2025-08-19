@@ -106,7 +106,8 @@ class analysis(processor.ProcessorABC):
         selection.add('twoBjets', events.has_2_bjets) # require 2 b-tagged jets
         selection.add('oneBjet', events.has_1_bjet)
         selection.add('njets > 2',  ak.num(events.j_init,axis=1) > 2)
-        selection.add('isoneEorM', events.e_region | events.mu_region ) # TEMP: remove after studying cutflow sequence
+        selection.add('isoneEorM', events.e_region | events.mu_region )
+
         # veto events with jets affected by EE water leak (2022) and hole in Pixel L3/L4 (2023)  
         jet_veto_maps = (ak.all(events.Jet.jet_veto_maps,axis=1) if '202' in self.year 
                          else ak.ones_like(events.MET.pt,dtype=bool))
@@ -120,6 +121,7 @@ class analysis(processor.ProcessorABC):
             'basic_selection': selection.all(*selection_list['basic_selection']),
             'preselection': selection.all(*selection_list['preselection'])
         })
+        
         output = {}
         #study sequential cutflow
         if not shift_name:
@@ -144,7 +146,7 @@ class analysis(processor.ProcessorABC):
 
         selection.add('isoneE', events.e_region) # no. of tight electrons = 1, loose muons = 0
         selection.add('isoneM', events.mu_region) # no. of tight muons =1, loose electrons = 0
-        selection.add('isoneEorM', events.e_region | events.mu_region ) # single lepton signal region
+        selection.add('isoneEorM', events.e_region | events.mu_region ) # need to add this selection again
 
         events['channel'] = ak.zip({
             'hadronic_W': selection.all('isoneEorM') & selection.all('hadronic_W'),

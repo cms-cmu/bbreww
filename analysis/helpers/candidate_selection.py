@@ -12,14 +12,15 @@ def candidate_selection(events, params, year, is_mc):
 
     j_candidates = j_soft[ak.argsort(j_soft.pt, axis=1, ascending=False)]
     j_candidates = j_candidates[ak.argsort(getattr(j_candidates,bTag_key), axis=1, ascending=False)]#particleNetAK4_B btagPNetB
-    j_candidates = ak.mask(j_candidates,ak.num(j_candidates) >= 4) # proceed only if we have at least 4 ak4 jets
+    
     j_bcand_pool = j_candidates[j_candidates.pt > 25.0]  # Only jets > 25 GeV for b-jets
     j_bcand_pool = j_bcand_pool[getattr(j_bcand_pool,bTag_key) > btag_threshold]
 
     events['has_2_bjets'] = ak.num(j_bcand_pool, axis=1) >= 2
     events['has_1_bjet'] = ak.num(j_bcand_pool, axis=1) >= 1
 
-    # Mask the entire event if not enough b-jets
+    # Mask the entire event if not enough jets or b-jets
+    j_candidates = ak.mask(j_candidates,ak.num(j_candidates) >= 4) # proceed only if we have at least 4 ak4 jets    
     j_candidates = ak.mask(j_candidates, events.has_2_bjets)
     j_bcand_pool = ak.mask(j_bcand_pool, events.has_2_bjets)
     events['j_bcand'] = ak.pad_none(j_bcand_pool[:,:2], 2, axis=1)

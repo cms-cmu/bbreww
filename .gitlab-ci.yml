@@ -63,8 +63,8 @@ setup_workspace:
     - setup_workspace
     - voms_proxy
   before_script:
-    - cp -r proxy/ coffea4bees_framework/python/
-    - cd coffea4bees_framework/python/
+    - cp -r proxy/ coffea4bees_framework/
+    - cd coffea4bees_framework/
     - pwd && ls -la
     - ls -la bbww/
   tags:

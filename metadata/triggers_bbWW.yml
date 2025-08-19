@@ -22,5 +22,8 @@ triggers:
   2022_preEE: &triggers_2022
     - IsoMu24
     - Ele30_WPTight_Gsf
-    - Ele28_eta2p1_WPTight_Gsf_HT150
   2022_EE: *triggers_2022
+  2023_preBPix: &triggers_2023
+    - Ele30_WPTight_Gsf
+    - IsoMu24
+  2023_BPix: *triggers_2023

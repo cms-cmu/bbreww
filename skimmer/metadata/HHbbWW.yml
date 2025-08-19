@@ -2,14 +2,14 @@ runner:
   #maxchunks: 2
   #test_files: 1
   min_workers: 1
-  max_workers: 200
+  max_workers: 400
   chunksize: 100000
-  picosize: 100000
-  basketsize: 100000
+  picosize: 500000
+  basketsize: 500000
   class_name: Skimmer
   data_tier: nanoAOD
   condor_cores: 1
-  condor_memory: 4GB
+  condor_memory: 10GB
   condor_transfer_input_files:
     - src
     - analysis
@@ -20,7 +20,7 @@ runner:
   allowlist_sites:
     - T3_US_FNALLPC
     - T2_US_Nebraska
-  #  - T3_US_NotreDame
+    - T3_US_NotreDame
     - T2_US_Caltech
     - T1_US_FNAL_Disk
     - T2_US_MIT
@@ -31,8 +31,8 @@ runner:
 
 
 config:
-  base_path: root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/   ### for example in EOS
-  #base_path: /srv/bbww/output/skimmer/test/   ### local
+  base_path: root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/   ### for example in EOS
+  #base_path: /srv/python/bbww/output/skimmer/test/   ### local
   step: 100000
   skip_collections:
     - LHEPart
@@ -59,6 +59,9 @@ config:
     - Proton
     - HLTriggerFirstPath
     - PPSLocalTrack
+    - Tau
+    - Photon
+    
   skip_branches:
     - "btagWeight_.*"
     ## Remove all the triggers except the onces below

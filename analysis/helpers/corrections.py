@@ -12,37 +12,42 @@ path = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/"
 ### Electron and Muon Scale Factors
 
 # retrieve electron scale factors for id = Loose, Tight, RecoBelow20, Reco20to75, etc
-def get_ele_sf (params,year, eta, pt, id):
+def get_ele_sf (params,year, eta, pt, phi, id):
     evaluator = list(correctionlib.CorrectionSet.from_file(params[year].ele_sf.file).values())[0]
     year_label = params[year].ele_sf.tag
 
-    if 'Reco' in id:
-        eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
-        eta = ak.where((eta<2.399), ak.full_like(eta,-2.399), eta)
-        pt = ak.where((pt<10.), ak.full_like(pt,10.), pt)        
-        
-        if 'RecoBelow20' in id:
-            pt = ak.where((pt>19.99), ak.full_like(pt,19.99), pt)
-        elif 'Reco20to75'in id: 
-            pt = ak.where((pt<20), ak.full_like(pt,20), pt)
-            pt = ak.where((pt>74.99), ak.full_like(pt,74.99), pt)   
-    else:
-        pt = ak.where((pt<10.), ak.full_like(pt,10.), pt)
-        
+    pt = ak.where((pt<10.), ak.full_like(pt,10.), pt)             
+    if 'RecoBelow20' in id:
+        pt = ak.where((pt>19.99), ak.full_like(pt,19.99), pt)
+    elif 'Reco20to75'in id: 
+        pt = ak.where((pt<20), ak.full_like(pt,20), pt)
+        pt = ak.where((pt>74.99), ak.full_like(pt,74.99), pt)   
+    
     flateta, counts = ak.flatten(eta), ak.num(eta)
     flatpt = ak.flatten(pt)
+    flatphi = ak.flatten(phi)
 
-    if '202' in year: 
+    if '23' in year: 
         # retrieve the year_label from the json file itself
-        weight = evaluator.evaluate(year_label, "sf", id, flateta, flatpt) # run3
+        weight = evaluator.evaluate(year_label, "sf", id, flateta, flatpt, flatphi) # 2023 version requires phi
     else: 
-        weight = evaluator.evaluate(year_label,"sf", id, flateta, flatpt) #run2
+        weight = evaluator.evaluate(year_label,"sf", id, flateta, flatpt)
 
     return ak.unflatten(weight, counts=counts)
 
+def get_ele_trig_sf (params,year, eta, pt, id):
+    evaluator = correctionlib.CorrectionSet.from_file(params[year].ele_sf.HLT)
+    year_label = params[year].ele_sf.tag
+
+    pt = ak.where((pt<25.), ak.full_like(pt,25.), pt)             
+    flateta, counts = ak.flatten(eta), ak.num(eta)
+    flatpt = ak.flatten(pt)
+
+    weight = evaluator['Electron-HLT-SF'].evaluate(year_label,"sf", f'HLT_SF_Ele30_{id}ID', flateta, flatpt)
+    return ak.unflatten(weight, counts=counts)
 
 def get_mu_id_sf (params,year, eta, pt, id):
-    evaluator = correctionlib.CorrectionSet.from_file(params[year].mu_sf)
+    evaluator = correctionlib.CorrectionSet.from_file(params[year].mu_sf.sf)
 
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
     flateta, counts = ak.flatten(eta), ak.num(eta)
@@ -58,7 +63,7 @@ def get_mu_id_sf (params,year, eta, pt, id):
     return ak.unflatten(weight, counts=counts)
 
 def get_mu_iso_sf (params,year, eta, pt, id):
-    evaluator = correctionlib.CorrectionSet.from_file(params[year].mu_sf)
+    evaluator = correctionlib.CorrectionSet.from_file(params[year].mu_sf.sf)
 
     eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
     flateta, counts = ak.flatten(eta), ak.num(eta)
@@ -71,6 +76,19 @@ def get_mu_iso_sf (params,year, eta, pt, id):
     else: 
         suffix = 'IDandIPCut' if id == 'Tight' else 'ID'
         weight = evaluator[f'NUM_{id}RelIso_DEN_{id}{suffix}'].evaluate(flateta, flatpt, "nominal") #run2
+
+    return ak.unflatten(weight, counts=counts)
+
+def get_mu_trig_sf (params,year, eta, pt, id):
+    evaluator = correctionlib.CorrectionSet.from_file(params[year].mu_sf.HLT)
+
+    eta = ak.where((eta>2.399), ak.full_like(eta,2.399), eta)
+    flateta, counts = ak.flatten(eta), ak.num(eta)
+
+    pt  = ak.where((pt<26.),ak.full_like(pt,26.),pt)
+    flatpt = ak.flatten(pt)
+
+    weight = evaluator[f'NUM_IsoMu24_DEN_CutBasedId{id}_and_PFIso{id}'].evaluate(flateta, flatpt, "nominal")
 
     return ak.unflatten(weight, counts=counts)
 
@@ -100,48 +118,6 @@ def get_met_xy_correction(year, npv, run, pt, phi, isMC):
 
     return corrected_pt, corrected_phi
 
-def add_ele_sf(events, year):
-    e = events.Electron
-
-    events['Electron', 'reco_sf'] = ak.where(
-            (e.pt<20),
-            get_ele_sf(year, e.eta+e.deltaEtaSC, e.pt, "RecoBelow20"), 
-            get_ele_sf(year, e.eta+e.deltaEtaSC, e.pt, "Reco20to75")
-        )
-    events['Electron', 'id_sf'] = ak.where(
-            e.isloose,
-            get_ele_sf(year, e.eta+e.deltaEtaSC, e.pt, "Loose"),
-            ak.ones_like(e.pt)
-        )
-    events['Electron','id_sf'] = ak.where(
-        e.istight,
-        get_ele_sf(year, e.eta+e.deltaEtaSC, e.pt, "Tight"),
-        events.Electron.id_sf
-        )
-
-def add_mu_sf(events,year):
-    mu = events.Muon
-
-    events['Muon', 'id_sf'] = ak.where(
-        mu.isloose, 
-        get_mu_id_sf(year, abs(mu.eta), mu.pt, "Loose"), 
-        ak.ones_like(mu.pt)
-    )
-    events['Muon', 'id_sf'] = ak.where(
-        mu.istight, 
-        get_mu_id_sf(year, abs(mu.eta), mu.pt, "Tight"), 
-        events.Muon.id_sf
-    )
-    events['Muon', 'iso_sf'] = ak.where(
-        mu.isloose, 
-        get_mu_iso_sf(year, abs(mu.eta), mu.pt, "Loose"), 
-        ak.ones_like(mu.pt)
-        )
-    events['Muon', 'iso_sf'] = ak.where(
-        mu.istight, 
-        get_mu_iso_sf(year, abs(mu.eta), mu.pt, "Tight"), 
-        events.Muon.iso_sf
-        )
 #####################################################
     
 def get_ttbar_weight(pt):

@@ -3,7 +3,7 @@ import awkward as ak
 import logging
 import correctionlib
 from coffea.nanoevents.methods import vector
-from bbww.analysis.helpers.corrections import get_ele_sf, get_mu_id_sf, get_mu_iso_sf
+from bbww.analysis.helpers.corrections import get_ele_sf, get_mu_id_sf, get_mu_iso_sf, get_mu_trig_sf, get_ele_trig_sf
 
 def match(a, b, val):
     combinations = a.cross(b, nested=True)
@@ -79,68 +79,70 @@ def met_reconstr(events, e, mu):
 def get_ele_sfs(params, electron, year):
     reco_sf =  ak.where(
             (electron.pt<20),
-            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "RecoBelow20"), 
-            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "Reco20to75")
-        )
-    id_sf = ak.where(
-            electron.isloose,
-            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "Loose"),
-            ak.ones_like(electron.pt)
-        )
-    id_sf = ak.where(
-            electron.istight,
-            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "Tight"),
-            id_sf
+            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, electron.phi, "RecoBelow20"), 
+            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, electron.phi, "Reco20to75")
         )
 
-    return reco_sf, id_sf
+    id_sf = ak.where(
+            electron.istight,
+            get_ele_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, electron.phi, "Tight"),
+            ak.ones_like(electron.pt)
+        )
+    
+    trig_sf = ak.where(
+        electron.istight,
+        get_ele_trig_sf(params, year, electron.eta+electron.deltaEtaSC, electron.pt, "Tight"),
+        ak.ones_like(electron.pt)
+    )
+
+    return reco_sf, id_sf, trig_sf
 
 def get_mu_sfs(params, muon, year):
     id_sf = ak.where(
-            muon.isloose, 
-            get_mu_id_sf(params, year, abs(muon.eta), muon.pt, "Loose"), 
-            ak.ones_like(muon.pt)
-        )
-    id_sf = ak.where(
             muon.istight, 
             get_mu_id_sf(params, year, abs(muon.eta), muon.pt, "Tight"), 
-            id_sf
-        )
-    iso_sf = ak.where(
-            muon.isloose, 
-            get_mu_iso_sf(params, year, abs(muon.eta), muon.pt, "Loose"), 
             ak.ones_like(muon.pt)
         )
     iso_sf = ak.where(
         muon.istight, 
         get_mu_iso_sf(params, year, abs(muon.eta), muon.pt, "Tight"), 
-        iso_sf
+        ak.ones_like(muon.pt)
+    )
+    trig_sf = ak.where(
+        muon.istight, 
+        get_mu_trig_sf(params, year, abs(muon.eta), muon.pt, "Tight"), 
+        ak.ones_like(muon.pt)
     )
 
-    return iso_sf, id_sf 
+    return iso_sf, id_sf, trig_sf
 
 #combined electron and muon scale factors
 # 0: electron, 1: muon
-def add_lepton_sfs(params, events, electron, muon, weights, year):
-    ele_reco_sf, ele_id_sf = get_ele_sfs(params, electron, year)
-    mu_reco_sf = ak.ones_like(events.Muon.pt, dtype = float)
-    mu_iso_sf, mu_id_sf = get_mu_sfs(params, muon, year)
-    ele_iso_sf = ak.ones_like(events.Electron.pt, dtype = float)
-    leading_lep = events.lepton_choice == 0 # electron: 0, muon : 1
+def add_lepton_sfs(params, events, electron, muon, weights, year, is_mc):
+    if is_mc:
+        e_clean = electron[electron.isclean]        
+        ele_reco_sf, ele_id_sf, ele_trig_sf = get_ele_sfs(params, e_clean, year)
+        mu_reco_sf = ak.ones_like(events.Muon.pt, dtype = float)
+        mu_iso_sf, mu_id_sf, mu_trig_sf = get_mu_sfs(params, muon, year)
+        ele_iso_sf = ak.ones_like(events.Electron.pt, dtype = float)
+        
+        reco_sf = ak.where(events.e_region, # select leading lepton out of leading electrons and leading muons
+                        ak.firsts(ele_reco_sf[e_clean.istight]),# leading electrons
+                        ak.firsts(mu_reco_sf[muon.istight])) # leading muons
+        id_sf = ak.where(events.e_region, 
+                        ak.firsts(ele_id_sf[e_clean.istight]), 
+                        ak.firsts(mu_id_sf[muon.istight]))
+        iso_sf = ak.where(events.e_region, 
+                        ak.firsts(ele_iso_sf[electron.istight]),
+                        ak.firsts(mu_iso_sf[muon.istight]))
+        trig_sf = ak.where(events.e_region, 
+                        ak.firsts(ele_trig_sf[e_clean.istight]),
+                        ak.firsts(mu_trig_sf[muon.istight]))
 
-    reco_sf = ak.where(leading_lep, # select leading lepton out of leading electrons and leading muons
-                       ak.firsts(ele_reco_sf[electron.istight]),# leading electrons
-                       ak.firsts(mu_reco_sf[muon.istight])) # leading muons
-    id_sf = ak.where(leading_lep, 
-                    ak.firsts(ele_id_sf[electron.istight]), 
-                    ak.firsts(mu_id_sf[muon.istight]))
-    iso_sf = ak.where(leading_lep, 
-                      ak.firsts(ele_iso_sf[electron.istight]), 
-                      ak.firsts(mu_iso_sf[muon.istight]))
-
-    weights.add('reco_sf', reco_sf)
-    weights.add('id_sf', id_sf)
-    weights.add('iso_sf', iso_sf)
+        weights.add('reco_sf', reco_sf)
+        weights.add('id_sf', id_sf)
+        weights.add('iso_sf', iso_sf)
+        weights.add('trig_sf', trig_sf)
     return weights
 
 ### placeholder: wanna use apply_jet_veto_maps from the base framework common.py, not bbww
@@ -171,10 +173,9 @@ def apply_jet_veto_maps( corrections_metadata, jets ):
 
     return jetMask & mask_for_VetoMap
 
-def get_sequential_cutflow(selection, events, selection_list, channels=['hadronic_W', 'leptonic_W', 'null']):
+def get_sequential_cutflow(selection, events, selection_list):
     sequential_cutflow = {
         'events': {},
-        'weights': {}
     }
     cumulative_cuts = []
 
@@ -184,6 +185,5 @@ def get_sequential_cutflow(selection, events, selection_list, channels=['hadroni
         current_mask = selection.all(*cumulative_cuts)
         
         sequential_cutflow['events'][cut_name] = np.sum(current_mask)
-        sequential_cutflow['weights'][cut_name] = np.sum(events.weight[current_mask])
 
     return sequential_cutflow

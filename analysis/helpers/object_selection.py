@@ -1,12 +1,7 @@
 import numpy as np 
 import awkward as ak
-<<<<<<< HEAD
 from src.physics.objects.jet_corrections import apply_jet_veto_maps
 from bbww.analysis.helpers.ids import lepton_preselection, tau_preselection, photon_preselection, jet_preselection, HEMjet_preselection    
-=======
-from base_class.physics.objects.jet_corrections import apply_jet_veto_maps
-from bbww.analysis.helpers.ids import lepton_preselection,jet_preselection, HEMjet_preselection    
->>>>>>> a6eef8d (add trigger scale factors)
 from bbww.analysis.helpers.corrections import get_met_xy_correction
 
 ## this file contains object preselection for MET, electrons, muons, taus, photons, and jets

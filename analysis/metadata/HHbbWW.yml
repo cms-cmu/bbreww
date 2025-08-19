@@ -7,7 +7,7 @@ runner:
   condor_cores: 1
   condor_memory: 4GB
   condor_transfer_input_files:
-    - base_class
+    - src
     - analysis
     - skimmer
     - data

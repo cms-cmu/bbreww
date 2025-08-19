@@ -39,7 +39,8 @@ class analysis(processor.ProcessorABC):
         self.parameters = parameters
         corrections= OmegaConf.load(corrections_metadata)
         parameters = OmegaConf.load(self.parameters)
-        self.params = OmegaConf.merge(corrections, parameters)
+        btagWPs = OmegaConf.load("bbww/analysis/metadata/btag_WPs.yaml")
+        self.params = OmegaConf.merge(corrections, parameters, btagWPs)
 
     def process(self, events):
 
@@ -192,7 +193,7 @@ class analysis(processor.ProcessorABC):
                         'basic_selection': np.sum(events.weight[events.selection.basic_selection[events.channel.hadronic_W]]),
                         'preselection': np.sum(events.weight[events.selection.preselection[events.channel.hadronic_W]]),
                     },
-                },
+                }, 
                 'leptonic_W': {
                     'events': {
                         'basic_selection': np.sum(events.selection.basic_selection[events.channel.leptonic_W]),

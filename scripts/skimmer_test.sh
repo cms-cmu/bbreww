@@ -7,7 +7,7 @@ source "bbww/scripts/common.sh"
 usage() {
     echo "Usage: $0 [OPTIONS]"
     echo "Options:"
-    echo "  --output-base DIR         Base output directory (default: bbww/output/)"
+    echo "  --output-base DIR         Base output directory (default: output/)"
     echo "  --processor PATH          Path to processor file (default: bbww/skimmer/processors/skimmer_bbWW.py)"
     echo "  --metadata PATH           Path to metadata file (default: bbww/metadata/datasets.yml)"
     echo "  --config PATH             Path to config file (default: bbww/skimmer/metadata/HHbbWW.yml)"
@@ -38,7 +38,7 @@ display_config() {
 
 # Default values
 declare -A DEFAULTS=(
-    ["OUTPUT_BASE"]="bbww/output/"
+    ["OUTPUT_BASE"]="output/"
     ["PROCESSOR_PATH"]="bbww/skimmer/processors/skimmer_bbWW.py"
     ["METADATA_PATH"]="bbww/metadata/datasets_run3.yml"
     ["CONFIG_PATH"]="bbww/skimmer/metadata/HHbbWW.yml"
@@ -154,7 +154,7 @@ display_section_header "Changing metadata"
 if [[ $(hostname) == *fnal* ]]; then
     BASE_PATH="/srv/python/${OUTPUT_DIR}/"
 else
-    BASE_PATH="/builds/${CI_PROJECT_PATH}/coffea4bees_framework/python/output/${OUTPUT_SUBDIR}/"
+    BASE_PATH="/builds/${CI_PROJECT_PATH}/coffea4bees_framework/output/${OUTPUT_SUBDIR}/"
 fi
 
 sed -e "s#base_path.*#base_path: ${BASE_PATH}#" \

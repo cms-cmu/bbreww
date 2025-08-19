@@ -7,7 +7,7 @@ source "bbww/scripts/common.sh"
 usage() {
     echo "Usage: $0 [OPTIONS]"
     echo "Options:"
-    echo "  --output-base DIR         Base output directory (default: bbww/output/)"
+    echo "  --output-base DIR         Base output directory (default: output/)"
     echo "  --input-file FILE         Input coffea file (default: analysis_test/test.coffea)"
     echo "  --input-subdir DIR        Input subdirectory (default: analysis_test)"
     echo "  --output-filename FILE    Output cutflow filename (default: test_cutflow.yml)"
@@ -29,7 +29,7 @@ display_config() {
 
 # Default values
 declare -A DEFAULTS=(
-    ["OUTPUT_BASE"]="bbww/output/"
+    ["OUTPUT_BASE"]="output/"
     ["INPUT_SUBDIR"]="analysis_test"
     ["INPUT_FILENAME"]="test.coffea"
     ["OUTPUT_FILENAME"]="test_cutflow.yml"

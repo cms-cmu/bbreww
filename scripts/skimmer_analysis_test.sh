@@ -4,7 +4,7 @@
 source "bbww/scripts/common.sh"
 
 # Parse output base argument
-OUTPUT_BASE_DIR=$(parse_output_base_arg "bbww/output/" "$@") || exit 1
+OUTPUT_BASE_DIR=$(parse_output_base_arg "output/" "$@") || exit 1
 
 [[ $(hostname) = *runner* ]] && OUTPUT_BASE_DIR="/builds/$CI_PROJECT_PATH/coffea4bees_framework/python/output"
 

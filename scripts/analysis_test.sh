@@ -7,7 +7,7 @@ source "bbww/scripts/common.sh"
 usage() {
     echo "Usage: $0 [OPTIONS]"
     echo "Options:"
-    echo "  --output-base DIR         Base output directory (default: bbww/output/)"
+    echo "  --output-base DIR         Base output directory (default: output/)"
     echo "  --processor PATH          Path to processor file (default: bbww/analysis/processors/hh_bbww_processor.py)"
     echo "  --metadata PATH           Path to metadata file (default: bbww/metadata/datasets.yml)"
     echo "  --config PATH             Path to config file (default: bbww/analysis/metadata/HHbbWW.yml)"
@@ -46,7 +46,7 @@ display_config() {
 
 # Default values
 declare -A DEFAULTS=(
-    ["OUTPUT_BASE"]="bbww/output/"
+    ["OUTPUT_BASE"]="output/"
     ["PROCESSOR_PATH"]="bbww/analysis/processors/hh_bbww_processor.py"
     ["METADATA_PATH"]="bbww/metadata/datasets.yml"
     ["CONFIG_PATH"]="bbww/analysis/metadata/HHbbWW.yml"

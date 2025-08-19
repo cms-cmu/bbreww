@@ -1,7 +1,7 @@
 import awkward as ak
 import numpy as np
 
-def candidate_selection(events, params, year):
+def candidate_selection(events, params, year, is_mc):
     j_clean = events.Jet[events.Jet.isclean]
     j_soft = j_clean[j_clean.issoft]
     events['j_init'] = j_soft # initial preselected jets

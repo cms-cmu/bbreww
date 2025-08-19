@@ -6,7 +6,7 @@
 source "bbww/scripts/common.sh"
 
 # Parse output base argument
-OUTPUT_BASE_DIR=$(parse_output_base_arg "bbww/output/" "$@")
+OUTPUT_BASE_DIR=$(parse_output_base_arg "output/" "$@")
 if [ $? -ne 0 ]; then
     exit 1
 fi

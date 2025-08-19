@@ -1,5 +1,5 @@
-from base_class.hist import Collection, Fill
-from base_class.hist.object import Elec, Jet, LorentzVector, Muon
+from src.hist import Collection, Fill
+from src.hist.object import Elec, Jet, LorentzVector, Muon
 
 def fill_histograms(
     events, 

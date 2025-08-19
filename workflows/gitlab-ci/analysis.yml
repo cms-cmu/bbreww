@@ -8,7 +8,7 @@ analysis_test_run3:
     - source bbww/scripts/analysis_test_run3.sh --output-base output/
   artifacts:
     paths:
-      - coffea4bees_framework/python/output/analysis_test_run3/
+      - coffea4bees_framework/output/analysis_test_run3/
     expire_in: 1 day
 
 analysis_test_data_run3:
@@ -21,5 +21,5 @@ analysis_test_data_run3:
     - source bbww/scripts/analysis_test_data.sh --output-base output/
   artifacts:
     paths:
-      - coffea4bees_framework/python/output/analysis_test_run3/
+      - coffea4bees_framework/output/analysis_test_run3/
     expire_in: 1 day

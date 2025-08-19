@@ -59,7 +59,7 @@ check_file_exists() {
 
 # Function to parse --output-base argument (common pattern for wrapper scripts)
 parse_output_base_arg() {
-    local default_output_base="${1:-bbww/output/}"
+    local default_output_base="${1:-output/}"
     local output_base="$default_output_base"
     
     # Parse command line arguments

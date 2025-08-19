@@ -6,15 +6,15 @@ from omegaconf import OmegaConf
 from analysis.helpers.mc_weight_outliers import OutlierByMedian
 from bbww.analysis.helpers.object_selection import apply_bbWW_preselection
 from bbww.analysis.helpers.candidate_selection import bjet_flag
-from base_class.physics.event_selection import apply_event_selection
+from src.physics.event_selection import apply_event_selection
 from coffea.analysis_tools import PackedSelection, Weights
-from base_class.skimmer.picoaod import PicoAOD
+from src.skimmer.picoaod import PicoAOD
 
 
 class Skimmer(PicoAOD):
     def __init__(
         self, 
-        corrections_file: str = "analysis/metadata/corrections.yml",
+    corrections_file: str = "src/physics/corrections.yml",
         params_file: str = "bbww/analysis/metadata/object_preselection.yaml",
         mc_outlier_threshold:int|None=200, *args, **kwargs):
         super().__init__(*args, **kwargs)

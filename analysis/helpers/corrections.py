@@ -147,7 +147,7 @@ def add_mu_sf(events,year):
 def get_ttbar_weight(pt):
     return np.exp(0.0615 - 0.0005 * np.clip(pt, 0, 800))
 
-### might move this to base_class
+### might move this to src
 def apply_met_corrections_after_jec(events, jets):
     from coffea.jetmet_tools import CorrectedMETFactory
     jec_name_map = {

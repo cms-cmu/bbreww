@@ -10,9 +10,9 @@ from coffea.analysis_tools import Weights, PackedSelection
 
 from omegaconf import OmegaConf
 
-from base_class.physics.event_selection import apply_event_selection
-from base_class.physics.objects.jet_corrections import apply_jerc_corrections
-from base_class.physics.event_weights import add_weights
+from src.physics.event_selection import apply_event_selection
+from src.physics.objects.jet_corrections import apply_jerc_corrections
+from src.physics.event_weights import add_weights
 
 from bbww.analysis.helpers.common import update_events, add_lepton_sfs, get_sequential_cutflow
 from bbww.analysis.helpers.corrections import apply_met_corrections_after_jec
@@ -33,7 +33,7 @@ class analysis(processor.ProcessorABC):
         self,
         path: str = "bbww/analysis/data",
         parameters: str = "bbww/analysis/metadata/object_preselection_run3.yaml",
-        corrections_metadata: str = "analysis/metadata/corrections.yml",
+    corrections_metadata: str = "src/physics/corrections.yml",
     ):
         self.path = path
         self.parameters = parameters

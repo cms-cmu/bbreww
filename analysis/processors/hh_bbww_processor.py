@@ -39,8 +39,7 @@ class analysis(processor.ProcessorABC):
         self.parameters = parameters
         corrections= OmegaConf.load(corrections_metadata)
         parameters = OmegaConf.load(self.parameters)
-        btagWPs = OmegaConf.load("bbww/analysis/metadata/btag_WPs.yaml")
-        self.params = OmegaConf.merge(corrections, parameters, btagWPs)
+        self.params = OmegaConf.merge(corrections, parameters)
 
     def process(self, events):
 

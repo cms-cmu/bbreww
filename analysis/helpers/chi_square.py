@@ -11,8 +11,10 @@ def chi_sq(events):
     # hadronic W* signal reconstruction
     v_mu, v_e = met_reconstr(events, leading_e, leading_mu)
     # H -> lvqq with electrons and muons
-    mevqq = (leading_e + v_e + events.qq ).mass
-    mmuvqq = (leading_mu + v_mu + events.qq).mass
+    mevqq_nom = (leading_e + v_e + events.qq_nom ).mass
+    mmuvqq_nom = (leading_mu + v_mu + events.qq_nom).mass
+    mevqq_soft = (leading_e + v_e + events.qq_soft ).mass
+    mmuvqq_soft = (leading_mu + v_mu + events.qq_soft).mass
     l_mu = ~ak.is_none(leading_mu.pt)
     l_e = ~ak.is_none(leading_e.pt)
     muge = leading_mu.pt > leading_e.pt
@@ -23,23 +25,35 @@ def chi_sq(events):
                             ak.where(l_mu, 1,      # only mu: 1
                                     ak.where(l_e, 0, -1)))  # only e: 0, neither: -1
 
-    mlvqq_hadWs = ak.where(l_mu & l_e,
-                        ak.where(muge, mmuvqq, mevqq),  # both present: select muon calculation if mu>e else electron
-                        ak.where(l_mu, mmuvqq, mevqq))     # only muon present
-    events['mlvqq_hadWs'] = ak.fill_none(mlvqq_hadWs,np.nan)
+    mlvqq_hadWs_nom = ak.where(l_mu & l_e,
+                        ak.where(muge, mmuvqq_nom, mevqq_nom),  # both present: select muon calculation if mu>e else electron
+                        ak.where(l_mu, mmuvqq_nom, mevqq_nom))     # only muon present
+    mlvqq_hadWs_soft = ak.where(l_mu & l_e,
+                        ak.where(muge, mmuvqq_soft, mevqq_soft),  # both present: select muon calculation if mu>e else electron
+                        ak.where(l_mu, mmuvqq_soft, mevqq_soft))     # only muon present
+    events['mlvqq_hadWs'] = ak.fill_none(mlvqq_hadWs_nom,np.nan)
 
     events['bb_dr'] = events.j_bcand[:,0].delta_r(events.j_bcand[:,1])
 
     #individual chi squares for hadronic W* signal selection
     chi1_hadWs = chi_square(events.mbb,116.02, 45.04) # H -> bb            
-    chi2_hadWs = chi_square(mlvqq_hadWs, 161.15, 34.23) # H -> lvqq
-    chi3_hadWs = chi_square(events.qq.mass,39.13, 10.02) #hadronic W*   
+    chi2_hadWs_nom = chi_square(mlvqq_hadWs_nom, 161.15, 34.23) # H -> lvqq in nominal region
+    chi2_hadWs_soft = chi_square(mlvqq_hadWs_soft, 161.15, 34.23) # H -> lvqq in low pt region
+    chi3_hadWs_nom = chi_square(events.qq_nom.mass,39.13, 10.02) #hadronic W* in nominal region
+    chi3_hadWs_soft = chi_square(events.qq_soft.mass,39.13, 10.02) #hadronic W* in low pt region
     chi4_hadWs = chi_square(events.bb_dr,1.79, 0.79) #delta R between b-jets 
     
     #total chi square
-    chi_sq_hadWs = np.sqrt(chi1_hadWs + chi2_hadWs + chi3_hadWs + chi4_hadWs)
-    min_chi_sq_hadWs = ak.argmin(chi_sq_hadWs, axis=1, keepdims = True) #index of the minimum chi square non-bjet pair
-    chi_sq_hadWs = chi_sq_hadWs[min_chi_sq_hadWs]
+    chi_sq_hadWs_nom_4j = np.sqrt(chi1_hadWs + chi2_hadWs_nom + chi3_hadWs_nom + chi4_hadWs) # 4 jet region chi square
+    chi_sq_hadWs_nom_3j = np.sqrt(chi1_hadWs + chi4_hadWs) # can't use di-jet variables for 3 jet region
+    chi_sq_hadWs_soft = np.sqrt(chi1_hadWs + chi2_hadWs_soft + chi3_hadWs_soft + chi4_hadWs)
+    min_chi_sq_hadWs_soft = ak.argmin(chi_sq_hadWs_soft, axis=1, keepdims = True) #index of the minimum chi square non-bjet pairs
+    
+    #combined chi square based on selection region
+    chi_sq_hadWs = ak.where(events.selection.lowpt_4j2b, chi_sq_hadWs_soft[min_chi_sq_hadWs_soft], 
+                            ak.where(events.selection.nominal_4j2b, ak.singletons(chi_sq_hadWs_nom_4j), 
+                            ak.singletons(chi_sq_hadWs_nom_3j)))
+
     #transverse mass
     mT = {
         'esr'  : np.sqrt(2*leading_e.pt*met.pt*(1-np.cos(met.delta_phi(leading_e)))),
@@ -53,22 +67,27 @@ def chi_sq(events):
     #individual chi squares for hadronic W signal selection
     chi1_hadW = chi_square(events.mbb,112.46, 46.61) # H -> bb
     chi2_hadW = chi_square(events.mT_leading_lep, 58.87, 37.35) #transverse mass             
-    chi3_hadW = chi_square(events.qq.mass,76.84, 10.98) #hadronic W
+    chi3_hadW_nom = chi_square(events.qq_nom.mass,76.84, 10.98) #hadronic W
+    chi3_hadW_soft = chi_square(events.qq_soft.mass,76.84, 10.98) #hadronic W
     chi4_hadW = chi_square(events.bb_dr,1.76, 0.81) #delta R between b-jets
 
-    chi_sq_hadW = np.sqrt(chi1_hadW + chi2_hadW + chi3_hadW + chi4_hadW)
-    min_chi_sq_hadW= ak.argmin(chi_sq_hadW, axis=1, keepdims = True) #index of the minimum chi square non-bjet pair
-    chi_sq_hadW = chi_sq_hadW[min_chi_sq_hadW]
-
+    chi_sq_hadW_nom_4j = np.sqrt(chi1_hadW + chi2_hadW + chi3_hadW_nom + chi4_hadW)
+    chi_sq_hadW_nom_3j = np.sqrt(chi1_hadW + chi2_hadW + chi4_hadW) # don't use dijet variables for 3j region
+    chi_sq_hadW_soft = np.sqrt(chi1_hadW + chi2_hadW + chi3_hadW_soft + chi4_hadW)
+    min_chi_sq_hadW_soft= ak.argmin(chi_sq_hadW_soft, axis=1, keepdims = True) #index of the minimum chi square non-bjet pair
+    chi_sq_hadW =  ak.where(events.selection.lowpt_4j2b, chi_sq_hadW_soft[min_chi_sq_hadW_soft], 
+                            ak.where(events.selection.nominal_4j2b, ak.singletons(chi_sq_hadW_nom_4j), 
+                            ak.singletons(chi_sq_hadW_nom_3j)))
+    
     ## ttbar reconstruction
 
     #leptonic top with electrons
-    mevb1 = (leading_e + v_e + ak.pad_none(events.j_bcand,2,axis=1)[:,0]).mass
-    mevb2 = (leading_e + v_e + ak.pad_none(events.j_bcand,2,axis=1)[:,1]).mass
+    mevb1 = (leading_e + v_e + events.j_bcand[:,0]).mass
+    mevb2 = (leading_e + v_e + events.j_bcand[:,1]).mass
 
     #leptonic top with muons
-    mmvb1 = (leading_mu + v_mu + ak.pad_none(events.j_bcand,2,axis=1)[:,0]).mass
-    mmvb2 = (leading_mu + v_mu + ak.pad_none(events.j_bcand,2,axis=1)[:,1]).mass
+    mmvb1 = (leading_mu + v_mu + events.j_bcand[:,0]).mass
+    mmvb2 = (leading_mu + v_mu + events.j_bcand[:,1]).mass
 
     mlvb1 = ak.where(l_mu & l_e,
                 ak.where(muge, mmvb1, mevb1), 
@@ -77,51 +96,62 @@ def chi_sq(events):
                 ak.where(muge, mmvb2, mevb2), 
                 ak.where(l_mu, mmvb2, mevb2)) #leptonic candidate 2  
 
-    mbqq1 = ak.pad_none((ak.pad_none(events.j_bcand,2,axis=1)[:,0] + events.qq).mass,3,axis=1) #hadronic candidate 1
-    mbqq2 = ak.pad_none((ak.pad_none(events.j_bcand,2,axis=1)[:,1] + events.qq).mass,3,axis=1) #hadronic candidate 2
-
+    mbqq1_soft = ak.pad_none((events.j_bcand[:,0] + events.qq_soft).mass,3,axis=1) #hadronic candidate 1
+    mbqq2_soft = ak.pad_none((events.j_bcand[:,1] + events.qq_soft).mass,3,axis=1) #hadronic candidate 2
+    mbqq1_nom = ak.singletons((events.j_bcand[:,0] + events.qq_nom).mass) #hadronic candidate 1
+    mbqq2_nom = ak.singletons((events.j_bcand[:,1] + events.qq_nom).mass) #hadronic candidate 2
     def distance(x1,y1,x2,y2):
         return np.sqrt((x2-x1)**2+(y2-y1)**2)
 
     #ttbar candidates
-    tt1 = ak.cartesian({"t1":mlvb1,"t2":mbqq2},axis=1)
-    tt2 = ak.cartesian({"t1":mlvb2,"t2":mbqq1},axis=1)
-    b_sel = abs(distance(tt1.t1,tt1.t2,172.5,172.5)) <  abs(distance(tt2.t1,tt2.t2,172.5,172.5)) #pick pair closest to ttbar mass
+    tt1_soft = ak.cartesian({"t1":mlvb1,"t2":mbqq2_soft},axis=1)
+    tt2_soft = ak.cartesian({"t1":mlvb2,"t2":mbqq1_soft},axis=1)
+    tt1_nom = ak.cartesian({"t1":mlvb1,"t2":mbqq2_nom},axis=1)
+    tt2_nom = ak.cartesian({"t1":mlvb2,"t2":mbqq1_nom},axis=1)
+    b_sel_soft = abs(distance(tt1_soft.t1,tt1_soft.t2,172.5,172.5))< abs(distance(tt2_soft.t1,tt2_soft.t2,172.5,172.5)) #pick pair closest to ttbar mass
+    b_sel_nom =  abs(distance(tt1_nom.t1,tt1_nom.t2,172.5,172.5)) < abs(distance(tt2_nom.t1,tt2_nom.t2,172.5,172.5)) #pick pair closest to ttbar mass
 
     #conditions to work around None values
-    c1 = ~ak.is_none(distance(tt1.t1, tt1.t2,172.5,172.5))
-    c2 = ~ak.is_none(distance(tt2.t1, tt2.t2,172.5,172.5))
+    c1_soft = ~ak.is_none(distance(tt1_soft.t1, tt1_soft.t2,172.5,172.5))
+    c2_soft = ~ak.is_none(distance(tt2_soft.t1, tt2_soft.t2,172.5,172.5))
+    c1_nom = ~ak.is_none(distance(tt1_nom.t1, tt1_nom.t2,172.5,172.5))
+    c2_nom = ~ak.is_none(distance(tt2_nom.t1, tt2_nom.t2,172.5,172.5))
 
     #final ttbar candidates
-    tt = ak.pad_none(ak.where( c1 & c2, ak.where(b_sel, tt1 , tt2), ak.where(c1, tt1, tt2)),3,axis=1)
+    tt_soft = ak.pad_none(ak.where( c1_soft & c2_soft, ak.where(b_sel_soft, tt1_soft , tt2_soft), 
+                              ak.where(c1_soft, tt1_soft, tt2_soft)),3,axis=1)
+    tt_nom = ak.pad_none(ak.where( c1_nom & c2_nom, ak.where(b_sel_nom, tt1_nom , tt2_nom), 
+                            ak.where(c1_nom, tt1_nom, tt2_nom)),3,axis=1)
 
-    chi1_tt = chi_square(tt.t1,165.55 , 35.49 ) #leptonic top
-    chi2_tt = chi_square(tt.t2, 171.55, 44.95 ) #hadronic top
-    chi3_tt = chi_square(events.qq.mass,73.9, 23.56) #hadronic W
+    chi1_tt_soft = chi_square(tt_soft.t1,165.55 , 35.49 ) #leptonic top
+    chi2_tt_soft = chi_square(tt_soft.t2, 171.55, 44.95 ) #hadronic top
+    chi1_tt_nom =  chi_square(tt_nom.t1,165.55 , 35.49 ) #leptonic top
+    chi2_tt_nom =  chi_square(tt_nom.t2, 171.55, 44.95 ) #hadronic top
+    chi3_tt_soft = chi_square(events.qq_soft.mass,73.9, 23.56) #hadronic W
+    chi3_tt_nom = chi_square(events.qq_nom.mass,73.9, 23.56) #hadronic W
     chi4_tt = chi_square(events.bb_dr,2.36, 0.81) #delta R between b-jets
 
-    chi_sq_tt = np.sqrt(chi1_tt + chi2_tt + chi3_tt + chi4_tt)
-    min_chi_sq_tt = ak.argmin(chi_sq_tt, axis=1, keepdims = True) #get index of the minimum chi square 
-    events['chi_sq_tt'] = ak.firsts(chi_sq_tt[min_chi_sq_tt])
+    chi_sq_tt_soft = np.sqrt(chi1_tt_soft + chi2_tt_soft + chi3_tt_soft + chi4_tt)
+    chi_sq_tt_nom_4j =  np.sqrt(chi1_tt_nom + chi2_tt_nom + chi3_tt_nom + chi4_tt)
+    min_chi_sq_tt_soft = ak.argmin(chi_sq_tt_soft, axis=1, keepdims = True) #get index of the minimum chi square 
+    events['chi_sq_tt'] = ak.firsts(ak.where(events.selection.lowpt_4j2b, chi_sq_tt_soft[min_chi_sq_tt_soft], chi_sq_tt_nom_4j))
 
     # select jets with lower chi square across two signal regions
-    events['qq_sel_index'] = ak.where(
-        ak.fill_none(chi_sq_hadW,100.0) < ak.fill_none(chi_sq_hadWs,100.0) , 
-        min_chi_sq_hadW, ak.where(~ak.is_none(chi_sq_hadWs),min_chi_sq_hadWs, -1))
+    qq_sel_index = ak.where(chi_sq_hadW_soft[min_chi_sq_hadW_soft] < chi_sq_hadWs_soft[min_chi_sq_hadWs_soft], 
+        min_chi_sq_hadW_soft, min_chi_sq_hadWs_soft)
+    qq_sel_index = qq_sel_index[~ak.is_none(qq_sel_index)]
 
     events['qq_sel_mass'] = ak.where(
-        ak.fill_none(chi_sq_hadW,100.0) < ak.fill_none(chi_sq_hadWs,100.0) , 
-        ak.firsts(events.qq[min_chi_sq_hadW].mass), 
-        ak.where(~ak.is_none(chi_sq_hadWs),ak.firsts(events.qq[min_chi_sq_hadWs].mass), -1))
-    
-    events['sr_boolean'] = ak.where(events.qq_sel_mass > 55.0, 1, 
+        chi_sq_hadW_soft < chi_sq_hadWs_soft , 
+        ak.firsts(events.qq_soft[min_chi_sq_hadW_soft].mass), 
+        ak.firsts(events.qq_soft[min_chi_sq_hadWs_soft].mass))
+
+    events['sr_boolean'] = ak.where(events.qq_sel_mass > 55.0, 1,
                                     ak.where(events.qq_sel_mass > 0, 0, 5))
     
-    events['ak4_sel1'] = events.j_nonbcand[events.dijet_combs.j1[events.qq_sel_index]]
-    events['ak4_sel2'] = events.j_nonbcand[events.dijet_combs.j2[events.qq_sel_index]]
-
     events['leading_e'] =  ak.fill_none(e_clean[e_clean.istight], np.nan)
     events['leading_mu'] = ak.fill_none(events.Muon[events.Muon.istight],np.nan)
+
     events['chi_sq_hadWs'] = ak.firsts(chi_sq_hadWs)
     events['chi_sq_hadW'] = ak.firsts(chi_sq_hadW)
 
@@ -129,6 +159,11 @@ def chi_sq(events):
 
 # apply chi square cuts
 def chi_sq_cut(events):
-    events['passChiSqHadW'] = ak.fill_none(ak.where(events.chi_sq_hadW < 2, True, False ),False) 
-    events['passChiSqLepW'] = ak.fill_none(ak.where(events.chi_sq_hadWs < 1.6, True, False ),False) 
+    #apply cuts on chi square calculation in leptonic W region and 4 jets hadronic W region
+    events['passChiSqTT'] = ak.firsts(ak.where(events.sr_boolean == 1 & ~(events.selection.nominal_3j2b), 
+                                                ak.where((events.chi_sq_tt > 1.0), True, False), #hadronic W region cut
+                                                True))
+    events['passChiSqLepW'] = ak.firsts(ak.where(events.sr_boolean == 0,
+                                                ak.where((events.chi_sq_hadWs < 2.0), True, False), #leptonic W region cut
+                                                True))
     return events

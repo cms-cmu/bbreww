@@ -102,6 +102,7 @@ class analysis(processor.ProcessorABC):
         selection.add('njets',  ak.num(events.j_init[events.j_init.preselected],axis=1)>3) # at least 4 ak4 jets
         selection.add('oneBjet', events.has_1_bjet)
         selection.add('isoneEorM', events.e_region | events.mu_region )
+        selection.add('tau_veto', (events.tau_nmedium==0))
         selection.add('nom_njets4',  ak.num(events.j_init[events.j_init.isnominal],axis=1)>3) # nominal pT region
         selection.add('nom_njets3',  ak.num(events.j_init[events.j_init.isnominal],axis=1)==3) # exact 3 jets region
         selection.add('lowpt_njets4', ~selection.all('nom_njets4') & (ak.num(events.j_init[events.j_init.preselected],axis=1)>3) )
@@ -112,7 +113,7 @@ class analysis(processor.ProcessorABC):
 
         selection_list = {
             'basic_selection': ['lumimask', 'passNoiseFilter', 'trigger'],
-            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'isoneEorM', 'twoBjets'],
+            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'isoneEorM', 'tau_veto','twoBjets'],
         }
         events['selection'] = ak.zip({
             'preselection': selection.all(*selection_list['preselection']),
@@ -139,7 +140,8 @@ class analysis(processor.ProcessorABC):
         #study sequential cutflow (get weights and events after each cut)
         output = {}
         if not shift_name:
-            full_sel_list = ['lumimask', 'passNoiseFilter', 'trigger', 'oneBjet', 'twoBjets', 'isoneEorM','jet_veto_mask']
+            # list below contains individual selections that we might wanna study
+            full_sel_list = ['lumimask', 'passNoiseFilter', 'trigger', 'oneBjet', 'twoBjets', 'isoneEorM', 'tau_veto','jet_veto_mask']
             output['sequential_cutflow'] = {}
             output['sequential_cutflow'][events.metadata['dataset']] = get_sequential_cutflow(
                 selection,
@@ -167,7 +169,7 @@ class analysis(processor.ProcessorABC):
          
         selection.add('isoneE', events.e_region) # no. of tight electrons = 1, loose muons = 0
         selection.add('isoneM', events.mu_region) # no. of tight muons =1, loose electrons = 0     
-        
+
         events['channel'] = ak.zip({
             'hadronic_W': selection.all('hadronic_W'),
             'leptonic_W': selection.all('leptonic_W')

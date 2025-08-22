@@ -14,7 +14,7 @@ from src.physics.event_selection import apply_event_selection
 from src.physics.objects.jet_corrections import apply_jerc_corrections
 from src.physics.event_weights import add_weights
 
-from bbww.analysis.helpers.common import update_events, add_lepton_sfs, get_sequential_cutflow
+from bbww.analysis.helpers.common import update_events, add_lepton_sfs, get_sequential_cutflow, add_output_cutflow
 from bbww.analysis.helpers.corrections import apply_met_corrections_after_jec
 from bbww.analysis.helpers.object_selection import apply_bbWW_preselection
 from bbww.analysis.helpers.candidate_selection import candidate_selection
@@ -64,8 +64,7 @@ class analysis(processor.ProcessorABC):
         )
         met = apply_met_corrections_after_jec(events, jets)
 
-        shifts = [({"Jet": jets, "MET":met}, None)]
-
+        shifts = [({"Jet": jets, "MET":met}, None)] 
         
         '''if systematics:
             shifts.extend([
@@ -99,12 +98,13 @@ class analysis(processor.ProcessorABC):
         selection.add( "lumimask", events.lumimask) # apply lumimask on data
         selection.add( "passNoiseFilter", events.passNoiseFilter) # apply various noise filters
         selection.add("trigger", events.passHLT) # apply trigger selection
-        selection.add('njets',  ak.num(events.j_init,axis=1) > 3) # require at least 4 cleaned ak4 jets
         selection.add('twoBjets', events.has_2_bjets) # require 2 b-tagged jets
+        selection.add('njets',  ak.num(events.j_init[events.j_init.preselected],axis=1)>3) # at least 4 ak4 jets
         selection.add('oneBjet', events.has_1_bjet)
-        selection.add('njets > 2',  ak.num(events.j_init,axis=1) > 2)
         selection.add('isoneEorM', events.e_region | events.mu_region )
-
+        selection.add('nom_njets4',  ak.num(events.j_init[events.j_init.isnominal],axis=1)>3) # nominal pT region
+        selection.add('nom_njets3',  ak.num(events.j_init[events.j_init.isnominal],axis=1)==3) # exact 3 jets region
+        selection.add('lowpt_njets4', ~selection.all('nom_njets4') & (ak.num(events.j_init[events.j_init.preselected],axis=1)>3) )
         # veto events with jets affected by EE water leak (2022) and hole in Pixel L3/L4 (2023)  
         jet_veto_maps = (ak.all(events.Jet.jet_veto_maps,axis=1) if '202' in self.year 
                          else ak.ones_like(events.MET.pt,dtype=bool))
@@ -112,49 +112,16 @@ class analysis(processor.ProcessorABC):
 
         selection_list = {
             'basic_selection': ['lumimask', 'passNoiseFilter', 'trigger'],
-            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets', 'jet_veto_mask', 'twoBjets'],
+            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'isoneEorM', 'twoBjets'],
         }
         events['selection'] = ak.zip({
-            'basic_selection': selection.all(*selection_list['basic_selection']),
-            'preselection': selection.all(*selection_list['preselection'])
+            'preselection': selection.all(*selection_list['preselection']),
+            'nominal_4j2b': selection.all('nom_njets4'),
+            'nominal_3j2b': selection.all('nom_njets3'),
+            'lowpt_4j2b' :  selection.all('lowpt_njets4')
         })
-        
-        output = {}
-        #study sequential cutflow
-        if not shift_name:
-            full_sel_list = ['lumimask', 'passNoiseFilter', 'trigger', 'oneBjet', 'twoBjets', 'isoneEorM','njets > 2', 'njets','jet_veto_mask']
-            output['sequential_cutflow'] = {}
-            output['sequential_cutflow'][events.metadata['dataset']] = get_sequential_cutflow(
-                selection,
-                events,
-                full_sel_list
-            )
 
-        events = events[events.selection.preselection]
-        events = chi_sq(events) # chi square selection and calculation
-        ##events = chi_sq_cut(events) # (DON'T APPLY ANY CHI SQUARE CUTS FOR NOW) 
-
-        #add regions separated by chi square calculation
-        selection = PackedSelection(dtype="uint64") # reset selection to match sliced events shapes
-        selection.add('preselection', events.selection.preselection ) # apply preselection again
-        selection.add('leptonic_W',  ak.firsts(events.sr_boolean) == 0)
-        selection.add('hadronic_W',  ak.firsts(events.sr_boolean) == 1)
-        selection.add('null_region', ak.firsts(events.sr_boolean)==5) # sanity check: this region should have no events
-
-        selection.add('isoneE', events.e_region) # no. of tight electrons = 1, loose muons = 0
-        selection.add('isoneM', events.mu_region) # no. of tight muons =1, loose electrons = 0
-        selection.add('isoneEorM', events.e_region | events.mu_region ) # need to add this selection again
-
-        events['channel'] = ak.zip({
-            'hadronic_W': selection.all('isoneEorM') & selection.all('hadronic_W'),
-            'leptonic_W': selection.all('isoneEorM') & selection.all('leptonic_W'),
-            'null' : selection.all('isoneEorM') & selection.all('null_region')
-        }) 
-        events['region'] = ak.zip({
-            'e_region':  selection.all('isoneE'),
-            'mu_region': selection.all('isoneM')
-        }) # separate electron and muon regions
-
+        ## add weights
         weights, list_weight_names = add_weights(
             events,
             do_MC_weights=self.is_mc,
@@ -165,11 +132,52 @@ class analysis(processor.ProcessorABC):
             apply_trigWeight=False,
             isTTForMixed=False
         )
+        weights = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, self.year, self.is_mc)
+        events['weight'] = weights.weight() 
+        ##
+
+        #study sequential cutflow (get weights and events after each cut)
+        output = {}
+        if not shift_name:
+            full_sel_list = ['lumimask', 'passNoiseFilter', 'trigger', 'oneBjet', 'twoBjets', 'isoneEorM','jet_veto_mask']
+            output['sequential_cutflow'] = {}
+            output['sequential_cutflow'][events.metadata['dataset']] = get_sequential_cutflow(
+                selection,
+                events,
+                full_sel_list
+            )
+
+        events = events[events.selection.preselection]
+        events = chi_sq(events) # chi square selection and calculation
+        events = chi_sq_cut(events)
+
+        #add regions separated by chi square calculation
+        selection = PackedSelection(dtype="uint64") # reset selection to match sliced events shapes
+        selection.add('leptonic_W',  ak.firsts(events.sr_boolean) == 0)
+        selection.add('hadronic_W',  ak.firsts(events.sr_boolean) == 1)
+        selection.add('chi_sq', events.passChiSqTT & events.passChiSqLepW) # chi square cuts
+
+        # add chi square cuts selection in each analysis region
+        events['selection'] = ak.with_field(events['selection'], 
+                                        events.selection.nominal_4j2b & selection.all('chi_sq'), 'chi_sq_nom_4j2b')
+        events['selection'] = ak.with_field(events['selection'], 
+                                        events.selection.nominal_3j2b & selection.all('chi_sq'), 'chi_sq_nom_3j2b')
+        events['selection'] = ak.with_field(events['selection'], 
+                                        events.selection.lowpt_4j2b & selection.all('chi_sq'), 'chi_sq_lowpt_4j2b')
+         
+        selection.add('isoneE', events.e_region) # no. of tight electrons = 1, loose muons = 0
+        selection.add('isoneM', events.mu_region) # no. of tight muons =1, loose electrons = 0     
+        
+        events['channel'] = ak.zip({
+            'hadronic_W': selection.all('hadronic_W'),
+            'leptonic_W': selection.all('leptonic_W')
+        }) 
+        events['region'] = ak.zip({
+            'e_region':  selection.all('isoneE'),
+            'mu_region': selection.all('isoneM')
+        }) # separate electron and muon regions
 
         events = gen_studies(events, self.is_mc) # gen particle studies for MC
-        weights = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, self.year, self.is_mc)
-
-        events['weight'] = weights.weight() 
 
         if not shift_name:
             output['events_processed'] = {}
@@ -177,48 +185,17 @@ class analysis(processor.ProcessorABC):
                 'n_events' : self.n_events,
                 'sum_genweights': np.sum(events.genWeight) if self.is_mc else self.n_events,
             }
-            
-            output['cutflow'] = {}
-            output['cutflow'][events.metadata['dataset']] = {
-                'hadronic_W': {
-                    'events': {
-                        'basic_selection': np.sum(events.selection.basic_selection[events.channel.hadronic_W]),
-                        'preselection': np.sum(events.selection.preselection[events.channel.hadronic_W]),
-                    },
-                    'weights': {
-                        'basic_selection': np.sum(events.weight[events.selection.basic_selection[events.channel.hadronic_W]]),
-                        'preselection': np.sum(events.weight[events.selection.preselection[events.channel.hadronic_W]]),
-                    },
-                }, 
-                'leptonic_W': {
-                    'events': {
-                        'basic_selection': np.sum(events.selection.basic_selection[events.channel.leptonic_W]),
-                        'preselection': np.sum(events.selection.preselection[events.channel.leptonic_W]),
-                    },
-                    'weights': {
-                        'basic_selection': np.sum(events.weight[events.selection.basic_selection[events.channel.leptonic_W]]),
-                        'preselection': np.sum(events.weight[events.selection.preselection[events.channel.leptonic_W]]),
-                    },
-                },
-                'null': {
-                    'events': {
-                        'basic_selection': np.sum(events.selection.basic_selection[events.channel.null]),
-                        'preselection': np.sum(events.selection.preselection[events.channel.null]),
-                    },
-                    'weights': {
-                        'basic_selection': np.sum(events.weight[events.selection.basic_selection[events.channel.null]]),
-                        'preselection': np.sum(events.weight[events.selection.preselection[events.channel.null]]),
-                    },
-                }
-            }
+            output['cutflow_weights'] = {}
+            output = add_output_cutflow(events, output)
 
         hists = fill_histograms(
             events,
             processName=self.processName,
             year=self.year_label,
             is_mc=self.is_mc,
-            selection_list=['basic_selection', 'preselection'],
-            channel_list=['hadronic_W', 'leptonic_W', 'null'],
+            selection_list=['preselection','chi_sq_nom_4j2b','chi_sq_nom_3j2b',
+                            'chi_sq_lowpt_4j2b','nominal_4j2b','nominal_3j2b','lowpt_4j2b'],
+            channel_list=['hadronic_W', 'leptonic_W'],
             region_list = ['e_region', 'mu_region']
         )
 

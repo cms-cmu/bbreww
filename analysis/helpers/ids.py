@@ -12,8 +12,8 @@ def lepton_preselection(events, lepton_flavour, params, id):
 
     leptons = events[lepton_flavour]
     cuts = params.object_preselection[lepton_flavour][id]
-    # Requirements on pT
-    passes_pt = leptons.pt > cuts["pt"]
+    passes_pt = leptons.pt > cuts.pt
+    passes_eta = abs(leptons.eta) < cuts.eta
 
     if lepton_flavour == "Electron":
         # Requirements on SuperCluster eta, dxy, dz for barrel and endcap regions
@@ -32,18 +32,17 @@ def lepton_preselection(events, lepton_flavour, params, id):
 
         passes_iso = True
         if "iso" in cuts.keys():
-            passes_iso = leptons.pfRelIso03_all < cuts["iso"]
+            passes_iso = leptons.pfRelIso03_all < cuts.iso
         if id == "loose":
-            passes_cutbased = leptons.cutBased >= cuts["cutBased"]
+            passes_cutbased = leptons.cutBased >= cuts.cutBased
         elif id == "tight":
-            passes_cutbased = leptons.cutBased == cuts["cutBased"]
-        good_leptons = passes_pt & passes_SC & passes_cutbased
+            passes_cutbased = leptons.cutBased == cuts.cutBased
+        good_leptons = passes_pt & passes_eta & passes_SC & passes_cutbased
 
     elif lepton_flavour == "Muon":
         # Requirements on isolation and id
-        passes_eta = abs(leptons.eta) < cuts["eta"]
-        passes_iso = leptons.pfRelIso04_all < cuts["iso"]
-        passes_id = leptons[cuts['id']] == True
+        passes_iso = leptons.pfRelIso04_all < cuts.iso
+        passes_id = leptons[cuts.id] == True
         
         good_leptons = passes_pt & passes_eta & passes_iso & passes_id
     
@@ -74,43 +73,41 @@ def lepton_preselection(events, lepton_flavour, params, id):
 ######
 
 
-def jet_preselection(events, params, year):
+def jet_preselection(events, params, mode):
 
-    jets = events["Jet"]
-    cuts = params.object_preselection["Jet"]
-
-    # pileup ID is only needed for run 2 (CHS jets)
-    if '201' in year:
-        ## custom low pT pileup Id (only valid for pT < 30 GeV)
-        def puId_cut_low_pt(jet_pt):
-            puId = (0.85-0.7)*(jet_pt-30)/(30-8) + 0.85
-            return puId
-        
-        puId_value = 4
-        if '2016' in year:
-            puId_value =1
-
-        passes_puId  = ak.where(
-            jets.pt > 30,
-            (jets.pt >= 50) | ((jets.puId & puId_value) == puId_value),
-            (jets.puIdDisc > puId_cut_low_pt(jets.pt)) # soft jets: pT < 30 GeV
-            )
-    else:
-        passes_puId = True
+    jets = events.Jet
+    nominal_cuts = params.object_preselection.Jet.nominal
+    soft_cuts = params.object_preselection.Jet.soft
     
-    passes_pt = jets.pt > cuts["pt"]
-    passes_eta = abs(jets.eta) < cuts["eta"]
+    nominal_pt = jets.pt > nominal_cuts.pt
+    soft_pt = (nominal_cuts.pt > jets.pt) & (jets.pt > soft_cuts.pt)
+    presel_pt = jets.pt > soft_cuts.pt
+    passes_eta = abs(jets.eta) < soft_cuts.pt
+    passes_jetId  = (jets.jetId & soft_cuts.jetId) == 2
 
-    good_jets = passes_eta & passes_pt & passes_puId
+    nominal_jets = passes_eta & nominal_pt & passes_jetId
+    soft_jets = passes_eta & soft_pt & passes_jetId
+    preselected_jets = passes_eta & presel_pt & passes_jetId
 
-    return good_jets
+    return nominal_jets, soft_jets, preselected_jets
 
-def HEMjet_preselection(events):
-    jets = events["Jet"]
-    passes_pt = jets.pt > 30
-    passes_eta = (jets.eta > -3.0) & (jets.eta < -1.3) 
-    passes_phi = (jets.phi > -1.57) & (jets.phi < -0.87)
 
-    good_jets = passes_pt & passes_eta & passes_phi
+def tau_preselection(events, params, id):
 
-    return good_jets
+    taus = events.Tau
+    cuts = params.object_preselection.Tau[id]
+
+    try:
+        passes_decayModeDMs=taus.decayModeFindingNewDMs
+    except:
+        passes_decayModeDMs=~np.isnan(ak.ones_like(taus.pt))
+
+    passes_pt = taus.pt > cuts.pt
+    passes_eta = abs(taus.eta) < cuts.eta
+    passes_dz = abs(taus.dz) < cuts.dz
+    passes_deeptauid = (taus.idDeepTau2018v2p5VSjet == cuts.wp) 
+
+
+    good_taus = passes_pt & passes_eta &  passes_dz & passes_deeptauid & passes_decayModeDMs
+
+    return good_taus

@@ -1,5 +1,6 @@
 import logging
 
+import awkward as ak
 import numpy as np
 import yaml
 from omegaconf import OmegaConf
@@ -14,7 +15,7 @@ from src.skimmer.picoaod import PicoAOD
 class Skimmer(PicoAOD):
     def __init__(
         self, 
-    corrections_file: str = "src/physics/corrections.yml",
+        corrections_file: str = "src/physics/corrections.yml",
         params_file: str = "bbww/analysis/metadata/object_preselection.yaml",
         mc_outlier_threshold:int|None=200, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -46,9 +47,10 @@ class Skimmer(PicoAOD):
         selections.add( "passNoiseFilter", event.passNoiseFilter)
         selections.add("trigger", event.passHLT)
         selections.add('isoneEorM', oneE|oneM )
-        selections.add('twoBjets', event.has_2_bjets)
+        selections.add('oneBjet', event.has_1_bjet)
+        selections.add('njets', ak.num(event.j_init, axis=1) > 2)
         final_selection = selections.require(lumimask=True, passNoiseFilter=True, trigger = True, 
-                                             twoBjets = True, isoneEorM = True)
+                                             njets = True, oneBjet = True, isoneEorM = True)
 
         weights = Weights(len(event), storeIndividual=True)
         if self.is_mc:

@@ -1,0 +1,108 @@
+GluGluToHHTo2B2VLNu2J_2023_preBPix:
+  count: 265445
+  cutFlowFourTag:
+    all: 7876.368579462171
+    isoneEorM: 1602.9082338549197
+    lumimask: 7876.368579462171
+    njets: 1385.012097261846
+    oneBjet: 1515.7313449159265
+    passNoiseFilter: 7871.566266592592
+    trigger: 2140.679840963334
+  cutFlowFourTagUnitWeight:
+    all: 265445
+    isoneEorM: 54231
+    lumimask: 265445
+    njets: 47037
+    oneBjet: 51401
+    passNoiseFilter: 265274
+    trigger: 72415
+  cutFlowThreeTag:
+    all: 7876.368579462171
+    isoneEorM: 1602.9082338549197
+    lumimask: 7876.368579462171
+    njets: 1385.012097261846
+    oneBjet: 1515.7313449159265
+    passNoiseFilter: 7871.566266592592
+    trigger: 2140.679840963334
+  cutFlowThreeTagUnitWeight:
+    all: 265445
+    isoneEorM: 54231
+    lumimask: 265445
+    njets: 47037
+    oneBjet: 51401
+    passNoiseFilter: 265274
+    trigger: 72415
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/GluGluToHHTo2B2VLNu2J_2023_preBPix/picoAOD.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbww/skimmer/processors/skimmer_bbWW.py', configs='bbww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbww/metadata/datasets_run3.yml', triggers='bbww/metadata/triggers_bbWW.yml',
+      luminosities='bbww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_GluGluToHHTo2B2VLNu2J_2023_preBPix.yml',
+      output_path='bbww/output/skimmer_test', years=['2023_preBPix'], datasets=['GluGluToHHTo2B2VLNu2J'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, run_dask=True,
+      condor=True, debug=False, check_input_files=False, githash='', gitdiff='')
+    date: '2025-08-19 07:24:24'
+    diff: "diff --git a/python/base_class/physics/corrections.yml b/python/base_class/physics/corrections.yml\n\
+      index e3bfff98..9657ec87 100644\n--- a/python/base_class/physics/corrections.yml\n\
+      +++ b/python/base_class/physics/corrections.yml\n@@ -245,8 +245,11 @@\n   PU:\
+      \ '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2022_Summer22/puWeights.json.gz'\n\
+      \   ele_sf: \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2022_Summer22/electron.json.gz'\n\
+      +    HLT: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2022_Summer22/electronHlt.json.gz'\n\
+      \     tag: 2022Re-recoBCD\n-  mu_sf: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2022_Summer22/muon_Z.json.gz'\n\
+      +  mu_sf: \n+    sf: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2022_Summer22/muon_Z.json.gz'\n\
+      +    HLT: 'data/Muon/ScaleFactors_Muon_Z_HLT_2022_abseta_pt_schemaV2.json'\n\
+      \   jet_veto_maps: \n     file: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2022_Summer22/jetvetomaps.json.gz\n\
+      \     tag: Summer22_23Sep2023_RunCD_V1\n@@ -288,8 +291,11 @@\n   PU: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2022_Summer22EE/puWeights.json.gz'\n\
+      \   ele_sf: \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2022_Summer22EE/electron.json.gz'\n\
+      +    HLT: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2022_Summer22EE/electronHlt.json.gz'\n\
+      \     tag:  2022Re-recoE+PromptFG\n-  mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2022_Summer22EE/muon_Z.json.gz\n\
+      +  mu_sf: \n+    sf: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2022_Summer22EE/muon_Z.json.gz'\n\
+      +    HLT: 'data/Muon/ScaleFactors_Muon_Z_HLT_2022_EE_abseta_pt_schemaV2.json'\n\
+      \   jet_veto_maps: \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2022_Summer22EE/jetvetomaps.json.gz'\n\
+      \     tag: 'Summer22EE_23Sep2023_RunEFG_V1'\n@@ -331,8 +337,11 @@\n   PU: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23/puWeights.json.gz'\n\
+      \   ele_sf: \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23/electron.json.gz'\n\
+      +    HLT: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23/electronHlt.json.gz'\n\
+      \     tag: 2023PromptC\n-  mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2023_Summer23/muon_Z.json.gz'\n\
+      +  mu_sf: \n+    sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2023_Summer23/muon_Z.json.gz\n\
+      +    HLT: 'data/Muon/ScaleFactors_Muon_Z_HLT_2023_abseta_pt_schemaV2.json'\n\
+      \   jet_veto_maps: \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2023_Summer23/jetvetomaps.json.gz'\n\
+      \     tag: Summer23Prompt23_RunC_V1\n@@ -374,13 +383,14 @@\n '2023_BPix':\n\
+      \   year_label: '2023'\n   goldenJSON: 'data/goldenJSON/Cert_Collisions2023_366442_370790_Golden.json'\n\
+      -  PU: \n-    file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23BPix/puWeights.json.gz'\n\
+      -    tag: Collisions2023_369803_370790_eraD_GoldenJson\n+  PU: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23BPix/puWeights.json.gz'\n\
+      \   ele_sf: \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23BPix/electron.json.gz'\n\
+      +    HLT: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23BPix/electronHlt.json.gz'\n\
+      \     tag: 2023PromptD\n-  mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2023_Summer23BPix/muon_Z.json.gz'\n\
+      +  mu_sf: \n+    sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2023_Summer23BPix/muon_Z.json.gz\n\
+      +    HLT: 'data/Muon/ScaleFactors_Muon_Z_HLT_2023_BPix_abseta_pt_schemaV2.json'\n\
+      \   jet_veto_maps: \n     file: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2023_Summer23BPix/jetvetomaps.json.gz\n\
+      \     tag: 'Summer23BPixPrompt23_RunD_V1'\ndiff --git a/python/base_class/physics/event_weights.py\
+      \ b/python/base_class/physics/event_weights.py\nindex f7041c06..4ca0c24a 100644\n\
+      --- a/python/base_class/physics/event_weights.py\n+++ b/python/base_class/physics/event_weights.py\n\
+      @@ -24,6 +24,7 @@ def add_weights(event, do_MC_weights: bool = True,\n     \
+      \    lumi    = event.metadata.get('lumi',    1.0)\n         xs      = event.metadata.get('xs',\
+      \      1.0)\n         kFactor = event.metadata.get('kFactor', 1.0)\n+\n    \
+      \     weights.add( \"genweight\", event.genWeight * (lumi * xs * kFactor / event.metadata[\"\
+      genEventSumw\"]) )\n         list_weight_names.append('genweight')\n       \
+      \  logging.debug( f\"genweight {weights.partial_weight(include=['genweight'])[:10]}\\\
+      n\" )\ndiff --git a/python/base_class/physics/objects/jet_corrections.py b/python/base_class/physics/objects/jet_corrections.py\n\
+      index e20ebcf2..6613e5ca 100644\n--- a/python/base_class/physics/objects/jet_corrections.py\n\
+      +++ b/python/base_class/physics/objects/jet_corrections.py\n@@ -36,8 +36,8 @@\
+      \ def extract_jetmet_tar_files(tar_file_name: str=None,\n                 member.name\
+      \ = os.path.basename(member.name)  # Remove any directory structure from the\
+      \ archive\n \n                 new_file_name = member.name\n-              \
+      \  if 'Puppi' in jet_type and jet_type in member.name:  ### this is only for\
+      \ Run3, temporary fix\n-                    new_file_name = member.name.replace('_',\
+      \ '', 1)\n+                if ('Puppi' in jet_type) and (jet_type in member.name)\
+      \ and ('Summer23' not in member.name): \n+                    new_file_name\
+      \ = member.name.replace('_', '', 1) #22 and 23 corrections seem to have different\
+      \ naming schemes\n                     member.name = new_file_name\n \n    \
+      \             new_file_path = os.path.join(extract_path, new_file_name)\n"
+    hash: 739b89092f77cfe156e3e077139d4dfe1770e8a8
+  saved_events: 47037
+  sumw: 7876.369409561157
+  sumw2: 291.89440980553627
+  sumw2_raw: 291.89439196010346
+  sumw_raw: 7876.368793400004
+  total_events: 265445

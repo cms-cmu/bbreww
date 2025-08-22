@@ -36,8 +36,7 @@ def lepton_preselection(events, lepton_flavour, params, id):
         if id == "loose":
             passes_cutbased = leptons.cutBased >= cuts["cutBased"]
         elif id == "tight":
-            passes_cutbased = leptons.cutBased = cuts["cutBased"]
-
+            passes_cutbased = leptons.cutBased == cuts["cutBased"]
         good_leptons = passes_pt & passes_SC & passes_cutbased
 
     elif lepton_flavour == "Muon":
@@ -50,49 +49,6 @@ def lepton_preselection(events, lepton_flavour, params, id):
     
     return good_leptons
 
-
-def tau_preselection(events, params, id):
-
-    taus = events["Tau"]
-    cuts = params.object_preselection["Tau"][id]
-
-    try:
-        passes_decayModeDMs=taus.decayModeFindingNewDMs
-    except:
-        passes_decayModeDMs=~np.isnan(ak.ones_like(taus.pt))
-
-    passes_pt = taus.pt > cuts["pt"]
-    passes_eta = abs(taus.eta) < cuts["eta"]
-    passes_dz = abs(taus.dz) < cuts["dz"]
-    try:
-        passes_deeptauid = (taus.idDeepTau2018v2p5VSjet & 5) == 5 #medium working point
-    except:
-        passes_deeptauid = (taus.idDeepTau2017v2p1VSjet & 4) == 4 # fall back to older collection if newer not available
-
-    good_taus = passes_pt & passes_eta &  passes_dz & passes_deeptauid & passes_decayModeDMs
-
-    return good_taus
-
-######
-## Photon
-## https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2
-## Photon_cutBased Int_t cut-based ID bitmap, Fall17V2,
-## (0:fail, 1:loose, 2:medium, 3:tight)
-## Note: Photon IDs are integers, not bit masks
-######
-
-def photon_preselection(events, params, id):
-
-    photons = events["Photon"]
-    cuts = params.object_preselection["Photon"][id]
-
-    passes_pt = photons.pt > cuts["pt"]
-    passes_eta = ~((abs(photons.eta) > 1.4442) & (abs(photons.eta) < 1.5660))& (abs(photons.eta) < 2.5)
-    passes_cutbased = photons.cutBased >= cuts["cutBased"]
-
-    good_photons = passes_pt & passes_eta & passes_cutbased & photons.electronVeto
-
-    return good_photons
 
 ######
 ## Jet

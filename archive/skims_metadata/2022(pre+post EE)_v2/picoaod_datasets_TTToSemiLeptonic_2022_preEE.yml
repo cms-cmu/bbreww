@@ -1,0 +1,111 @@
+TTToSemiLeptonic_2022_preEE:
+  count: 76955324
+  cutFlowFourTag:
+    all: 25728073346.30786
+    isoneEorM: 8334127391.85791
+    lumimask: 25728073346.30786
+    njets: 7229785827.970093
+    oneBjet: 7661507304.235474
+    passNoiseFilter: 25714648764.41455
+    trigger: 10025765259.012817
+  cutFlowFourTagUnitWeight:
+    all: 76955324
+    isoneEorM: 24918224
+    lumimask: 76955324
+    njets: 21607785
+    oneBjet: 22904403
+    passNoiseFilter: 76914880
+    trigger: 29973983
+  cutFlowThreeTag:
+    all: 25728073346.30786
+    isoneEorM: 8334127391.85791
+    lumimask: 25728073346.30786
+    njets: 7229785827.970093
+    oneBjet: 7661507304.235474
+    passNoiseFilter: 25714648764.41455
+    trigger: 10025765259.012817
+  cutFlowThreeTagUnitWeight:
+    all: 76955324
+    isoneEorM: 24918224
+    lumimask: 76955324
+    njets: 21607785
+    oneBjet: 22904403
+    passNoiseFilter: 76914880
+    trigger: 29973983
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk1.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk2.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk3.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk4.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk5.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk6.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk7.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk8.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk9.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk10.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk11.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk12.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk13.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk14.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk15.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk16.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk17.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk18.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk19.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk20.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk21.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk22.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk23.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk24.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk25.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk26.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk27.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk28.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk29.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk30.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk31.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk32.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk33.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk34.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk35.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk36.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk37.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk38.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk39.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk40.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk41.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk42.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/TTToSemiLeptonic_2022_preEE/picoAOD.chunk43.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbww/skimmer/processors/skimmer_bbWW.py', configs='bbww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbww/metadata/datasets_run3.yml', triggers='bbww/metadata/triggers_bbWW.yml',
+      luminosities='bbww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_TTToSemiLeptonic_2022_preEE.yml',
+      output_path='bbww/output/skimmer_test', years=['2022_preEE'], datasets=['TTToSemiLeptonic'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, run_dask=True,
+      condor=True, debug=False, check_input_files=False, githash='', gitdiff='')
+    date: '2025-08-16 00:33:03'
+    diff: "diff --git a/python/base_class/physics/corrections.yml b/python/base_class/physics/corrections.yml\n\
+      index e3bfff98..4d42d577 100644\n--- a/python/base_class/physics/corrections.yml\n\
+      +++ b/python/base_class/physics/corrections.yml\n@@ -332,7 +332,7 @@\n   ele_sf:\
+      \ \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23/electron.json.gz'\n\
+      \     tag: 2023PromptC\n-  mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2023_Summer23/muon_Z.json.gz'\n\
+      +  mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2023_Summer23/muon_Z.json.gz\n\
+      \   jet_veto_maps: \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2023_Summer23/jetvetomaps.json.gz'\n\
+      \     tag: Summer23Prompt23_RunC_V1\n@@ -374,13 +374,11 @@\n '2023_BPix':\n\
+      \   year_label: '2023'\n   goldenJSON: 'data/goldenJSON/Cert_Collisions2023_366442_370790_Golden.json'\n\
+      -  PU: \n-    file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23BPix/puWeights.json.gz'\n\
+      -    tag: Collisions2023_369803_370790_eraD_GoldenJson\n+  PU: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23BPix/puWeights.json.gz'\n\
+      \   ele_sf: \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23BPix/electron.json.gz'\n\
+      \     tag: 2023PromptD\n-  mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2023_Summer23BPix/muon_Z.json.gz'\n\
+      +  mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2023_Summer23BPix/muon_Z.json.gz\n\
+      \   jet_veto_maps: \n     file: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2023_Summer23BPix/jetvetomaps.json.gz\n\
+      \     tag: 'Summer23BPixPrompt23_RunD_V1'\n"
+    hash: 739b89092f77cfe156e3e077139d4dfe1770e8a8
+  saved_events: 21607785
+  sumw: 25728069186.25
+  sumw2: 8742174027008.0
+  sumw2_raw: 8742177152104.014
+  sumw_raw: 25728073569.94201
+  total_events: 76955324

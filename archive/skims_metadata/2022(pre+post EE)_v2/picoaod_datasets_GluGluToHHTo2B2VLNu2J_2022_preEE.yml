@@ -1,0 +1,78 @@
+GluGluToHHTo2B2VLNu2J_2022_preEE:
+  count: 89899
+  cutFlowFourTag:
+    all: 2668.1342809833586
+    isoneEorM: 567.1817265190184
+    lumimask: 2668.1342809833586
+    njets: 486.3413284085691
+    oneBjet: 536.3911981508136
+    passNoiseFilter: 2666.1382829360664
+    trigger: 748.6639708057046
+  cutFlowFourTagUnitWeight:
+    all: 89899
+    isoneEorM: 19114
+    lumimask: 89899
+    njets: 16442
+    oneBjet: 18105
+    passNoiseFilter: 89837
+    trigger: 25336
+  cutFlowThreeTag:
+    all: 2668.1342809833586
+    isoneEorM: 567.1817265190184
+    lumimask: 2668.1342809833586
+    njets: 486.3413284085691
+    oneBjet: 536.3911981508136
+    passNoiseFilter: 2666.1382829360664
+    trigger: 748.6639708057046
+  cutFlowThreeTagUnitWeight:
+    all: 89899
+    isoneEorM: 19114
+    lumimask: 89899
+    njets: 16442
+    oneBjet: 18105
+    passNoiseFilter: 89837
+    trigger: 25336
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/GluGluToHHTo2B2VLNu2J_2022_preEE/picoAOD.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbww/skimmer/processors/skimmer_bbWW.py', configs='bbww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbww/metadata/datasets_run3.yml', triggers='bbww/metadata/triggers_bbWW.yml',
+      luminosities='bbww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_GluGluToHHTo2B2VLNu2J_2022_preEE.yml',
+      output_path='bbww/output/skimmer_test', years=['2022_preEE'], datasets=['GluGluToHHTo2B2VLNu2J'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, run_dask=True,
+      condor=True, debug=False, check_input_files=False, githash='', gitdiff='')
+    date: '2025-08-18 07:00:25'
+    diff: "diff --git a/python/base_class/physics/corrections.yml b/python/base_class/physics/corrections.yml\n\
+      index e3bfff98..4d42d577 100644\n--- a/python/base_class/physics/corrections.yml\n\
+      +++ b/python/base_class/physics/corrections.yml\n@@ -332,7 +332,7 @@\n   ele_sf:\
+      \ \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23/electron.json.gz'\n\
+      \     tag: 2023PromptC\n-  mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2023_Summer23/muon_Z.json.gz'\n\
+      +  mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2023_Summer23/muon_Z.json.gz\n\
+      \   jet_veto_maps: \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2023_Summer23/jetvetomaps.json.gz'\n\
+      \     tag: Summer23Prompt23_RunC_V1\n@@ -374,13 +374,11 @@\n '2023_BPix':\n\
+      \   year_label: '2023'\n   goldenJSON: 'data/goldenJSON/Cert_Collisions2023_366442_370790_Golden.json'\n\
+      -  PU: \n-    file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23BPix/puWeights.json.gz'\n\
+      -    tag: Collisions2023_369803_370790_eraD_GoldenJson\n+  PU: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23BPix/puWeights.json.gz'\n\
+      \   ele_sf: \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23BPix/electron.json.gz'\n\
+      \     tag: 2023PromptD\n-  mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2023_Summer23BPix/muon_Z.json.gz'\n\
+      +  mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2023_Summer23BPix/muon_Z.json.gz\n\
+      \   jet_veto_maps: \n     file: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2023_Summer23BPix/jetvetomaps.json.gz\n\
+      \     tag: 'Summer23BPixPrompt23_RunD_V1'\ndiff --git a/python/base_class/physics/objects/jet_corrections.py\
+      \ b/python/base_class/physics/objects/jet_corrections.py\nindex e20ebcf2..a923e2dd\
+      \ 100644\n--- a/python/base_class/physics/objects/jet_corrections.py\n+++ b/python/base_class/physics/objects/jet_corrections.py\n\
+      @@ -36,7 +36,7 @@ def extract_jetmet_tar_files(tar_file_name: str=None,\n  \
+      \               member.name = os.path.basename(member.name)  # Remove any directory\
+      \ structure from the archive\n \n                 new_file_name = member.name\n\
+      -                if 'Puppi' in jet_type and jet_type in member.name:  ### this\
+      \ is only for Run3, temporary fix\n+                if 'Puppi' in jet_type and\
+      \ jet_type in member.name and '23' not in member.name:  ### this is only for\
+      \ Run3, temporary fix\n                     new_file_name = member.name.replace('_',\
+      \ '', 1)\n                     member.name = new_file_name\n \n"
+    hash: 739b89092f77cfe156e3e077139d4dfe1770e8a8
+  saved_events: 16442
+  sumw: 2668.1345007419586
+  sumw2: 98.87135451287031
+  sumw2_raw: 98.87134737539463
+  sumw_raw: 2668.1343534
+  total_events: 89899

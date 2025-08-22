@@ -1,7 +1,7 @@
 import numpy as np 
 import awkward as ak
 from src.physics.objects.jet_corrections import apply_jet_veto_maps
-from bbww.analysis.helpers.ids import lepton_preselection, jet_preselection, HEMjet_preselection    
+from bbww.analysis.helpers.ids import lepton_preselection, jet_preselection, tau_preselection   
 from bbww.analysis.helpers.corrections import get_met_xy_correction
 
 ## this file contains object preselection for MET, electrons, muons, taus, photons, and jets
@@ -37,6 +37,21 @@ def electron_selection(events,year, params):
     events['e_ntight'] = ak.num(e_clean[e_clean.istight], axis=1)
     return events
 
+def tau_selection(events,params): 
+    e_clean = events.Electron[events.Electron.isclean]
+
+    events['Tau','isclean']=(
+        ak.all(events.Tau.metric_table(events.Muon[events.Muon.isloose]) > 0.4, axis=2) 
+        & ak.all(events.Tau.metric_table(e_clean[e_clean.isloose]) > 0.4, axis=2)
+    )
+    events['Tau','ismedium']= tau_preselection(events, params, "medium")
+
+    tau_clean=events.Tau[events.Tau.isclean]
+    tau_medium=tau_clean[tau_clean.ismedium]
+    events['tau_nmedium']=ak.num(tau_medium, axis=1)
+
+    return events
+
 def jet_selection(events, params, year):
     e_clean = events.Electron[events.Electron.isclean]
 
@@ -49,13 +64,11 @@ def jet_selection(events, params, year):
         ak.all(events.Jet.metric_table(events.Muon[events.Muon.isloose]) > 0.4, axis=2)
         & ak.all(events.Jet.metric_table(e_clean[e_clean.isloose]) > 0.4, axis=2)
     )
-    events['Jet','issoft'] = jet_preselection(events, params, year)
-    events['Jet','isHEM'] = HEMjet_preselection(events)
+    events['Jet', 'isnominal'], events['Jet', 'issoft'],  events['Jet', 'preselected'] = jet_preselection(events, params, year)
+
     j_clean = events.Jet[events.Jet.isclean]
     j_soft = j_clean[j_clean.issoft]
-    j_HEM = events.Jet[events.Jet.isHEM]
     events['j_nsoft']= ak.num(j_soft, axis=1)
-    events['j_nHEM'] = ak.num(j_HEM, axis=1)
 
     return events
 
@@ -63,9 +76,11 @@ def apply_bbWW_preselection(events, year,params, isMC):
     events = met_selection(events, year, not isMC)
     events = muon_selection(events, year, params) #muons
     events = electron_selection(events, year, params) #electrons
-    events = jet_selection(events,params,year) #jets
-    
-    events['e_region'] = (events.e_ntight==1) & (events.mu_nloose==0) 
+    events = tau_selection(events,params)
+    events = jet_selection(events,params, year)
+
+    # require exactly one tight electron(muon) with no loose muon(electron)
+    events['e_region'] = (events.e_ntight==1) & (events.mu_nloose==0)
     events['mu_region'] = (events.mu_ntight==1) & (events.e_nloose==0)
     return events
         

@@ -26,10 +26,13 @@ analysis_test_data:
 
 skimmer_analysis_test:
   stage: analysis
-  needs: skimmer_test
   extends:
     - .base_bbww_job
   image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest
+  needs:
+    - setup_workspace
+    - voms_proxy
+    - skimmer_test
   script:
     - echo "Running bbww skimmer analysis in coffea4bees framework"
     - source bbww/scripts/skimmer_analysis_test.sh --output-base output/

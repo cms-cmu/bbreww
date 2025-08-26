@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Source common functions
-source "bbww/scripts/common.sh"
+source "src/scripts/common.sh"
 
 # Function to display usage
 usage() {

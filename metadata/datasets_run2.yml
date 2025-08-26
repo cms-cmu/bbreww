@@ -1,0 +1,9 @@
+datasets:
+  GluGluToHHTo2B2VLNu2J:
+    UL18:
+      xs: 0.003384123
+      nanoAOD: bbww/metadata/GluGluToHHTo2B2VLNu2J_files.txt
+  TTToSemiLeptonic:
+    UL18:
+      xs: 365.457
+      nanoAOD: /TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9-20UL18JMENano_106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM

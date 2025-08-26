@@ -1,5 +1,5 @@
 config = {
-    "default_dir": "bbww/CI_output",
+    "default_dir": "CI_output",
     "analysis_container": "/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest",
 }
 
@@ -41,7 +41,6 @@ rule analysis_test_run3:
     shell:
         "source bbww/scripts/analysis_test_run3.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
 
-
 rule analysis_test_cutflows_run3:
     input: 
         f"{config['default_dir']}/analysis_test_run3/test.coffea"
@@ -56,10 +55,34 @@ rule analysis_test_cutflows_run3:
 
 rule skimmer_test:
     output: 
-        f"{config['default_dir']}/skimmer_test/picoaod_datasets_GluGluToHHTo2B2VLNu2J_2022_preEE.yml"
+        f"{config['default_dir']}/skimmer_test/picoaod_datasets.yml"
     container: 
         config["analysis_container"]
     log: 
         f"{config['default_dir']}/skimmer_test/skimmer_test.log"
     shell:
         "source bbww/scripts/skimmer_test.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
+
+rule skimmer_analysis_test:
+    input:
+        f"{config['default_dir']}/skimmer_test/picoaod_datasets.yml"
+    output: 
+        f"{config['default_dir']}/skimmer_analysis_test/test.coffea"
+    container: 
+        config["analysis_container"]
+    log: 
+        f"{config['default_dir']}/skimmer_analysis_test/skimmer_analysis_test.log"
+    shell:
+        "source bbww/scripts/skimmer_analysis_test.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
+
+rule skimmer_analysis_test_cutflows:
+    input:
+        f"{config['default_dir']}/skimmer_analysis_test/test.coffea"
+    output: 
+        f"{config['default_dir']}/skimmer_analysis_test_cutflows/test_cutflow.yml"
+    container: 
+        config["analysis_container"]
+    log: 
+        f"{config['default_dir']}/skimmer_analysis_test_cutflows/skimmer_analysis_test_cutflows.log"
+    shell:
+        "source bbww/scripts/skimmer_analysis_test_cutflows.sh --output-base {config[default_dir]} 2>&1 | tee {log}"

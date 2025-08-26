@@ -32,7 +32,7 @@ runner:
 
 config:
   base_path: root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v2/   ### for example in EOS
-  #base_path: /srv/python/bbww/output/skimmer/test/   ### local
+  #base_path: /srv/bbww/output/skimmer/test/   ### local
   step: 100000
   skip_collections:
     - LHEPart

@@ -13,9 +13,9 @@ fi
 bash bbww/scripts/run_processor.sh \
     --output-base "$OUTPUT_BASE_DIR" \
     --processor "bbww/analysis/processors/hh_bbww_processor.py" \
-    --metadata "bbww/metadata/datasets.yml" \
+    --metadata "bbww/metadata/datasets_run2.yml" \
     --config "bbww/analysis/metadata/HHbbWW.yml" \
-    --datasets "data__SingleMuon" \
-    --year "2022_preEE" \
-    --output-filename "test_data.coffea" \
+    --datasets "GluGluToHHTo2B2VLNu2J TTToSemiLeptonic" \
+    --year "2022_EE" \
+    --output-filename "test.coffea" \
     --output-subdir "analysis_test_run3" 

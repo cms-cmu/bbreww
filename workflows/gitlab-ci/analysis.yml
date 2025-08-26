@@ -26,6 +26,7 @@ analysis_test_data:
 
 skimmer_analysis_test:
   stage: analysis
+  needs: skimmer_test
   extends:
     - .base_bbww_job
   image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest

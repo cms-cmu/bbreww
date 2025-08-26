@@ -8,5 +8,5 @@ skimmer_test:
     - source bbww/scripts/skimmer_test.sh --output-base output/
   artifacts:
     paths:
-      - coffea4bees_framework/output/skimmer_test/picoaod_datasets.yml
+      - coffea4bees_framework/output/skimmer_test/
     expire_in: 1 day

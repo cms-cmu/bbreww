@@ -31,15 +31,12 @@ vector.register_awkward()
 class analysis(processor.ProcessorABC):
     def __init__(
         self,
-        path: str = "bbww/analysis/data",
         parameters: str = "bbww/analysis/metadata/object_preselection_run3.yaml",
         corrections_metadata: str = "src/physics/corrections.yml",
     ):
-        self.path = path
         self.parameters = parameters
-        corrections= OmegaConf.load(corrections_metadata)
-        parameters = OmegaConf.load(self.parameters)
-        self.params = OmegaConf.merge(corrections, parameters)
+        loaded_parameters = OmegaConf.load(self.parameters)
+        self.params = OmegaConf.merge(corrections_metadata, loaded_parameters)
 
     def process(self, events):
 

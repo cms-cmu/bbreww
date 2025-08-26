@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Source common functions
-source "bbww/scripts/common.sh"
+source "src/scripts/common.sh"
 
 # Function to display usage
 usage() {
@@ -140,9 +140,6 @@ echo "############### Running cutflow comparison"
 cmd=(python bbww/tests/cutflow_unittest.py --input_file "$OUTPUT_FILE" --known_cutflow "$KNOWN_CUTFLOW")
 run_command "${cmd[@]}"
 
-echo "############### Final output"
-ls -lh "$OUTPUT_FILE"
-
 # Check if the command was successful
 if [ $? -eq 0 ]; then
     echo "############### SUCCESS: Cutflow analysis completed successfully!"
@@ -150,3 +147,6 @@ else
     echo "############### FAILED: Cutflow comparison failed."
     exit 1
 fi
+
+echo "############### Final output"
+ls -lh "$OUTPUT_FILE"

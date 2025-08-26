@@ -26,5 +26,4 @@ runner:
     - T2_US_Purdue
 
 
-config:
-  path: "bbww/analysis/data"
+# config:

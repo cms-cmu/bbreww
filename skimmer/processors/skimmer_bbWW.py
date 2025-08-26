@@ -15,13 +15,12 @@ from src.skimmer.picoaod import PicoAOD
 class Skimmer(PicoAOD):
     def __init__(
         self, 
-        corrections_file: str = "src/physics/corrections.yml",
+        corrections_metadata: str = "src/physics/corrections.yml",
         params_file: str = "bbww/analysis/metadata/object_preselection.yaml",
         mc_outlier_threshold:int|None=200, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        corrections = yaml.safe_load(open(corrections_file, 'r'))
         parameters = OmegaConf.load(params_file)
-        self.params = OmegaConf.merge(corrections, parameters)
+        self.params = OmegaConf.merge(corrections_metadata, parameters)
         self.mc_outlier_threshold = mc_outlier_threshold
 
 

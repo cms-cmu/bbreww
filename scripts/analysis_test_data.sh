@@ -1,5 +1,7 @@
 #!/bin/bash
 
+JOB_NAME="analysis_test_data"
+
 # Source common functions
 source "src/scripts/common.sh"
 
@@ -17,5 +19,5 @@ bash bbww/scripts/run_processor.sh \
     --config "bbww/analysis/metadata/HHbbWW.yml" \
     --datasets "data__SingleMuon" \
     --year "2022_preEE" \
-    --output-filename "test_data.coffea" \
-    --output-subdir "analysis_test_run3" 
+    --output-filename "test.coffea" \
+    --output-subdir "${JOB_NAME}" 

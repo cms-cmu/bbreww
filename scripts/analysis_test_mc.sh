@@ -1,5 +1,7 @@
 #!/bin/bash
 
+JOB_NAME="analysis_test_mc"
+
 # Source common functions
 source "src/scripts/common.sh"
 
@@ -18,4 +20,4 @@ bash bbww/scripts/run_processor.sh \
     --datasets "GluGluToHHTo2B2VLNu2J TTToSemiLeptonic" \
     --year "2022_EE" \
     --output-filename "test.coffea" \
-    --output-subdir "analysis_test_run3" 
+    --output-subdir "${JOB_NAME}" 

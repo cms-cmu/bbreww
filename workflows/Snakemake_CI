@@ -6,24 +6,24 @@ config = {
 rule all:
     input: 
         f"{config['default_dir']}/analysis_test_cutflows/test_cutflow.yml",
-        f"{config['default_dir']}/analysis_test_cutflows_run3/test_cutflow.yml",
+        f"{config['default_dir']}/analysis_test_cutflows_mc/test_cutflow.yml",
         f"{config['default_dir']}/skimmer_analysis_test_cutflows/test_cutflow.yml",
 
-rule analysis_test_data_run3:
+rule analysis_test_data:
     output: 
-        f"{config['default_dir']}/analysis_test_run3/test_data.coffea"
+        f"{config['default_dir']}/analysis_test_data/test.coffea"
     container: 
         config["analysis_container"]
     log: 
-        f"{config['default_dir']}/analysis_test/analysis_test_data.log"
+        f"{config['default_dir']}/analysis_test_data/analysis_test_data.log"
     shell:
         "source bbww/scripts/analysis_test_data.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
 
-rule analysis_test_data_cutflows:
+rule analysis_test_cutflows_data:
     input: 
-        f"{config['default_dir']}/analysis_test_run3/test_data.coffea"
+        f"{config['default_dir']}/analysis_test_data/test.coffea"
     output: 
-        f"{config['default_dir']}/analysis_test_cutflows_run3/test_cutflow_data.yml"
+        f"{config['default_dir']}/analysis_test_cutflows_data/test_cutflow_data.yml"
     container: 
         config["analysis_container"]
     log: 
@@ -31,27 +31,27 @@ rule analysis_test_data_cutflows:
     shell:
         "source bbww/scripts/analysis_test_cutflows_data.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
 
-rule analysis_test_run3:
+rule analysis_test_mc:
     output: 
-        f"{config['default_dir']}/analysis_test_run3/test.coffea"
+        f"{config['default_dir']}/analysis_test_mc/test.coffea"
     container: 
         config["analysis_container"]
     log: 
-        f"{config['default_dir']}/analysis_test_run3/analysis_test.log"
+        f"{config['default_dir']}/analysis_test_mc/analysis_test.log"
     shell:
-        "source bbww/scripts/analysis_test_run3.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
+        "source bbww/scripts/analysis_test_mc.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
 
-rule analysis_test_cutflows_run3:
+rule analysis_test_cutflows_mc:
     input: 
-        f"{config['default_dir']}/analysis_test_run3/test.coffea"
+        f"{config['default_dir']}/analysis_test_mc/test.coffea"
     output: 
-        f"{config['default_dir']}/analysis_test_cutflows_run3/test_cutflow.yml"
+        f"{config['default_dir']}/analysis_test_cutflows_mc/test_cutflow.yml"
     container: 
         config["analysis_container"]
     log: 
-        f"{config['default_dir']}/analysis_test_cutflows_run3/test_cutflow.log"
+        f"{config['default_dir']}/analysis_test_cutflows_mc/analysis_test_cutflows_mc.log"
     shell:
-        "source bbww/scripts/analysis_test_cutflows_run3.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
+        "source bbww/scripts/analysis_test_cutflows_mc.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
 
 rule skimmer_test:
     output: 

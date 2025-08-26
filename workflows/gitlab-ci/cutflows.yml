@@ -38,7 +38,7 @@ skimmer_analysis_test_cutflows:
     - .base_bbww_job
   needs:
     - setup_workspace
-    - analysis_test_data_run3
+    - skimmer_analysis_test
     - voms_proxy
   image: gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest
   script:

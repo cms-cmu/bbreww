@@ -105,6 +105,7 @@ class analysis(processor.ProcessorABC):
         selection.add('isoneEorM', events.e_region | events.mu_region )
         selection.add('tau_veto', (events.tau_nmedium==0))
         selection.add('mll_cut', events.pass_mll_cut)
+        selection.add('njets_ak8', (events.n_ak8_jets == 0))
         selection.add('nom_njets4',  ak.num(events.j_init[events.j_init.isnominal],axis=1)>3) # nominal pT region
         selection.add('nom_njets3',  ak.num(events.j_init[events.j_init.isnominal],axis=1)==3) # exact 3 jets region
         selection.add('lowpt_njets4', ~selection.all('nom_njets4') & (ak.num(events.j_init[events.j_init.preselected],axis=1)>3) )
@@ -116,7 +117,7 @@ class analysis(processor.ProcessorABC):
 
         selection_list = {
             'basic_selection': ['lumimask', 'passNoiseFilter', 'trigger'],
-            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'isoneEorM', 'tau_veto', 'pass_mll_cut'],
+            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'isoneEorM', 'tau_veto', 'mll_cut', 'njets_ak8'],
         }
         events['selection'] = ak.zip({
             'preselection': selection.all(*selection_list['preselection']),
@@ -144,7 +145,7 @@ class analysis(processor.ProcessorABC):
         output = {}
         if not shift_name:
             # list below contains individual selections that we might wanna study
-            full_sel_list = ['lumimask', 'passNoiseFilter', 'trigger', 'oneBjet', 'twoBjets', 'isoneEorM', 'tau_veto','jet_veto_mask']
+            full_sel_list = ['lumimask', 'passNoiseFilter', 'trigger', 'oneBjet', 'twoBjets', 'isoneEorM', 'tau_veto','jet_veto_mask', 'njets_ak8']
             output['sequential_cutflow'] = {}
             output['sequential_cutflow'][events.metadata['dataset']] = get_sequential_cutflow(
                 selection,

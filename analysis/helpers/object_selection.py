@@ -1,7 +1,7 @@
 import numpy as np 
 import awkward as ak
 from src.physics.objects.jet_corrections import apply_jet_veto_maps
-from bbww.analysis.helpers.ids import lepton_preselection, jet_preselection, tau_preselection   
+from bbww.analysis.helpers.ids import lepton_preselection, jet_preselection, tau_preselection, ak8_jet_preselection  
 from bbww.analysis.helpers.corrections import get_met_xy_correction
 
 ## this file contains object preselection for MET, electrons, muons, taus, photons, and jets
@@ -70,18 +70,15 @@ def jet_selection(events, params, year):
     j_soft = j_clean[j_clean.issoft]
     events['j_nsoft']= ak.num(j_soft, axis=1)
 
-    return events
+    #### AK-8 jets selection
+    is_clean_ak8 = (
+        ak.all(events.FatJet.metric_table(events.Muon[events.Muon.isloose]) > 0.8, axis=2)
+        & ak.all(events.FatJet.metric_table(e_clean[e_clean.isloose]) > 0.8, axis=2)
+    )
+    ak8_selected = ak8_jet_preselection(events, events.FatJet[is_clean_ak8], params)
+    events['n_ak8_jets'] = ak.num(ak8_selected,  axis=1)
+    ####
 
-def apply_bbWW_preselection(events, year,params, isMC):
-    events = met_selection(events, year, not isMC)
-    events = muon_selection(events, year, params) #muons
-    events = electron_selection(events, year, params) #electrons
-    events = tau_selection(events,params)
-    events = jet_selection(events,params, year)
-
-    # require exactly one tight electron(muon) with no loose muon(electron)
-    events['e_region'] = (events.e_ntight==1) & (events.mu_ntight==0)
-    events['mu_region'] = (events.mu_ntight==1) & (events.e_ntight==0)
     return events
 
 def apply_mll_cut(events):   
@@ -104,12 +101,24 @@ def apply_mll_cut(events):
     mu_pairs_mass = (loose_mu[mu_pairs.mu1] + loose_mu[mu_pairs.mu2]).mass
 
     is_same_charge_mu = (loose_mu[mu_pairs.mu1].charge == loose_mu[mu_pairs.mu2].charge)  # pairs with same charge
-    passes_mass_cut_mu = (mu_pairs_mass > 12.0) (abs(mu_pairs_mass - 91.19) > 10) # m_ll > 12 and abs(m_ll-mZ)<10
+    passes_mass_cut_mu = (mu_pairs_mass > 12.0) & (abs(mu_pairs_mass - 91.19) > 10) # m_ll > 12 and abs(m_ll-mZ)<10
     is_good_pair_mu = is_same_charge_mu | passes_mass_cut_mu # either same charge muons or pass m_ll cuts
     pass_cut_mu = ak.fill_none(ak.all(is_good_pair_mu,axis=1), True) # pass cut for None values 
     
     events['pass_mll_cut'] = pass_cut_e & pass_cut_mu # m_ll > 12 GeV and m_Z window cut on opposite charged leptons
 
+    return events
+
+def apply_bbWW_preselection(events, year,params, isMC):
+    events = met_selection(events, year, not isMC)
+    events = muon_selection(events, year, params) #muons
+    events = electron_selection(events, year, params) #electrons
+    events = tau_selection(events,params)
+    events = jet_selection(events,params, year)
+
+    # require exactly one tight electron(muon) with no loose muon(electron)
+    events['e_region'] = (events.e_ntight==1) & (events.mu_ntight==0)
+    events['mu_region'] = (events.mu_ntight==1) & (events.e_ntight==0)
     return events
 
 

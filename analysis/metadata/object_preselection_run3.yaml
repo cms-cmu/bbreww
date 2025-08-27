@@ -43,3 +43,17 @@ object_preselection:
       pt: 15.0
       eta: 2.4
       jetId: 2
+
+  fatJet:
+    pt: 200.0
+    eta: 2.4
+    msoftdrop_upper: 210.0
+    msoftdrop_lower: 30.0
+    nsubjettiness_ratio: 0.75
+    btagWP: 0.2450
+    subjet1: 
+      pt: 30.0
+      eta: 2.4
+    subjet2:
+      pt: 20.0
+      eta: 2.4

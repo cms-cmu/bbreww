@@ -73,8 +73,7 @@ def lepton_preselection(events, lepton_flavour, params, id):
 ######
 
 
-def jet_preselection(events, params, mode):
-
+def jet_preselection(events, params):
     jets = events.Jet
     nominal_cuts = params.object_preselection.Jet.nominal
     soft_cuts = params.object_preselection.Jet.soft
@@ -91,6 +90,27 @@ def jet_preselection(events, params, mode):
 
     return nominal_jets, soft_jets, preselected_jets
 
+def ak8_jet_preselection(events, fat_jets, params):
+    jets = events.Jet
+    cuts = params.object_preselection.fatJet
+
+    passes_pt = fat_jets.pt > cuts.pt
+    passes_eta = abs(fat_jets.eta) < cuts.eta
+    passes_msoftdrop = (fat_jets.msoftdrop > cuts.msoftdrop_lower) & (fat_jets.msoftdrop < cuts.msoftdrop_upper)
+    passes_nsubjettines_ratio = (fat_jets.tau2/fat_jets.tau1) <= cuts.nsubjettiness_ratio
+    passes_btag_WP = fat_jets.particleNetWithMass_HbbvsQCD > cuts.btagWP
+
+    #subjets cuts
+    passes_subjet1_pt = jets[fat_jets.subJetIdx1].pt > cuts.subjet1.pt
+    passes_subjet1_eta = abs(jets[fat_jets.subJetIdx1].eta) < cuts.subjet1.eta
+    passes_subjet2_pt = jets[fat_jets.subJetIdx2].pt > cuts.subjet2.pt
+    passes_subjet2_eta = abs(jets[fat_jets.subJetIdx2].eta) < cuts.subjet2.eta
+    passes_subjet_cuts = passes_subjet1_pt & passes_subjet1_eta &passes_subjet2_pt & passes_subjet2_eta
+
+    good_jets = passes_pt & passes_eta & passes_msoftdrop & passes_nsubjettines_ratio & passes_btag_WP & passes_subjet_cuts
+    
+    return good_jets
+    
 
 def tau_preselection(events, params, id):
 

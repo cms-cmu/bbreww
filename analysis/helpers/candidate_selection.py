@@ -7,7 +7,7 @@ def candidate_selection(events, params, year):
 
     QvG_key = 'btagPNetQvG' if '202' in year else 'particleNetAK4_QvsG' # use particleNET for quark vs. gluon tagging
     bTag_key = 'btagPNetB' if '202' in year else 'particleNetAK4_B' # use particleNET b-tagging
-    btag_threshold = params[year].btagWP.M # using loose working point
+    btag_threshold = params[year].btagWP.M # using medium working point
 
     j_candidates = events.j_init[ak.argsort(events.j_init.pt, axis=1, ascending=False)] # pt sort to take higher pT when b-tag scores are tied
     j_candidates = j_candidates[ak.argsort(getattr(j_candidates,bTag_key), axis=1, ascending=False)]#particleNetAK4_B btagPNetB

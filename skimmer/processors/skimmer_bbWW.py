@@ -16,7 +16,7 @@ class Skimmer(PicoAOD):
     def __init__(
         self, 
         corrections_metadata: str = "src/physics/corrections.yml",
-        params_file: str = "bbww/analysis/metadata/object_preselection.yaml",
+        params_file: str = "bbww/analysis/metadata/object_preselection_run3.yaml",
         mc_outlier_threshold:int|None=200, *args, **kwargs):
         super().__init__(*args, **kwargs)
         parameters = OmegaConf.load(params_file)
@@ -38,8 +38,8 @@ class Skimmer(PicoAOD):
         event = bjet_flag(event, self.params, year)  
         event = apply_event_selection( event, self.params[year], cut_on_lumimask= not self.is_mc )
 
-        oneE =(event.e_ntight==1) & (event.mu_nloose==0)
-        oneM = (event.mu_ntight==1) & (event.e_nloose==0)
+        oneE =(event.e_ntight==1) & (event.mu_ntight==0)
+        oneM = (event.mu_ntight==1) & (event.e_ntight==0)
         
         selections = PackedSelection()
         selections.add( "lumimask", event.lumimask)

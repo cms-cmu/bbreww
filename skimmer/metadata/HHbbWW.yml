@@ -12,9 +12,6 @@ runner:
   condor_memory: 10GB
   condor_transfer_input_files:
     - src
-    - analysis
-    - skimmer
-    - data
     - bbww
   # rucio_regex_sites: 'T[123]_(US|CH|DE|UK)'
   allowlist_sites:

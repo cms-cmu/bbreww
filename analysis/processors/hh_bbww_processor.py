@@ -16,7 +16,7 @@ from src.physics.event_weights import add_weights
 
 from bbww.analysis.helpers.common import update_events, add_lepton_sfs, get_sequential_cutflow, add_output_cutflow
 from bbww.analysis.helpers.corrections import apply_met_corrections_after_jec
-from bbww.analysis.helpers.object_selection import apply_bbWW_preselection
+from bbww.analysis.helpers.object_selection import apply_bbWW_preselection, apply_mll_cut
 from bbww.analysis.helpers.candidate_selection import candidate_selection
 from bbww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
 from bbww.analysis.helpers.gen_process import gen_process, add_gen_info, gen_studies
@@ -93,33 +93,36 @@ class analysis(processor.ProcessorABC):
         events = add_gen_info(events, self.is_mc) # add gen particle information
         events = apply_bbWW_preselection(events, self.year, self.params, self.is_mc) #preselection
         events = candidate_selection(events, self.params, self.year) # select HH->bbWW candidates
+        events = apply_mll_cut(events)
 
         # apply selections before computing chi_square
         selection.add( "lumimask", events.lumimask) # apply lumimask on data
         selection.add( "passNoiseFilter", events.passNoiseFilter) # apply various noise filters
         selection.add("trigger", events.passHLT) # apply trigger selection
         selection.add('twoBjets', events.has_2_bjets) # require 2 b-tagged jets
-        selection.add('njets',  ak.num(events.j_init[events.j_init.preselected],axis=1)>3) # at least 4 ak4 jets
+        selection.add('njets',  ak.num(events.j_init[events.j_init.preselected],axis=1)>2) # at least 3 ak4 jets
         selection.add('oneBjet', events.has_1_bjet)
         selection.add('isoneEorM', events.e_region | events.mu_region )
         selection.add('tau_veto', (events.tau_nmedium==0))
+        selection.add('mll_cut', events.pass_mll_cut)
         selection.add('nom_njets4',  ak.num(events.j_init[events.j_init.isnominal],axis=1)>3) # nominal pT region
         selection.add('nom_njets3',  ak.num(events.j_init[events.j_init.isnominal],axis=1)==3) # exact 3 jets region
         selection.add('lowpt_njets4', ~selection.all('nom_njets4') & (ak.num(events.j_init[events.j_init.preselected],axis=1)>3) )
         # veto events with jets affected by EE water leak (2022) and hole in Pixel L3/L4 (2023)  
         jet_veto_maps = (ak.all(events.Jet.jet_veto_maps,axis=1) if '202' in self.year 
-                         else ak.ones_like(events.MET.pt,dtype=bool))
+                         else ak.ones_like(events.run,dtype=bool))
+
         selection.add('jet_veto_mask', jet_veto_maps)
 
         selection_list = {
             'basic_selection': ['lumimask', 'passNoiseFilter', 'trigger'],
-            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'isoneEorM', 'tau_veto','twoBjets'],
+            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'isoneEorM', 'tau_veto', 'pass_mll_cut'],
         }
         events['selection'] = ak.zip({
             'preselection': selection.all(*selection_list['preselection']),
-            'nominal_4j2b': selection.all('nom_njets4'),
-            'nominal_3j2b': selection.all('nom_njets3'),
-            'lowpt_4j2b' :  selection.all('lowpt_njets4')
+            'nominal_4j2b': selection.all('nom_njets4') & selection.all('twoBjets'),
+            'nominal_3j2b': selection.all('nom_njets3') & selection.all('twoBjets'),
+            'lowpt_4j2b' :  selection.all('lowpt_njets4') & selection.all('twoBjets')
         })
 
         ## add weights

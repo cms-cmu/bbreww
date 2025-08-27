@@ -80,10 +80,37 @@ def apply_bbWW_preselection(events, year,params, isMC):
     events = jet_selection(events,params, year)
 
     # require exactly one tight electron(muon) with no loose muon(electron)
-    events['e_region'] = (events.e_ntight==1) & (events.mu_nloose==0)
-    events['mu_region'] = (events.mu_ntight==1) & (events.e_nloose==0)
+    events['e_region'] = (events.e_ntight==1) & (events.mu_ntight==0)
+    events['mu_region'] = (events.mu_ntight==1) & (events.e_ntight==0)
     return events
-        
+
+def apply_mll_cut(events):   
+    
+    # electrons
+    loose_e = events.Electron[events.Electron.isloose]
+    loose_e = ak.mask(loose_e, events.e_nloose > 1) # only keep events with two leptons of same flavour
+    e_pairs = ak.argcombinations(loose_e, 2, replacement = False, fields=["e1","e2"])
+    e_pairs_mass = (loose_e[e_pairs.e1] + loose_e[e_pairs.e2]).mass
+
+    is_same_charge_e = (loose_e[e_pairs.e1].charge == loose_e[e_pairs.e2].charge) # pairs with same charge
+    passes_mass_cut_e = (e_pairs_mass > 12.0) & (abs(e_pairs_mass - 91.19) > 10) # m_ll > 12 and abs(m_ll-mZ)<10
+    is_good_pair_e = is_same_charge_e | passes_mass_cut_e # either same charge electrons or pass m_ll cuts
+    pass_cut_e = ak.fill_none(ak.all(is_good_pair_e,axis=1), True) # pass cut for None values
+
+    # muons
+    loose_mu = events.Muon[events.Muon.isloose]
+    loose_mu = ak.mask(loose_mu, events.mu_nloose > 1) # only keep events with two leptons of same flavour
+    mu_pairs = ak.argcombinations(loose_mu, 2, replacement = False, fields=["mu1","mu2"])
+    mu_pairs_mass = (loose_mu[mu_pairs.mu1] + loose_mu[mu_pairs.mu2]).mass
+
+    is_same_charge_mu = (loose_mu[mu_pairs.mu1].charge == loose_mu[mu_pairs.mu2].charge)  # pairs with same charge
+    passes_mass_cut_mu = (mu_pairs_mass > 12.0) (abs(mu_pairs_mass - 91.19) > 10) # m_ll > 12 and abs(m_ll-mZ)<10
+    is_good_pair_mu = is_same_charge_mu | passes_mass_cut_mu # either same charge muons or pass m_ll cuts
+    pass_cut_mu = ak.fill_none(ak.all(is_good_pair_mu,axis=1), True) # pass cut for None values 
+    
+    events['pass_mll_cut'] = pass_cut_e & pass_cut_mu # m_ll > 12 GeV and m_Z window cut on opposite charged leptons
+
+    return events
 
 
 

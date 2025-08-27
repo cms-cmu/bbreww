@@ -174,7 +174,7 @@ def add_output_cutflow(events, output):
             'events': {
                 'preselection':      np.sum(events.selection.preselection[selector]),
                 'nominal_4j2b':      np.sum(events.selection.nominal_4j2b[selector]),
-                'nominal_3j1b':      np.sum(events.selection.nominal_3j2b[selector]),
+                'nominal_3j2b':      np.sum(events.selection.nominal_3j2b[selector]),
                 'lowpt_4j2b':        np.sum(events.selection.lowpt_4j2b[selector]),
                 'chi_sq_nom_4j2b':   np.sum(events.selection.chi_sq_nom_4j2b[selector]),
                 'chi_sq_nom_3j2b':   np.sum(events.selection.chi_sq_nom_3j2b[selector]),
@@ -183,7 +183,7 @@ def add_output_cutflow(events, output):
             'weights': {
                 'preselection':      np.sum(events.weight[events.selection.preselection[selector]]),
                 'nominal_4j2b':      np.sum(events.weight[events.selection.nominal_4j2b[selector]]),
-                'nominal_3j1b':      np.sum(events.weight[events.selection.nominal_3j2b[selector]]),
+                'nominal_3j2b':      np.sum(events.weight[events.selection.nominal_3j2b[selector]]),
                 'lowpt_4j2b':        np.sum(events.weight[events.selection.lowpt_4j2b[selector]]),
                 'chi_sq_nom_4j2b':   np.sum(events.weight[events.selection.chi_sq_nom_4j2b[selector]]),
                 'chi_sq_nom_3j2b':   np.sum(events.weight[events.selection.chi_sq_nom_3j2b[selector]]),

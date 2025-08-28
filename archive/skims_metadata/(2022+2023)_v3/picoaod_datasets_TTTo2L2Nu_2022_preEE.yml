@@ -1,0 +1,105 @@
+TTTo2L2Nu_2022_preEE:
+  count: 24047488
+  cutFlowFourTag:
+    all: 1330151439.2372131
+    isoneEorM: 570725366.3230896
+    lumimask: 1330151439.2372131
+    njets: 438126415.1576996
+    oneBjet: 515248273.11286926
+    passNoiseFilter: 1329459785.2027893
+    trigger: 838404966.8010712
+  cutFlowFourTagUnitWeight:
+    all: 16534144
+    isoneEorM: 7091838
+    lumimask: 16534144
+    njets: 5444501
+    oneBjet: 6401351
+    passNoiseFilter: 16525448
+    trigger: 10417217
+  cutFlowThreeTag:
+    all: 1330151439.2372131
+    isoneEorM: 570725366.3230896
+    lumimask: 1330151439.2372131
+    njets: 438126415.1576996
+    oneBjet: 515248273.11286926
+    passNoiseFilter: 1329459785.2027893
+    trigger: 838404966.8010712
+  cutFlowThreeTagUnitWeight:
+    all: 16534144
+    isoneEorM: 7091838
+    lumimask: 16534144
+    njets: 5444501
+    oneBjet: 6401351
+    passNoiseFilter: 16525448
+    trigger: 10417217
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TTTo2L2Nu_2022_preEE/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TTTo2L2Nu_2022_preEE/picoAOD.chunk1.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TTTo2L2Nu_2022_preEE/picoAOD.chunk2.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TTTo2L2Nu_2022_preEE/picoAOD.chunk3.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TTTo2L2Nu_2022_preEE/picoAOD.chunk4.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TTTo2L2Nu_2022_preEE/picoAOD.chunk5.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TTTo2L2Nu_2022_preEE/picoAOD.chunk6.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TTTo2L2Nu_2022_preEE/picoAOD.chunk7.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TTTo2L2Nu_2022_preEE/picoAOD.chunk8.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TTTo2L2Nu_2022_preEE/picoAOD.chunk9.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TTTo2L2Nu_2022_preEE/picoAOD.chunk10.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TTTo2L2Nu_2022_preEE/picoAOD.chunk11.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TTTo2L2Nu_2022_preEE/picoAOD.chunk12.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TTTo2L2Nu_2022_preEE/picoAOD.chunk13.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TTTo2L2Nu_2022_preEE/picoAOD.chunk14.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TTTo2L2Nu_2022_preEE/picoAOD.chunk15.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbww/skimmer/processors/skimmer_bbWW.py', configs='bbww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbww/metadata/datasets_run3.yml', triggers='bbww/metadata/triggers_bbWW.yml',
+      luminosities='bbww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_TTTo2L2Nu_2022_preEE.yml',
+      output_path='output/skimmer/', years=['2022_preEE'], datasets=['TTTo2L2Nu'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, run_dask=True,
+      condor=True, debug=False, check_input_files=False, githash='', gitdiff='')
+    date: '2025-08-25 13:21:01'
+    diff: "diff --git a/src/physics/corrections.yml b/src/physics/corrections.yml\n\
+      index ef162bf5..5aab84b9 100644\n--- a/src/physics/corrections.yml\n+++ b/src/physics/corrections.yml\n\
+      @@ -383,9 +383,8 @@\n '2023_BPix':\n   year_label: '2023'\n   goldenJSON: 'src/data/goldenJSON/Cert_Collisions2023_366442_370790_Golden.json'\n\
+      -  PU: \n-    file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23BPix/puWeights.json.gz'\n\
+      -    tag: Collisions2023_369803_370790_eraD_GoldenJson\n+  PU: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23BPix/puWeights.json.gz'\n\
+      +\n   ele_sf: \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23BPix/electron.json.gz'\n\
+      \     HLT: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23BPix/electronHlt.json.gz'\n\
+      diff --git a/src/physics/event_weights.py b/src/physics/event_weights.py\nindex\
+      \ f7041c06..e6e92aea 100644\n--- a/src/physics/event_weights.py\n+++ b/src/physics/event_weights.py\n\
+      @@ -25,6 +25,14 @@ def add_weights(event, do_MC_weights: bool = True,\n    \
+      \     xs      = event.metadata.get('xs',      1.0)\n         kFactor = event.metadata.get('kFactor',\
+      \ 1.0)\n         weights.add( \"genweight\", event.genWeight * (lumi * xs *\
+      \ kFactor / event.metadata[\"genEventSumw\"]) )\n+        #TEMP for testing\
+      \ on nanoAOD\n+        #if 'TTToSemiLeptonic' in event.metadata['dataset']:\n\
+      +        #    print('ttbar weight calc')\n+        #    weights.add( \"genweight\"\
+      , event.genWeight * (lumi * xs * kFactor / 25728069186.25) )\n+        #elif\
+      \ 'GluGluToHHTo2B2VLNu2J' in event.metadata['dataset']:\n+        #   print('signal\
+      \ weight calc')\n+        #    weights.add( \"genweight\", event.genWeight *\
+      \ (lumi * xs * kFactor / 2668.1345007419586) )\n+\n         list_weight_names.append('genweight')\n\
+      \         logging.debug( f\"genweight {weights.partial_weight(include=['genweight'])[:10]}\\\
+      n\" )\n         logging.debug( f\" = {event.genWeight} * ({lumi} * {xs} * {kFactor}\
+      \ / {event.metadata['genEventSumw']})\\n\")\ndiff --git a/src/physics/objects/jet_corrections.py\
+      \ b/src/physics/objects/jet_corrections.py\nindex ab0ca62b..1211317b 100644\n\
+      --- a/src/physics/objects/jet_corrections.py\n+++ b/src/physics/objects/jet_corrections.py\n\
+      @@ -37,7 +37,7 @@ def extract_jetmet_tar_files(tar_file_name: str=None,\n \n\
+      \                 new_file_name = member.name\n                 if ('Puppi'\
+      \ in jet_type) and (jet_type in member.name):\n-                    if ('Summer23'\
+      \ not in member.name): # need a second if to avoid getting False and False =\
+      \ True\n+                    if ('Summer23' not in member.name):\n         \
+      \                new_file_name = member.name.replace('_', '', 1) #22 and 23\
+      \ corrections have different name formats\n                         member.name\
+      \ = new_file_name\n \ndiff --git a/src/skimmer/picoaod.py b/src/skimmer/picoaod.py\n\
+      index 2226ad3c..f1b17b62 100644\n--- a/src/skimmer/picoaod.py\n+++ b/src/skimmer/picoaod.py\n\
+      @@ -13,7 +13,7 @@ import awkward as ak\n import numpy as np\n import numpy.typing\
+      \ as npt\n import uproot\n-from python.analysis.helpers.cutflow import cutFlow\n\
+      +from src.utils.cutflow import cutFlow\n from src.data_formats.awkward.zip import\
+      \ NanoAOD\n from src.data_formats.root import Chunk, TreeReader, TreeWriter,\
+      \ merge\n from src.storage.eos import EOS, PathLike\n"
+    hash: b28d4e7c8058642ccc737bde8597e7974d47d468
+  saved_events: 7920637
+  sumw: 1934586301.1992188
+  sumw2: 158180604753.5
+  sumw2_raw: 158180590874.2008
+  sumw_raw: 1934586574.233201
+  total_events: 24047488

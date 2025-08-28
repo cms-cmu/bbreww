@@ -2,30 +2,39 @@ data__EGamma_2022_preEED:
   count: 89134996.0
   cutFlowFourTag:
     all: 89134996.0
-    isoneEorM: 63113.0
+    isoneEorM: 15561248.0
     lumimask: 79635067.0
+    njets: 906597.0
+    oneBjet: 1794642.0
     passNoiseFilter: 79376419.0
-    trigger: 800908.0
+    trigger: 32521258.0
   cutFlowFourTagUnitWeight:
     all: 89134996
-    isoneEorM: 63113
+    isoneEorM: 15561248
     lumimask: 79635067
+    njets: 906597
+    oneBjet: 1794642
     passNoiseFilter: 79376419
-    trigger: 800908
+    trigger: 32521258
   cutFlowThreeTag:
     all: 89134996.0
-    isoneEorM: 63113.0
+    isoneEorM: 15561248.0
     lumimask: 79635067.0
+    njets: 906597.0
+    oneBjet: 1794642.0
     passNoiseFilter: 79376419.0
-    trigger: 800908.0
+    trigger: 32521258.0
   cutFlowThreeTagUnitWeight:
     all: 89134996
-    isoneEorM: 63113
+    isoneEorM: 15561248
     lumimask: 79635067
+    njets: 906597
+    oneBjet: 1794642
     passNoiseFilter: 79376419
-    trigger: 800908
+    trigger: 32521258
   files:
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/data__EGamma_2022_preEED/picoAOD.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__EGamma_2022_preEED/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__EGamma_2022_preEED/picoAOD.chunk1.root
   lumis_processed:
     357538:
     - 1
@@ -13244,50 +13253,53 @@ data__EGamma_2022_preEED:
     - 382
   missing: {}
   reproducible:
-    args: Namespace(processor='bbww/skimmer/processors/skimmer_bbWW.py', configs='bbww//skimmer/metadata/HHbbWW.yml',
-      metadata='bbww/metadata/datasets_run3.yml', triggers='metadata/triggers_HH4b.yml',
-      luminosities='metadata/luminosities_HH4b.yml', output_file='picoaod_datasets_EGamma_2022preEE_eraD.yml',
-      output_path='bbww/output/skimmer/', years=['2022_preEE'], datasets=['EGamma'],
+    args: Namespace(processor='bbww/skimmer/processors/skimmer_bbWW.py', configs='bbww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbww/metadata/datasets_run3.yml', triggers='bbww/metadata/triggers_bbWW.yml',
+      luminosities='bbww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_EGamma_2022_preEE_eraD.yml',
+      output_path='output/skimmer/', years=['2022_preEE'], datasets=['data__EGamma'],
       era=['D'], skimming=True, test=False, run_dask=True, condor=True, debug=False,
       check_input_files=False, githash='', gitdiff='')
-    date: '2025-08-03 21:54:46'
-    diff: "diff --git a/python/scripts/skimmer-test-job.sh b/python/scripts/skimmer-test-job.sh\n\
-      index f80a945d..4da91158 100644\n--- a/python/scripts/skimmer-test-job.sh\n\
-      +++ b/python/scripts/skimmer-test-job.sh\n@@ -9,20 +9,23 @@ fi\n \n echo \"\
-      ############### Changing metadata\"\n if [[ $(hostname) = *fnal* ]]; then\n\
-      -    sed -e \"s#base_path.*#base_path: \\/srv\\/output\\/skimmer_test_job\\\
-      /#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files: 1/\" -e \"\
-      s/2024_.*/tmp\\//\" skimmer/metadata/HH4b.yml > $OUTPUT_DIR/HH4b.yml\n+    sed\
-      \ -e \"s#base_path.*#base_path: \\/srv\\/output\\/skimmer_test_job\\/#\" -e\
-      \ \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files: 1/\" -e \"s/2024_.*/tmp\\\
-      //\" bbww/skimmer/metadata/HHbbWW.yml > $OUTPUT_DIR/HHbbWW.yml\n else\n-   \
-      \ sed -e \"s#base_path.*#base_path: /builds/${CI_PROJECT_PATH}/python/output\\\
-      /skimmer_test_job\\/#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files:\
-      \ 1/\" -e \"s/2024_.*/tmp\\//\" -e \"s/T3_US_FNALLPC/T3_CH_PSI/\" skimmer/metadata/HH4b.yml\
-      \ > $OUTPUT_DIR/HH4b.yml\n+    sed -e \"s#base_path.*#base_path: /builds/${CI_PROJECT_PATH}/python/output\\\
-      /skimmer_test_job\\/#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files:\
-      \ 1/\" -e \"s/2024_.*/tmp\\//\" -e \"s/T3_US_FNALLPC/T3_CH_PSI/\" bbww/skimmer/metadata/HHbbWW.yml\
-      \ > $OUTPUT_DIR/HHbbWW.yml\n fi\n-cat $OUTPUT_DIR/HH4b.yml\n+cat $OUTPUT_DIR/HHbbWW.yml\n\
-      +\n \n #nanoAOD_file=\"root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/70000/92D0BDF3-91AE-514F-88B5-8F591450B8AD.root\"\
-      \n #sed -e \"s#/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9.*#[\
-      \ '${nanoAOD_file}' ]#\" metadata/datasets_HH4b.yml > $OUTPUT_DIR/datasets_HH4b.yml\n\
-      \ #python runner.py -s -p skimmer/processor/skimmer_4b.py -c $OUTPUT_DIR/datasets_HH4b.yml\
-      \ -y UL18 -d TTToSemiLeptonic -op $OUTPUT_DIR -o picoaod_datasets_TTToSemiLeptonic_UL18.yml\
-      \ -m $OUTPUT_DIR/datasets_HH4b.yml  -t \n \n-nanoAOD_file=\"root://cmseos.fnal.gov//store/mc/RunIISummer20UL18NanoAODv9/GluGluToHHTo4B_cHHH0_TuneCP5_PSWeights_13TeV-powheg-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/70000/3F95108D-84D2-CD4D-A0D2-324A7D15E691.root\"\
-      \n-sed -e \"s#/GluGluToHHTo4B_cHHH0_TuneCP5_PSWeights_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9.*#[\
-      \ '${nanoAOD_file}' ]#\" metadata/datasets_HH4b.yml > $OUTPUT_DIR/datasets_HH4b.yml\n\
-      +nanoAOD_file=\"root://cmseos.fnal.gov//store/mc/Run3Summer22NanoAODv13/GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/133X_mcRun3_2022_realistic_ForNanov13_v1-v2/2830000/1ee1335c-a70a-4fba-9c2d-5ab8d5cd0287.root\"\
-      \n+sed -e \"s#/GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv13-133X_mcRun3_2022_realistic_ForNanov13_v1-v2.*#[\
-      \ '${nanoAOD_file}' ]#\" bbww/metadata/datasets_run3.yml > $OUTPUT_DIR/datasets_run3.yml\n\
-      +\n+\n echo \"############### Running test processor\"\n-python runner.py -s\
-      \ -p skimmer/processor/skimmer_4b.py -c $OUTPUT_DIR/HH4b.yml -y UL18 -d GluGluToHHTo4B_cHHH0\
-      \ -op $OUTPUT_DIR -o picoaod_datasets_GluGluToHHTo4B_cHHH0_UL18.yml -m $OUTPUT_DIR/datasets_HH4b.yml\
-      \  -t \n+python runner.py -s -p bbww/skimmer/processors/skimmer_bbWW.py -c bbww/skimmer/metadata/HHbbWW.yml\
-      \ -y 2022_preEE -d GluGluToHHTo2B2VLNu2J -op $OUTPUT_DIR -o picoaod_datasets_GluGluToHHtobbWW_test.yml\
-      \ -m bbww/metadata/datasets_run3.yml  -t \n ls -R $OUTPUT_DIR\n \n if [ \"$return_to_base\"\
-      \ = true ]; then\n"
-    hash: 12afb3fa8a75861f422efee653414e9a818b21b4
-  saved_events: 63113
+    date: '2025-08-25 14:01:17'
+    diff: "diff --git a/src/physics/corrections.yml b/src/physics/corrections.yml\n\
+      index ef162bf5..5aab84b9 100644\n--- a/src/physics/corrections.yml\n+++ b/src/physics/corrections.yml\n\
+      @@ -383,9 +383,8 @@\n '2023_BPix':\n   year_label: '2023'\n   goldenJSON: 'src/data/goldenJSON/Cert_Collisions2023_366442_370790_Golden.json'\n\
+      -  PU: \n-    file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23BPix/puWeights.json.gz'\n\
+      -    tag: Collisions2023_369803_370790_eraD_GoldenJson\n+  PU: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23BPix/puWeights.json.gz'\n\
+      +\n   ele_sf: \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23BPix/electron.json.gz'\n\
+      \     HLT: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23BPix/electronHlt.json.gz'\n\
+      diff --git a/src/physics/event_weights.py b/src/physics/event_weights.py\nindex\
+      \ f7041c06..e6e92aea 100644\n--- a/src/physics/event_weights.py\n+++ b/src/physics/event_weights.py\n\
+      @@ -25,6 +25,14 @@ def add_weights(event, do_MC_weights: bool = True,\n    \
+      \     xs      = event.metadata.get('xs',      1.0)\n         kFactor = event.metadata.get('kFactor',\
+      \ 1.0)\n         weights.add( \"genweight\", event.genWeight * (lumi * xs *\
+      \ kFactor / event.metadata[\"genEventSumw\"]) )\n+        #TEMP for testing\
+      \ on nanoAOD\n+        #if 'TTToSemiLeptonic' in event.metadata['dataset']:\n\
+      +        #    print('ttbar weight calc')\n+        #    weights.add( \"genweight\"\
+      , event.genWeight * (lumi * xs * kFactor / 25728069186.25) )\n+        #elif\
+      \ 'GluGluToHHTo2B2VLNu2J' in event.metadata['dataset']:\n+        #   print('signal\
+      \ weight calc')\n+        #    weights.add( \"genweight\", event.genWeight *\
+      \ (lumi * xs * kFactor / 2668.1345007419586) )\n+\n         list_weight_names.append('genweight')\n\
+      \         logging.debug( f\"genweight {weights.partial_weight(include=['genweight'])[:10]}\\\
+      n\" )\n         logging.debug( f\" = {event.genWeight} * ({lumi} * {xs} * {kFactor}\
+      \ / {event.metadata['genEventSumw']})\\n\")\ndiff --git a/src/physics/objects/jet_corrections.py\
+      \ b/src/physics/objects/jet_corrections.py\nindex ab0ca62b..1211317b 100644\n\
+      --- a/src/physics/objects/jet_corrections.py\n+++ b/src/physics/objects/jet_corrections.py\n\
+      @@ -37,7 +37,7 @@ def extract_jetmet_tar_files(tar_file_name: str=None,\n \n\
+      \                 new_file_name = member.name\n                 if ('Puppi'\
+      \ in jet_type) and (jet_type in member.name):\n-                    if ('Summer23'\
+      \ not in member.name): # need a second if to avoid getting False and False =\
+      \ True\n+                    if ('Summer23' not in member.name):\n         \
+      \                new_file_name = member.name.replace('_', '', 1) #22 and 23\
+      \ corrections have different name formats\n                         member.name\
+      \ = new_file_name\n \ndiff --git a/src/skimmer/picoaod.py b/src/skimmer/picoaod.py\n\
+      index 2226ad3c..f1b17b62 100644\n--- a/src/skimmer/picoaod.py\n+++ b/src/skimmer/picoaod.py\n\
+      @@ -13,7 +13,7 @@ import awkward as ak\n import numpy as np\n import numpy.typing\
+      \ as npt\n import uproot\n-from python.analysis.helpers.cutflow import cutFlow\n\
+      +from src.utils.cutflow import cutFlow\n from src.data_formats.awkward.zip import\
+      \ NanoAOD\n from src.data_formats.root import Chunk, TreeReader, TreeWriter,\
+      \ merge\n from src.storage.eos import EOS, PathLike\n"
+    hash: b28d4e7c8058642ccc737bde8597e7974d47d468
+  saved_events: 906597
   sumw: 89134996
   sumw2: 89134996
   total_events: 89134996

@@ -4,8 +4,8 @@ import awkward as ak
 import numpy as np
 import yaml
 from omegaconf import OmegaConf
-from analysis.helpers.mc_weight_outliers import OutlierByMedian
-from bbww.analysis.helpers.object_selection import apply_bbWW_preselection
+from src.skimmer.mc_weight_outliers import OutlierByMedian
+from bbww.analysis.helpers.object_selection import electron_selection, muon_selection, jet_selection
 from bbww.analysis.helpers.candidate_selection import bjet_flag
 from src.physics.event_selection import apply_event_selection
 from coffea.analysis_tools import PackedSelection, Weights
@@ -34,7 +34,9 @@ class Skimmer(PicoAOD):
         #
         # Set process and datset dependent flags
         #
-        event = apply_bbWW_preselection(event, year, self.params, self.is_mc )
+        event = muon_selection(event, self.params) #muons
+        event = electron_selection(event, self.params) #electrons
+        event = jet_selection(event, self.params, year)
         event = bjet_flag(event, self.params, year)  
         event = apply_event_selection( event, self.params[year], cut_on_lumimask= not self.is_mc )
 

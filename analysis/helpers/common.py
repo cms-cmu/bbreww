@@ -169,7 +169,7 @@ def add_output_cutflow(events, output):
     'mu_region':  events.region.mu_region,
     'e_region':   events.region.e_region
     }
-    output['cutflow_weights'][events.metadata['dataset']] = {
+    output['cutflow'][events.metadata['dataset']] = {
         name: {
             'events': {
                 'preselection':      np.sum(events.selection.preselection[selector]),

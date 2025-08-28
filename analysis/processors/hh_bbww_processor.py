@@ -191,7 +191,7 @@ class analysis(processor.ProcessorABC):
                 'n_events' : self.n_events,
                 'sum_genweights': np.sum(events.genWeight) if self.is_mc else self.n_events,
             }
-            output['cutflow_weights'] = {}
+            output['cutflow'] = {}
             output = add_output_cutflow(events, output)
 
         hists = fill_histograms(

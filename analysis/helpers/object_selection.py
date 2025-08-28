@@ -15,7 +15,7 @@ def met_selection(events, year, is_Data):
     return events
 
 
-def muon_selection(events,year,params):       
+def muon_selection(events,params):       
     events['Muon','isloose'] = lepton_preselection(events, "Muon", params, "loose")
     events['Muon','istight'] = lepton_preselection(events, "Muon", params, "tight")
 
@@ -24,7 +24,7 @@ def muon_selection(events,year,params):
 
     return events
 
-def electron_selection(events,year, params):       
+def electron_selection(events, params):       
     e = events.Electron
     
     events['Electron', 'isloose'] = lepton_preselection(events, "Electron", params, "loose")
@@ -64,12 +64,17 @@ def jet_selection(events, params, year):
         ak.all(events.Jet.metric_table(events.Muon[events.Muon.isloose]) > 0.4, axis=2)
         & ak.all(events.Jet.metric_table(e_clean[e_clean.isloose]) > 0.4, axis=2)
     )
-    events['Jet', 'isnominal'], events['Jet', 'issoft'],  events['Jet', 'preselected'] = jet_preselection(events, params, year)
+    events['Jet', 'isnominal'], events['Jet', 'issoft'],  events['Jet', 'preselected'] = jet_preselection(events, params)
 
     j_clean = events.Jet[events.Jet.isclean]
     j_soft = j_clean[j_clean.issoft]
     events['j_nsoft']= ak.num(j_soft, axis=1)
+    ####
 
+    return events
+
+def ak8_jet_selection(events,params):
+    e_clean = events.Electron[events.Electron.isclean]
     #### AK-8 jets selection
     is_clean_ak8 = (
         ak.all(events.FatJet.metric_table(events.Muon[events.Muon.isloose]) > 0.8, axis=2)
@@ -77,8 +82,6 @@ def jet_selection(events, params, year):
     )
     ak8_selected = ak8_jet_preselection(events, events.FatJet[is_clean_ak8], params)
     events['n_ak8_jets'] = ak.num(ak8_selected,  axis=1)
-    ####
-
     return events
 
 def apply_mll_cut(events):   
@@ -111,10 +114,11 @@ def apply_mll_cut(events):
 
 def apply_bbWW_preselection(events, year,params, isMC):
     events = met_selection(events, year, not isMC)
-    events = muon_selection(events, year, params) #muons
-    events = electron_selection(events, year, params) #electrons
+    events = muon_selection(events, params) #muons
+    events = electron_selection(events, params) #electrons
     events = tau_selection(events,params)
     events = jet_selection(events,params, year)
+    events = ak8_jet_selection(events, params)
 
     # require exactly one tight electron(muon) with no loose muon(electron)
     events['e_region'] = (events.e_ntight==1) & (events.mu_ntight==0)

@@ -15,7 +15,7 @@ fi
 bash bbww/scripts/run_processor.sh \
     --output-base "$OUTPUT_BASE_DIR" \
     --processor "bbww/analysis/processors/hh_bbww_processor.py" \
-    --metadata "bbww/metadata/datasets.yml" \
+    --metadata "bbww/metadata/skims_v3" \
     --config "bbww/analysis/metadata/HHbbWW.yml" \
     --datasets "GluGluToHHTo2B2VLNu2J TTToSemiLeptonic" \
     --year "2022_EE" \

@@ -5,23 +5,27 @@ import numpy as np
 import yaml
 from omegaconf import OmegaConf
 from src.skimmer.mc_weight_outliers import OutlierByMedian
+from src.physics.event_selection import apply_event_selection
+from src.skimmer.picoaod import PicoAOD
 from bbww.analysis.helpers.object_selection import electron_selection, muon_selection, jet_selection
 from bbww.analysis.helpers.candidate_selection import bjet_flag
-from src.physics.event_selection import apply_event_selection
+from bbww.analysis.helpers.cutflow import cutflow_bbWW
 from coffea.analysis_tools import PackedSelection, Weights
-from src.skimmer.picoaod import PicoAOD
 
 
 class Skimmer(PicoAOD):
     def __init__(
-        self, 
-        corrections_metadata: str = "src/physics/corrections.yml",
-        params_file: str = "bbww/analysis/metadata/object_preselection_run3.yaml",
-        mc_outlier_threshold:int|None=200, *args, **kwargs):
+            self, 
+            corrections_metadata: dict = {},
+            params_file: str = "bbww/analysis/metadata/object_preselection_run3.yaml",
+            mc_outlier_threshold:int|None=200, 
+            *args, **kwargs
+        ):
         super().__init__(*args, **kwargs)
         parameters = OmegaConf.load(params_file)
         self.params = OmegaConf.merge(corrections_metadata, parameters)
         self.mc_outlier_threshold = mc_outlier_threshold
+        self._cutFlow = cutflow_bbWW()
 
 
     def select(self, event):
@@ -44,25 +48,32 @@ class Skimmer(PicoAOD):
         oneM = (event.mu_ntight==1) & (event.e_ntight==0)
         
         selections = PackedSelection()
-        selections.add( "lumimask", event.lumimask)
-        selections.add( "passNoiseFilter", event.passNoiseFilter)
-        selections.add("trigger", event.passHLT)
+        selections.add('lumimask', event.lumimask)
+        selections.add('passNoiseFilter', event.passNoiseFilter)
+        selections.add('trigger', event.passHLT)
         selections.add('isoneEorM', oneE|oneM )
         selections.add('oneBjet', event.has_1_bjet)
         selections.add('njets', ak.num(event.j_init, axis=1) > 2)
-        final_selection = selections.require(lumimask=True, passNoiseFilter=True, trigger = True, 
-                                             njets = True, oneBjet = True, isoneEorM = True)
+        final_selection = selections.require(
+            lumimask=True,
+            passNoiseFilter=True,
+            trigger=True,
+            njets=True,
+            oneBjet=True,
+            isoneEorM=True
+        )
 
         weights = Weights(len(event), storeIndividual=True)
         if self.is_mc:
             weights.add( "genweight_", event.genWeight )
         event["weight"] = weights.weight()
 
-        self._cutFlow.fill( "all", event, allTag=True )
-        cumulative_cuts = []
-        for cut in selections.names:
-            cumulative_cuts.append(cut)
-            self._cutFlow.fill( cut, event[selections.all(*cumulative_cuts)], allTag=True )
+        ### Needs to be fixed
+        # self._cutFlow.fill( "all", event, allTag=True )
+        # cumulative_cuts = []
+        # for cut in selections.names:
+        #     cumulative_cuts.append(cut)
+        #     self._cutFlow.fill( cut, event[selections.all(*cumulative_cuts)], allTag=True )
 
         processOutput = {}
 

@@ -23,11 +23,14 @@ def candidate_selection(events, params, year):
     j_candidates = ak.mask(j_candidates, events.has_2_bjets)
     j_bcand_pool = ak.mask(j_bcand_pool, events.has_2_bjets)
     events['j_bcand'] = j_bcand_pool[:,:2]
+    j_bcand_sorted = events.j_bcand[ak.argsort(events.j_bcand.pt, axis=1, ascending=False)]
+    events['j_bcand_lead'] = j_bcand_sorted[:,0]
+    events['j_bcand_sublead'] = j_bcand_sorted[:,1] 
 
     # nominal non-bjet selection
     j_candidates_nom = j_candidates[j_candidates.isnominal] # pt > 25 GeV jets (nominal)
     j_candidates_nom = ak.mask(j_candidates_nom[:,2:], ak.num(j_candidates_nom[:,2:],axis=1)>=2) # require 2 or more non-bjets
-    j_candidates_nom = j_candidates[ak.argsort(j_candidates.pt, axis=1, ascending=False)] # pT sort the jets
+    j_candidates_nom = j_candidates_nom[ak.argsort(j_candidates_nom.pt, axis=1, ascending=False)] # pT sort the jets
     j_candidates_nom = j_candidates_nom[:,:2] # take leading two pT jets
     events['qq_nom'] = j_candidates_nom[:,0] + j_candidates_nom[:,1]
 
@@ -39,7 +42,7 @@ def candidate_selection(events, params, year):
 
     jj_i = ak.argcombinations(j_candidates,2,replacement = False, fields=["j1","j2"]) #take dijet combinations
     jj_i = jj_i[(j_candidates[jj_i.j1]-j_candidates[jj_i.j2]).eta<2.0]
-    jj_i = jj_i[(j_candidates[jj_i.j1]+ j_candidates[jj_i.j2]).mass<120.0] #dijet cuts
+    #jj_i = jj_i[(j_candidates[jj_i.j1]+ j_candidates[jj_i.j2]).mass<120.0] #dijet cuts
     events['dijet_combs'] = jj_i
     
     events['j_sublead'] =  j_candidates[jj_i.j2] # subleading jet
@@ -47,6 +50,7 @@ def candidate_selection(events, params, year):
     events['qq_mass'] = ak.fill_none((j_candidates[jj_i.j1] + j_candidates[jj_i.j2]).mass,np.nan) # plotting gives issues with None values
     events['qq_soft'] = ak.pad_none(j_candidates[jj_i.j1] + j_candidates[jj_i.j2], 3, axis=1)
     events['mbb'] = (events.j_bcand[:,0]+events.j_bcand[:,1]).mass
+    events['bb_dr'] = events.j_bcand[:,0].delta_r(events.j_bcand[:,1])
 
     events['njets'] = ak.fill_none(ak.num(j_clean[j_clean.isnominal],axis=1),np.nan)
 

@@ -53,7 +53,9 @@ def fill_histograms(
     fill += hist.add("bjets_genjets_dr", (30, -0.5, 5, ("bjets_genjets_dr", r'$\Delta$ R between b-candidates (genjets)')))
     fill += hist.add("bjets_genjets_mass", (50, -0.5, 250, ("bjets_genjets_mass", "H-> bb candidate (genjets) mass[GeV]")))
     fill += hist.add("nonbjet_pt", (50, -0.5, 250, ("j_nonbcand.pt", "non-bjets pT [GeV]")))
-    fill += hist.add("bjet_pt", (50, -0.5, 250, ("j_bcand.pt", "bjets pT [GeV]")))
+    fill += hist.add("bjet_pt_lead", (50, -0.5, 250, ("j_bcand_lead.pt", "leading bjet pT [GeV]")))
+    fill += hist.add("bjet_pt_sublead", (50, -0.5, 250, ("j_bcand_sublead.pt", "subleading bjet pT [GeV]")))
+
 
     fill += hist.add("qq_mass", (50, -0.5, 250, ("qq_mass", "non-bjets pT [GeV]")))
     fill += hist.add("mT", (60, -0.5, 250, ("mT_leading_lep", "transverse mass W->lv [GeV]")))

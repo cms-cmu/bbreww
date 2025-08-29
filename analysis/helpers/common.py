@@ -46,35 +46,20 @@ def chi_square(data,mean,std):
     chi2 = ((data - mean)/std)**2
     return chi2
 
-def met_reconstr(events, e, mu):
-    met = events.met    
-    pz_e = nu_pz(e, met)
-    pz_mu = nu_pz(mu,met)
-    v_e = ak.zip({
+def met_reconstr(events, lep):
+    met = events.MET   
+    pz = nu_pz(lep, met)
+    nu = ak.zip({
             "x": met.pt * np.cos(met.phi),
             "y": met.pt * np.sin(met.phi),
-            "z": pz_e,
-            "t": np.sqrt(met.pt**2 + pz_e**2),
+            "z": pz,
+            "t": np.sqrt(met.pt**2 + pz**2),
         },
         with_name="LorentzVector",
         behavior=vector.behavior,
     )
 
-    v_mu = ak.zip(
-        {
-            "x": met.pt * np.cos(met.phi),
-            "y": met.pt * np.sin(met.phi),
-            "z": pz_mu,
-            "t": np.sqrt(met.pt**2+pz_mu**2) ,
-        },
-        with_name="LorentzVector",
-        behavior=vector.behavior,
-    )
-
-    v_mu = ak.mask(v_mu, ~np.isnan(v_mu.pz))
-    v_e = ak.mask(v_e, ~np.isnan(v_e.pz)) #avoid calculations for imaginary solutions
-
-    return v_mu, v_e
+    return nu
 
 def get_ele_sfs(params, electron, year):
     reco_sf =  ak.where(
@@ -119,24 +104,23 @@ def get_mu_sfs(params, muon, year):
 #combined electron and muon scale factors
 # 0: electron, 1: muon
 def add_lepton_sfs(params, events, electron, muon, weights, year, is_mc):
-    if is_mc:
-        e_clean = electron[electron.isclean]        
-        ele_reco_sf, ele_id_sf, ele_trig_sf = get_ele_sfs(params, e_clean, year)
+    if is_mc:        
+        ele_reco_sf, ele_id_sf, ele_trig_sf = get_ele_sfs(params, electron, year)
         mu_reco_sf = ak.ones_like(events.Muon.pt, dtype = float)
         mu_iso_sf, mu_id_sf, mu_trig_sf = get_mu_sfs(params, muon, year)
         ele_iso_sf = ak.ones_like(events.Electron.pt, dtype = float)
         
         reco_sf = ak.where(events.e_region, # select leading lepton out of leading electrons and leading muons
-                        ak.firsts(ele_reco_sf[e_clean.istight]),# leading electrons
+                        ak.firsts(ele_reco_sf[electron.istight]),# leading electrons
                         ak.firsts(mu_reco_sf[muon.istight])) # leading muons
         id_sf = ak.where(events.e_region, 
-                        ak.firsts(ele_id_sf[e_clean.istight]), 
+                        ak.firsts(ele_id_sf[electron.istight]), 
                         ak.firsts(mu_id_sf[muon.istight]))
         iso_sf = ak.where(events.e_region, 
                         ak.firsts(ele_iso_sf[electron.istight]),
                         ak.firsts(mu_iso_sf[muon.istight]))
         trig_sf = ak.where(events.e_region, 
-                        ak.firsts(ele_trig_sf[e_clean.istight]),
+                        ak.firsts(ele_trig_sf[electron.istight]),
                         ak.firsts(mu_trig_sf[muon.istight]))
 
         weights.add('reco_sf', reco_sf)
@@ -144,52 +128,3 @@ def add_lepton_sfs(params, events, electron, muon, weights, year, is_mc):
         weights.add('iso_sf', iso_sf)
         weights.add('trig_sf', trig_sf)
     return weights
-
-def get_sequential_cutflow(selection, events, selection_list):
-    sequential_cutflow = {
-        'events': {},
-        'weights': {}
-    }
-    cumulative_cuts = []
-
-    for cut_name in selection_list:
-        # Add the cuts in sequence
-        cumulative_cuts.append(cut_name)
-        current_mask = selection.all(*cumulative_cuts)
-        
-        sequential_cutflow['events'][cut_name] = np.sum(current_mask)
-        sequential_cutflow['weights'][cut_name] = np.sum(events.weight[current_mask])
-
-    return sequential_cutflow
-
-def add_output_cutflow(events, output):
-    region_map = {
-    'hadronic_W': events.channel.hadronic_W,
-    'leptonic_W': events.channel.leptonic_W,
-    'mu_region':  events.region.mu_region,
-    'e_region':   events.region.e_region
-    }
-    output['cutflow'][events.metadata['dataset']] = {
-        name: {
-            'events': {
-                'preselection':      np.sum(events.selection.preselection[selector]),
-                'nominal_4j2b':      np.sum(events.selection.nominal_4j2b[selector]),
-                'nominal_3j2b':      np.sum(events.selection.nominal_3j2b[selector]),
-                'lowpt_4j2b':        np.sum(events.selection.lowpt_4j2b[selector]),
-                'chi_sq_nom_4j2b':   np.sum(events.selection.chi_sq_nom_4j2b[selector]),
-                'chi_sq_nom_3j2b':   np.sum(events.selection.chi_sq_nom_3j2b[selector]),
-                'chi_sq_lowpt_4j2b': np.sum(events.selection.chi_sq_lowpt_4j2b[selector])
-            },
-            'weights': {
-                'preselection':      np.sum(events.weight[events.selection.preselection[selector]]),
-                'nominal_4j2b':      np.sum(events.weight[events.selection.nominal_4j2b[selector]]),
-                'nominal_3j2b':      np.sum(events.weight[events.selection.nominal_3j2b[selector]]),
-                'lowpt_4j2b':        np.sum(events.weight[events.selection.lowpt_4j2b[selector]]),
-                'chi_sq_nom_4j2b':   np.sum(events.weight[events.selection.chi_sq_nom_4j2b[selector]]),
-                'chi_sq_nom_3j2b':   np.sum(events.weight[events.selection.chi_sq_nom_3j2b[selector]]),
-                'chi_sq_lowpt_4j2b': np.sum(events.weight[events.selection.chi_sq_lowpt_4j2b[selector]])
-            }
-        }
-        for name, selector in region_map.items()
-    }
-    return output

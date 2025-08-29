@@ -137,17 +137,17 @@ class analysis(processor.ProcessorABC):
         selection_list['nominal_4j2b'] = selection_list['preselection'] + ['nom_njets4', 'twoBjets']
         selection_list['nominal_3j2b'] = selection_list['preselection'] + ['nom_njets3', 'twoBjets']
         selection_list['lowpt_4j2b'] = selection_list['preselection'] + ['lowpt_njets4', 'twoBjets']
+        selection_list['lowpt_3j2b'] = selection_list['preselection'] + ['lowpt_njets3', 'twoBjets'] ## TEMP
 
-        events['selection'] = ak.zip({
-            'preselection': selection.all(*selection_list['preselection']),
-            'nominal_4j2b': selection.all(*selection_list['nominal_4j2b']),
-            'nominal_3j2b': selection.all(*selection_list['nominal_3j2b']),
-            'lowpt_4j2b' :  selection.all(*selection_list['lowpt_4j2b'])
-        })
+        events['flavor'] = ak.zip({
+            'e':  selection.all('oneE')[selection.all(*selection_list['preselection'])],
+            'mu': selection.all('oneM')[selection.all(*selection_list['preselection'])]
+        }) # separate electron and muon regions
 
         events['preselection'] = selection.all(*selection_list['preselection'])
         events['nominal_4j2b'] = selection.all(*selection_list['nominal_4j2b'])
         events['nominal_3j2b'] = selection.all(*selection_list['nominal_3j2b'])
+        events['lowpt_4j2b'] = selection.all('lowpt_njets4') & selection.all('twoBjets')
 
         ## add weights
         weights, list_weight_names = add_weights(
@@ -162,6 +162,13 @@ class analysis(processor.ProcessorABC):
         events['weight'] = weights.weight()
         ##
 
+        signal_region = ((events.mbb > 75) & (events.mbb < 135) 
+                & (events.bb_dr > 0.85) & (events.bb_dr < 2.15))
+        events['region'] = ak.zip({
+            'SR': ak.fill_none(signal_region, False),
+            'CR': ak.fill_none(~signal_region, False)
+        }) 
+
         #study sequential cutflow (get weights and events after each cut)
         if not shift_name:
             # list below contains individual selections that we might wanna study
@@ -171,7 +178,7 @@ class analysis(processor.ProcessorABC):
                 cumulative_cuts.append(cut_name)
                 cutflow.fill(cut_name, cumulative_cuts, weights.weight())
 
-        selected_events = events[events.selection.preselection]
+        selected_events = events[events.preselection]
         del events
         selected_events = chi_sq(selected_events) # chi square selection and calculation
         selected_events = chi_sq_cut(selected_events)
@@ -201,31 +208,14 @@ class analysis(processor.ProcessorABC):
         )
 
         # add chi square cuts selection in each analysis region
-        selected_events["selection"]["chi_sq_nom_4j2b"] = selected_events.selection.nominal_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
-        selected_events['selection'] = ak.with_field(
-            selected_events['selection'],
-            selected_events.selection.nominal_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])],
-            'chi_sq_nom_4j2b'
-        )
-        selected_events['selection'] = ak.with_field(
-            selected_events['selection'],
-            selected_events.selection.nominal_3j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])],
-            'chi_sq_nom_3j2b'
-        )
-        selected_events['selection'] = ak.with_field(
-            selected_events['selection'],
-            selected_events.selection.lowpt_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])],
-            'chi_sq_lowpt_4j2b'
-        )
+        selected_events['chi_sq_nom_4j2b'] = selected_events.nominal_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
+        selected_events['chi_sq_nom_3j2b'] = selected_events.nominal_3j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
+        selected_events['chi_sq_lowpt_4j2b'] = selected_events.lowpt_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
 
         selected_events['channel'] = ak.zip({
             'hadronic_W': selection.all('hadronic_W')[selection.all(*selection_list['preselection'])],
             'leptonic_W': selection.all('leptonic_W')[selection.all(*selection_list['preselection'])]
         })
-        selected_events['flavor'] = ak.zip({
-            'e':  selection.all('oneE')[selection.all(*selection_list['preselection'])],
-            'mu': selection.all('oneM')[selection.all(*selection_list['preselection'])]
-        }) # separate electron and muon regions
 
         selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
 
@@ -235,7 +225,12 @@ class analysis(processor.ProcessorABC):
                 'n_events' : self.n_events,
                 'sum_genweights': np.sum(selected_events.genWeight) if self.is_mc else self.n_events,
             }
+            # add cuts for different regions
+            cutflow_list = ['nominal_4j2b','nominal_3j2b', 'lowpt_4j2b', 'lowpt_3j2b', 'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b']
+            for cuts in cutflow_list:
+                cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True)
             cutflow.add_output(output['events_processed'], self.dataset)
+
 
         hists = fill_histograms(
             selected_events,

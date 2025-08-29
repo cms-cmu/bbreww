@@ -1,7 +1,7 @@
 import numpy as np 
 import awkward as ak
 from src.physics.objects.jet_corrections import apply_jet_veto_maps
-from bbww.analysis.helpers.ids import lepton_preselection, jet_preselection, HEMjet_preselection    
+from bbww.analysis.helpers.ids import lepton_preselection, jet_preselection, tau_preselection, ak8_jet_preselection  
 from bbww.analysis.helpers.corrections import get_met_xy_correction
 
 ## this file contains object preselection for MET, electrons, muons, taus, photons, and jets
@@ -15,7 +15,7 @@ def met_selection(events, year, is_Data):
     return events
 
 
-def muon_selection(events,year,params):       
+def muon_selection(events,params):       
     events['Muon','isloose'] = lepton_preselection(events, "Muon", params, "loose")
     events['Muon','istight'] = lepton_preselection(events, "Muon", params, "tight")
 
@@ -24,7 +24,7 @@ def muon_selection(events,year,params):
 
     return events
 
-def electron_selection(events,year, params):       
+def electron_selection(events, params):       
     e = events.Electron
     
     events['Electron', 'isloose'] = lepton_preselection(events, "Electron", params, "loose")
@@ -35,6 +35,21 @@ def electron_selection(events,year, params):
     e_clean = events.Electron[events.Electron.isclean]
     events['e_nloose'] = ak.num(e_clean[e_clean.isloose], axis=1) #use clean electons for loose/tight selection
     events['e_ntight'] = ak.num(e_clean[e_clean.istight], axis=1)
+    return events
+
+def tau_selection(events,params): 
+    e_clean = events.Electron[events.Electron.isclean]
+
+    events['Tau','isclean']=(
+        ak.all(events.Tau.metric_table(events.Muon[events.Muon.isloose]) > 0.4, axis=2) 
+        & ak.all(events.Tau.metric_table(e_clean[e_clean.isloose]) > 0.4, axis=2)
+    )
+    events['Tau','ismedium']= tau_preselection(events, params, "medium")
+
+    tau_clean=events.Tau[events.Tau.isclean]
+    tau_medium=tau_clean[tau_clean.ismedium]
+    events['tau_nmedium']=ak.num(tau_medium, axis=1)
+
     return events
 
 def jet_selection(events, params, year):
@@ -49,26 +64,66 @@ def jet_selection(events, params, year):
         ak.all(events.Jet.metric_table(events.Muon[events.Muon.isloose]) > 0.4, axis=2)
         & ak.all(events.Jet.metric_table(e_clean[e_clean.isloose]) > 0.4, axis=2)
     )
-    events['Jet','issoft'] = jet_preselection(events, params, year)
-    events['Jet','isHEM'] = HEMjet_preselection(events)
+    events['Jet', 'isnominal'], events['Jet', 'issoft'],  events['Jet', 'preselected'] = jet_preselection(events, params)
+
     j_clean = events.Jet[events.Jet.isclean]
     j_soft = j_clean[j_clean.issoft]
-    j_HEM = events.Jet[events.Jet.isHEM]
     events['j_nsoft']= ak.num(j_soft, axis=1)
-    events['j_nHEM'] = ak.num(j_HEM, axis=1)
+    ####
+
+    return events
+
+def ak8_jet_selection(events,params):
+    e_clean = events.Electron[events.Electron.isclean]
+    #### AK-8 jets selection
+    is_clean_ak8 = (
+        ak.all(events.FatJet.metric_table(events.Muon[events.Muon.isloose]) > 0.8, axis=2)
+        & ak.all(events.FatJet.metric_table(e_clean[e_clean.isloose]) > 0.8, axis=2)
+    )
+    ak8_selected = ak8_jet_preselection(events, events.FatJet[is_clean_ak8], params)
+    events['n_ak8_jets'] = ak.num(ak8_selected,  axis=1)
+    return events
+
+def apply_mll_cut(events):   
+    
+    # electrons
+    loose_e = events.Electron[events.Electron.isloose]
+    loose_e = ak.mask(loose_e, events.e_nloose > 1) # only keep events with two leptons of same flavour
+    e_pairs = ak.argcombinations(loose_e, 2, replacement = False, fields=["e1","e2"])
+    e_pairs_mass = (loose_e[e_pairs.e1] + loose_e[e_pairs.e2]).mass
+
+    is_same_charge_e = (loose_e[e_pairs.e1].charge == loose_e[e_pairs.e2].charge) # pairs with same charge
+    passes_mass_cut_e = (e_pairs_mass > 12.0) & (abs(e_pairs_mass - 91.19) > 10) # m_ll > 12 and abs(m_ll-mZ)<10
+    is_good_pair_e = is_same_charge_e | passes_mass_cut_e # either same charge electrons or pass m_ll cuts
+    pass_cut_e = ak.fill_none(ak.all(is_good_pair_e,axis=1), True) # pass cut for None values
+
+    # muons
+    loose_mu = events.Muon[events.Muon.isloose]
+    loose_mu = ak.mask(loose_mu, events.mu_nloose > 1) # only keep events with two leptons of same flavour
+    mu_pairs = ak.argcombinations(loose_mu, 2, replacement = False, fields=["mu1","mu2"])
+    mu_pairs_mass = (loose_mu[mu_pairs.mu1] + loose_mu[mu_pairs.mu2]).mass
+
+    is_same_charge_mu = (loose_mu[mu_pairs.mu1].charge == loose_mu[mu_pairs.mu2].charge)  # pairs with same charge
+    passes_mass_cut_mu = (mu_pairs_mass > 12.0) & (abs(mu_pairs_mass - 91.19) > 10) # m_ll > 12 and abs(m_ll-mZ)<10
+    is_good_pair_mu = is_same_charge_mu | passes_mass_cut_mu # either same charge muons or pass m_ll cuts
+    pass_cut_mu = ak.fill_none(ak.all(is_good_pair_mu,axis=1), True) # pass cut for None values 
+    
+    events['pass_mll_cut'] = pass_cut_e & pass_cut_mu # m_ll > 12 GeV and m_Z window cut on opposite charged leptons
 
     return events
 
 def apply_bbWW_preselection(events, year,params, isMC):
     events = met_selection(events, year, not isMC)
-    events = muon_selection(events, year, params) #muons
-    events = electron_selection(events, year, params) #electrons
-    events = jet_selection(events,params,year) #jets
-    
-    events['e_region'] = (events.e_ntight==1) & (events.mu_nloose==0) 
-    events['mu_region'] = (events.mu_ntight==1) & (events.e_nloose==0)
+    events = muon_selection(events, params) #muons
+    events = electron_selection(events, params) #electrons
+    events = tau_selection(events,params)
+    events = jet_selection(events,params, year)
+    events = ak8_jet_selection(events, params)
+
+    # require exactly one tight electron(muon) with no loose muon(electron)
+    events['e_region'] = (events.e_ntight==1) & (events.mu_ntight==0)
+    events['mu_region'] = (events.mu_ntight==1) & (events.e_ntight==0)
     return events
-        
 
 
 

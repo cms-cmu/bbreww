@@ -145,37 +145,10 @@ def add_lepton_sfs(params, events, electron, muon, weights, year, is_mc):
         weights.add('trig_sf', trig_sf)
     return weights
 
-### placeholder: wanna use apply_jet_veto_maps from the base framework common.py, not bbww
-def apply_jet_veto_maps( corrections_metadata, jets ):
-    '''
-    taken from https://github.com/PocketCoffea/PocketCoffea/blob/main/pocket_coffea/lib/cut_functions.py#L65
-    modified to veto jets not events
-    '''
-
-    mask_for_VetoMap = (
-        ((jets.jetId & 2)==2) # Must fulfill tight jetId
-        & (abs(jets.eta) < 5.19) # Must be within HCal acceptance
-        & ((jets.neEmEF + jets.chEmEF) < 0.9) # Energy fraction not dominated by ECal
-    )
-    if 'muonSubtrFactor' in jets.fields:  ### AGE: this should be temporary for old picos. New skims should have this field
-        mask_for_VetoMap = mask_for_VetoMap & (jets.muonSubtrFactor < 0.8) # May no be Muons misreconstructed as jets
-    else: logging.warning("muonSubtrFactor NOT in jets fields. This is correct only for mixeddata and old picos.")
-
-    corr = correctionlib.CorrectionSet.from_file(corrections_metadata['file'])[corrections_metadata['tag']]
-
-    etaFlat, phiFlat, etaCounts = ak.flatten(jets.eta), ak.flatten(jets.phi), ak.num(jets.eta)
-    phiFlat = np.clip(phiFlat, -3.14159, 3.14159) # Needed since no overflow included in phi binning
-    weight = ak.unflatten(
-        corr.evaluate("jetvetomap", etaFlat, phiFlat),
-        counts=etaCounts,
-    )
-    jetMask = ak.where( weight == 0, True, False, axis=1 )  # if 0 is not vetoed, then True
-
-    return jetMask & mask_for_VetoMap
-
 def get_sequential_cutflow(selection, events, selection_list):
     sequential_cutflow = {
         'events': {},
+        'weights': {}
     }
     cumulative_cuts = []
 
@@ -185,5 +158,38 @@ def get_sequential_cutflow(selection, events, selection_list):
         current_mask = selection.all(*cumulative_cuts)
         
         sequential_cutflow['events'][cut_name] = np.sum(current_mask)
+        sequential_cutflow['weights'][cut_name] = np.sum(events.weight[current_mask])
 
     return sequential_cutflow
+
+def add_output_cutflow(events, output):
+    region_map = {
+    'hadronic_W': events.channel.hadronic_W,
+    'leptonic_W': events.channel.leptonic_W,
+    'mu_region':  events.region.mu_region,
+    'e_region':   events.region.e_region
+    }
+    output['cutflow'][events.metadata['dataset']] = {
+        name: {
+            'events': {
+                'preselection':      np.sum(events.selection.preselection[selector]),
+                'nominal_4j2b':      np.sum(events.selection.nominal_4j2b[selector]),
+                'nominal_3j2b':      np.sum(events.selection.nominal_3j2b[selector]),
+                'lowpt_4j2b':        np.sum(events.selection.lowpt_4j2b[selector]),
+                'chi_sq_nom_4j2b':   np.sum(events.selection.chi_sq_nom_4j2b[selector]),
+                'chi_sq_nom_3j2b':   np.sum(events.selection.chi_sq_nom_3j2b[selector]),
+                'chi_sq_lowpt_4j2b': np.sum(events.selection.chi_sq_lowpt_4j2b[selector])
+            },
+            'weights': {
+                'preselection':      np.sum(events.weight[events.selection.preselection[selector]]),
+                'nominal_4j2b':      np.sum(events.weight[events.selection.nominal_4j2b[selector]]),
+                'nominal_3j2b':      np.sum(events.weight[events.selection.nominal_3j2b[selector]]),
+                'lowpt_4j2b':        np.sum(events.weight[events.selection.lowpt_4j2b[selector]]),
+                'chi_sq_nom_4j2b':   np.sum(events.weight[events.selection.chi_sq_nom_4j2b[selector]]),
+                'chi_sq_nom_3j2b':   np.sum(events.weight[events.selection.chi_sq_nom_3j2b[selector]]),
+                'chi_sq_lowpt_4j2b': np.sum(events.weight[events.selection.chi_sq_lowpt_4j2b[selector]])
+            }
+        }
+        for name, selector in region_map.items()
+    }
+    return output

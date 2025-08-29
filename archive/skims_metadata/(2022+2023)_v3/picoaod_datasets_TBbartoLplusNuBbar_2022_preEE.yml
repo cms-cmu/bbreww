@@ -1,0 +1,90 @@
+TBbartoLplusNuBbar_2022_preEE:
+  count: 1271280
+  cutFlowFourTag:
+    all: 2891578.6230654716
+    isoneEorM: 795639.3887255192
+    lumimask: 2891578.6230654716
+    njets: 433719.4041259289
+    oneBjet: 655300.1233932972
+    passNoiseFilter: 2890838.6517210007
+    trigger: 897988.5252277851
+  cutFlowFourTagUnitWeight:
+    all: 1271280
+    isoneEorM: 346740
+    lumimask: 1271280
+    njets: 182884
+    oneBjet: 281375
+    passNoiseFilter: 1270942
+    trigger: 391741
+  cutFlowThreeTag:
+    all: 2891578.6230654716
+    isoneEorM: 795639.3887255192
+    lumimask: 2891578.6230654716
+    njets: 433719.4041259289
+    oneBjet: 655300.1233932972
+    passNoiseFilter: 2890838.6517210007
+    trigger: 897988.5252277851
+  cutFlowThreeTagUnitWeight:
+    all: 1271280
+    isoneEorM: 346740
+    lumimask: 1271280
+    njets: 182884
+    oneBjet: 281375
+    passNoiseFilter: 1270942
+    trigger: 391741
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TBbartoLplusNuBbar_2022_preEE/picoAOD.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbww/skimmer/processors/skimmer_bbWW.py', configs='bbww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbww/metadata/datasets_run3.yml', triggers='bbww/metadata/triggers_bbWW.yml',
+      luminosities='bbww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_TBbartoLplusNuBbar_2022_preEE.yml',
+      output_path='output/skimmer/', years=['2022_preEE'], datasets=['TBbartoLplusNuBbar'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, run_dask=True,
+      condor=True, debug=False, check_input_files=False, githash='', gitdiff='')
+    date: '2025-08-26 20:29:32'
+    diff: "diff --git a/src/physics/corrections.yml b/src/physics/corrections.yml\n\
+      index ef162bf5..5aab84b9 100644\n--- a/src/physics/corrections.yml\n+++ b/src/physics/corrections.yml\n\
+      @@ -383,9 +383,8 @@\n '2023_BPix':\n   year_label: '2023'\n   goldenJSON: 'src/data/goldenJSON/Cert_Collisions2023_366442_370790_Golden.json'\n\
+      -  PU: \n-    file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23BPix/puWeights.json.gz'\n\
+      -    tag: Collisions2023_369803_370790_eraD_GoldenJson\n+  PU: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2023_Summer23BPix/puWeights.json.gz'\n\
+      +\n   ele_sf: \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23BPix/electron.json.gz'\n\
+      \     HLT: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2023_Summer23BPix/electronHlt.json.gz'\n\
+      diff --git a/src/physics/event_weights.py b/src/physics/event_weights.py\nindex\
+      \ f7041c06..e6e92aea 100644\n--- a/src/physics/event_weights.py\n+++ b/src/physics/event_weights.py\n\
+      @@ -25,6 +25,14 @@ def add_weights(event, do_MC_weights: bool = True,\n    \
+      \     xs      = event.metadata.get('xs',      1.0)\n         kFactor = event.metadata.get('kFactor',\
+      \ 1.0)\n         weights.add( \"genweight\", event.genWeight * (lumi * xs *\
+      \ kFactor / event.metadata[\"genEventSumw\"]) )\n+        #TEMP for testing\
+      \ on nanoAOD\n+        #if 'TTToSemiLeptonic' in event.metadata['dataset']:\n\
+      +        #    print('ttbar weight calc')\n+        #    weights.add( \"genweight\"\
+      , event.genWeight * (lumi * xs * kFactor / 25728069186.25) )\n+        #elif\
+      \ 'GluGluToHHTo2B2VLNu2J' in event.metadata['dataset']:\n+        #   print('signal\
+      \ weight calc')\n+        #    weights.add( \"genweight\", event.genWeight *\
+      \ (lumi * xs * kFactor / 2668.1345007419586) )\n+\n         list_weight_names.append('genweight')\n\
+      \         logging.debug( f\"genweight {weights.partial_weight(include=['genweight'])[:10]}\\\
+      n\" )\n         logging.debug( f\" = {event.genWeight} * ({lumi} * {xs} * {kFactor}\
+      \ / {event.metadata['genEventSumw']})\\n\")\ndiff --git a/src/physics/objects/jet_corrections.py\
+      \ b/src/physics/objects/jet_corrections.py\nindex ab0ca62b..1211317b 100644\n\
+      --- a/src/physics/objects/jet_corrections.py\n+++ b/src/physics/objects/jet_corrections.py\n\
+      @@ -37,7 +37,7 @@ def extract_jetmet_tar_files(tar_file_name: str=None,\n \n\
+      \                 new_file_name = member.name\n                 if ('Puppi'\
+      \ in jet_type) and (jet_type in member.name):\n-                    if ('Summer23'\
+      \ not in member.name): # need a second if to avoid getting False and False =\
+      \ True\n+                    if ('Summer23' not in member.name):\n         \
+      \                new_file_name = member.name.replace('_', '', 1) #22 and 23\
+      \ corrections have different name formats\n                         member.name\
+      \ = new_file_name\n \ndiff --git a/src/skimmer/picoaod.py b/src/skimmer/picoaod.py\n\
+      index 2226ad3c..f1b17b62 100644\n--- a/src/skimmer/picoaod.py\n+++ b/src/skimmer/picoaod.py\n\
+      @@ -13,7 +13,7 @@ import awkward as ak\n import numpy as np\n import numpy.typing\
+      \ as npt\n import uproot\n-from python.analysis.helpers.cutflow import cutFlow\n\
+      +from src.utils.cutflow import cutFlow\n from src.data_formats.awkward.zip import\
+      \ NanoAOD\n from src.data_formats.root import Chunk, TreeReader, TreeWriter,\
+      \ merge\n from src.storage.eos import EOS, PathLike\n"
+    hash: b28d4e7c8058642ccc737bde8597e7974d47d468
+  saved_events: 182884
+  sumw: 2891578.255859375
+  sumw2: 17402471.1875
+  sumw2_raw: 17402475.65210184
+  sumw_raw: 2891578.6485761995
+  total_events: 1271280

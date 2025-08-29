@@ -1,44 +1,138 @@
 data__SingleMuon_2022_preEEC:
   hadronic_W:
     events:
-      basic_selection: 117
-      preselection: 117
+      preselection: 36
+      nominal_4j2b: 22
+      nominal_3j2b: 11
+      lowpt_4j2b: 8
+      chi_sq_nom_4j2b: 22
+      chi_sq_nom_3j2b: 11
+      chi_sq_lowpt_4j2b: 8
     weights:
-      basic_selection: 117.0
-      preselection: 117.0
+      preselection: 36.0
+      nominal_4j2b: 22.0
+      nominal_3j2b: 11.0
+      lowpt_4j2b: 8.0
+      chi_sq_nom_4j2b: 22.0
+      chi_sq_nom_3j2b: 11.0
+      chi_sq_lowpt_4j2b: 8.0
   leptonic_W:
     events:
-      basic_selection: 41
-      preselection: 41
+      preselection: 7
+      nominal_4j2b: 4
+      nominal_3j2b: 2
+      lowpt_4j2b: 2
+      chi_sq_nom_4j2b: 0
+      chi_sq_nom_3j2b: 0
+      chi_sq_lowpt_4j2b: 0
     weights:
-      basic_selection: 41.0
-      preselection: 41.0
-  'null':
+      preselection: 7.0
+      nominal_4j2b: 4.0
+      nominal_3j2b: 2.0
+      lowpt_4j2b: 2.0
+      chi_sq_nom_4j2b: 0.0
+      chi_sq_nom_3j2b: 0.0
+      chi_sq_lowpt_4j2b: 0.0
+  mu_region:
     events:
-      basic_selection: 0
-      preselection: 0
+      preselection: 682
+      nominal_4j2b: 27
+      nominal_3j2b: 17
+      lowpt_4j2b: 11
+      chi_sq_nom_4j2b: 22
+      chi_sq_nom_3j2b: 11
+      chi_sq_lowpt_4j2b: 8
     weights:
-      basic_selection: 0.0
-      preselection: 0.0
+      preselection: 682.0
+      nominal_4j2b: 27.0
+      nominal_3j2b: 17.0
+      lowpt_4j2b: 11.0
+      chi_sq_nom_4j2b: 22.0
+      chi_sq_nom_3j2b: 11.0
+      chi_sq_lowpt_4j2b: 8.0
+  e_region:
+    events:
+      preselection: 2
+      nominal_4j2b: 1
+      nominal_3j2b: 0
+      lowpt_4j2b: 0
+      chi_sq_nom_4j2b: 0
+      chi_sq_nom_3j2b: 0
+      chi_sq_lowpt_4j2b: 0
+    weights:
+      preselection: 2.0
+      nominal_4j2b: 1.0
+      nominal_3j2b: 0.0
+      lowpt_4j2b: 0.0
+      chi_sq_nom_4j2b: 0.0
+      chi_sq_nom_3j2b: 0.0
+      chi_sq_lowpt_4j2b: 0.0
 data__SingleMuon_2022_preEED:
   hadronic_W:
     events:
-      basic_selection: 119
-      preselection: 119
+      preselection: 43
+      nominal_4j2b: 26
+      nominal_3j2b: 10
+      lowpt_4j2b: 7
+      chi_sq_nom_4j2b: 26
+      chi_sq_nom_3j2b: 10
+      chi_sq_lowpt_4j2b: 7
     weights:
-      basic_selection: 119.0
-      preselection: 119.0
+      preselection: 43.0
+      nominal_4j2b: 26.0
+      nominal_3j2b: 10.0
+      lowpt_4j2b: 7.0
+      chi_sq_nom_4j2b: 26.0
+      chi_sq_nom_3j2b: 10.0
+      chi_sq_lowpt_4j2b: 7.0
   leptonic_W:
     events:
-      basic_selection: 55
-      preselection: 55
+      preselection: 9
+      nominal_4j2b: 3
+      nominal_3j2b: 3
+      lowpt_4j2b: 3
+      chi_sq_nom_4j2b: 0
+      chi_sq_nom_3j2b: 2
+      chi_sq_lowpt_4j2b: 2
     weights:
-      basic_selection: 55.0
-      preselection: 55.0
-  'null':
+      preselection: 9.0
+      nominal_4j2b: 3.0
+      nominal_3j2b: 3.0
+      lowpt_4j2b: 3.0
+      chi_sq_nom_4j2b: 0.0
+      chi_sq_nom_3j2b: 2.0
+      chi_sq_lowpt_4j2b: 2.0
+  mu_region:
     events:
-      basic_selection: 0
-      preselection: 0
+      preselection: 700
+      nominal_4j2b: 35
+      nominal_3j2b: 15
+      lowpt_4j2b: 11
+      chi_sq_nom_4j2b: 25
+      chi_sq_nom_3j2b: 12
+      chi_sq_lowpt_4j2b: 9
     weights:
-      basic_selection: 0.0
-      preselection: 0.0
+      preselection: 700.0
+      nominal_4j2b: 35.0
+      nominal_3j2b: 15.0
+      lowpt_4j2b: 11.0
+      chi_sq_nom_4j2b: 25.0
+      chi_sq_nom_3j2b: 12.0
+      chi_sq_lowpt_4j2b: 9.0
+  e_region:
+    events:
+      preselection: 4
+      nominal_4j2b: 1
+      nominal_3j2b: 0
+      lowpt_4j2b: 0
+      chi_sq_nom_4j2b: 1
+      chi_sq_nom_3j2b: 0
+      chi_sq_lowpt_4j2b: 0
+    weights:
+      preselection: 4.0
+      nominal_4j2b: 1.0
+      nominal_3j2b: 0.0
+      lowpt_4j2b: 0.0
+      chi_sq_nom_4j2b: 1.0
+      chi_sq_nom_3j2b: 0.0
+      chi_sq_lowpt_4j2b: 0.0

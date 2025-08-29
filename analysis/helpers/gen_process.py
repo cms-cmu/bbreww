@@ -146,7 +146,9 @@ def gen_studies(events, is_mc):
         #####################
 
         ### study input parameters to chi square 
-
+        events['bjets_genjets_mass'] = ak.fill_none((events.j_bcand[:,0].matched_gen + events.j_bcand[:,1].matched_gen).mass,np.nan)
+        events['bjets_genjets_dr'] = ak.fill_none(events.j_bcand[:,0].matched_gen.delta_r(events.j_bcand[:,1].matched_gen),np.nan)
+        #events['bcand_genjets_mass'] = (events.j_bcand[:,0].matched_gen + events.j_bcand[:,1].matched_gen)
         events['gen_bb'] = ak.fill_none(gen_b[:,0] + gen_b[:,1], np.nan)
         if 'HH' in events.metadata['dataset']:
             genjet_from_b =  ak.pad_none(events.j_bcand[events.j_bcand.isbFromH].matched_gen,2,axis=1)

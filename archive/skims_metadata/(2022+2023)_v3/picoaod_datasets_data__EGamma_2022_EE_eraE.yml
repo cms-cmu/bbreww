@@ -1,233 +1,42 @@
-EGamma_2022_EE:
+data__EGamma_2022_EEE:
   count: 148654795.0
   cutFlowFourTag:
     all: 148654795.0
-    isoneEorM: 20294092.0
+    isoneEorM: 30800018.0
     lumimask: 139033757.0
+    njets: 1678342.0
+    oneBjet: 3405529.0
     passNoiseFilter: 138518712.0
-    trigger: 58452469.0
+    trigger: 58778536.0
   cutFlowFourTagUnitWeight:
     all: 148654795
-    isoneEorM: 20294092
+    isoneEorM: 30800018
     lumimask: 139033757
+    njets: 1678342
+    oneBjet: 3405529
     passNoiseFilter: 138518712
-    trigger: 58452469
+    trigger: 58778536
   cutFlowThreeTag:
     all: 148654795.0
-    isoneEorM: 20294092.0
+    isoneEorM: 30800018.0
     lumimask: 139033757.0
+    njets: 1678342.0
+    oneBjet: 3405529.0
     passNoiseFilter: 138518712.0
-    trigger: 58452469.0
+    trigger: 58778536.0
   cutFlowThreeTagUnitWeight:
     all: 148654795
-    isoneEorM: 20294092
+    isoneEorM: 30800018
     lumimask: 139033757
+    njets: 1678342
+    oneBjet: 3405529
     passNoiseFilter: 138518712
-    trigger: 58452469
+    trigger: 58778536
   files:
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk0.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk1.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk2.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk3.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk4.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk5.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk6.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk7.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk8.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk9.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk10.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk11.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk12.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk13.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk14.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk15.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk16.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk17.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk18.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk19.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk20.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk21.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk22.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk23.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk24.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk25.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk26.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk27.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk28.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk29.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk30.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk31.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk32.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk33.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk34.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk35.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk36.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk37.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk38.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk39.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk40.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk41.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk42.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk43.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk44.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk45.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk46.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk47.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk48.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk49.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk50.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk51.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk52.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk53.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk54.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk55.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk56.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk57.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk58.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk59.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk60.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk61.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk62.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk63.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk64.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk65.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk66.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk67.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk68.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk69.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk70.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk71.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk72.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk73.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk74.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk75.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk76.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk77.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk78.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk79.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk80.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk81.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk82.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk83.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk84.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk85.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk86.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk87.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk88.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk89.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk90.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk91.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk92.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk93.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk94.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk95.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk96.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk97.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk98.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk99.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk100.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk101.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk102.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk103.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk104.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk105.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk106.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk107.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk108.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk109.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk110.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk111.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk112.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk113.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk114.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk115.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk116.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk117.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk118.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk119.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk120.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk121.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk122.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk123.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk124.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk125.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk126.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk127.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk128.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk129.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk130.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk131.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk132.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk133.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk134.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk135.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk136.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk137.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk138.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk139.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk140.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk141.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk142.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk143.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk144.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk145.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk146.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk147.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk148.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk149.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk150.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk151.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk152.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk153.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk154.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk155.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk156.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk157.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk158.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk159.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk160.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk161.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk162.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk163.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk164.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk165.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk166.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk167.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk168.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk169.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk170.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk171.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk172.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk173.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk174.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk175.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk176.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk177.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk178.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk179.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk180.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk181.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk182.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk183.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk184.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk185.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk186.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk187.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk188.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk189.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk190.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk191.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk192.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk193.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk194.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk195.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk196.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk197.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk198.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk199.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk200.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk201.root
-  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v1/EGamma_2022_EEeraE/picoAOD.chunk202.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__EGamma_2022_EEE/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__EGamma_2022_EEE/picoAOD.chunk1.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__EGamma_2022_EEE/picoAOD.chunk2.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__EGamma_2022_EEE/picoAOD.chunk3.root
   lumis_processed:
     359356:
     - 47
@@ -25311,62 +25120,16 @@ EGamma_2022_EE:
     - 230
   missing: {}
   reproducible:
-    args: Namespace(test=False, output_file='picoaod_datasets_EGamma_2022EE_eraE.yml',
-      processor='bbww/skimmer/processors/skimmer_bbWW.py', configs='bbww//skimmer/metadata/HHbbWW.yml',
-      metadata='bbww/metadata/datasets_run3.yml', output_path='bbww/output/skimmer/',
-      years=['2022_EE'], datasets=['EGamma'], era=['A', 'B', 'C', 'D', 'E', 'F', 'G',
-      'H'], skimming=True, run_dask=True, condor=True, debug=False, githash='', gitdiff='',
-      check_input_files=False)
-    date: '2025-07-28 19:17:28'
-    diff: "diff --git a/python/base_class/hist/hist.py b/python/base_class/hist/hist.py\n\
-      index fb4c7a6a..b602d7a3 100644\n--- a/python/base_class/hist/hist.py\n+++ b/python/base_class/hist/hist.py\n\
-      @@ -273,6 +273,8 @@ class _Fill(Generic[HistType], Configurable, namespace=\"\
-      hist.Fill\"):\n                 hist_args = {}\n                 for k, v in\
-      \ fills.items():\n                     fill = fill_values[v]\n+            \
-      \        if isinstance(fill, ak.Array):\n+                        fill = ak.fill_none(fill,\
-      \ np.nan)\n                     if shape is None:\n                        \
-      \ ...\n                     elif self._is_jagged(fill):\ndiff --git a/python/base_class/hist/object/jet.py\
-      \ b/python/base_class/hist/object/jet.py\nindex 3a7167c5..9e79adf0 100644\n\
-      --- a/python/base_class/hist/object/jet.py\n+++ b/python/base_class/hist/object/jet.py\n\
-      @@ -17,7 +17,6 @@ class _PlotJet(_PlotCommon, _PlotLorentzVector):\n class _PlotDiJet(_PlotCommon,\
-      \ _PlotDiLorentzVector):\n     ...\n \n-\n class Jet:\n     plot = _PlotJet\n\
-      \     plot_pair = _PlotDiJet\ndiff --git a/python/scripts/skimmer-test-job.sh\
-      \ b/python/scripts/skimmer-test-job.sh\nindex f80a945d..4da91158 100644\n---\
-      \ a/python/scripts/skimmer-test-job.sh\n+++ b/python/scripts/skimmer-test-job.sh\n\
-      @@ -9,20 +9,23 @@ fi\n \n echo \"############### Changing metadata\"\n if [[\
-      \ $(hostname) = *fnal* ]]; then\n-    sed -e \"s#base_path.*#base_path: \\/srv\\\
-      /output\\/skimmer_test_job\\/#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files:\
-      \ 1/\" -e \"s/2024_.*/tmp\\//\" skimmer/metadata/HH4b.yml > $OUTPUT_DIR/HH4b.yml\n\
-      +    sed -e \"s#base_path.*#base_path: \\/srv\\/output\\/skimmer_test_job\\\
-      /#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files: 1/\" -e \"\
-      s/2024_.*/tmp\\//\" bbww/skimmer/metadata/HHbbWW.yml > $OUTPUT_DIR/HHbbWW.yml\n\
-      \ else\n-    sed -e \"s#base_path.*#base_path: /builds/${CI_PROJECT_PATH}/python/output\\\
-      /skimmer_test_job\\/#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files:\
-      \ 1/\" -e \"s/2024_.*/tmp\\//\" -e \"s/T3_US_FNALLPC/T3_CH_PSI/\" skimmer/metadata/HH4b.yml\
-      \ > $OUTPUT_DIR/HH4b.yml\n+    sed -e \"s#base_path.*#base_path: /builds/${CI_PROJECT_PATH}/python/output\\\
-      /skimmer_test_job\\/#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files:\
-      \ 1/\" -e \"s/2024_.*/tmp\\//\" -e \"s/T3_US_FNALLPC/T3_CH_PSI/\" bbww/skimmer/metadata/HHbbWW.yml\
-      \ > $OUTPUT_DIR/HHbbWW.yml\n fi\n-cat $OUTPUT_DIR/HH4b.yml\n+cat $OUTPUT_DIR/HHbbWW.yml\n\
-      +\n \n #nanoAOD_file=\"root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/70000/92D0BDF3-91AE-514F-88B5-8F591450B8AD.root\"\
-      \n #sed -e \"s#/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9.*#[\
-      \ '${nanoAOD_file}' ]#\" metadata/datasets_HH4b.yml > $OUTPUT_DIR/datasets_HH4b.yml\n\
-      \ #python runner.py -s -p skimmer/processor/skimmer_4b.py -c $OUTPUT_DIR/datasets_HH4b.yml\
-      \ -y UL18 -d TTToSemiLeptonic -op $OUTPUT_DIR -o picoaod_datasets_TTToSemiLeptonic_UL18.yml\
-      \ -m $OUTPUT_DIR/datasets_HH4b.yml  -t \n \n-nanoAOD_file=\"root://cmseos.fnal.gov//store/mc/RunIISummer20UL18NanoAODv9/GluGluToHHTo4B_cHHH0_TuneCP5_PSWeights_13TeV-powheg-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/70000/3F95108D-84D2-CD4D-A0D2-324A7D15E691.root\"\
-      \n-sed -e \"s#/GluGluToHHTo4B_cHHH0_TuneCP5_PSWeights_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9.*#[\
-      \ '${nanoAOD_file}' ]#\" metadata/datasets_HH4b.yml > $OUTPUT_DIR/datasets_HH4b.yml\n\
-      +nanoAOD_file=\"root://cmseos.fnal.gov//store/mc/Run3Summer22NanoAODv13/GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/133X_mcRun3_2022_realistic_ForNanov13_v1-v2/2830000/1ee1335c-a70a-4fba-9c2d-5ab8d5cd0287.root\"\
-      \n+sed -e \"s#/GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv13-133X_mcRun3_2022_realistic_ForNanov13_v1-v2.*#[\
-      \ '${nanoAOD_file}' ]#\" bbww/metadata/datasets_run3.yml > $OUTPUT_DIR/datasets_run3.yml\n\
-      +\n+\n echo \"############### Running test processor\"\n-python runner.py -s\
-      \ -p skimmer/processor/skimmer_4b.py -c $OUTPUT_DIR/HH4b.yml -y UL18 -d GluGluToHHTo4B_cHHH0\
-      \ -op $OUTPUT_DIR -o picoaod_datasets_GluGluToHHTo4B_cHHH0_UL18.yml -m $OUTPUT_DIR/datasets_HH4b.yml\
-      \  -t \n+python runner.py -s -p bbww/skimmer/processors/skimmer_bbWW.py -c bbww/skimmer/metadata/HHbbWW.yml\
-      \ -y 2022_preEE -d GluGluToHHTo2B2VLNu2J -op $OUTPUT_DIR -o picoaod_datasets_GluGluToHHtobbWW_test.yml\
-      \ -m bbww/metadata/datasets_run3.yml  -t \n ls -R $OUTPUT_DIR\n \n if [ \"$return_to_base\"\
-      \ = true ]; then\n"
-    hash: 4ed7992d58ce0da760d2d0b0a7b30671795578b8
-  saved_events: 20294092
+    args: Namespace(processor='bbww/skimmer/processors/skimmer_bbWW.py', configs='bbww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbww/metadata/skims_v3', triggers='bbww/metadata/triggers_bbWW.yml',
+      luminosities='bbww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_data__EGamma_2022_EE_eraE.yml',
+      output_path='output/skimmer/', years=['2022_EE'], datasets=['data__EGamma'],
+      era=['E'], skimming=True, test=False, systematics=None, run_dask=True, condor=True,
+      debug=False, check_input_files=False, githash='', gitdiff='')
+    date: '2025-08-27 19:32:42'
+    diff: ''
+    hash: aecbcab1c279fd0d54234f95ea90a6ef01011c8b
+  saved_events: 1678342
   sumw: 148654795
   sumw2: 148654795
   total_events: 148654795

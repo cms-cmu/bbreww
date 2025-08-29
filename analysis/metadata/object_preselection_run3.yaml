@@ -20,23 +20,40 @@ object_preselection:
   Electron:
     loose:
       pt: 10.0
+      eta: 2.5
       cutBased: 2
     tight:
       pt: 28.0
+      eta: 2.5
       cutBased: 4
   
   Tau:
-    loose:
+    medium:
       pt: 20.0
-      eta: 2.5
+      eta: 2.3
       dz: 0.2
-
-  Photon:
-    loose:
-      pt: 20.0
-      cutBased: 1
+      wp: 5
 
   Jet:
-    pt: 15.0
+    nominal: 
+      pt: 25.0
+      eta: 2.4
+      jetId: 2
+    soft:
+      pt: 15.0
+      eta: 2.4
+      jetId: 2
+
+  fatJet:
+    pt: 200.0
     eta: 2.4
-    jetId: 1
+    msoftdrop_upper: 210.0
+    msoftdrop_lower: 30.0
+    nsubjettiness_ratio: 0.75
+    btagWP: 0.2450
+    subjet1: 
+      pt: 30.0
+      eta: 2.4
+    subjet2:
+      pt: 20.0
+      eta: 2.4

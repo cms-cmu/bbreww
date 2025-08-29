@@ -1,16 +1,12 @@
 runner:
-  max_workers: 200 
+  max_workers: 400 
   skipbadfiles: True
   workers: 4
   condor_memory: 4GB
   data_tier: picoAOD
   condor_cores: 1
-  condor_memory: 4GB
   condor_transfer_input_files:
     - src
-    - analysis
-    - skimmer
-    - data
     - bbww
 
   # rucio_regex_sites: 'T[123]_(US|CH|DE|UK)'

@@ -1,22 +1,69 @@
 GluGluToHHTo2B2VLNu2J_2022_EE:
   hadronic_W:
     events:
-      basic_selection: 13047
-      preselection: 13047
+      preselection: 13145
+      nominal_4j2b: 8104
+      nominal_3j2b: 4018
+      lowpt_4j2b: 3529
+      chi_sq_nom_4j2b: 8086
+      chi_sq_nom_3j2b: 4018
+      chi_sq_lowpt_4j2b: 3477
     weights:
-      basic_selection: 2.3026053828430255
-      preselection: 2.3026053828430255
+      preselection: 2.382202764242209
+      nominal_4j2b: 1.4699784473851416
+      nominal_3j2b: 0.7250141628212994
+      lowpt_4j2b: 0.637857893410943
+      chi_sq_nom_4j2b: 1.4671528033907126
+      chi_sq_nom_3j2b: 0.7250141628212994
+      chi_sq_lowpt_4j2b: 0.6279531900862436
   leptonic_W:
     events:
-      basic_selection: 9563
-      preselection: 9563
+      preselection: 1289
+      nominal_4j2b: 920
+      nominal_3j2b: 281
+      lowpt_4j2b: 276
+      chi_sq_nom_4j2b: 4
+      chi_sq_nom_3j2b: 157
+      chi_sq_lowpt_4j2b: 139
     weights:
-      basic_selection: 1.6940118682120553
-      preselection: 1.6940118682120553
-  'null':
+      preselection: 0.22437018378898874
+      nominal_4j2b: 0.15948991965219347
+      nominal_3j2b: 0.05045146616493194
+      lowpt_4j2b: 0.04868019154207595
+      chi_sq_nom_4j2b: 0.0003641545223098346
+      chi_sq_nom_3j2b: 0.02725936780320658
+      chi_sq_lowpt_4j2b: 0.022978459176827518
+  mu_region:
     events:
-      basic_selection: 0
-      preselection: 0
+      preselection: 24248
+      nominal_4j2b: 6413
+      nominal_3j2b: 2892
+      lowpt_4j2b: 2487
+      chi_sq_nom_4j2b: 4807
+      chi_sq_nom_3j2b: 2433
+      chi_sq_lowpt_4j2b: 2095
     weights:
-      basic_selection: 0.0
-      preselection: 0.0
+      preselection: 4.386873652222067
+      nominal_4j2b: 1.152732721084556
+      nominal_3j2b: 0.5217181866559493
+      lowpt_4j2b: 0.4466404868462191
+      chi_sq_nom_4j2b: 0.8670587728577257
+      chi_sq_nom_3j2b: 0.44226311302221455
+      chi_sq_lowpt_4j2b: 0.37600298316219166
+  e_region:
+    events:
+      preselection: 16511
+      nominal_4j2b: 4362
+      nominal_3j2b: 2102
+      lowpt_4j2b: 1806
+      chi_sq_nom_4j2b: 3283
+      chi_sq_nom_3j2b: 1742
+      chi_sq_lowpt_4j2b: 1521
+    weights:
+      preselection: 3.0019520982055017
+      nominal_4j2b: 0.7856753751786199
+      nominal_3j2b: 0.3813560748557754
+      lowpt_4j2b: 0.3268450309339001
+      chi_sq_nom_4j2b: 0.5907196461676343
+      chi_sq_nom_3j2b: 0.3149334584528849
+      chi_sq_lowpt_4j2b: 0.2743289401311532

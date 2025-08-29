@@ -9,7 +9,7 @@ To install the necessary dependencies, run:
 
 ```bash
 git clone ssh://git@gitlab.cern.ch:7999/cms-cmu/coffea4bees.git
-cd coffea4bees/python/
+cd coffea4bees/
 git clone ssh://git@gitlab.cern.ch:7999/cms-cmu/bbWW.git
 ```
 
@@ -33,4 +33,4 @@ Replace `XXXXX` with the name of the job you want to run from the gitlab CI conf
 ./run_container snakemake -s bbww/workflows/Snakemake_CI --use-apptainer analysis_test
 ```
 
-The output of the tests will be saved in the `bbww/CI_output/` directory.
+The output of the tests will be saved in the `CI_output/` directory.

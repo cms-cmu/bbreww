@@ -1,357 +1,41 @@
-SingleMuon_2022_EE:
+data__SingleMuon_2022_EEG:
   count: 76689396.0
   cutFlowFourTag:
     all: 76689396.0
-    isoneEorM: 32668385.0
+    isoneEorM: 28191330.0
     lumimask: 75466643.0
+    njets: 1120420.0
+    oneBjet: 2503989.0
     passNoiseFilter: 75215931.0
-    trigger: 39151228.0
+    trigger: 39151844.0
   cutFlowFourTagUnitWeight:
     all: 76689396
-    isoneEorM: 32668385
+    isoneEorM: 28191330
     lumimask: 75466643
+    njets: 1120420
+    oneBjet: 2503989
     passNoiseFilter: 75215931
-    trigger: 39151228
+    trigger: 39151844
   cutFlowThreeTag:
     all: 76689396.0
-    isoneEorM: 32668385.0
+    isoneEorM: 28191330.0
     lumimask: 75466643.0
+    njets: 1120420.0
+    oneBjet: 2503989.0
     passNoiseFilter: 75215931.0
-    trigger: 39151228.0
+    trigger: 39151844.0
   cutFlowThreeTagUnitWeight:
     all: 76689396
-    isoneEorM: 32668385
+    isoneEorM: 28191330
     lumimask: 75466643
+    njets: 1120420
+    oneBjet: 2503989
     passNoiseFilter: 75215931
-    trigger: 39151228
+    trigger: 39151844
   files:
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk0.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk1.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk2.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk3.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk4.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk5.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk6.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk7.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk8.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk9.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk10.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk11.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk12.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk13.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk14.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk15.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk16.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk17.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk18.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk19.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk20.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk21.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk22.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk23.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk24.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk25.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk26.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk27.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk28.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk29.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk30.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk31.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk32.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk33.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk34.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk35.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk36.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk37.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk38.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk39.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk40.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk41.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk42.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk43.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk44.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk45.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk46.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk47.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk48.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk49.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk50.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk51.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk52.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk53.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk54.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk55.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk56.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk57.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk58.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk59.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk60.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk61.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk62.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk63.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk64.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk65.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk66.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk67.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk68.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk69.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk70.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk71.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk72.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk73.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk74.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk75.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk76.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk77.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk78.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk79.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk80.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk81.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk82.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk83.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk84.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk85.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk86.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk87.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk88.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk89.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk90.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk91.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk92.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk93.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk94.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk95.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk96.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk97.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk98.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk99.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk100.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk101.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk102.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk103.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk104.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk105.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk106.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk107.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk108.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk109.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk110.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk111.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk112.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk113.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk114.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk115.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk116.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk117.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk118.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk119.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk120.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk121.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk122.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk123.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk124.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk125.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk126.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk127.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk128.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk129.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk130.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk131.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk132.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk133.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk134.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk135.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk136.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk137.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk138.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk139.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk140.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk141.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk142.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk143.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk144.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk145.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk146.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk147.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk148.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk149.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk150.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk151.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk152.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk153.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk154.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk155.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk156.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk157.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk158.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk159.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk160.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk161.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk162.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk163.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk164.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk165.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk166.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk167.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk168.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk169.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk170.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk171.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk172.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk173.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk174.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk175.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk176.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk177.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk178.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk179.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk180.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk181.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk182.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk183.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk184.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk185.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk186.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk187.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk188.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk189.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk190.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk191.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk192.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk193.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk194.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk195.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk196.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk197.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk198.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk199.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk200.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk201.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk202.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk203.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk204.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk205.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk206.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk207.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk208.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk209.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk210.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk211.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk212.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk213.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk214.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk215.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk216.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk217.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk218.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk219.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk220.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk221.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk222.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk223.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk224.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk225.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk226.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk227.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk228.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk229.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk230.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk231.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk232.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk233.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk234.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk235.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk236.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk237.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk238.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk239.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk240.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk241.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk242.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk243.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk244.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk245.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk246.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk247.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk248.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk249.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk250.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk251.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk252.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk253.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk254.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk255.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk256.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk257.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk258.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk259.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk260.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk261.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk262.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk263.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk264.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk265.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk266.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk267.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk268.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk269.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk270.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk271.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk272.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk273.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk274.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk275.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk276.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk277.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk278.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk279.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk280.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk281.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk282.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk283.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk284.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk285.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk286.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk287.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk288.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk289.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk290.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk291.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk292.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk293.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk294.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk295.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk296.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk297.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk298.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk299.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk300.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk301.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk302.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk303.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk304.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk305.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk306.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk307.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk308.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk309.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk310.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk311.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk312.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk313.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk314.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk315.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk316.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk317.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk318.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk319.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk320.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk321.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk322.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk323.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk324.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk325.root
-  - root://cmsdata.phys.cmu.edu//store/group/bbWW/skims/2025_v1/SingleMuon_2022_EEeraG/picoAOD.chunk326.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEG/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEG/picoAOD.chunk1.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEG/picoAOD.chunk2.root
   lumis_processed:
     362362:
     - 1
@@ -9888,70 +9572,16 @@ SingleMuon_2022_EE:
     - 214
   missing: {}
   reproducible:
-    args: Namespace(test=False, output_file='picoaod_datasets_SingleMuon_2022EE_eraG.yml',
-      processor='bbww/skimmer/processors/skimmer_bbWW.py', configs='bbww//skimmer/metadata/HHbbWW.yml',
-      metadata='bbww/metadata/datasets_run3.yml', output_path='bbww/output/skimmer/',
-      years=['2022_EE'], datasets=['SingleMuon'], era=['A', 'B', 'C', 'D', 'E', 'F',
-      'G', 'H'], skimming=True, run_dask=True, condor=True, debug=False, githash='',
-      gitdiff='', check_input_files=False)
-    date: '2025-07-31 10:51:44'
-    diff: "diff --git a/python/analysis/metadata/corrections.yml b/python/analysis/metadata/corrections.yml\n\
-      index 0b6d8435..4a9471a9 100644\n--- a/python/analysis/metadata/corrections.yml\n\
-      +++ b/python/analysis/metadata/corrections.yml\n@@ -289,7 +289,7 @@\n   ele_sf:\
-      \ \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2022_Summer22EE/electron.json.gz'\n\
-      \     tag:  2022Re-recoE+PromptFG\n-  mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2022_Summer22EE/muon_Z.json.gz'\n\
-      +  mu_sf: /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2022_Summer22EE/muon_Z.json.gz\n\
-      \   jet_veto_maps: \n     file: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2022_Summer22EE/jetvetomaps.json.gz'\n\
-      \     tag: 'Summer22EE_23Sep2023_RunEFG_V1'\ndiff --git a/python/base_class/hist/hist.py\
-      \ b/python/base_class/hist/hist.py\nindex fb4c7a6a..b602d7a3 100644\n--- a/python/base_class/hist/hist.py\n\
-      +++ b/python/base_class/hist/hist.py\n@@ -273,6 +273,8 @@ class _Fill(Generic[HistType],\
-      \ Configurable, namespace=\"hist.Fill\"):\n                 hist_args = {}\n\
-      \                 for k, v in fills.items():\n                     fill = fill_values[v]\n\
-      +                    if isinstance(fill, ak.Array):\n+                     \
-      \   fill = ak.fill_none(fill, np.nan)\n                     if shape is None:\n\
-      \                         ...\n                     elif self._is_jagged(fill):\n\
-      diff --git a/python/base_class/hist/object/jet.py b/python/base_class/hist/object/jet.py\n\
-      index 3a7167c5..9e79adf0 100644\n--- a/python/base_class/hist/object/jet.py\n\
-      +++ b/python/base_class/hist/object/jet.py\n@@ -17,7 +17,6 @@ class _PlotJet(_PlotCommon,\
-      \ _PlotLorentzVector):\n class _PlotDiJet(_PlotCommon, _PlotDiLorentzVector):\n\
-      \     ...\n \n-\n class Jet:\n     plot = _PlotJet\n     plot_pair = _PlotDiJet\n\
-      diff --git a/python/scripts/skimmer-test-job.sh b/python/scripts/skimmer-test-job.sh\n\
-      index f80a945d..4da91158 100644\n--- a/python/scripts/skimmer-test-job.sh\n\
-      +++ b/python/scripts/skimmer-test-job.sh\n@@ -9,20 +9,23 @@ fi\n \n echo \"\
-      ############### Changing metadata\"\n if [[ $(hostname) = *fnal* ]]; then\n\
-      -    sed -e \"s#base_path.*#base_path: \\/srv\\/output\\/skimmer_test_job\\\
-      /#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files: 1/\" -e \"\
-      s/2024_.*/tmp\\//\" skimmer/metadata/HH4b.yml > $OUTPUT_DIR/HH4b.yml\n+    sed\
-      \ -e \"s#base_path.*#base_path: \\/srv\\/output\\/skimmer_test_job\\/#\" -e\
-      \ \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files: 1/\" -e \"s/2024_.*/tmp\\\
-      //\" bbww/skimmer/metadata/HHbbWW.yml > $OUTPUT_DIR/HHbbWW.yml\n else\n-   \
-      \ sed -e \"s#base_path.*#base_path: /builds/${CI_PROJECT_PATH}/python/output\\\
-      /skimmer_test_job\\/#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files:\
-      \ 1/\" -e \"s/2024_.*/tmp\\//\" -e \"s/T3_US_FNALLPC/T3_CH_PSI/\" skimmer/metadata/HH4b.yml\
-      \ > $OUTPUT_DIR/HH4b.yml\n+    sed -e \"s#base_path.*#base_path: /builds/${CI_PROJECT_PATH}/python/output\\\
-      /skimmer_test_job\\/#\" -e \"s/\\#max.*/maxchunks: 5/\" -e \"s/\\#test.*/test_files:\
-      \ 1/\" -e \"s/2024_.*/tmp\\//\" -e \"s/T3_US_FNALLPC/T3_CH_PSI/\" bbww/skimmer/metadata/HHbbWW.yml\
-      \ > $OUTPUT_DIR/HHbbWW.yml\n fi\n-cat $OUTPUT_DIR/HH4b.yml\n+cat $OUTPUT_DIR/HHbbWW.yml\n\
-      +\n \n #nanoAOD_file=\"root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/70000/92D0BDF3-91AE-514F-88B5-8F591450B8AD.root\"\
-      \n #sed -e \"s#/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9.*#[\
-      \ '${nanoAOD_file}' ]#\" metadata/datasets_HH4b.yml > $OUTPUT_DIR/datasets_HH4b.yml\n\
-      \ #python runner.py -s -p skimmer/processor/skimmer_4b.py -c $OUTPUT_DIR/datasets_HH4b.yml\
-      \ -y UL18 -d TTToSemiLeptonic -op $OUTPUT_DIR -o picoaod_datasets_TTToSemiLeptonic_UL18.yml\
-      \ -m $OUTPUT_DIR/datasets_HH4b.yml  -t \n \n-nanoAOD_file=\"root://cmseos.fnal.gov//store/mc/RunIISummer20UL18NanoAODv9/GluGluToHHTo4B_cHHH0_TuneCP5_PSWeights_13TeV-powheg-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/70000/3F95108D-84D2-CD4D-A0D2-324A7D15E691.root\"\
-      \n-sed -e \"s#/GluGluToHHTo4B_cHHH0_TuneCP5_PSWeights_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9.*#[\
-      \ '${nanoAOD_file}' ]#\" metadata/datasets_HH4b.yml > $OUTPUT_DIR/datasets_HH4b.yml\n\
-      +nanoAOD_file=\"root://cmseos.fnal.gov//store/mc/Run3Summer22NanoAODv13/GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/NANOAODSIM/133X_mcRun3_2022_realistic_ForNanov13_v1-v2/2830000/1ee1335c-a70a-4fba-9c2d-5ab8d5cd0287.root\"\
-      \n+sed -e \"s#/GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv13-133X_mcRun3_2022_realistic_ForNanov13_v1-v2.*#[\
-      \ '${nanoAOD_file}' ]#\" bbww/metadata/datasets_run3.yml > $OUTPUT_DIR/datasets_run3.yml\n\
-      +\n+\n echo \"############### Running test processor\"\n-python runner.py -s\
-      \ -p skimmer/processor/skimmer_4b.py -c $OUTPUT_DIR/HH4b.yml -y UL18 -d GluGluToHHTo4B_cHHH0\
-      \ -op $OUTPUT_DIR -o picoaod_datasets_GluGluToHHTo4B_cHHH0_UL18.yml -m $OUTPUT_DIR/datasets_HH4b.yml\
-      \  -t \n+python runner.py -s -p bbww/skimmer/processors/skimmer_bbWW.py -c bbww/skimmer/metadata/HHbbWW.yml\
-      \ -y 2022_preEE -d GluGluToHHTo2B2VLNu2J -op $OUTPUT_DIR -o picoaod_datasets_GluGluToHHtobbWW_test.yml\
-      \ -m bbww/metadata/datasets_run3.yml  -t \n ls -R $OUTPUT_DIR\n \n if [ \"$return_to_base\"\
-      \ = true ]; then\n"
-    hash: 4ed7992d58ce0da760d2d0b0a7b30671795578b8
-  saved_events: 32668385
+    args: Namespace(processor='bbww/skimmer/processors/skimmer_bbWW.py', configs='bbww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbww/metadata/skims_v3', triggers='bbww/metadata/triggers_bbWW.yml',
+      luminosities='bbww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_data__SingleMuon_2022_EE_eraG.yml',
+      output_path='output/skimmer/', years=['2022_EE'], datasets=['data__SingleMuon'],
+      era=['G'], skimming=True, test=False, systematics=None, run_dask=True, condor=True,
+      debug=False, check_input_files=False, githash='', gitdiff='')
+    date: '2025-08-27 20:36:41'
+    diff: ''
+    hash: aecbcab1c279fd0d54234f95ea90a6ef01011c8b
+  saved_events: 1120420
   sumw: 76689396
   sumw2: 76689396
   total_events: 76689396

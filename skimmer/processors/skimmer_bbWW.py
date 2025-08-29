@@ -48,9 +48,13 @@ class Skimmer(PicoAOD):
         oneM = (event.mu_ntight==1) & (event.e_ntight==0)
         
         selections = PackedSelection()
+        self._cutFlow.selections = selections
+        selections.add('all', np.ones(len(event), dtype=bool))
         selections.add('lumimask', event.lumimask)
         selections.add('passNoiseFilter', event.passNoiseFilter)
         selections.add('trigger', event.passHLT)
+        selections.add('oneE', oneE )
+        selections.add('oneM', oneM )
         selections.add('isoneEorM', oneE|oneM )
         selections.add('oneBjet', event.has_1_bjet)
         selections.add('njets', ak.num(event.j_init, axis=1) > 2)
@@ -64,16 +68,16 @@ class Skimmer(PicoAOD):
         )
 
         weights = Weights(len(event), storeIndividual=True)
+        self._cutFlow.weights = weights
         if self.is_mc:
             weights.add( "genweight_", event.genWeight )
-        event["weight"] = weights.weight()
 
-        ### Needs to be fixed
-        # self._cutFlow.fill( "all", event, allTag=True )
-        # cumulative_cuts = []
-        # for cut in selections.names:
-        #     cumulative_cuts.append(cut)
-        #     self._cutFlow.fill( cut, event[selections.all(*cumulative_cuts)], allTag=True )
+        self._cutFlow.fill( "all", ['all'], weights.weight() )
+        cumulative_cuts = []
+        for cut in selections.names:
+            if ('oneE' in cut) or ('oneM' in cut): continue
+            cumulative_cuts.append(cut)
+            self._cutFlow.fill( cut, cumulative_cuts, weights.weight() )
 
         processOutput = {}
 

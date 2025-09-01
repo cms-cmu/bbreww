@@ -166,7 +166,9 @@ declare -A SAVED_VARS=(
 )
 
 # Setup proxy if needed
-setup_proxy "$DO_PROXY"
+if [[ -n "$DO_PROXY" ]]; then
+    setup_proxy "$DO_PROXY"
+fi
 
 # Restore our configuration variables after setup
 OUTPUT_BASE="${SAVED_VARS[OUTPUT_BASE]}"

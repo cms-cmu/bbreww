@@ -61,8 +61,8 @@ def jet_selection(events, params, year):
         # events['Jet'] = events.Jet[events.Jet.jet_veto_maps] uncomment to apply on individual jets
 
     events['Jet','isclean'] = (
-        ak.all(events.Jet.metric_table(events.Muon[events.Muon.isloose]) > 0.4, axis=2)
-        & ak.all(events.Jet.metric_table(e_clean[e_clean.isloose]) > 0.4, axis=2)
+        ak.all(events.Jet.metric_table(events.Muon[events.Muon.istight]) > 0.4, axis=2)
+        & ak.all(events.Jet.metric_table(e_clean[e_clean.istight]) > 0.4, axis=2)
     )
     events['Jet', 'isnominal'], events['Jet', 'issoft'],  events['Jet', 'preselected'] = jet_preselection(events, params)
 

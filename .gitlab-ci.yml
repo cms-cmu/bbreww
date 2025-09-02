@@ -35,7 +35,7 @@ include:
 
 stages:  
   - setup
-  - build
+  - proxy
   - skimmer
   - analysis
   - test

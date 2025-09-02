@@ -13,21 +13,6 @@ class cutflow_bbWW(cutflow):
         self._cutflow_mu = {}
         self.selections = selections
 
-    def get_sequential_cutflow(self, selection, events, selection_list):
-        sequential_cutflow = {
-            'events': {},
-            'weights': {}
-        }
-        cumulative_cuts = []
-
-        for cut_name in selection_list:
-            cumulative_cuts.append(cut_name)
-            current_mask = selection.all(*cumulative_cuts)
-            sequential_cutflow['events'][cut_name] = np.sum(current_mask)
-            sequential_cutflow['weights'][cut_name] = np.sum(events.weight[current_mask])
-
-        return sequential_cutflow
-
     def add_output_cutflow(self, events, output):
         region_map = {
             'hadronic_W': events.channel.hadronic_W,
@@ -80,8 +65,8 @@ class cutflow_bbWW(cutflow):
         logging.debug(f"Cutflow {cut_name}: Ele: {self._cutflow_ele[cut_name]}, Mu: {self._cutflow_mu[cut_name]}")
 
 
-    def addOutput(self, *args, **kwargs):
-        pass  # Stub or update as needed
+    def add_output(self, o, dataset):
+        return self.addOutputSkim(o, dataset)
 
     def addOutputSkim(self, o, dataset):
 

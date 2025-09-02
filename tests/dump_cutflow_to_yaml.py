@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
     with open(args.inputFile, 'rb') as infile:
         hists = load(infile)
-    cutflow = hists['cutflow']
+    cutflow = hists['events_processed']
 
     cutflow_clean = convert_types(cutflow)
 

@@ -72,4 +72,3 @@ setup_workspace:
     - ls -la bbww/
   tags:
     - k8s-cvmfs
-  - local: 'workflows/gitlab-ci/*.yml'

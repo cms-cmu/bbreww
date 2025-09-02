@@ -32,6 +32,7 @@ variables:
 
 include:
   - local: 'software/dockerfiles/stages_build.yml'
+  - local: 'workflows/gitlab-ci/*.yml'
 
 stages:  
   - setup
@@ -71,6 +72,4 @@ setup_workspace:
     - ls -la bbww/
   tags:
     - k8s-cvmfs
-
-include:
   - local: 'workflows/gitlab-ci/*.yml'

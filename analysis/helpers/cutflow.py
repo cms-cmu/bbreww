@@ -1,30 +1,17 @@
 # Specialized subclass for 4b analysis
 import numpy as np
 import awkward as ak
+import logging
 from src.skimmer.cutflow import cutflow
 
 ########### IT IS NOT READY
 ########### NEEDS WORK
 
 class cutflow_bbWW(cutflow):
-    def __init__(self):
+    def __init__(self, selections=None, weights=None):
         self._cutflow_ele = {}
         self._cutflow_mu = {}
-
-    def get_sequential_cutflow(self, selection, events, selection_list):
-        sequential_cutflow = {
-            'events': {},
-            'weights': {}
-        }
-        cumulative_cuts = []
-
-        for cut_name in selection_list:
-            cumulative_cuts.append(cut_name)
-            current_mask = selection.all(*cumulative_cuts)
-            sequential_cutflow['events'][cut_name] = np.sum(current_mask)
-            sequential_cutflow['weights'][cut_name] = np.sum(events.weight[current_mask])
-
-        return sequential_cutflow
+        self.selections = selections
 
     def add_output_cutflow(self, events, output):
         region_map = {
@@ -58,11 +45,38 @@ class cutflow_bbWW(cutflow):
         }
         return output
 
-    def fill(self, *args, **kwargs):
-        pass  # Stub or update as needed
+    def fill(self, cut_name, cut_list, weight ):
 
-    def addOutput(self, *args, **kwargs):
-        pass  # Stub or update as needed
+        if 'oneE' in cut_list: cut_list.remove('oneE')
+        if 'oneM' in cut_list: cut_list.remove('oneM')
+        if self.selections is None or not hasattr(self.selections, 'names') or 'oneE' not in self.selections.names or 'oneM' not in self.selections.names:
+            logging.error('Selections MUST have a oneE (electron) and oneM (muon) selection')
 
-    def addOutputSkim(self, *args, **kwargs):
-        pass  # Stub or update as needed
+        if cut_name not in self._cutflow_ele:
+            self._cutflow_ele[cut_name] = (0, 0)    # weighted, raw
+            self._cutflow_mu[cut_name] = (0, 0)    # weighted, raw
+
+        ele_cut = self.selections.all(*cut_list) & (self.selections.require(oneE=True))
+        mu_cut  = self.selections.all(*cut_list) & (self.selections.require(oneM=True))
+
+        self._cutflow_ele[cut_name] = (np.sum(ele_cut), np.sum(weight[ele_cut]))
+        self._cutflow_mu[cut_name] = (np.sum(mu_cut), np.sum(weight[mu_cut]))
+
+        logging.debug(f"Cutflow {cut_name}: Ele: {self._cutflow_ele[cut_name]}, Mu: {self._cutflow_mu[cut_name]}")
+
+
+    def add_output(self, o, dataset):
+        return self.addOutputSkim(o, dataset)
+
+    def addOutputSkim(self, o, dataset):
+
+        o[dataset]['cutflow'] = {
+            "e_region": { "events": {}, "weights": {} },
+            "mu_region": { "events": {}, "weights": {} }
+        }
+        for k, v in self._cutflow_ele.items():
+            o[dataset]["cutflow"]["e_region"]["events"][k] = float(v[0])
+            o[dataset]["cutflow"]["e_region"]["weights"][k] = float(v[1])
+        for k, v in self._cutflow_mu.items():
+            o[dataset]["cutflow"]["mu_region"]["events"][k] = float(v[0])
+            o[dataset]["cutflow"]["mu_region"]["weights"][k] = float(v[1])

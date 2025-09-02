@@ -1,69 +1,46 @@
 GluGluToHHTo2B2VLNu2J_2022_EE:
-  hadronic_W:
-    events:
-      preselection: 13145
-      nominal_4j2b: 8104
-      nominal_3j2b: 4018
-      lowpt_4j2b: 3529
-      chi_sq_nom_4j2b: 8086
-      chi_sq_nom_3j2b: 4018
-      chi_sq_lowpt_4j2b: 3477
-    weights:
-      preselection: 2.382202764242209
-      nominal_4j2b: 1.4699784473851416
-      nominal_3j2b: 0.7250141628212994
-      lowpt_4j2b: 0.637857893410943
-      chi_sq_nom_4j2b: 1.4671528033907126
-      chi_sq_nom_3j2b: 0.7250141628212994
-      chi_sq_lowpt_4j2b: 0.6279531900862436
-  leptonic_W:
-    events:
-      preselection: 1289
-      nominal_4j2b: 920
-      nominal_3j2b: 281
-      lowpt_4j2b: 276
-      chi_sq_nom_4j2b: 4
-      chi_sq_nom_3j2b: 157
-      chi_sq_lowpt_4j2b: 139
-    weights:
-      preselection: 0.22437018378898874
-      nominal_4j2b: 0.15948991965219347
-      nominal_3j2b: 0.05045146616493194
-      lowpt_4j2b: 0.04868019154207595
-      chi_sq_nom_4j2b: 0.0003641545223098346
-      chi_sq_nom_3j2b: 0.02725936780320658
-      chi_sq_lowpt_4j2b: 0.022978459176827518
-  mu_region:
-    events:
-      preselection: 24248
-      nominal_4j2b: 6413
-      nominal_3j2b: 2892
-      lowpt_4j2b: 2487
-      chi_sq_nom_4j2b: 4807
-      chi_sq_nom_3j2b: 2433
-      chi_sq_lowpt_4j2b: 2095
-    weights:
-      preselection: 4.386873652222067
-      nominal_4j2b: 1.152732721084556
-      nominal_3j2b: 0.5217181866559493
-      lowpt_4j2b: 0.4466404868462191
-      chi_sq_nom_4j2b: 0.8670587728577257
-      chi_sq_nom_3j2b: 0.44226311302221455
-      chi_sq_lowpt_4j2b: 0.37600298316219166
-  e_region:
-    events:
-      preselection: 16511
-      nominal_4j2b: 4362
-      nominal_3j2b: 2102
-      lowpt_4j2b: 1806
-      chi_sq_nom_4j2b: 3283
-      chi_sq_nom_3j2b: 1742
-      chi_sq_lowpt_4j2b: 1521
-    weights:
-      preselection: 3.0019520982055017
-      nominal_4j2b: 0.7856753751786199
-      nominal_3j2b: 0.3813560748557754
-      lowpt_4j2b: 0.3268450309339001
-      chi_sq_nom_4j2b: 0.5907196461676343
-      chi_sq_nom_3j2b: 0.3149334584528849
-      chi_sq_lowpt_4j2b: 0.2743289401311532
+  n_events: 63646
+  sum_genweights: 1231.6512451171875
+  cutflow:
+    e_region:
+      events:
+        lumimask: 26264.0
+        passNoiseFilter: 26264.0
+        trigger: 26264.0
+        oneBjet: 24536.0
+        twoBjets: 11086.0
+        oneEorM: 11086.0
+        tau_veto: 11053.0
+        jet_veto_mask: 10055.0
+        njets_ak8: 6958.0
+      weights:
+        lumimask: 4.28449163803364
+        passNoiseFilter: 4.28449163803364
+        trigger: 4.28449163803364
+        oneBjet: 3.988815446853345
+        twoBjets: 1.772317456848449
+        oneEorM: 1.772317456848449
+        tau_veto: 1.7683066311648123
+        jet_veto_mask: 1.614683655324378
+        njets_ak8: 1.1255619926854603
+    mu_region:
+      events:
+        lumimask: 37382.0
+        passNoiseFilter: 37382.0
+        trigger: 37382.0
+        oneBjet: 34825.0
+        twoBjets: 15490.0
+        oneEorM: 15490.0
+        tau_veto: 15433.0
+        jet_veto_mask: 14052.0
+        njets_ak8: 9992.0
+      weights:
+        lumimask: 7.014911862191282
+        passNoiseFilter: 7.014911862191282
+        trigger: 7.014911862191282
+        oneBjet: 6.527001094857793
+        twoBjets: 2.8484666528295497
+        oneEorM: 2.8484666528295497
+        tau_veto: 2.8392306555683877
+        jet_veto_mask: 2.5881535399108087
+        njets_ak8: 1.882637451126481

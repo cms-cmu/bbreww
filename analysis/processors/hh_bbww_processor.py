@@ -14,14 +14,14 @@ from src.physics.event_selection import apply_event_selection
 from src.physics.objects.jet_corrections import apply_jerc_corrections
 from src.physics.event_weights import add_weights
 
-from bbww.analysis.helpers.common import update_events, add_lepton_sfs
-from bbww.analysis.helpers.cutflow import cutflow_bbWW
-from bbww.analysis.helpers.corrections import apply_met_corrections_after_jec
-from bbww.analysis.helpers.object_selection import apply_bbWW_preselection, apply_mll_cut
-from bbww.analysis.helpers.candidate_selection import candidate_selection
-from bbww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
-from bbww.analysis.helpers.gen_process import gen_process, add_gen_info, gen_studies
-from bbww.analysis.helpers.fill_histograms import fill_histograms
+from bbreww.analysis.helpers.common import update_events, add_lepton_sfs
+from bbreww.analysis.helpers.cutflow import cutflow_bbWW
+from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec
+from bbreww.analysis.helpers.object_selection import apply_bbWW_preselection, apply_mll_cut
+from bbreww.analysis.helpers.candidate_selection import candidate_selection
+from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
+from bbreww.analysis.helpers.gen_process import gen_process, add_gen_info, gen_studies
+from bbreww.analysis.helpers.fill_histograms import fill_histograms
 
 warnings.filterwarnings("ignore", "Missing cross-reference index for")
 warnings.filterwarnings("ignore", "Please ensure")
@@ -42,7 +42,7 @@ def add_to_selection(cut_name, cut, selections, mask):
 class analysis(processor.ProcessorABC):
     def __init__(
         self,
-        parameters: str = "bbww/analysis/metadata/object_preselection_run3.yaml",
+        parameters: str = "bbreww/analysis/metadata/object_preselection_run3.yaml",
         corrections_metadata: str = "src/physics/corrections.yml",
     ):
         self.parameters = parameters

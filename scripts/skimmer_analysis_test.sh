@@ -25,11 +25,11 @@ run_command python src/scripts/merge_yaml_datasets.py \
 cat $OUTPUT_DIR/datasets.yml
 
 # Call the main analysis_test.sh script with Run3-specific parameters
-bash bbww/scripts/run_processor.sh \
+bash bbreww/scripts/run_processor.sh \
     --output-base "$OUTPUT_BASE_DIR" \
-    --processor "bbww/analysis/processors/hh_bbww_processor.py" \
+    --processor "bbreww/analysis/processors/hh_bbww_processor.py" \
     --metadata $OUTPUT_DIR/datasets.yml \
-    --config "bbww/analysis/metadata/HHbbWW.yml" \
+    --config "bbreww/analysis/metadata/HHbbWW.yml" \
     --datasets "GluGluToHHTo2B2VLNu2J" \
     --year "2022_EE" \
     --output-filename "test.coffea" \

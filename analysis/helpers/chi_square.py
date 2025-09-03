@@ -1,6 +1,6 @@
 import awkward as ak
 import numpy as np
-from bbww.analysis.helpers.common import chi_square, met_reconstr
+from bbreww.analysis.helpers.common import chi_square, met_reconstr
 
 def chi_sq(events):
     e_clean = events.Electron[events.Electron.isclean]

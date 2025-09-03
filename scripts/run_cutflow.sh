@@ -12,7 +12,7 @@ usage() {
     echo "  --input-subdir DIR        Input subdirectory (default: analysis_test)"
     echo "  --output-filename FILE    Output cutflow filename (default: test_cutflow.yml)"
     echo "  --output-subdir DIR       Output subdirectory (default: analysis_test_cutflows)"
-    echo "  --known-cutflow FILE      Known cutflow file for comparison (default: bbww/tests/known_cutflow_hh_bbww_processor.yml)"
+    echo "  --known-cutflow FILE      Known cutflow file for comparison (default: bbreww/tests/known_cutflow_hh_bbww_processor.yml)"
     echo "  --help                    Show this help message"
     exit 1
 }
@@ -34,7 +34,7 @@ declare -A DEFAULTS=(
     ["INPUT_FILENAME"]="test.coffea"
     ["OUTPUT_FILENAME"]="test_cutflow.yml"
     ["OUTPUT_SUBDIR"]="analysis_test_cutflows"
-    ["KNOWN_CUTFLOW"]="bbww/tests/known_cutflow_hh_bbww_processor.yml"
+    ["KNOWN_CUTFLOW"]="bbreww/tests/known_cutflow_hh_bbww_processor.yml"
 )
 
 # Initialize variables with defaults
@@ -123,7 +123,7 @@ create_output_directory "$OUTPUT_DIR"
 
 echo "############### Running cutflow analysis"
 # Run the Python script to dump cutflow
-cmd=(python bbww/tests/dump_cutflow_to_yaml.py -i "$INPUT_FILE" -o "$OUTPUT_FILE")
+cmd=(python bbreww/tests/dump_cutflow_to_yaml.py -i "$INPUT_FILE" -o "$OUTPUT_FILE")
 run_command "${cmd[@]}"
 
 if [ $? -ne 0 ]; then
@@ -137,7 +137,7 @@ cat "$OUTPUT_FILE"
 
 echo "############### Running cutflow comparison"
 # Run the cutflow unit test
-cmd=(python bbww/tests/cutflow_unittest.py --input_file "$OUTPUT_FILE" --known_cutflow "$KNOWN_CUTFLOW")
+cmd=(python bbreww/tests/cutflow_unittest.py --input_file "$OUTPUT_FILE" --known_cutflow "$KNOWN_CUTFLOW")
 run_command "${cmd[@]}"
 
 # Check if the command was successful

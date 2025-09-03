@@ -1,8 +1,8 @@
 #!/bin/bash
 
 JOB_NAME="skimmer_test"
-CONFIG_PATH="bbww/skimmer/metadata/HHbbWW.yml"
-METADATA_PATH="bbww/metadata/datasets.yml"
+CONFIG_PATH="bbreww/skimmer/metadata/HHbbWW.yml"
+METADATA_PATH="bbreww/metadata/datasets.yml"
 
 # Source common functions
 source "src/scripts/common.sh"

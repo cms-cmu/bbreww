@@ -1,7 +1,7 @@
 analysis_test_cutflows_mc:
-  stage: test
+  stage: cutflow
   extends:
-    - .base_bbww_job
+    - .base_analysis
   needs:
     - setup_workspace
     - analysis_test_mc
@@ -15,9 +15,9 @@ analysis_test_cutflows_mc:
     expire_in: 1 day
 
 analysis_test_cutflows_data:
-  stage: test
+  stage: cutflow
   extends:
-    - .base_bbww_job
+    - .base_analysis
   needs:
     - setup_workspace
     - analysis_test_data
@@ -31,9 +31,9 @@ analysis_test_cutflows_data:
     expire_in: 1 day
 
 skimmer_analysis_test_cutflows:
-  stage: test
+  stage: cutflow
   extends:
-    - .base_bbww_job
+    - .base_analysis
   needs:
     - setup_workspace
     - skimmer_analysis_test

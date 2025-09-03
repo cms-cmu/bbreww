@@ -30,11 +30,19 @@ variables:
   BARISTA_REPO: 'https://${DEPLOY_TOKEN_USERNAME}:${DEPLOY_TOKEN_PASSWORD}@gitlab.cern.ch/cms-cmu/barista.git'
   BARISTA_BRANCH: 'master'
 
+include:
+  - local: workflows/gitlab-CI/analysis.yml
+  - local: workflows/gitlab-CI/cutflows.yml
+  - local: workflows/gitlab-CI/skimmer.yml
+  - project: 'cms-cmu/barista'
+    ref: 'master'
+    file: 'src/workflows/gitlab-CI/stages_proxy.yml'
+
 stages:  
   - setup
   - skimmer
   - analysis
-  - test
+  - cutflow
 
 # Setup job that clones barista once
 setup_workspace:
@@ -56,7 +64,7 @@ setup_workspace:
     - k8s-cvmfs
 
 # Base template for all jobs that need the framework
-.base_bbww_job:
+.base_analysis:
   needs:
     - setup_workspace
     - voms_proxy
@@ -68,6 +76,3 @@ setup_workspace:
   image: gitlab-registry.cern.ch/cms-cmu/barista:latest
   tags:
     - k8s-cvmfs
-
-include:
-  - local: 'workflows/gitlab-ci/*.yml'

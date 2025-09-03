@@ -1,7 +1,7 @@
 analysis_test_mc:
   stage: analysis
   extends:
-    - .base_bbww_job
+    - .base_analysis
   script:
     - echo "Running bbww analysis in barista framework"
     - source bbreww/scripts/analysis_test_mc.sh --output-base $CI_PROJECT_PATH/output/
@@ -13,7 +13,7 @@ analysis_test_mc:
 analysis_test_data:
   stage: analysis
   extends:
-    - .base_bbww_job
+    - .base_analysis
   script:
     - echo "Running bbww analysis (with data) in barista framework"
     - source bbreww/scripts/analysis_test_data.sh --output-base $CI_PROJECT_PATH/output/
@@ -25,7 +25,7 @@ analysis_test_data:
 skimmer_analysis_test:
   stage: analysis
   extends:
-    - .base_bbww_job
+    - .base_analysis
   needs:
     - setup_workspace
     - voms_proxy

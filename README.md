@@ -1,5 +1,7 @@
 # bbreww
 
+[![pipeline status](https://gitlab.cern.ch/cms-cmu/bbreww/badges/master/pipeline.svg)](https://gitlab.cern.ch/cms-cmu/bbreww/-/commits/master)
+
 `bbreww` is a CMS analysis package built on top of the [Barista](https://barista.docs.cern.ch/) framework, designed for streamlined physics workflows at CMU.
 
 ## Overview

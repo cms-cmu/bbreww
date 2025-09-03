@@ -16,33 +16,15 @@ def lepton_preselection(events, lepton_flavour, params, id):
     passes_eta = abs(leptons.eta) < cuts.eta
 
     if lepton_flavour == "Electron":
-        # Requirements on SuperCluster eta, dxy, dz for barrel and endcap regions
-        etaSC = abs(leptons.deltaEtaSC + leptons.eta)
-        passes_SC = (
-            # barrel cuts
-            (etaSC < 1.4442) 
-            & (abs(leptons.dxy) < 0.05) 
-            & (abs(leptons.dz) < 0.1)
-        ) | (
-            # endcap cuts
-            (etaSC < 2.5) & (etaSC > 1.5660)
-            & (abs(leptons.dxy) < 0.1)
-            & (abs(leptons.dz) < 0.2)
-        )
+        passes_iso = leptons.mvaIso_WP80
+        passes_cutbased = leptons.cutBased >= cuts.cutBased
 
-        passes_iso = True
-        if "iso" in cuts.keys():
-            passes_iso = leptons.pfRelIso03_all < cuts.iso
-        if id == "loose":
-            passes_cutbased = leptons.cutBased >= cuts.cutBased
-        elif id == "tight":
-            passes_cutbased = leptons.cutBased == cuts.cutBased
-        good_leptons = passes_pt & passes_eta & passes_SC & passes_cutbased
+        good_leptons = passes_pt & passes_eta & passes_iso
 
     elif lepton_flavour == "Muon":
         # Requirements on isolation and id
-        passes_iso = leptons.pfRelIso04_all < cuts.iso
-        passes_id = leptons[cuts.id] == True
+        passes_iso = leptons.pfIsoId >= cuts.iso
+        passes_id = leptons[cuts.id]
         
         good_leptons = passes_pt & passes_eta & passes_iso & passes_id
     
@@ -81,7 +63,7 @@ def jet_preselection(events, params):
     nominal_pt = jets.pt > nominal_cuts.pt
     soft_pt = (nominal_cuts.pt > jets.pt) & (jets.pt > soft_cuts.pt)
     presel_pt = jets.pt > soft_cuts.pt
-    passes_eta = abs(jets.eta) < soft_cuts.pt
+    passes_eta = abs(jets.eta) < soft_cuts.eta
     passes_jetId  = (jets.jetId & soft_cuts.jetId) == 2
 
     nominal_jets = passes_eta & nominal_pt & passes_jetId
@@ -90,16 +72,16 @@ def jet_preselection(events, params):
 
     return nominal_jets, soft_jets, preselected_jets
 
-def ak8_jet_preselection(events, fat_jets, params):
+def ak8_jet_preselection(fat_jets, params):
     cuts = params.object_preselection.fatJet
 
     passes_pt = fat_jets.pt > cuts.pt
     passes_eta = abs(fat_jets.eta) < cuts.eta
     passes_msoftdrop = (fat_jets.msoftdrop >= cuts.msoftdrop_lower) & (fat_jets.msoftdrop <= cuts.msoftdrop_upper)
-    passes_nsubjettines_ratio = (fat_jets.tau2/fat_jets.tau1) <= cuts.nsubjettiness_ratio
+    passes_nsubjettiness_ratio = (fat_jets.tau2/fat_jets.tau1) <= cuts.nsubjettiness_ratio
     passes_btag_WP = fat_jets.particleNetWithMass_HbbvsQCD > cuts.btagWP
 
-    good_jets = passes_pt & passes_eta & passes_msoftdrop & passes_nsubjettines_ratio & passes_btag_WP
+    good_jets = passes_pt & passes_eta & passes_msoftdrop & passes_nsubjettiness_ratio & passes_btag_WP
     
     return good_jets
     
@@ -117,7 +99,7 @@ def tau_preselection(events, params, id):
     passes_pt = taus.pt > cuts.pt
     passes_eta = abs(taus.eta) < cuts.eta
     passes_dz = abs(taus.dz) < cuts.dz
-    passes_deeptauid = (taus.idDeepTau2018v2p5VSjet == cuts.wp) 
+    passes_deeptauid = (taus.idDeepTau2017v2p1VSjet >= cuts.wp) 
 
 
     good_taus = passes_pt & passes_eta &  passes_dz & passes_deeptauid & passes_decayModeDMs

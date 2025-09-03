@@ -1,6 +1,6 @@
 # bbreww
 
-This is a temporary repository for bbreww analysis code, which is implemented on top of the coffea4bees framework. The code is under development.
+This is a temporary repository for bbreww analysis code, which is implemented on top of the barista framework. The code is under development.
 
 ## Installation
 

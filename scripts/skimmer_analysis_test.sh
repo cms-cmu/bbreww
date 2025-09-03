@@ -8,7 +8,7 @@ source "src/scripts/common.sh"
 # Parse output base argument
 OUTPUT_BASE_DIR=$(parse_output_base_arg "output/" "$@") || exit 1
 
-[[ $(hostname) = *runner* ]] && OUTPUT_BASE_DIR="/builds/$CI_PROJECT_PATH/coffea4bees_framework/output"
+[[ $(hostname) = *runner* ]] && OUTPUT_BASE_DIR="/builds/$CI_PROJECT_PATH/output"
 
 INPUT_DIR="$OUTPUT_BASE_DIR/skimmer_test"
 OUTPUT_DIR="$OUTPUT_BASE_DIR/${JOB_NAME}"

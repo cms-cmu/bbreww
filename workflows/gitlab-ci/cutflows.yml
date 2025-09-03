@@ -6,7 +6,6 @@ analysis_test_cutflows_mc:
     - setup_workspace
     - analysis_test_mc
     - voms_proxy
-  image: gitlab-registry.cern.ch/cms-cmu/barista:latest
   script:
     - echo "Running cutflow test for analysis_test"
     - source bbreww/scripts/analysis_test_cutflows_mc.sh --output-base $CI_PROJECT_PATH/output/
@@ -23,7 +22,6 @@ analysis_test_cutflows_data:
     - setup_workspace
     - analysis_test_data
     - voms_proxy
-  image: gitlab-registry.cern.ch/cms-cmu/barista:latest
   script:
     - echo "Running cutflow test for analysis_test"
     - source bbreww/scripts/analysis_test_cutflows_data.sh --output-base $CI_PROJECT_PATH/output/
@@ -40,7 +38,6 @@ skimmer_analysis_test_cutflows:
     - setup_workspace
     - skimmer_analysis_test
     - voms_proxy
-  image: gitlab-registry.cern.ch/cms-cmu/barista:latest
   script:
     - echo "Running cutflow test for skimmer_analysis_test"
     - source bbreww/scripts/skimmer_analysis_test_cutflows.sh --output-base $CI_PROJECT_PATH/output/

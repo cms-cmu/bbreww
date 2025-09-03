@@ -2,7 +2,6 @@ skimmer_test:
   stage: skimmer
   extends:
     - .base_bbww_job
-  image: gitlab-registry.cern.ch/cms-cmu/barista:latest
   script:
     - echo "Running bbww analysis in barista framework"
     - source bbreww/scripts/skimmer_test.sh --output-base $CI_PROJECT_PATH/output/

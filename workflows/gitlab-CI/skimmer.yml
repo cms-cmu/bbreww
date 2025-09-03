@@ -4,7 +4,7 @@ skimmer_test:
     - .base_analysis
   script:
     - echo "Running bbww analysis in barista framework"
-    - source bbreww/scripts/skimmer_test.sh --output-base $CI_PROJECT_PATH/output/
+    - source bbreww/scripts/skimmer_test.sh --output-base /builds/$CI_PROJECT_PATH/output/
   artifacts:
     paths:
       - output/skimmer_test/

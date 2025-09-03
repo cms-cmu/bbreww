@@ -1,0 +1,11 @@
+skimmer_test:
+  stage: skimmer
+  extends:
+    - .base_analysis
+  script:
+    - echo "Running bbww analysis in barista framework"
+    - source bbreww/scripts/skimmer_test.sh --output-base /builds/$CI_PROJECT_PATH/output/
+  artifacts:
+    paths:
+      - output/skimmer_test/
+    expire_in: 1 day

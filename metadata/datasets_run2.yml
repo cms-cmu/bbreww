@@ -2,7 +2,7 @@ datasets:
   GluGluToHHTo2B2VLNu2J:
     UL18:
       xs: 0.003384123
-      nanoAOD: bbww/metadata/GluGluToHHTo2B2VLNu2J_files.txt
+      nanoAOD: bbreww/metadata/GluGluToHHTo2B2VLNu2J_files.txt
   TTToSemiLeptonic:
     UL18:
       xs: 365.457

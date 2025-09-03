@@ -3,7 +3,7 @@ import awkward as ak
 import logging
 import correctionlib
 from coffea.nanoevents.methods import vector
-from bbww.analysis.helpers.corrections import get_ele_sf, get_mu_id_sf, get_mu_iso_sf, get_mu_trig_sf, get_ele_trig_sf
+from bbreww.analysis.helpers.corrections import get_ele_sf, get_mu_id_sf, get_mu_iso_sf, get_mu_trig_sf, get_ele_trig_sf
 
 def match(a, b, val):
     combinations = a.cross(b, nested=True)

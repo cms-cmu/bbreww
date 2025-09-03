@@ -1,6 +1,6 @@
 config = {
     "default_dir": "CI_output",
-    "analysis_container": "/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cmu/coffea4bees:latest",
+    "analysis_container": "/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cmu/barista:latest",
 }
 
 rule all:
@@ -17,7 +17,7 @@ rule analysis_test_data:
     log: 
         f"{config['default_dir']}/analysis_test_data/analysis_test_data.log"
     shell:
-        "source bbww/scripts/analysis_test_data.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
+        "source bbreww/scripts/analysis_test_data.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
 
 rule analysis_test_cutflows_data:
     input: 
@@ -29,7 +29,7 @@ rule analysis_test_cutflows_data:
     log: 
         f"{config['default_dir']}/analysis_test_cutflows/test_data_cutflow.log"
     shell:
-        "source bbww/scripts/analysis_test_cutflows_data.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
+        "source bbreww/scripts/analysis_test_cutflows_data.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
 
 rule analysis_test_mc:
     output: 
@@ -39,7 +39,7 @@ rule analysis_test_mc:
     log: 
         f"{config['default_dir']}/analysis_test_mc/analysis_test.log"
     shell:
-        "source bbww/scripts/analysis_test_mc.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
+        "source bbreww/scripts/analysis_test_mc.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
 
 rule analysis_test_cutflows_mc:
     input: 
@@ -51,7 +51,7 @@ rule analysis_test_cutflows_mc:
     log: 
         f"{config['default_dir']}/analysis_test_cutflows_mc/analysis_test_cutflows_mc.log"
     shell:
-        "source bbww/scripts/analysis_test_cutflows_mc.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
+        "source bbreww/scripts/analysis_test_cutflows_mc.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
 
 rule skimmer_test:
     output: 
@@ -61,7 +61,7 @@ rule skimmer_test:
     log: 
         f"{config['default_dir']}/skimmer_test/skimmer_test.log"
     shell:
-        "source bbww/scripts/skimmer_test.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
+        "source bbreww/scripts/skimmer_test.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
 
 rule skimmer_analysis_test:
     input:
@@ -73,7 +73,7 @@ rule skimmer_analysis_test:
     log: 
         f"{config['default_dir']}/skimmer_analysis_test/skimmer_analysis_test.log"
     shell:
-        "source bbww/scripts/skimmer_analysis_test.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
+        "source bbreww/scripts/skimmer_analysis_test.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
 
 rule skimmer_analysis_test_cutflows:
     input:
@@ -85,4 +85,4 @@ rule skimmer_analysis_test_cutflows:
     log: 
         f"{config['default_dir']}/skimmer_analysis_test_cutflows/skimmer_analysis_test_cutflows.log"
     shell:
-        "source bbww/scripts/skimmer_analysis_test_cutflows.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
+        "source bbreww/scripts/skimmer_analysis_test_cutflows.sh --output-base {config[default_dir]} 2>&1 | tee {log}"

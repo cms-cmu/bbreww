@@ -8,7 +8,7 @@ source "src/scripts/common.sh"
 # Parse output base argument
 OUTPUT_BASE_DIR=$(parse_output_base_arg "output/" "$@") || exit 1
 
-[[ $(hostname) = *runner* ]] && OUTPUT_BASE_DIR="/builds/$CI_PROJECT_PATH/coffea4bees_framework/output"
+[[ $(hostname) = *runner* ]] && OUTPUT_BASE_DIR="/builds/$CI_PROJECT_PATH/output"
 
 INPUT_DIR="$OUTPUT_BASE_DIR/skimmer_test"
 OUTPUT_DIR="$OUTPUT_BASE_DIR/${JOB_NAME}"
@@ -25,11 +25,11 @@ run_command python src/scripts/merge_yaml_datasets.py \
 cat $OUTPUT_DIR/datasets.yml
 
 # Call the main analysis_test.sh script with Run3-specific parameters
-bash bbww/scripts/run_processor.sh \
+bash bbreww/scripts/run_processor.sh \
     --output-base "$OUTPUT_BASE_DIR" \
-    --processor "bbww/analysis/processors/hh_bbww_processor.py" \
+    --processor "bbreww/analysis/processors/hh_bbww_processor.py" \
     --metadata $OUTPUT_DIR/datasets.yml \
-    --config "bbww/analysis/metadata/HHbbWW.yml" \
+    --config "bbreww/analysis/metadata/HHbbWW.yml" \
     --datasets "GluGluToHHTo2B2VLNu2J" \
     --year "2022_EE" \
     --output-filename "test.coffea" \

@@ -10,10 +10,10 @@ if [ $? -ne 0 ]; then
 fi
 
 # Call the main analysis_test.sh script with Run3-specific parameters
-bash bbww/scripts/run_cutflow.sh \
+bash bbreww/scripts/run_cutflow.sh \
     --output-base "$OUTPUT_BASE_DIR" \
     --input-file "test.coffea" \
     --input-subdir "analysis_test_data" \
     --output-filename "test_cutflow_data.yml" \
     --output-subdir "analysis_test_cutflows_data" \
-    --known-cutflow "bbww/tests/known_cutflow_analysis_test_data.yml" 
+    --known-cutflow "bbreww/tests/known_cutflow_analysis_test_data.yml" 

@@ -219,6 +219,12 @@ class analysis(processor.ProcessorABC):
 
         selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
 
+        signal_region = (events.mbb > 65 & events.mbb < 145) & (events.bb_dr > 0.7 & events.bb_dr < 2.7)
+        events['region'] = ak.zip({
+            'SR': signal_region,
+            'CR': ~signal_region
+        }) 
+
         if not shift_name:
             output['events_processed'] = {}
             output['events_processed'][self.dataset] = {

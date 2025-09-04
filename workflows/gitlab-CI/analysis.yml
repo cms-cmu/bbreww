@@ -29,7 +29,7 @@ skimmer_analysis_test_bbreww:
   needs:
     - setup_workspace
     - voms_proxy
-    - skimmer_test
+    - skimmer_test_bbreww
   script:
     - echo "Running bbww skimmer analysis in barista framework"
     - source bbreww/scripts/skimmer_analysis_test.sh --output-base /builds/$CI_PROJECT_PATH/output/

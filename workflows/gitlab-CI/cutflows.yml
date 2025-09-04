@@ -4,7 +4,7 @@ analysis_test_cutflows_mc_bbreww:
     - .base_analysis
   needs:
     - setup_workspace
-    - analysis_test_mc
+    - analysis_test_mc_bbreww
     - voms_proxy
   script:
     - echo "Running cutflow test for analysis_test"
@@ -20,7 +20,7 @@ analysis_test_cutflows_data_bbreww:
     - .base_analysis
   needs:
     - setup_workspace
-    - analysis_test_data
+    - analysis_test_data_bbreww
     - voms_proxy
   script:
     - echo "Running cutflow test for analysis_test"
@@ -36,7 +36,7 @@ skimmer_analysis_test_cutflows_bbreww:
     - .base_analysis
   needs:
     - setup_workspace
-    - skimmer_analysis_test
+    - skimmer_analysis_test_bbreww
     - voms_proxy
   script:
     - echo "Running cutflow test for skimmer_analysis_test"

@@ -127,4 +127,8 @@ def add_lepton_sfs(params, events, electron, muon, weights, year, is_mc):
         weights.add('id_sf', id_sf)
         weights.add('iso_sf', iso_sf)
         weights.add('trig_sf', trig_sf)
+<<<<<<< HEAD
     return weights
+=======
+    return weights
+>>>>>>> 0be8650 (combine all cutflows together)

@@ -16,7 +16,6 @@ object_preselection:
       iso: 4.0 #PFIsoTight
       id: tightId
 
-  # need to find run3 recommendations for electrons, these are from run2
   Electron:
     loose:
       pt: 15.0
@@ -32,7 +31,9 @@ object_preselection:
       pt: 20.0
       eta: 2.3
       dz: 0.2
-      wp: 5
+      wp_jet: 5 #medium
+      wp_e: 2 #VLoose
+      wp_mu: 1 #VVLoose
 
   Jet:
     nominal: 

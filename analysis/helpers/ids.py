@@ -87,21 +87,23 @@ def ak8_jet_preselection(fat_jets, params):
     
 
 def tau_preselection(events, params, id):
-
     taus = events.Tau
     cuts = params.object_preselection.Tau[id]
-
-    try:
-        passes_decayModeDMs=taus.decayModeFindingNewDMs
-    except:
-        passes_decayModeDMs=~np.isnan(ak.ones_like(taus.pt))
 
     passes_pt = taus.pt > cuts.pt
     passes_eta = abs(taus.eta) < cuts.eta
     passes_dz = abs(taus.dz) < cuts.dz
-    passes_deeptauid = (taus.idDeepTau2017v2p1VSjet >= cuts.wp) 
 
+    passes_deeptauid = ((events.Tau.idDeepTau2018v2p5VSe >= cuts.wp_e) &
+                        (events.Tau.idDeepTau2018v2p5VSmu >= cuts.wp_mu) &
+                        (events.Tau.idDeepTau2018v2p5VSjet >= cuts.wp_jet))
+    
+    passes_decayMode= ((taus.decayMode == 0) |
+                        (taus.decayMode == 1) |
+                        (taus.decayMode == 2) |
+                        (taus.decayMode == 10) |
+                        (taus.decayMode == 11))
 
-    good_taus = passes_pt & passes_eta &  passes_dz & passes_deeptauid & passes_decayModeDMs
+    good_taus = passes_pt & passes_eta &  passes_dz & passes_deeptauid & passes_decayMode
 
     return good_taus

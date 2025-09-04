@@ -29,7 +29,6 @@ class cutflow_bbWW(cutflow):
             self._cutflow_CR[cut_name] = (0, 0)    # weighted, raw
 
         # fill with regions
-
         if fill_region:
             ele_cut = events.selection[cut_name] & events.selection.e_region
             mu_cut = events.selection[cut_name] & events.selection.mu_region

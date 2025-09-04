@@ -116,8 +116,8 @@ class analysis(processor.ProcessorABC):
         selection.add('twoBjets', events.has_2_bjets) # require 2 b-tagged jets
         selection.add('njets',  ak.num(events.j_init[events.j_init.preselected],axis=1)>2) # at least 3 ak4 jets
         selection.add('oneBjet', events.has_1_bjet)
-        selection.add('oneE', events.e_region)
-        selection.add('oneM', events.mu_region)
+        selection.add('oneE', events.e_region) # no. of tight electrons = 1, loose muons = 0
+        selection.add('oneM', events.mu_region) # no. of tight muons =1, loose electrons = 0    
         selection.add('oneEorM', events.e_region | events.mu_region )
         selection.add('tau_veto', (events.tau_nmedium==0))
         selection.add('mll_cut', events.pass_mll_cut)
@@ -161,6 +161,12 @@ class analysis(processor.ProcessorABC):
         weights = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, self.year, self.is_mc)
         events['weight'] = weights.weight()
         ##
+        signal_region = ((events.mbb > 65) & (events.mbb < 145) 
+                        & (events.bb_dr > 0.7) & (events.bb_dr < 2.7))
+        events['region'] = ak.zip({
+            'SR': ak.fill_none(signal_region, False),
+            'CR': ak.fill_none(~signal_region, False)
+        }) 
 
         signal_region = ((events.mbb > 75) & (events.mbb < 135) 
                 & (events.bb_dr > 0.85) & (events.bb_dr < 2.15))
@@ -172,11 +178,11 @@ class analysis(processor.ProcessorABC):
         #study sequential cutflow (get weights and events after each cut)
         if not shift_name:
             # list below contains individual selections that we might wanna study
-            full_sel_list = ['lumimask', 'passNoiseFilter', 'trigger', 'oneBjet', 'twoBjets', 'oneEorM', 'tau_veto','jet_veto_mask', 'njets_ak8']
+            full_sel_list = ['lumimask', 'passNoiseFilter', 'trigger','jet_veto_mask', 'oneEorM', 'oneBjet', 'twoBjets', 'tau_veto', 'njets_ak8', 'mll_cut']
             cumulative_cuts = []
             for cut_name in full_sel_list:
                 cumulative_cuts.append(cut_name)
-                cutflow.fill(cut_name, cumulative_cuts, weights.weight())
+                cutflow.fill(events, cut_name,cumulative_cuts, weights.weight())
 
         selected_events = events[events.preselection]
         del events
@@ -215,15 +221,8 @@ class analysis(processor.ProcessorABC):
         selected_events['channel'] = ak.zip({
             'hadronic_W': selection.all('hadronic_W')[selection.all(*selection_list['preselection'])],
             'leptonic_W': selection.all('leptonic_W')[selection.all(*selection_list['preselection'])]
-        })
-
-        selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
-
-        signal_region = (events.mbb > 65 & events.mbb < 145) & (events.bb_dr > 0.7 & events.bb_dr < 2.7)
-        events['region'] = ak.zip({
-            'SR': signal_region,
-            'CR': ~signal_region
         }) 
+        selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
 
         if not shift_name:
             output['events_processed'] = {}

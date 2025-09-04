@@ -1,4 +1,4 @@
-analysis_test_cutflows_mc:
+analysis_test_cutflows_mc_bbreww:
   stage: cutflow
   extends:
     - .base_analysis
@@ -14,7 +14,7 @@ analysis_test_cutflows_mc:
       - output/analysis_test_cutflows_mc/test_cutflow.yml
     expire_in: 1 day
 
-analysis_test_cutflows_data:
+analysis_test_cutflows_data_bbreww:
   stage: cutflow
   extends:
     - .base_analysis
@@ -30,7 +30,7 @@ analysis_test_cutflows_data:
       - output/analysis_test_cutflows_data/test_cutflow_data.yml
     expire_in: 1 day
 
-skimmer_analysis_test_cutflows:
+skimmer_analysis_test_cutflows_bbreww:
   stage: cutflow
   extends:
     - .base_analysis

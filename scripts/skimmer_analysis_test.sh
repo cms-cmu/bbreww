@@ -18,7 +18,7 @@ display_section_header "Printing input yml file"
 cat $INPUT_DIR/picoaod_datasets.yml
 
 display_section_header "Modifying dataset file with skimmer ci output"
-run_command python src/scripts/merge_yaml_datasets.py \
+run_command python src/utils/merge_yaml_datasets.py \
     -m $INPUT_DIR/datasets.yml \
     -f $INPUT_DIR/picoaod_datasets.yml \
     -o $OUTPUT_DIR/datasets.yml

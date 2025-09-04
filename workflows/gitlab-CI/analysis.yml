@@ -1,4 +1,4 @@
-analysis_test_mc:
+analysis_test_mc_bbreww:
   stage: analysis
   extends:
     - .base_analysis
@@ -10,7 +10,7 @@ analysis_test_mc:
       - output/analysis_test_mc/test.coffea
     expire_in: 1 day
 
-analysis_test_data:
+analysis_test_data_bbreww:
   stage: analysis
   extends:
     - .base_analysis
@@ -22,7 +22,7 @@ analysis_test_data:
       - output/analysis_test_data/test.coffea
     expire_in: 1 day
 
-skimmer_analysis_test:
+skimmer_analysis_test_bbreww:
   stage: analysis
   extends:
     - .base_analysis

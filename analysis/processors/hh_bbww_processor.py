@@ -161,8 +161,8 @@ class analysis(processor.ProcessorABC):
         weights = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, self.year, self.is_mc)
         events['weight'] = weights.weight()
         ##
-        signal_region = ((events.mbb > 65) & (events.mbb < 145) 
-                        & (events.bb_dr > 0.7) & (events.bb_dr < 2.7))
+        signal_region = ((events.mbb > 75) & (events.mbb < 135) 
+                        & (events.bb_dr > 0.85) & (events.bb_dr < 2.15))
         events['region'] = ak.zip({
             'SR': ak.fill_none(signal_region, False),
             'CR': ak.fill_none(~signal_region, False)

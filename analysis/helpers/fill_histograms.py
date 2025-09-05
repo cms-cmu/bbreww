@@ -2,26 +2,28 @@ from src.hist import Collection, Fill
 from src.hist.object import Elec, Jet, LorentzVector, Muon
 
 def fill_histograms(
-    events, 
+    events,
     processName: str = None,
     year: str = 'UL18',
     is_mc: bool = False,
-    selection_list: list = ['preselection'],
+    histCuts: list = ['preselection'],
     channel_list: list = ['hadronic_W','leptonic_W'],
-    region_list: list = ['e_region', 'mu_region']
+    flavor_list: list = ['e', 'mu'],
+    #region_list: list = ['e_region', 'mu_region']
 ):
 
     fill = Fill(
-        process=processName, 
-        year=year, 
+        process=processName,
+        year=year,
         weight="weight")
-    
+
     hist = Collection(
         process=[processName],
         year=[year],
         channel=channel_list,
-        selection=selection_list,
-        region = region_list
+        flavor = flavor_list,
+        #region = region_list,
+        **dict((s, ...) for s in histCuts)
     )
 
     fill += hist.add("nPVs", (101, -0.5, 100.5, ("PV.npvs", "Number of Primary Vertices")))
@@ -31,11 +33,11 @@ def fill_histograms(
     #fill += hist.add("W_mass_res", (50, -100, 100, ("W_mass_res", "leptonic W mass resolution [GeV]")))
     #fill += hist.add("genW_mass", (50, 30, 150, ("genW_mass", "leptonic W mass resolution [GeV]")))
     #fill += hist.add("mlvqq_hadWs", (50, 50, 300, ("mlvqq_hadWs", "reconstructed H->lvqq mass [GeV]")))
-    
+
     ### these histograms are just to study the quark vs. gluon selection efficiency
     #fill += hist.add("Wjets_pre_lead",    (15, 15 , 30,    ("Wjets_pre_lead.pt", r"$jet pT$[GeV]")))
     #fill += hist.add("Wjets_post_lead",   (15, 15 , 30,   ("Wjets_post_lead.pt", r"$jet pT$[GeV]")))
-    #fill += hist.add("Wjets_pre_sublead", (15, 15 , 30, ("Wjets_pre_sublead.pt", r"$jet pT$[GeV]")))    
+    #fill += hist.add("Wjets_pre_sublead", (15, 15 , 30, ("Wjets_pre_sublead.pt", r"$jet pT$[GeV]")))
     #fill += hist.add("Wjets_post_sublead",(15, 15 , 30,("Wjets_post_sublead.pt", r"$jet pT$[GeV]")))
     #fill += hist.add("dijets_pre_lead",    (15, 15 , 30,  ("dijets_pre_lead.pt", r"$jet pT$[GeV]")))
     #fill += hist.add("dijets_post_lead",   (15, 15 , 30, ("dijets_post_lead.pt", r"$jet pT$[GeV]")))
@@ -63,18 +65,18 @@ def fill_histograms(
     fill += hist.add("chi_sq_hadWs", (30, -0.5, 6, ("chi_sq_hadWs", "leptonic W region chi square")))
     fill += hist.add("chi_sq_tt", (30, -0.5, 6, ("chi_sq_tt", "ttbar chi square")))
 
-    fill += hist.add("mbb_vs_bb_dr", 
+    fill += hist.add("mbb_vs_bb_dr",
                     (50, 0, 250, ('mbb', 'H->bb Candidate Mass [GeV]')),
                     (50, 0, 5, ('bb_dr', r'$\Delta R$ between b-candidates')))
-    fill += hist.add("genjets_mbb_vs_bb_dr", 
+    fill += hist.add("genjets_mbb_vs_bb_dr",
                     (50, 0, 250, ('bjets_genjets_mass', 'H->bb Candidate (genjets) Mass [GeV]')),
                     (50, 0, 5, ('bjets_genjets_dr', r'$\Delta R$ between b-candidates (genjets)')))
-    
-    #fill += hist.add("Hbb_vs_HWW", 
+
+    #fill += hist.add("Hbb_vs_HWW",
     #                (50, 0, 250, ('mbb', 'H->bb Candidate Mass [GeV]')),
     #                (50, 0, 250, ('mlvqq_hadWs', 'H->WW Candidate Mass [GeV]')))
     #
-    #fill += hist.add("chiSq_vs_mbb", 
+    #fill += hist.add("chiSq_vs_mbb",
     #            (50, 0, 250, ('mbb','H->bb Candidate Mass [GeV]')),
     #            (50, 0, 5, ('chi_sq_hadW', 'hadronic W region chi square')))
 
@@ -87,7 +89,7 @@ def fill_histograms(
     # fill += Jet.plot(("canJets", "Higgs Candidate Jets"), "canJet", skip=skip_jet_list, bins={"mass": (50, 0, 100)})
     # fill += Jet.plot(("othJets", "Other Jets"), "notCanJet_coffea", skip=skip_jet_list, bins={"mass": (50, 0, 100)})
     # fill += Jet.plot(("tagJets", "Tag Jets"), "tagJet", skip=skip_jet_list, bins={"mass": (50, 0, 100)})
-    
+
     # # Leptons
     # skip_muons = ["charge"] + Muon.skip_detailed_plots
     # if not is_mc:
@@ -100,7 +102,7 @@ def fill_histograms(
     #         skip_elecs += ["genPartFlav"]
     #     fill += Elec.plot(("selElecs", "Selected Elecs"), "selElec", skip=skip_elecs)
 
-    
+
     # fill histograms
     fill(events, hist)
 

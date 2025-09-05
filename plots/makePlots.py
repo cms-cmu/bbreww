@@ -19,7 +19,7 @@ np.seterr(divide='ignore', invalid='ignore')
 def doPlots(varList, debug=False):
 
     if args.doTest:
-        varList = ["qq_mass", "mbb"]
+        varList = ["qq_mass", "mbb","mbb_vs_bb_dr"]
 
     cut = "preselection"
 
@@ -64,41 +64,45 @@ def doPlots(varList, debug=False):
 
                 plt.close()
 
-#    #
-#    #  2D Plots
-#    #
-#    for v in varList:
-#        print(v)
-#
-#        vDict = cfg.plotModifiers.get(v, {})
-#
-#        if not vDict.get("2d", False):
-#            continue
-#
-#        vDict["ylabel"] = "Entries"
-#        vDict["doRatio"] = cfg.plotConfig.get("doRatio", True)
-#        vDict["legend"] = True
-#
-#        if args.doTest:
-#            vDict["write_yaml"] = True
-#
-#        for process in ["data", "Multijet", "HH4b", "TTbar"]:
-#            for region in ["SR", "SB"]:
-#
-#                plot_args  = {}
-#                plot_args["var"] = v
-#                plot_args["cut"] = cut
-#                plot_args["region"] = region
-#                plot_args["outputFolder"] = args.outputFolder
-#                plot_args = plot_args | vDict
-#
-#                if debug: print("process is ",process)
-#                if debug: print(plot_args)
-#
-#                fig = make2DPlot(cfg, process,
-#                                 **plot_args)
-#                plt.close()
-#
+    #
+    #  2D Plots
+    #
+    for v in varList:
+        if debug: print(v)
+
+        vDict = cfg.plotModifiers.get(v, {})
+
+        if not vDict.get("2d", False):
+            continue
+
+        vDict["ylabel"] = "Entries"
+        vDict["doRatio"] = cfg.plotConfig.get("doRatio", True)
+        vDict["legend"] = True
+        vDict["year"] = "Run3"
+
+        if args.doTest:
+            vDict["write_yaml"] = True
+
+        for process in ["HHbbWW","TTbar"]:
+
+            for flavor in ["e", "mu", sum]:
+
+                for channel in ["hadronic_W", "leptonic_W", sum]:
+
+                    plot_args  = {}
+                    plot_args["var"] = v
+                    plot_args["cut"] = cut
+                    plot_args["axis_opts"] = {"flavor":flavor, "channel":channel}
+                    plot_args["outputFolder"] = args.outputFolder
+                    plot_args = plot_args | vDict
+
+                    if debug: print("process is ",process)
+                    if debug: print(plot_args)
+
+                    fig = make2DPlot(cfg, process,
+                                     **plot_args)
+                    plt.close()
+
 #    #
 #    #  Comparison Plots
 #    #

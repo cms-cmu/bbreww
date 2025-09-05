@@ -1,0 +1,70 @@
+ data__SingleMuon:
+    2022_preEE:
+      lumi: 7.98
+      nanoAOD:
+        C: /Muon/Run2022C-22Sep2023-v1/NANOAOD
+        D: /Muon/Run2022D-22Sep2023-v1/NANOAOD
+      picoAOD:
+        C: 
+          count: 138427345.0
+          files:
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_preEEC/picoAOD.chunk0.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_preEEC/picoAOD.chunk1.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_preEEC/picoAOD.chunk2.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_preEEC/picoAOD.chunk3.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_preEEC/picoAOD.chunk4.root
+          saved_events: 2031108
+          total_events: 138427345
+        D: 
+          count: 75468381.0
+          files:
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_preEED/picoAOD.chunk0.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_preEED/picoAOD.chunk1.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_preEED/picoAOD.chunk2.root
+          saved_events: 1299827
+          total_events: 75468381
+    2022_EE:  
+      lumi: 
+      nanoAOD:
+          E: /Muon/Run2022E-22Sep2023-v1/NANOAOD
+          F: /Muon/Run2022F-22Sep2023-v2/NANOAOD
+          G: /Muon/Run2022G-22Sep2023-v1/NANOAOD
+      picoAOD:
+        E: 
+          count: 141460608.0
+          files: 
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEE/picoAOD.chunk0.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEE/picoAOD.chunk1.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEE/picoAOD.chunk2.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEE/picoAOD.chunk3.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEE/picoAOD.chunk4.root
+          saved_events: 2413753 
+          total_events: 141460608
+        F: 
+          count: 449887248.0
+          files: 
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEF/picoAOD.chunk0.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEF/picoAOD.chunk1.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEF/picoAOD.chunk2.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEF/picoAOD.chunk3.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEF/picoAOD.chunk4.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEF/picoAOD.chunk5.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEF/picoAOD.chunk6.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEF/picoAOD.chunk7.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEF/picoAOD.chunk8.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEF/picoAOD.chunk9.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEF/picoAOD.chunk10.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEF/picoAOD.chunk11.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEF/picoAOD.chunk12.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEF/picoAOD.chunk13.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEF/picoAOD.chunk14.root
+          saved_events: 7036819
+          total_events: 449887248
+        G: 
+          files: 
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEG/picoAOD.chunk0.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEG/picoAOD.chunk1.root
+          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/data__SingleMuon_2022_EEG/picoAOD.chunk2.root
+          saved_events: 1120420
+          total_events: 76689396
+

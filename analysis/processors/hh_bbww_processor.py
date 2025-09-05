@@ -60,10 +60,10 @@ class analysis(processor.ProcessorABC):
         self.n_events = len(events)
 
         events = apply_event_selection(
-            events, 
-            self.params[self.year], 
+            events,
+            self.params[self.year],
             not self.is_mc
-        )         
+        )
 
         jets = apply_jerc_corrections(
             events,
@@ -75,8 +75,8 @@ class analysis(processor.ProcessorABC):
         )
         met = apply_met_corrections_after_jec(events, jets)
 
-        shifts = [({"Jet": jets, "MET":met}, None)] 
-        
+        shifts = [({"Jet": jets, "MET":met}, None)]
+
         '''if systematics:
             shifts.extend([
                 ({"Jet": jets.JES_jes.up, "MET": met.JES_jes.up}, "JESUp"),
@@ -125,8 +125,8 @@ class analysis(processor.ProcessorABC):
         selection.add('nom_njets4',  ak.num(events.j_init[events.j_init.isnominal],axis=1)>3) # nominal pT region
         selection.add('nom_njets3',  ak.num(events.j_init[events.j_init.isnominal],axis=1)==3) # exact 3 jets region
         selection.add('lowpt_njets4', ~selection.all('nom_njets4') & (ak.num(events.j_init[events.j_init.preselected],axis=1)>3) )
-        # veto events with jets affected by EE water leak (2022) and hole in Pixel L3/L4 (2023)  
-        jet_veto_maps = (ak.all(events.Jet.jet_veto_maps,axis=1) if '202' in self.year 
+        # veto events with jets affected by EE water leak (2022) and hole in Pixel L3/L4 (2023)
+        jet_veto_maps = (ak.all(events.Jet.jet_veto_maps,axis=1) if '202' in self.year
                          else ak.ones_like(events.run,dtype=bool))
 
         selection.add('jet_veto_mask', jet_veto_maps)
@@ -145,6 +145,10 @@ class analysis(processor.ProcessorABC):
             'lowpt_4j2b' :  selection.all(*selection_list['lowpt_4j2b'])
         })
 
+        events['preselection'] = selection.all(*selection_list['preselection'])
+        events['nominal_4j2b'] = selection.all(*selection_list['nominal_4j2b'])
+        events['nominal_3j2b'] = selection.all(*selection_list['nominal_3j2b'])
+
         ## add weights
         weights, list_weight_names = add_weights(
             events,
@@ -155,7 +159,7 @@ class analysis(processor.ProcessorABC):
             corrections_metadata=self.params[self.year],
         )
         weights = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, self.year, self.is_mc)
-        events['weight'] = weights.weight() 
+        events['weight'] = weights.weight()
         ##
 
         #study sequential cutflow (get weights and events after each cut)
@@ -173,43 +177,43 @@ class analysis(processor.ProcessorABC):
         selected_events = chi_sq_cut(selected_events)
 
         #add regions separated by chi square calculation
-        add_to_selection( 
-            'leptonic_W', 
-            (ak.firsts(selected_events.sr_boolean) == 0), 
-            selection, 
+        add_to_selection(
+            'leptonic_W',
+            (ak.firsts(selected_events.sr_boolean) == 0),
+            selection,
             selection_list['preselection']
         )
 
         # hadronic_W = ak.zeros_like(presel_mask,dtype=bool)
-        add_to_selection( 
-            'hadronic_W', 
-            ak.firsts(selected_events.sr_boolean) == 1, 
-            selection, 
+        add_to_selection(
+            'hadronic_W',
+            ak.firsts(selected_events.sr_boolean) == 1,
+            selection,
             selection_list['preselection']
         )
 
         # chi_sq = ak.zeros_like(presel_mask,dtype=bool)
-        add_to_selection( 
-            'chi_sq', 
-            selected_events.passChiSqTT & selected_events.passChiSqLepW, 
-            selection, 
+        add_to_selection(
+            'chi_sq',
+            selected_events.passChiSqTT & selected_events.passChiSqLepW,
+            selection,
             selection_list['preselection']
         )
 
         # add chi square cuts selection in each analysis region
         selected_events["selection"]["chi_sq_nom_4j2b"] = selected_events.selection.nominal_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
         selected_events['selection'] = ak.with_field(
-            selected_events['selection'], 
+            selected_events['selection'],
             selected_events.selection.nominal_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])],
             'chi_sq_nom_4j2b'
         )
         selected_events['selection'] = ak.with_field(
-            selected_events['selection'], 
+            selected_events['selection'],
             selected_events.selection.nominal_3j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])],
             'chi_sq_nom_3j2b'
         )
         selected_events['selection'] = ak.with_field(
-            selected_events['selection'], 
+            selected_events['selection'],
             selected_events.selection.lowpt_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])],
             'chi_sq_lowpt_4j2b'
         )
@@ -217,10 +221,10 @@ class analysis(processor.ProcessorABC):
         selected_events['channel'] = ak.zip({
             'hadronic_W': selection.all('hadronic_W')[selection.all(*selection_list['preselection'])],
             'leptonic_W': selection.all('leptonic_W')[selection.all(*selection_list['preselection'])]
-        }) 
-        selected_events['region'] = ak.zip({
-            'e_region':  selection.all('oneE')[selection.all(*selection_list['preselection'])],
-            'mu_region': selection.all('oneM')[selection.all(*selection_list['preselection'])]
+        })
+        selected_events['flavor'] = ak.zip({
+            'e':  selection.all('oneE')[selection.all(*selection_list['preselection'])],
+            'mu': selection.all('oneM')[selection.all(*selection_list['preselection'])]
         }) # separate electron and muon regions
 
         selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
@@ -238,13 +242,13 @@ class analysis(processor.ProcessorABC):
             processName=self.processName,
             year=self.year_label,
             is_mc=self.is_mc,
-            selection_list=['preselection','chi_sq_nom_4j2b','chi_sq_nom_3j2b',
-                            'chi_sq_lowpt_4j2b','nominal_4j2b','nominal_3j2b','lowpt_4j2b'],
+            histCuts=['preselection', 'nominal_4j2b'], #,'chi_sq_nom_4j2b','chi_sq_nom_3j2b',
+            #                      'chi_sq_lowpt_4j2b','nominal_4j2b','nominal_3j2b','lowpt_4j2b'],
             channel_list=['hadronic_W', 'leptonic_W'],
-            region_list=['e_region', 'mu_region']
+            flavor_list=['e', 'mu']
         )
 
         return hists | output
-    
+
     def postprocess(self, accumulator):
         return accumulator

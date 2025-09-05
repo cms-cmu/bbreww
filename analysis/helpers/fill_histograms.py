@@ -56,7 +56,6 @@ def fill_histograms(
     fill += hist.add("bjet_pt_lead", (50, -0.5, 250, ("j_bcand_lead.pt", "leading bjet pT [GeV]")))
     fill += hist.add("bjet_pt_sublead", (50, -0.5, 250, ("j_bcand_sublead.pt", "subleading bjet pT [GeV]")))
 
-
     fill += hist.add("qq_mass", (50, -0.5, 250, ("qq_mass", "non-bjets pT [GeV]")))
     fill += hist.add("mT", (60, -0.5, 250, ("mT_leading_lep", "transverse mass W->lv [GeV]")))
     fill += hist.add("leading_e", (50, -0.5, 250, ("leading_e.pt", "electron pT [GeV]")))

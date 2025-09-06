@@ -86,3 +86,16 @@ rule skimmer_analysis_test_cutflows:
         f"{config['default_dir']}/skimmer_analysis_test_cutflows/skimmer_analysis_test_cutflows.log"
     shell:
         "source bbreww/scripts/skimmer_analysis_test_cutflows.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
+
+
+rule analysis_plot_mc:
+    input: 
+        f"{config['default_dir']}/analysis_test_mc/test.coffea"
+    output: 
+        f"{config['default_dir']}/analysis_plot_mc"
+    container: 
+        config["analysis_container"]
+    log: 
+        f"{config['default_dir']}/analysis_plot_mc/analysis_test.log"
+    shell:
+        "source bbreww/scripts/analysis_plot_mc.sh --output-base {config[default_dir]} 2>&1 | tee {log}"

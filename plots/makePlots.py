@@ -103,62 +103,68 @@ def doPlots(varList, debug=False):
                                      **plot_args)
                     plt.close()
 
-#    #
-#    #  Comparison Plots
-#    #
-#    varListComp = []
-#    if args.doTest:
-#        varListComp = ["v4j.mass", "SvB_MA.ps", "quadJet_selected.xHH"]
-#
-#        for v in varListComp:
-#            print(v)
-#
-#            vDict = cfg.plotModifiers.get(v, {})
-#
-#            vDict["ylabel"] = "Entries"
-#            vDict["doRatio"] = cfg.plotConfig.get("doRatio", True)
-#            vDict["legend"] = True
-#
-#            if args.doTest:
-#                vDict["write_yaml"] = True
-#
-#            for process in ["data", "Multijet", "HH4b", "TTbar"]:
-#
-#                #
-#                # Comp Cuts
-#                #
-#                for region in ["SR", "SB"]:
-#
-#                    plot_args  = {}
-#                    plot_args["var"] = v
-#                    plot_args["cut"] = ["passPreSel", "failSvB", "passSvB"]
-#                    plot_args["region"] = region
-#                    plot_args["outputFolder"] = args.outputFolder
-#                    plot_args["process"] = process
-#                    plot_args["norm"] = True
-#                    plot_args = plot_args | vDict
-#
-#                    if debug: print(plot_args)
-#
-#                    fig = makePlot(cfg, **plot_args)
-#
-#
-#
-#                    plt.close()
-#
-#                #
-#                # Comp Regions
-#                #
-#                fig = makePlot(cfg,
-#                               var=v,
-#                               cut="passPreSel",
-#                               region=["SR", "SB"],
-#                               process=process,
-#                               outputFolder=args.outputFolder,
-#                               **vDict
-#                               )
-#
-#                plt.close()
+    #
+    #  Comparison Plots
+    #
+    varListComp = []
+    if args.doTest:
+        varListComp = ["mbb"]
+
+        for v in varListComp:
+            if debug: print(v)
+
+            vDict = cfg.plotModifiers.get(v, {})
+
+            vDict["ylabel"] = "Entries"
+            vDict["doRatio"] = cfg.plotConfig.get("doRatio", True)
+            vDict["legend"] = True
+            vDict["year"] = "Run3"
+
+            if args.doTest:
+                vDict["write_yaml"] = True
+
+            for process in ["HHbbWW", "TTbar"]:
+
+                #
+                # Comp Cuts
+                #
+                for channel in ["hadronic_W", "leptonic_W", sum]:
+
+                    flavor = sum
+
+                    plot_args  = {}
+                    plot_args["var"] = v
+                    plot_args["cut"] = ["preselection", "nominal_4j2b"]
+                    plot_args["axis_opts"] = {"flavor":flavor, "channel":channel}
+                    plot_args["outputFolder"] = args.outputFolder
+                    plot_args["process"] = process
+                    plot_args["norm"] = True
+                    plot_args = plot_args | vDict
+
+                    if debug: print(plot_args)
+
+                    fig = makePlot(cfg, **plot_args)
+
+
+                    plt.close()
+
+                #
+                # Comp channels
+                #
+                plot_args  = {}
+                plot_args["var"] = v
+                plot_args["cut"] = "preselection"
+                plot_args["axis_opts"] = {"flavor":sum, "channel": ["hadronic_W", "leptonic_W", sum]}
+                plot_args["outputFolder"] = args.outputFolder
+                plot_args["process"] = process
+                plot_args["norm"] = True
+                plot_args = plot_args | vDict
+
+                fig = makePlot(cfg,
+                               **plot_args,
+                               )
+
+                plt.close()
 
 
 if __name__ == '__main__':

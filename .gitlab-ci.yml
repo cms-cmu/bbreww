@@ -40,6 +40,7 @@ stages:
   - setup
   - skimmer
   - analysis
+  - plot
   - cutflow
 
 # Setup job that clones barista once

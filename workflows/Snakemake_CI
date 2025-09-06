@@ -98,4 +98,4 @@ rule analysis_plot_mc:
     log: 
         f"{config['default_dir']}/analysis_plot_mc/analysis_test.log"
     shell:
-        "source bbreww/scripts/analysis_plot_mc.sh --output-base {config[default_dir]} 2>&1 | tee {log}"
+        "source bbreww/scripts/analysis_plot_mc.sh  2>&1 | tee {log}"

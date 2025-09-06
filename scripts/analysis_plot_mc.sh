@@ -3,8 +3,14 @@
 source "src/scripts/common.sh"
 
 
-INPUT_DIR="${1:-"output"}/analysis_test_mc"
-OUTPUT_DIR="${1:-"output"}/analysis_plot_mc"
+OUTPUT_BASE_DIR=$(parse_output_base_arg "output" "$@")
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+
+INPUT_DIR="${OUTPUT_BASE_DIR}/analysis_test_mc"
+OUTPUT_DIR="${OUTPUT_BASE_DIR}/analysis_plot_mc"
 echo "############### Checking and creating output directory"
 if [ ! -d $OUTPUT_DIR ]; then
     mkdir -p $OUTPUT_DIR

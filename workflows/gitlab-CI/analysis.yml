@@ -50,7 +50,7 @@ analysis_plot_mc:
 
   script:
     - echo "Running bbww plot_mc analysis in barista framework"
-    - source bbreww/scripts/analysis_plot_mc.sh
+    - source bbreww/scripts/analysis_plot_mc.sh --output-base /builds/$CI_PROJECT_PATH/output/
   artifacts:
     paths:
       - output/analysis_plot_mc/

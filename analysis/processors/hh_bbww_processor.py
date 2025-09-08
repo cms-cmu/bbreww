@@ -139,15 +139,17 @@ class analysis(processor.ProcessorABC):
         selection_list['lowpt_4j2b'] = selection_list['preselection'] + ['lowpt_njets4', 'twoBjets']
         selection_list['lowpt_3j2b'] = selection_list['preselection'] + ['lowpt_njets3', 'twoBjets'] ## TEMP
 
-        events['flavor'] = ak.zip({
-            'e':  selection.all('oneE')[selection.all(*selection_list['preselection'])],
-            'mu': selection.all('oneM')[selection.all(*selection_list['preselection'])]
-        }) # separate electron and muon regions
-
         events['preselection'] = selection.all(*selection_list['preselection'])
         events['nominal_4j2b'] = selection.all(*selection_list['nominal_4j2b'])
         events['nominal_3j2b'] = selection.all(*selection_list['nominal_3j2b'])
         events['lowpt_4j2b'] = selection.all('lowpt_njets4') & selection.all('twoBjets')
+        events['lowpt_3j2b'] =  selection.all(*selection_list['lowpt_3j2b']) ## TEMP
+        
+
+        events['flavor'] = ak.zip({
+            'e':  selection.all('oneE') & selection.all(*selection_list['preselection']),
+            'mu': selection.all('oneM') & selection.all(*selection_list['preselection'])
+        }) # separate electron and muon regions
 
         ## add weights
         weights, list_weight_names = add_weights(
@@ -163,13 +165,6 @@ class analysis(processor.ProcessorABC):
         ##
         signal_region = ((events.mbb > 75) & (events.mbb < 135) 
                         & (events.bb_dr > 0.85) & (events.bb_dr < 2.15))
-        events['region'] = ak.zip({
-            'SR': ak.fill_none(signal_region, False),
-            'CR': ak.fill_none(~signal_region, False)
-        }) 
-
-        signal_region = ((events.mbb > 75) & (events.mbb < 135) 
-                & (events.bb_dr > 0.85) & (events.bb_dr < 2.15))
         events['region'] = ak.zip({
             'SR': ak.fill_none(signal_region, False),
             'CR': ak.fill_none(~signal_region, False)

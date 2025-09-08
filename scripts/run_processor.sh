@@ -48,7 +48,7 @@ display_config() {
 declare -A DEFAULTS=(
     ["OUTPUT_BASE"]="output/"
     ["PROCESSOR_PATH"]="bbreww/analysis/processors/hh_bbww_processor.py"
-    ["METADATA_PATH"]="bbreww/metadata/skims_v3"
+    ["METADATA_PATH"]="bbreww/metadata/skims_v4"
     ["CONFIG_PATH"]="bbreww/analysis/metadata/HHbbWW.yml"
     ["TRIGGERS_PATH"]="bbreww/metadata/triggers_bbWW.yml"
     ["LUMINOSITIES_PATH"]="bbreww/metadata/luminosities_bbWW.yml"

@@ -26,7 +26,7 @@ workflow:
 
 variables:
   BARISTA_REPO: 'https://${DEPLOY_TOKEN_USERNAME}:${DEPLOY_TOKEN_PASSWORD}@gitlab.cern.ch/cms-cmu/barista.git'
-  BARISTA_BRANCH: $CI_COMMIT_BRANCH'
+  BARISTA_BRANCH: '$CI_COMMIT_BRANCH'
 
 include:
   - local: workflows/gitlab-CI/analysis.yml

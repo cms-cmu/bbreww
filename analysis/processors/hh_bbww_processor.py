@@ -124,11 +124,11 @@ class analysis(processor.ProcessorABC):
         selection.add('njets_ak8', (events.n_ak8_jets == 0))
         selection.add('nom_njets4',  ak.num(events.j_init[events.j_init.isnominal],axis=1)>3) # nominal pT region
         selection.add('nom_njets3',  ak.num(events.j_init[events.j_init.isnominal],axis=1)==3) # exact 3 jets region
-        selection.add('lowpt_njets4', ~selection.all('nom_njets4') & (ak.num(events.j_init[events.j_init.preselected],axis=1)>3) )
-        # veto events with jets affected by EE water leak (2022) and hole in Pixel L3/L4 (2023)
-        jet_veto_maps = (ak.all(events.Jet.jet_veto_maps,axis=1) if '202' in self.year
-                         else ak.ones_like(events.run,dtype=bool))
-
+        selection.add('lowpt_njets4', ~(selection.all('nom_njets4')) & (ak.num(events.j_init[events.j_init.preselected],axis=1)>3) )
+        selection.add('lowpt_njets3', ~(selection.all('nom_njets4')) & (ak.num(events.j_init[events.j_init.preselected],axis=1)==3) ) ## TEMP (comparing 3j regions in nominal to lowpt)
+        # veto events with jets affected by EE water leak (2022) and hole in Pixel L3/L4 (2023)  
+        jet_veto_maps = (ak.all(events.Jet.jet_veto_maps,axis=1) if '202' in self.year 
+                         else ak.ones_like(events.run,dtype=bool)) 
         selection.add('jet_veto_mask', jet_veto_maps)
 
         selection_list = {

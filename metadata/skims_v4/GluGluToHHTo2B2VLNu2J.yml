@@ -15,7 +15,7 @@ GluGluToHHTo2B2VLNu2J:
       picoAOD:
         count: 307250
         files: 
-        - - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_2022_EE/picoAOD.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_2022_EE/picoAOD.root
         saved_events: 61505
         sumw: 9112.809677124023
         sumw2: 337.8800603747368

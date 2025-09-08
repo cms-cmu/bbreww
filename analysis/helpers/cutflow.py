@@ -31,10 +31,10 @@ class cutflow_bbWW(cutflow):
         # fill with regions
 
         if fill_region:
-            ele_cut = events.selection[cut_name] & events.selection.e_region
-            mu_cut = events.selection[cut_name] & events.selection.mu_region
-            SR_cut = events.selection[cut_name] & events.region.SR
-            CR_cut = events.selection[cut_name] & events.region.CR
+            ele_cut = events[cut_name] & events.flavor.e
+            mu_cut =  events[cut_name] & events.flavor.mu
+            SR_cut =  events[cut_name] & events.region.SR
+            CR_cut =  events[cut_name] & events.region.CR
         # fill with individual cuts
         else:
             ele_cut = self.selections.all(*cut_list) & (self.selections.require(oneE=True))

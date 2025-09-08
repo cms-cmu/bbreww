@@ -26,14 +26,14 @@ workflow:
 
 variables:
   BARISTA_REPO: 'https://${DEPLOY_TOKEN_USERNAME}:${DEPLOY_TOKEN_PASSWORD}@gitlab.cern.ch/cms-cmu/barista.git'
-  BARISTA_BRANCH: '$CI_COMMIT_BRANCH'
+  BARISTA_BRANCH: '$CI_COMMIT_REF_NAME'
 
 include:
   - local: workflows/gitlab-CI/analysis.yml
   - local: workflows/gitlab-CI/cutflows.yml
   - local: workflows/gitlab-CI/skimmer.yml
   - project: 'cms-cmu/barista'
-    ref: '$CI_COMMIT_BRANCH'
+    ref: '$CI_COMMIT_REF_NAME'
     file: 'src/workflows/gitlab-CI/stages_proxy.yml'
 
 stages:  

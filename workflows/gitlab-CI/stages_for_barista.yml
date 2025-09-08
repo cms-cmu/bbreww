@@ -1,4 +1,5 @@
 include:
   - local: 'workflows/gitlab-CI/skimmer.yml'
   - local: 'workflows/gitlab-CI/analysis.yml'
+  - local: 'workflows/gitlab-CI/plots.yml'
   - local: 'workflows/gitlab-CI/cutflows.yml'

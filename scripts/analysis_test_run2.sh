@@ -6,6 +6,7 @@ source "src/scripts/common.sh"
 # Parse output base argument
 OUTPUT_BASE_DIR=$(parse_output_base_arg "output/" "$@")
 if [ $? -ne 0 ]; then
+    echo "Error parsing output base argument. Use --output-base DIR to specify the output directory. Default DIR=output/"
     exit 1
 fi
 

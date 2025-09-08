@@ -1,4 +1,4 @@
-analysis_test_mc:
+analysis_test_mc_bbreww:
   stage: analysis
   extends:
     - .base_analysis
@@ -10,7 +10,7 @@ analysis_test_mc:
       - output/analysis_test_mc/test.coffea
     expire_in: 1 day
 
-analysis_test_data:
+analysis_test_data_bbreww:
   stage: analysis
   extends:
     - .base_analysis
@@ -22,14 +22,14 @@ analysis_test_data:
       - output/analysis_test_data/test.coffea
     expire_in: 1 day
 
-skimmer_analysis_test:
+skimmer_analysis_test_bbreww:
   stage: analysis
   extends:
     - .base_analysis
   needs:
     - setup_workspace
     - voms_proxy
-    - skimmer_test
+    - skimmer_test_bbreww
   script:
     - echo "Running bbww skimmer analysis in barista framework"
     - source bbreww/scripts/skimmer_analysis_test.sh --output-base /builds/$CI_PROJECT_PATH/output/
@@ -39,19 +39,3 @@ skimmer_analysis_test:
     expire_in: 1 day
 
 
-analysis_plot_mc:
-  stage: plot
-  extends:
-    - .base_analysis
-  needs:
-    - setup_workspace
-    - analysis_test_mc
-    - voms_proxy
-
-  script:
-    - echo "Running bbww plot_mc analysis in barista framework"
-    - source bbreww/scripts/analysis_plot_mc.sh --output-base /builds/$CI_PROJECT_PATH/output/
-  artifacts:
-    paths:
-      - output/analysis_plot_mc/
-    expire_in: 1 day

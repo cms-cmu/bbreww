@@ -26,14 +26,15 @@ workflow:
 
 variables:
   BARISTA_REPO: 'https://${DEPLOY_TOKEN_USERNAME}:${DEPLOY_TOKEN_PASSWORD}@gitlab.cern.ch/cms-cmu/barista.git'
-  BARISTA_BRANCH: 'master'
+  BARISTA_BRANCH: '$CI_COMMIT_REF_NAME'
 
 include:
   - local: workflows/gitlab-CI/analysis.yml
   - local: workflows/gitlab-CI/cutflows.yml
+  - local: workflows/gitlab-CI/plot.yml
   - local: workflows/gitlab-CI/skimmer.yml
   - project: 'cms-cmu/barista'
-    ref: 'master'
+    ref: '$CI_COMMIT_REF_NAME'
     file: 'src/workflows/gitlab-CI/stages_proxy.yml'
 
 stages:  
@@ -49,10 +50,20 @@ setup_workspace:
   image: alpine/git:latest
   script:
     - echo "Setting up barista workspace"
+    # --- Add fallback logic for cloning barista ---
+    - BARISTA_DEFAULT_BRANCH="master" 
+    - echo "Checking for branch '$BARISTA_BRANCH' in barista repository..."
+    # Check if the feature branch exists in barista. If not, use the default branch.
+    - git ls-remote --exit-code --heads "$BARISTA_REPO" "$BARISTA_BRANCH" || BARISTA_BRANCH="$BARISTA_DEFAULT_BRANCH"
+    
+    - echo "Cloning barista from branch '$BARISTA_BRANCH'"
     - git clone --recursive --depth=1 --branch=$BARISTA_BRANCH $BARISTA_REPO barista_framework
     - cd barista_framework
-    # Create the bbreww directory and copy current repository content
-    - mkdir -p bbreww
+
+    # Create the subdirectory for the current project and copy its content
+    # For bbreww repository, use 'bbreww'. For coffea4bees, use 'coffea4bees'.
+    - mkdir -p bbreww 
+    - echo "Copying content of $CI_PROJECT_NAME into barista_framework/bbreww/"
     - cp -r $CI_PROJECT_DIR/* bbreww/ 2>/dev/null || true
     - ls -la bbreww/
   artifacts:

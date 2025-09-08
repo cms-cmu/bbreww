@@ -1,4 +1,4 @@
-skimmer_test:
+skimmer_test_bbreww:
   stage: skimmer
   extends:
     - .base_analysis

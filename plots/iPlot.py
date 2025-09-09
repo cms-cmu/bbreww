@@ -15,8 +15,9 @@ import matplotlib.pyplot as plt
 
 # Local imports
 sys.path.insert(0, os.getcwd())
+from bbreww.plots.plots import load_config_bbWW
 from src.plotting.plots import (
-    makePlot, make2DPlot, load_config_bbWW, load_hists,
+    makePlot, make2DPlot, load_hists,
     read_axes_and_cuts, parse_args, print_cfg
 )
 import src.plotting.iPlot_config as cfg
@@ -51,64 +52,52 @@ def examples() -> None:
 examples:
 
 # Nominal plot of data and background in a region passing a cut
-plot("v4j.mass", region="SR", cut="passPreSel")
+plot("mbb", flavor=sum, channel=sum, cut="preselection")
 
 # Can get a print out of the variables
 ls()
-plot("*", region="SR", cut="passPreSel")
-plot("v4j*", region="SR", cut="passPreSel")
+plot("*", flavor=sum, channel=sum, cut="preselection")
+plot("m*", flavor=sum, channel=sum, cut="preselection")
 
 # Can add ratio
-plot("v4j.mass", region="SR", cut="passPreSel", doRatio=1)
+plot("mbb", flavor=sum, channel=sum, cut="preselection", doRatio=1)
 
 # Can rebin
-plot("v4j.mass", region="SR", cut="passPreSel", doRatio=1, rebin=4)
+plot("mbb", flavor=sum, channel=sum, cut="preselection", doRatio=1, rebin=4)
 
 # Can normalize
-plot("v4j.mass", region="SR", cut="passPreSel", doRatio=1, rebin=4, norm=1)
+plot("mbb", flavor=sum, channel=sum, cut="preselection", doRatio=1, rebin=4, norm=1)
 
 # Can set logy
-plot("v4j.mass", region="SR", cut="passPreSel", doRatio=1, rebin=4, norm=1, yscale="log")
+plot("mbb", flavor=sum, channel=sum, cut="preselection", doRatio=1, rebin=4, norm=1, yscale="log")
 
 # Can set ranges
-plot("v4j.mass", region="SR", cut="passPreSel", doRatio=1, rebin=4, norm=1, rlim=[0.5,1.5])
-plot("v4j.mass", region="SR", cut="passPreSel", doRatio=1, rebin=4, norm=1, xlim=[0,1000])
-plot("v4j.mass", region="SR", cut="passPreSel", doRatio=1, rebin=4, norm=1, ylim=[0,0.01])
+plot("mbb", flavor=sum, channel=sum, cut="preselection", doRatio=1, rebin=4, norm=1, rlim=[0.5,1.5])
+plot("mbb", flavor=sum, channel=sum, cut="preselection", doRatio=1, rebin=4, norm=1, xlim=[50,200])
+plot("mbb", flavor=sum, channel=sum, cut="preselection", doRatio=1, rebin=4, norm=1, ylim=[0,0.01])
 
-# Can overlay different regions
-plot("v4j.mass", region=["SR","SB"], cut="passPreSel", process="data", doRatio=1, rebin=4)
-plot("v4j.mass", region=["SR","SB"], cut="passPreSel", process="HH4b", doRatio=1, rebin=4)
-plot("v4j.mass", region=["SR","SB"], cut="passPreSel", process="Multijet", doRatio=1, rebin=4)
-plot("v4j.mass", region=["SR","SB"], cut="passPreSel", process="TTToHadronic", doRatio=1, rebin=4)
-
-# Can overlay different cuts
-plot("v4j.mass", region="SR", cut=["passPreSel","passSvB","failSvB"], process="data", doRatio=1, rebin=4, norm=1)
-plot("v4j.mass", region="SR", cut=["passPreSel","passSvB","failSvB"], process="HH4b", doRatio=1, rebin=4, norm=1)
-plot("v4j.mass", region="SR", cut=["passPreSel","passSvB","failSvB"], process="Multijet", doRatio=1, rebin=4, norm=1)
-plot("v4j.mass", region="SR", cut=["passPreSel","passSvB","failSvB"], process="TTToHadronic", doRatio=1, rebin=4, norm=1)
+# Can overlay different flavors or channels or cuts
+plot("mbb", flavor=["e","mu"], channel=sum, cut="preselection", process="HHbbWW", doRatio=1, rebin=4, histtype="step")
+plot("mbb", flavor=sum,  channel=["hadronic_W","leptonic_W"], cut="preselection", process="TTbar", doRatio=1, rebin=4, histtype="step")
+plot("mbb", flavor=sum, channel=sum,  cut=["preselection","nominal_4j2b"], process="HHbbWW", doRatio=1, rebin=4, norm=1)
 
 # Can overlay different variables
-plot(["canJet0.pt","canJet1.pt"], region="SR", cut="passPreSel", doRatio=1, process="Multijet")
-plot(["canJet0.pt","canJet1.pt","canJet2.pt","canJet3.pt"], region="SR", cut="passPreSel", doRatio=1, process="Multijet")
+plot(["mbb","qq_mass"], flavor=sum, channel=sum,  cut="preselection", doRatio=1, process="HHbbWW")
+plot(["mbb","qq_mass","bjets_genjets_mass"], flavor=sum, channel=sum,  cut="preselection", doRatio=1, process="TTbar")
 
 # Can plot a single process
-plot("v4j.mass", region="SR", cut="passPreSel", process="data")
+plot("mbb", flavor=sum, channel=sum,  cut="preselection", process="HHbbWW")
 
 # Can overlay processes
-plot("v4j.mass", region="SR", cut="passPreSel", norm=1, process=["data","TTTo2L2Nu","HH4b","Multijet"], doRatio=1)
+plot("mbb", flavor=sum, channel=sum,  cut="preselection", norm=1, process=["HHbbWW","TTbar"],doRatio=1)
 
 # Can overlay years
-plot("canJet0.pt", region="SR", cut="passPreSel", doRatio=1, process="data", year=["UL16_preVFP","UL16_postVFP","UL17","UL18"])
+plot("mbb", flavor=sum, channel=sum,  cut="preselection", doRatio=1, process="HHbbWW", year=["2022","2022"])
 
 # Plot 2d hists
-plot2d("quadJet_min_dr.close_vs_other_m", process="Multijet", region="SR", cut="failSvB")
-plot2d("quadJet_min_dr.close_vs_other_m", process="Multijet", region="SR", cut="failSvB", full=True)
+plot2d("mbb_vs_bb_dr", process="HHbbWW", flavor=sum, channel=sum,  cut="preselection")
+plot2d("mbb_vs_bb_dr", process="HHbbWW", flavor=sum, channel=sum,  cut="preselection", full=True)
 
-# Unsup4b plots with SB and SRSB as composite regions
-plot("v4j.mass", region="SRSB", cut="passPreSel")
-plot2d("quadJet_selected.lead_vs_subl_m", process="data3b", region="SRSB")
-plot("leadStM_selected", region="SB", cut="passPreSel", process=["data3b","mixeddata"])
-plot("v4j.mass", region=["SR", "SB"], cut="passPreSel", process="data3b")
 """
     print(examples_text)
 
@@ -153,7 +142,9 @@ def handle_wildcards(var: Union[str, List[str]]) -> bool:
 
 def plot(var: Union[str, List[str]] = 'selJets.pt', *,
          cut: Union[str, List[str]] = "passPreSel",
-         region: Union[str, List[str]] = "SR",
+         flavor: Union[str, List[str]] = None,
+         channel: Union[str, List[str]] = None,
+         axis_opts: Dict = {},
          output_file: str = DEFAULT_OUTPUT_FILE,
          **kwargs) -> Optional[Tuple[plt.Figure, plt.Axes]]:
     """Create a 1D plot of the specified variable.
@@ -162,6 +153,7 @@ def plot(var: Union[str, List[str]] = 'selJets.pt', *,
         var: Variable(s) to plot. Can be a string or list of strings.
         cut: Selection cut to apply (default: "passPreSel")
         region: Region to plot (default: "SR")
+        axis_opts: Additional axis options as a dictionary
         output_file: Name of the output file (default: "test.pdf")
         **kwargs: Additional plotting options
 
@@ -175,14 +167,25 @@ def plot(var: Union[str, List[str]] = 'selJets.pt', *,
     if handle_wildcards(var):
         return
 
+    # Add channel to axis_opts
+    if flavor:
+        axis_opts["flavor"] = flavor
+    if channel:
+        axis_opts["channel"] = channel
+
+    opts = {"var": var,
+            "cut": cut,
+            "axis_opts": axis_opts,
+            "outputFolder": cfg.outputFolder
+            }
+    opts.update(kwargs)
+
+    if len(cfg.hists) > 1:
+        opts["fileLabels"] = cfg.fileLabels
+
     try:
-        # Create plot with appropriate parameters
-        if len(cfg.hists) > 1:
-            fig, ax = makePlot(cfg, var=var, cut=cut, region=region,
-                         outputFolder=cfg.outputFolder, fileLabels=cfg.fileLabels, **kwargs)
-        else:
-            fig, ax = makePlot(cfg, var=var, cut=cut, region=region,
-                         outputFolder=cfg.outputFolder, **kwargs)
+        fig, ax = makePlot(cfg, **opts)
+
     except ValueError as e:
         print(f"Error creating plot: {e}")
         return
@@ -202,7 +205,9 @@ def plot2d(var: str = 'quadJet_selected.lead_vs_subl_m',
            process: Union[str, List[str]] = "HH4b",
            *,
            cut: Union[str, List[str]] = "passPreSel",
-           region: Union[str, List[str]] = "SR",
+           flavor: Union[str, List[str]] = None,
+           channel: Union[str, List[str]] = None,
+           axis_opts: Dict = {},
            output_file: str = DEFAULT_OUTPUT_FILE,
            **kwargs) -> Optional[Tuple[plt.Figure, plt.Axes]]:
     """Create a 2D plot of the specified variable.
@@ -224,9 +229,15 @@ def plot2d(var: str = 'quadJet_selected.lead_vs_subl_m',
     if handle_wildcards(var):
         return
 
+    # Add channel to axis_opts
+    if flavor:
+        axis_opts["flavor"] = flavor
+    if channel:
+        axis_opts["channel"] = channel
+
     try:
         fig, ax = make2DPlot(cfg, process, var=var, cut=cut,
-                       region=region, outputFolder=cfg.outputFolder, **kwargs)
+                             axis_opts=axis_opts, outputFolder=cfg.outputFolder, **kwargs)
     except Exception as e:
         print(f"Error creating 2D plot: {e}")
         return

@@ -10,7 +10,7 @@ def chi_sq(events):
     leading_lep = ak.firsts(ak.concatenate([leading_e[ak.singletons(events.flavor.e)],
                                   leading_mu[ak.singletons(events.flavor.mu)]],axis=1))
     events['leading_lep'] = ak.with_name(leading_lep, 'PtEtaPhiMLorentzVector') #reapply 4-vector behavior after concatenate 
-    print(np.sum(leading_lep.eta> 0.5), np.sum(abs(leading_lep.eta)< 0.5), np.sum(events.e_region), np.sum(events.mu_region), events.Jet)
+   
     # hadronic W* chi square calculation
     nu = met_reconstr(events, events.leading_lep) # calculate MET pz requiring (lepton + nu).mass == W_mass
     mlvqq_hadWs_nom = (events.leading_lep + nu + events.qq_nom ).mass # H -> lvqq candidates (nonbjet_pt > 25 GeV)

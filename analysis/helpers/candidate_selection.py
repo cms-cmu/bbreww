@@ -32,13 +32,14 @@ def candidate_selection(events, params, year):
     j_candidates_nom = ak.mask(j_candidates_nom[:,2:], ak.num(j_candidates_nom[:,2:],axis=1)>=2) # require 2 or more non-bjets
     j_candidates_nom = j_candidates_nom[ak.argsort(j_candidates_nom.pt, axis=1, ascending=False)] # pT sort the jets
     j_candidates_nom = j_candidates_nom[:,:2] # take leading two pT jets
+    events['j_nonbcand_nom'] = j_candidates_nom
     events['qq_nom'] = j_candidates_nom[:,0] + j_candidates_nom[:,1]
 
     # soft jets analysis
     j_candidates = j_candidates[ak.argsort(getattr(j_candidates,QvG_key), axis=1, ascending=False)] #particleNetAK4_QvsG btagPNetQvG
     j_candidates = j_candidates[:,:3] #top 3 quark vs gluon non b-jets
     j_candidates = j_candidates[ak.argsort(j_candidates.pt, axis=1, ascending=False)] #pt sort the jets
-    events['j_nonbcand'] = j_candidates[:,2:]
+    events['j_nonbcand_soft'] = j_candidates[:,2:]
 
     jj_i = ak.argcombinations(j_candidates,2,replacement = False, fields=["j1","j2"]) #take dijet combinations
     jj_i = jj_i[(j_candidates[jj_i.j1]-j_candidates[jj_i.j2]).eta<2.0]

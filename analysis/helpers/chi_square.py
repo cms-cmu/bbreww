@@ -9,12 +9,12 @@ def chi_sq(events):
     #select leading lepton out of electrons/muons. Use ak.singletons to slice entries, not whole events 
     leading_lep = ak.firsts(ak.concatenate([leading_e[ak.singletons(events.flavor.e)],
                                   leading_mu[ak.singletons(events.flavor.mu)]],axis=1))
-    leading_lep = ak.with_name(leading_lep, 'PtEtaPhiMLorentzVector') #reapply 4-vector behavior after concatenate 
-
+    events['leading_lep'] = ak.with_name(leading_lep, 'PtEtaPhiMLorentzVector') #reapply 4-vector behavior after concatenate 
+    print(np.sum(leading_lep.eta> 0.5), np.sum(abs(leading_lep.eta)< 0.5), np.sum(events.e_region), np.sum(events.mu_region), events.Jet)
     # hadronic W* chi square calculation
-    nu = met_reconstr(events, leading_lep) # calculate MET pz requiring (lepton + nu).mass == W_mass
-    mlvqq_hadWs_nom = (leading_lep + nu + events.qq_nom ).mass # H -> lvqq candidates (nonbjet_pt > 25 GeV)
-    mlvqq_hadWs_soft = (leading_lep + nu + events.qq_soft ).mass # H -> lvqq candidates (15 GeV > nonbjet_pt > 25 GeV)
+    nu = met_reconstr(events, events.leading_lep) # calculate MET pz requiring (lepton + nu).mass == W_mass
+    mlvqq_hadWs_nom = (events.leading_lep + nu + events.qq_nom ).mass # H -> lvqq candidates (nonbjet_pt > 25 GeV)
+    mlvqq_hadWs_soft = (events.leading_lep + nu + events.qq_soft ).mass # H -> lvqq candidates (15 GeV > nonbjet_pt > 25 GeV)
     events['mlvqq_hadWs'] = ak.fill_none(mlvqq_hadWs_nom,np.nan)
 
     #individual chi squares for hadronic W* signal selection
@@ -38,7 +38,7 @@ def chi_sq(events):
                                    chi_sq_hadWs_nom_3j[ak.singletons(events.nominal_3j2b)]], axis=1)
 
     ## hadronic W chi square calculation
-    events['mT_leading_lep'] = np.sqrt(2*leading_lep.pt*events.MET.pt*(1-np.cos(events.MET.delta_phi(leading_lep))))
+    events['mT_leading_lep'] = np.sqrt(2*events.leading_lep.pt*events.MET.pt*(1-np.cos(events.MET.delta_phi(events.leading_lep))))
 
     #individual chi squares for hadronic W signal selection
     chi1_hadW = chi_square(events.mbb,111.13, 23.63) # H -> bb
@@ -61,8 +61,8 @@ def chi_sq(events):
     ## ttbar reconstruction
 
     #leptonic top
-    mlvb1 = (leading_lep + nu + events.j_bcand[:,0]).mass
-    mlvb2 = (leading_lep + nu + events.j_bcand[:,1]).mass 
+    mlvb1 = (events.leading_lep + nu + events.j_bcand[:,0]).mass
+    mlvb2 = (events.leading_lep + nu + events.j_bcand[:,1]).mass 
 
     mbqq1_soft = ak.pad_none((events.j_bcand[:,0] + events.qq_soft).mass,3,axis=1) #hadronic candidate 1
     mbqq2_soft = ak.pad_none((events.j_bcand[:,1] + events.qq_soft).mass,3,axis=1) #hadronic candidate 2

@@ -15,11 +15,12 @@ from src.physics.objects.jet_corrections import apply_jerc_corrections
 from src.physics.event_weights import add_weights
 
 from bbreww.analysis.helpers.common import update_events, add_lepton_sfs
+from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
 from bbreww.analysis.helpers.cutflow import cutflow_bbWW
+from bbreww.analysis.helpers.dump_friendtrees import dump_input_friend
 from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec
 from bbreww.analysis.helpers.object_selection import apply_bbWW_preselection, apply_mll_cut
 from bbreww.analysis.helpers.candidate_selection import candidate_selection
-from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
 from bbreww.analysis.helpers.gen_process import gen_process, add_gen_info, gen_studies
 from bbreww.analysis.helpers.fill_histograms import fill_histograms
 
@@ -58,6 +59,7 @@ class analysis(processor.ProcessorABC):
         self.processName = events.metadata['processName']
         self.is_mc = hasattr(events, "genWeight")
         self.n_events = len(events)
+        self.make_classifier_input = True
 
         events = apply_event_selection(
             events,
@@ -218,7 +220,20 @@ class analysis(processor.ProcessorABC):
             'leptonic_W': selection.all('leptonic_W')[selection.all(*selection_list['preselection'])]
         }) 
         selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
+        analysis_selections = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
 
+        if self.make_classifier_input is not None:
+            selev = selected_events[selected_events.nominal_4j2b]
+            friends = { 'friends': {} }
+            friends["friends"] = ( friends["friends"]
+                | dump_input_friend(
+                    selev,
+                    'output/friendtrees',
+                    "classifier_input",
+                    analysis_selections,
+                    weight = "weight"
+                )
+            )
         if not shift_name:
             output['events_processed'] = {}
             output['events_processed'][self.dataset] = {

@@ -11,7 +11,8 @@ from coffea.util import load
 import numpy as np
 
 sys.path.insert(0, os.getcwd())
-from src.plotting.plots import makePlot, make2DPlot, load_config_bbWW, load_hists, read_axes_and_cuts, parse_args
+from bbreww.plots.plots import load_config_bbWW
+from src.plotting.plots import makePlot, make2DPlot, load_hists, read_axes_and_cuts, parse_args
 import src.plotting.iPlot_config as cfg
 
 np.seterr(divide='ignore', invalid='ignore')

@@ -33,16 +33,28 @@ stack:
         #         label: QCD multijet
 
 ratios:
+        # dataToBkg:
+        #         numerator:
+        #                 type: hists
+        #                 key: data
+        #         denominator:
+        #                 type: stack
+        #         uncertianty:
+        #                 nominal
+        #         color: k
+        #         marker: "o"
+
         dataToBkg:
                 numerator:
                         type: hists
-                        key: data
+                        key: HHbbWW
                 denominator:
                         type: stack
                 uncertianty:
                         nominal
-                color: k
+                color: "#e42536"
                 marker: "o"
+
 
 doRatio:
     1

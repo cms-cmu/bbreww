@@ -34,7 +34,7 @@ include:
   - local: workflows/gitlab-CI/plot.yml
   - local: workflows/gitlab-CI/skimmer.yml
   - project: 'cms-cmu/barista'
-    ref: '$CI_COMMIT_REF_NAME'
+    ref: master
     file: 'src/workflows/gitlab-CI/stages_proxy.yml'
 
 stages:  
@@ -48,6 +48,8 @@ stages:
 setup_workspace:
   stage: setup
   image: alpine/git:latest
+  needs:
+    - voms_proxy
   script:
     - echo "Setting up barista workspace"
     # --- Add fallback logic for cloning barista ---
@@ -66,9 +68,14 @@ setup_workspace:
     - echo "Copying content of $CI_PROJECT_NAME into barista_framework/bbreww/"
     - cp -r $CI_PROJECT_DIR/* bbreww/ 2>/dev/null || true
     - ls -la bbreww/
+
+    # Copy the proxy if it exists
+    - echo "Checking for proxy directory in $CI_PROJECT_DIR/proxy"
+    - if [ -d "$CI_PROJECT_DIR/proxy" ]; then cp -r $CI_PROJECT_DIR/proxy/ barista_framework/; fi
   artifacts:
     paths:
       - barista_framework/
+      - proxy/
     expire_in: 2 hours
   tags:
     - k8s-cvmfs
@@ -77,9 +84,10 @@ setup_workspace:
 .base_analysis:
   needs:
     - setup_workspace
-    - voms_proxy
   before_script:
-    - cp -r proxy/ barista_framework/
+    - echo "Checking output directory"
+    - ls $CI_PROJECT_PATH/output/ || true
+    - echo "Setting analysis framework"
     - cd barista_framework/
     - pwd && ls -la
     - ls -la bbreww/

@@ -71,11 +71,10 @@ setup_workspace:
 
     # Copy the proxy if it exists
     - echo "Checking for proxy directory in $CI_PROJECT_DIR/proxy"
-    - if [ -d "$CI_PROJECT_DIR/proxy" ]; then cp -r $CI_PROJECT_DIR/proxy/ barista_framework/; fi
+    - if [ -d "$CI_PROJECT_DIR/proxy" ]; then cp -r $CI_PROJECT_DIR/proxy/ .; fi
   artifacts:
     paths:
       - barista_framework/
-      - proxy/
     expire_in: 2 hours
   tags:
     - k8s-cvmfs

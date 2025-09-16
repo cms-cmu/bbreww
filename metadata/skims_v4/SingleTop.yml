@@ -3,8 +3,8 @@ TBbarQ:
       nanoAOD: /TBbarQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
       picoAOD:
         files: 
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TBbarQ_2022_preEE/picoAOD.root
-        saved_events: 174958
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TBbarQ_2022_preEE/picoAOD.root
+        saved_events: 96726
         sumw: 370365216.828125
         sumw2: 54430711575.0
         total_events: 2973675
@@ -19,8 +19,8 @@ TbarBQ:
     nanoAOD: /TbarBQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
     picoAOD:
       files: 
-      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TbarBQ_2022_preEE/picoAOD.root
-      saved_events: 84419
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarBQ_2022_preEE/picoAOD.root
+      saved_events: 48157
       sumw: 108650616.9765625
       sumw2: 9631393373.0
       total_events: 1433215
@@ -34,8 +34,8 @@ TBbartoLplusNuBbar:
     nanoAOD: /TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
     picoAOD:
       files: 
-      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TBbartoLplusNuBbar_2022_preEE/picoAOD.root
-      saved_events: 182884
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TBbartoLplusNuBbar_2022_preEE/picoAOD.root
+      saved_events: 122968
       sumw: 2891578.255859375
       sumw2: 17402471.1875
       total_events: 1271280
@@ -49,8 +49,8 @@ TbarBtoLminusNuB:
     nanoAOD: /TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
     picoAOD:
       files: 
-      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/TbarBtoLminusNuB_2022_preEE/picoAOD.root
-      saved_events: 118315
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarBtoLminusNuB_2022_preEE/picoAOD.root
+      saved_events: 79565
       sumw: 1124381.0026855469
       sumw2: 4226395.061035156
       total_events: 785520

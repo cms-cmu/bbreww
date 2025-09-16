@@ -59,7 +59,7 @@ class analysis(processor.ProcessorABC):
         self.processName = events.metadata['processName']
         self.is_mc = hasattr(events, "genWeight")
         self.n_events = len(events)
-        self.make_classifier_input = True
+        self.make_classifier_input = False
 
         events = apply_event_selection(
             events,
@@ -127,7 +127,7 @@ class analysis(processor.ProcessorABC):
         selection.add('nom_njets4',  ak.num(events.j_init[events.j_init.isnominal],axis=1)>3) # nominal pT region
         selection.add('nom_njets3',  ak.num(events.j_init[events.j_init.isnominal],axis=1)==3) # exact 3 jets region
         selection.add('lowpt_njets4', ~(selection.all('nom_njets4')) & (ak.num(events.j_init[events.j_init.preselected],axis=1)>3) )
-        selection.add('lowpt_njets3', ~(selection.all('nom_njets4')) & (ak.num(events.j_init[events.j_init.preselected],axis=1)==3) ) ## TEMP (comparing 3j regions in nominal to lowpt)
+        selection.add('lowpt_njets3', ~(selection.all('nom_njets4')) & (ak.num(events.j_init[events.j_init.preselected],axis=1)==3) )
         # veto events with jets affected by EE water leak (2022) and hole in Pixel L3/L4 (2023)  
         jet_veto_maps = (ak.all(events.Jet.jet_veto_maps,axis=1) if '202' in self.year 
                          else ak.ones_like(events.run,dtype=bool)) 
@@ -139,13 +139,13 @@ class analysis(processor.ProcessorABC):
         selection_list['nominal_4j2b'] = selection_list['preselection'] + ['nom_njets4', 'twoBjets']
         selection_list['nominal_3j2b'] = selection_list['preselection'] + ['nom_njets3', 'twoBjets']
         selection_list['lowpt_4j2b'] = selection_list['preselection'] + ['lowpt_njets4', 'twoBjets']
-        selection_list['lowpt_3j2b'] = selection_list['preselection'] + ['lowpt_njets3', 'twoBjets'] ## TEMP
+        selection_list['lowpt_3j2b'] = selection_list['preselection'] + ['lowpt_njets3', 'twoBjets']
 
         events['preselection'] = selection.all(*selection_list['preselection'])
         events['nominal_4j2b'] = selection.all(*selection_list['nominal_4j2b'])
         events['nominal_3j2b'] = selection.all(*selection_list['nominal_3j2b'])
         events['lowpt_4j2b'] = selection.all('lowpt_njets4') & selection.all('twoBjets')
-        events['lowpt_3j2b'] =  selection.all(*selection_list['lowpt_3j2b']) ## TEMP
+        events['lowpt_3j2b'] =  selection.all(*selection_list['lowpt_3j2b'])
         
 
         events['flavor'] = ak.zip({
@@ -166,10 +166,14 @@ class analysis(processor.ProcessorABC):
         events['weight'] = weights.weight()
         ##
         signal_region = ((events.mbb > 75) & (events.mbb < 135) 
-                        & (events.bb_dr > 0.85) & (events.bb_dr < 2.15))
+                        & (events.bb_dr > 0.85) & (events.bb_dr < 2.15)) # elliptical signal region
+        control_region = ((events.mbb > 55) & (events.mbb < 155) 
+                        & (events.bb_dr > 0.42) & (events.bb_dr < 2.58) 
+                        & ~signal_region) # sideband TTbar control region 
+        
         events['region'] = ak.zip({
             'SR': ak.fill_none(signal_region, False),
-            'CR': ak.fill_none(~signal_region, False)
+            'CR': ak.fill_none(control_region, False)
         }) 
 
         #study sequential cutflow (get weights and events after each cut)
@@ -184,7 +188,7 @@ class analysis(processor.ProcessorABC):
         selected_events = events[events.preselection]
         del events
         selected_events = chi_sq(selected_events) # chi square selection and calculation
-        selected_events = chi_sq_cut(selected_events)
+        selected_events = chi_sq_cut(selected_events) # add chi square cuts booleans
 
         #add regions separated by chi square calculation
         add_to_selection(
@@ -252,8 +256,8 @@ class analysis(processor.ProcessorABC):
             processName=self.processName,
             year=self.year_label,
             is_mc=self.is_mc,
-            histCuts=['preselection', 'nominal_4j2b'], #,'chi_sq_nom_4j2b','chi_sq_nom_3j2b',
-            #                      'chi_sq_lowpt_4j2b','nominal_4j2b','nominal_3j2b','lowpt_4j2b'],
+            histCuts=['preselection', 'chi_sq_nom_4j2b','chi_sq_nom_3j2b',
+                    'chi_sq_lowpt_4j2b','nominal_4j2b','nominal_3j2b','lowpt_4j2b', 'lowpt_3j2b'],
             channel_list=['hadronic_W', 'leptonic_W'],
             flavor_list=['e', 'mu']
         )

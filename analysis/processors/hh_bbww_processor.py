@@ -45,7 +45,7 @@ class analysis(processor.ProcessorABC):
         self,
         parameters: str = "bbreww/analysis/metadata/object_preselection_run3.yaml",
         corrections_metadata: str = "src/physics/corrections.yml",
-        make_classifier_input:str = None,
+        make_classifier_input:str = 'output/friendtrees_test_mc',
         fill_histograms: bool = True,
     ):
         self.parameters = parameters
@@ -70,13 +70,25 @@ class analysis(processor.ProcessorABC):
             not self.is_mc
         )
 
-        jets = apply_jerc_corrections(
-            events,
-            corrections_metadata=self.params[self.year],
-            isMC=self.is_mc,
-            run_systematics=False, ###self.run_systematics,
-            dataset=self.dataset,
-            jet_type='AK4PFPuppi.txt',
+        jets = ak.where(
+            events.Jet.btagPNetB >= self.params[self.year].btagWP.M,
+            apply_jerc_corrections(
+                events,
+                corrections_metadata=self.params[self.year],
+                isMC=self.is_mc,
+                run_systematics=False,
+                dataset=self.dataset,
+                jet_corr_factor=events.Jet.PNetRegPtRawCorr * events.Jet.PNetRegPtRawCorrNeutrino,
+                jet_type="AK4PFPuppiPNetRegressionPlusNeutrino"
+            ),
+            apply_jerc_corrections(
+                events,
+                corrections_metadata=self.params[self.year],
+                isMC=self.is_mc,
+                run_systematics=False,
+                dataset=self.dataset,
+                jet_type="AK4PFPuppi.txt"
+            )
         )
         met = apply_met_corrections_after_jec(events, jets)
 
@@ -147,7 +159,7 @@ class analysis(processor.ProcessorABC):
         events['preselection'] = selection.all(*selection_list['preselection'])
         events['nominal_4j2b'] = selection.all(*selection_list['nominal_4j2b'])
         events['nominal_3j2b'] = selection.all(*selection_list['nominal_3j2b'])
-        events['lowpt_4j2b'] = selection.all('lowpt_njets4') & selection.all('twoBjets')
+        events['lowpt_4j2b'] = selection.all(*selection_list['lowpt_4j2b'])
         events['lowpt_3j2b'] =  selection.all(*selection_list['lowpt_3j2b'])
         
 

@@ -26,11 +26,6 @@ def add_gen_info(events, is_mc):
     
         events['isHtoW'] = events.GenPart[(events.GenPart[events.GenPart[events.GenPart.isW].genPartIdxMother].pdgId== 25)]
 
-        ## non-bjets gen matched with W jets decaying to quarks
-        gen_qFromW = gen_match(events.GenPart, [1,2,3,4], [24])
-        events['Jet', 'isQfromW']= ak.any(gen_qFromW.metric_table(events.Jet)< 0.2,axis=1)
-        events['gen_bFromH'] = gen_match(events.GenPart, [5], [25] )
-
         if 'HH' in events.metadata['dataset']:
             events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
     

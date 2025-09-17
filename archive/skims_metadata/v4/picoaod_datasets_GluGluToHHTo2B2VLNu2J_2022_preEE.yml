@@ -1,0 +1,59 @@
+GluGluToHHTo2B2VLNu2J_2022_preEE:
+  count: 89899
+  cutflow:
+    CR:
+      events: {}
+      weights: {}
+    SR:
+      events: {}
+      weights: {}
+    e_region:
+      events:
+        all: 11054.0
+        lumimask: 11054.0
+        njets: 8006.0
+        oneBjet: 8881.0
+        passNoiseFilter: 11049.0
+        trigger: 9434.0
+      weights:
+        all: 326.8359394222498
+        lumimask: 326.8359394222498
+        njets: 235.56179800257087
+        oneBjet: 261.6191595941782
+        passNoiseFilter: 326.6703424267471
+        trigger: 278.3314664401114
+    mu_region:
+      events:
+        all: 13504.0
+        lumimask: 13504.0
+        njets: 10210.0
+        oneBjet: 11283.0
+        passNoiseFilter: 13499.0
+        trigger: 12019.0
+      weights:
+        all: 401.75242441892624
+        lumimask: 401.75242441892624
+        njets: 303.43456008657813
+        oneBjet: 336.59085738658905
+        passNoiseFilter: 401.58682742342353
+        trigger: 358.9257182814181
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_2022_preEE/picoAOD.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v3', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_GluGluToHHTo2B2VLNu2J_2022_preEE.yml',
+      output_path='output/skimmer', years=['2022_preEE'], datasets=['GluGluToHHTo2B2VLNu2J'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    date: '2025-09-04 17:03:48'
+    diff: ''
+    hash: bced4739ec5caba8448b5d0a5accc37bfe7cf58a
+  saved_events: 18216
+  sumw: 2668.1345007419586
+  sumw2: 98.87135451287031
+  sumw2_raw: 98.87134737539463
+  sumw_raw: 2668.1343534
+  total_events: 89899

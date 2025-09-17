@@ -52,13 +52,17 @@ def fill_histograms(
     fill += hist.add("mbb", (50, -0.5, 250, ("mbb", "H-> bb candidate mass[GeV]")))
     fill += hist.add("bjets_genjets_dr", (30, -0.5, 5, ("bjets_genjets_dr", r'$\Delta$ R between b-candidates (genjets)')))
     fill += hist.add("bjets_genjets_mass", (50, -0.5, 250, ("bjets_genjets_mass", "H-> bb candidate (genjets) mass[GeV]")))
-    fill += hist.add("nonbjet_pt", (50, -0.5, 250, ("j_nonbcand.pt", "non-bjets pT [GeV]")))
-    fill += hist.add("bjet_pt", (50, -0.5, 250, ("j_bcand.pt", "bjets pT [GeV]")))
+    fill += hist.add("bjet_pt_lead", (50, -0.5, 250, ("j_bcand_lead.pt", "leading bjet pT [GeV]")))
+    fill += hist.add("bjet_pt_sublead", (50, -0.5, 250, ("j_bcand_sublead.pt", "subleading bjet pT [GeV]")))
+    fill += hist.add("nonbjet_pt_lead", (50, -0.5, 250, ("j_nonbcand_nom_lead_pt", "leading non-bjet pT [GeV]")))
+    fill += hist.add("nonbjet_pt_sublead", (50, -0.5, 250, ("j_nonbcand_nom_sublead_pt", "subleading non-bjet pT [GeV]")))
+    fill += hist.add("nonbjets_pt", (50, -0.5, 250, ("j_nonbcand_nom.pt", "non-bjets pT [GeV]")))
 
     fill += hist.add("qq_mass", (50, -0.5, 250, ("qq_mass", "non-bjets pT [GeV]")))
     fill += hist.add("mT", (60, -0.5, 250, ("mT_leading_lep", "transverse mass W->lv [GeV]")))
     fill += hist.add("leading_e", (50, -0.5, 250, ("leading_e.pt", "electron pT [GeV]")))
     fill += hist.add("leading_mu", (50, -0.5, 250, ("leading_mu.pt", "muon pT [GeV]")))
+    fill += hist.add("MET", (50, -0.5, 250, ("MET.pt", "MET pT [GeV]")))
     fill += hist.add("njets", (10, -0.5, 9.5, ("njets", "jet multiplicity")))
 
     fill += hist.add("chi_sq_hadW", (30, -0.5, 6, ("chi_sq_hadW", "hadronic W region chi square")))
@@ -71,6 +75,9 @@ def fill_histograms(
     fill += hist.add("genjets_mbb_vs_bb_dr",
                     (50, 0, 250, ('bjets_genjets_mass', 'H->bb Candidate (genjets) Mass [GeV]')),
                     (50, 0, 5, ('bjets_genjets_dr', r'$\Delta R$ between b-candidates (genjets)')))
+    fill += hist.add("lep_qq_pt_dr",
+                (50, 0, 250, ('leading_lep.pt', 'leading lepton pT [GeV]')),
+                (50, 0, 5, ('lep_qq_dr', r'$\Delta R$ between leading lepton and selected qq')))
 
     #fill += hist.add("Hbb_vs_HWW",
     #                (50, 0, 250, ('mbb', 'H->bb Candidate Mass [GeV]')),

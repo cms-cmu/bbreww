@@ -16,7 +16,7 @@ fi
 bash bbreww/scripts/run_processor.sh \
     --output-base "$OUTPUT_BASE_DIR" \
     --processor "bbreww/analysis/processors/hh_bbww_processor.py" \
-    --metadata "bbreww/metadata/skims_v3" \
+    --metadata "bbreww/metadata/skims_v4" \
     --config "bbreww/analysis/metadata/HHbbWW.yml" \
     --datasets "data__SingleMuon" \
     --year "2022_preEE" \

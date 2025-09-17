@@ -15,11 +15,12 @@ from src.physics.objects.jet_corrections import apply_jerc_corrections
 from src.physics.event_weights import add_weights
 
 from bbreww.analysis.helpers.common import update_events, add_lepton_sfs
+from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
 from bbreww.analysis.helpers.cutflow import cutflow_bbWW
+from bbreww.analysis.helpers.dump_friendtrees import dump_input_friend
 from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec
 from bbreww.analysis.helpers.object_selection import apply_bbWW_preselection, apply_mll_cut
 from bbreww.analysis.helpers.candidate_selection import candidate_selection
-from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
 from bbreww.analysis.helpers.gen_process import gen_process, add_gen_info, gen_studies
 from bbreww.analysis.helpers.fill_histograms import fill_histograms
 
@@ -58,6 +59,7 @@ class analysis(processor.ProcessorABC):
         self.processName = events.metadata['processName']
         self.is_mc = hasattr(events, "genWeight")
         self.n_events = len(events)
+        self.make_classifier_input = False
 
         events = apply_event_selection(
             events,
@@ -116,19 +118,19 @@ class analysis(processor.ProcessorABC):
         selection.add('twoBjets', events.has_2_bjets) # require 2 b-tagged jets
         selection.add('njets',  ak.num(events.j_init[events.j_init.preselected],axis=1)>2) # at least 3 ak4 jets
         selection.add('oneBjet', events.has_1_bjet)
-        selection.add('oneE', events.e_region)
-        selection.add('oneM', events.mu_region)
+        selection.add('oneE', events.e_region) # no. of tight electrons = 1, loose muons = 0
+        selection.add('oneM', events.mu_region) # no. of tight muons =1, loose electrons = 0    
         selection.add('oneEorM', events.e_region | events.mu_region )
         selection.add('tau_veto', (events.tau_nmedium==0))
         selection.add('mll_cut', events.pass_mll_cut)
         selection.add('njets_ak8', (events.n_ak8_jets == 0))
         selection.add('nom_njets4',  ak.num(events.j_init[events.j_init.isnominal],axis=1)>3) # nominal pT region
         selection.add('nom_njets3',  ak.num(events.j_init[events.j_init.isnominal],axis=1)==3) # exact 3 jets region
-        selection.add('lowpt_njets4', ~selection.all('nom_njets4') & (ak.num(events.j_init[events.j_init.preselected],axis=1)>3) )
-        # veto events with jets affected by EE water leak (2022) and hole in Pixel L3/L4 (2023)
-        jet_veto_maps = (ak.all(events.Jet.jet_veto_maps,axis=1) if '202' in self.year
-                         else ak.ones_like(events.run,dtype=bool))
-
+        selection.add('lowpt_njets4', ~(selection.all('nom_njets4')) & (ak.num(events.j_init[events.j_init.preselected],axis=1)>3) )
+        selection.add('lowpt_njets3', ~(selection.all('nom_njets4')) & (ak.num(events.j_init[events.j_init.preselected],axis=1)==3) )
+        # veto events with jets affected by EE water leak (2022) and hole in Pixel L3/L4 (2023)  
+        jet_veto_maps = (ak.all(events.Jet.jet_veto_maps,axis=1) if '202' in self.year 
+                         else ak.ones_like(events.run,dtype=bool)) 
         selection.add('jet_veto_mask', jet_veto_maps)
 
         selection_list = {
@@ -137,17 +139,19 @@ class analysis(processor.ProcessorABC):
         selection_list['nominal_4j2b'] = selection_list['preselection'] + ['nom_njets4', 'twoBjets']
         selection_list['nominal_3j2b'] = selection_list['preselection'] + ['nom_njets3', 'twoBjets']
         selection_list['lowpt_4j2b'] = selection_list['preselection'] + ['lowpt_njets4', 'twoBjets']
-
-        events['selection'] = ak.zip({
-            'preselection': selection.all(*selection_list['preselection']),
-            'nominal_4j2b': selection.all(*selection_list['nominal_4j2b']),
-            'nominal_3j2b': selection.all(*selection_list['nominal_3j2b']),
-            'lowpt_4j2b' :  selection.all(*selection_list['lowpt_4j2b'])
-        })
+        selection_list['lowpt_3j2b'] = selection_list['preselection'] + ['lowpt_njets3', 'twoBjets']
 
         events['preselection'] = selection.all(*selection_list['preselection'])
         events['nominal_4j2b'] = selection.all(*selection_list['nominal_4j2b'])
         events['nominal_3j2b'] = selection.all(*selection_list['nominal_3j2b'])
+        events['lowpt_4j2b'] = selection.all('lowpt_njets4') & selection.all('twoBjets')
+        events['lowpt_3j2b'] =  selection.all(*selection_list['lowpt_3j2b'])
+        
+
+        events['flavor'] = ak.zip({
+            'e':  selection.all('oneE') & selection.all(*selection_list['preselection']),
+            'mu': selection.all('oneM') & selection.all(*selection_list['preselection'])
+        }) # separate electron and muon regions
 
         ## add weights
         weights, list_weight_names = add_weights(
@@ -161,20 +165,30 @@ class analysis(processor.ProcessorABC):
         weights = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, self.year, self.is_mc)
         events['weight'] = weights.weight()
         ##
+        signal_region = ((events.mbb > 75) & (events.mbb < 135) 
+                        & (events.bb_dr > 0.85) & (events.bb_dr < 2.15)) # elliptical signal region
+        control_region = ((events.mbb > 55) & (events.mbb < 155) 
+                        & (events.bb_dr > 0.42) & (events.bb_dr < 2.58) 
+                        & ~signal_region) # sideband TTbar control region 
+        
+        events['region'] = ak.zip({
+            'SR': ak.fill_none(signal_region, False),
+            'CR': ak.fill_none(control_region, False)
+        }) 
 
         #study sequential cutflow (get weights and events after each cut)
         if not shift_name:
             # list below contains individual selections that we might wanna study
-            full_sel_list = ['lumimask', 'passNoiseFilter', 'trigger', 'oneBjet', 'twoBjets', 'oneEorM', 'tau_veto','jet_veto_mask', 'njets_ak8']
+            full_sel_list = ['lumimask', 'passNoiseFilter', 'trigger','jet_veto_mask', 'oneEorM', 'oneBjet', 'twoBjets', 'tau_veto', 'njets_ak8', 'mll_cut']
             cumulative_cuts = []
             for cut_name in full_sel_list:
                 cumulative_cuts.append(cut_name)
-                cutflow.fill(cut_name, cumulative_cuts, weights.weight())
+                cutflow.fill(events, cut_name,cumulative_cuts, weights.weight())
 
-        selected_events = events[events.selection.preselection]
+        selected_events = events[events.preselection]
         del events
         selected_events = chi_sq(selected_events) # chi square selection and calculation
-        selected_events = chi_sq_cut(selected_events)
+        selected_events = chi_sq_cut(selected_events) # add chi square cuts booleans
 
         #add regions separated by chi square calculation
         add_to_selection(
@@ -201,49 +215,49 @@ class analysis(processor.ProcessorABC):
         )
 
         # add chi square cuts selection in each analysis region
-        selected_events["selection"]["chi_sq_nom_4j2b"] = selected_events.selection.nominal_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
-        selected_events['selection'] = ak.with_field(
-            selected_events['selection'],
-            selected_events.selection.nominal_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])],
-            'chi_sq_nom_4j2b'
-        )
-        selected_events['selection'] = ak.with_field(
-            selected_events['selection'],
-            selected_events.selection.nominal_3j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])],
-            'chi_sq_nom_3j2b'
-        )
-        selected_events['selection'] = ak.with_field(
-            selected_events['selection'],
-            selected_events.selection.lowpt_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])],
-            'chi_sq_lowpt_4j2b'
-        )
+        selected_events['chi_sq_nom_4j2b'] = selected_events.nominal_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
+        selected_events['chi_sq_nom_3j2b'] = selected_events.nominal_3j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
+        selected_events['chi_sq_lowpt_4j2b'] = selected_events.lowpt_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
 
         selected_events['channel'] = ak.zip({
             'hadronic_W': selection.all('hadronic_W')[selection.all(*selection_list['preselection'])],
             'leptonic_W': selection.all('leptonic_W')[selection.all(*selection_list['preselection'])]
-        })
-        selected_events['flavor'] = ak.zip({
-            'e':  selection.all('oneE')[selection.all(*selection_list['preselection'])],
-            'mu': selection.all('oneM')[selection.all(*selection_list['preselection'])]
-        }) # separate electron and muon regions
-
+        }) 
         selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
+        analysis_selections = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
 
+        if self.make_classifier_input is not None:
+            selev = selected_events[selected_events.nominal_4j2b]
+            friends = { 'friends': {} }
+            friends["friends"] = ( friends["friends"]
+                | dump_input_friend(
+                    selev,
+                    'output/friendtrees',
+                    "classifier_input",
+                    analysis_selections,
+                    weight = "weight"
+                )
+            )
         if not shift_name:
             output['events_processed'] = {}
             output['events_processed'][self.dataset] = {
                 'n_events' : self.n_events,
                 'sum_genweights': np.sum(selected_events.genWeight) if self.is_mc else self.n_events,
             }
+            # add cuts for different regions
+            cutflow_list = ['nominal_4j2b','nominal_3j2b', 'lowpt_4j2b', 'lowpt_3j2b', 'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b']
+            for cuts in cutflow_list:
+                cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True)
             cutflow.add_output(output['events_processed'], self.dataset)
+
 
         hists = fill_histograms(
             selected_events,
             processName=self.processName,
             year=self.year_label,
             is_mc=self.is_mc,
-            histCuts=['preselection', 'nominal_4j2b'], #,'chi_sq_nom_4j2b','chi_sq_nom_3j2b',
-            #                      'chi_sq_lowpt_4j2b','nominal_4j2b','nominal_3j2b','lowpt_4j2b'],
+            histCuts=['preselection', 'chi_sq_nom_4j2b','chi_sq_nom_3j2b',
+                    'chi_sq_lowpt_4j2b','nominal_4j2b','nominal_3j2b','lowpt_4j2b', 'lowpt_3j2b'],
             channel_list=['hadronic_W', 'leptonic_W'],
             flavor_list=['e', 'mu']
         )

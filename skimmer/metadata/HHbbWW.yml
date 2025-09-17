@@ -27,7 +27,7 @@ runner:
 
 
 config:
-  base_path: root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v3/   ### for example in EOS
+  base_path: root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/   ### for example in EOS
   #base_path: /srv/output/skimmer/test/   ### local
   step: 100000
   skip_collections:

@@ -229,9 +229,9 @@ class analysis(processor.ProcessorABC):
         selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
         analysis_selections = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
 
+        friends = { 'friends': {} }
         if self.make_classifier_input is not None:
             selev = selected_events[selected_events.nominal_4j2b]
-            friends = { 'friends': {} }
             friends["friends"] = ( friends["friends"]
                 | dump_input_friend(
                     selev,

@@ -6,10 +6,9 @@ runner:
   data_tier: picoAOD
   condor_cores: 1
   condor_transfer_input_files:
-    - bbreww/analysis
-    - bbreww/metadata
-    - bbreww/plots
-    - bbreww/skimmer
+    - src/
+    - bbreww/
+    
   # rucio_regex_sites: 'T[123]_(US|CH|DE|UK)'
   allowlist_sites:
     - T3_US_CMU

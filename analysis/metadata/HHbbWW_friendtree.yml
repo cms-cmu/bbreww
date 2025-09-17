@@ -4,13 +4,20 @@ runner:
   # condor_memory: 4GB
   # data_tier: picoAOD
   # condor_cores: 1
-  friend_base: &friend_base "/srv/output/tmp/"
+  friend_base: &friend_base root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/
   condor_transfer_input_files:
     - src
-    - bbreww/analysis
-    - bbreww/metadata
-    - bbreww/plots
-    - bbreww/skimmer
+    - bbreww
+  allowlist_sites:
+    - T3_US_CMU
+    - T3_US_FNALLPC
+    - T2_US_Nebraska
+    - T3_US_NotreDame
+    - T3_US_Rutgers
+    - T2_US_Caltech
+    - T1_US_FNAL_Disk
+    - T2_US_MIT
+    - T2_US_Purdue
 
 
 config:

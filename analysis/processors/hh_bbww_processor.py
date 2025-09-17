@@ -45,10 +45,14 @@ class analysis(processor.ProcessorABC):
         self,
         parameters: str = "bbreww/analysis/metadata/object_preselection_run3.yaml",
         corrections_metadata: str = "src/physics/corrections.yml",
+        make_classifier_input:str = None,
+        fill_histograms: bool = True,
     ):
         self.parameters = parameters
         loaded_parameters = OmegaConf.load(self.parameters)
         self.params = OmegaConf.merge(corrections_metadata, loaded_parameters)
+        self.make_classifier_input = make_classifier_input
+        self.fill_histograms = fill_histograms
 
     def process(self, events):
 
@@ -59,7 +63,6 @@ class analysis(processor.ProcessorABC):
         self.processName = events.metadata['processName']
         self.is_mc = hasattr(events, "genWeight")
         self.n_events = len(events)
-        self.make_classifier_input = False
 
         events = apply_event_selection(
             events,
@@ -232,12 +235,13 @@ class analysis(processor.ProcessorABC):
             friends["friends"] = ( friends["friends"]
                 | dump_input_friend(
                     selev,
-                    'output/friendtrees',
+                    self.make_classifier_input,
                     "classifier_input",
                     analysis_selections,
                     weight = "weight"
                 )
             )
+        
         if not shift_name:
             output['events_processed'] = {}
             output['events_processed'][self.dataset] = {
@@ -250,19 +254,20 @@ class analysis(processor.ProcessorABC):
                 cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True)
             cutflow.add_output(output['events_processed'], self.dataset)
 
+        hists = {}
+        if self.fill_histograms:
+            hists = fill_histograms(
+                selected_events,
+                processName=self.processName,
+                year=self.year_label,
+                is_mc=self.is_mc,
+                histCuts=['preselection', 'chi_sq_nom_4j2b','chi_sq_nom_3j2b',
+                        'chi_sq_lowpt_4j2b','nominal_4j2b','nominal_3j2b','lowpt_4j2b', 'lowpt_3j2b'],
+                channel_list=['hadronic_W', 'leptonic_W'],
+                flavor_list=['e', 'mu']
+            )
 
-        hists = fill_histograms(
-            selected_events,
-            processName=self.processName,
-            year=self.year_label,
-            is_mc=self.is_mc,
-            histCuts=['preselection', 'chi_sq_nom_4j2b','chi_sq_nom_3j2b',
-                    'chi_sq_lowpt_4j2b','nominal_4j2b','nominal_3j2b','lowpt_4j2b', 'lowpt_3j2b'],
-            channel_list=['hadronic_W', 'leptonic_W'],
-            flavor_list=['e', 'mu']
-        )
-
-        return hists | output
+        return hists | output | friends
 
     def postprocess(self, accumulator):
         return accumulator

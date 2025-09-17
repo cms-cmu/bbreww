@@ -1,0 +1,18 @@
+runner:
+  # max_workers: 400 
+  # workers: 4
+  # condor_memory: 4GB
+  # data_tier: picoAOD
+  # condor_cores: 1
+  friend_base: &friend_base "/srv/output/tmp/"
+  condor_transfer_input_files:
+    - src
+    - bbreww/analysis
+    - bbreww/metadata
+    - bbreww/plots
+    - bbreww/skimmer
+
+
+config:
+  make_classifier_input: *friend_base
+  fill_histograms: false

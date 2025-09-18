@@ -18,7 +18,7 @@ from bbreww.analysis.helpers.common import update_events, add_lepton_sfs
 from bbreww.analysis.helpers.cutflow import cutflow_bbWW
 from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec
 from bbreww.analysis.helpers.object_selection import apply_bbWW_preselection, apply_mll_cut
-from bbreww.analysis.helpers.candidate_selection import candidate_selection
+from bbreww.analysis.helpers.candidate_selection import candidate_selection, hbb_candidate_selection
 from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
 from bbreww.analysis.helpers.gen_process import gen_process, add_gen_info, gen_studies
 from bbreww.analysis.helpers.fill_histograms import fill_histograms
@@ -106,7 +106,6 @@ class analysis(processor.ProcessorABC):
 
         events = add_gen_info(events, self.is_mc) # add gen particle information
         events = apply_bbWW_preselection(events, self.year, self.params, self.is_mc) #preselection
-        events = candidate_selection(events, self.params, self.year) # select HH->bbWW candidates
         events = apply_mll_cut(events)
 
         # apply selections before computing chi_square
@@ -114,7 +113,7 @@ class analysis(processor.ProcessorABC):
         selection.add( "passNoiseFilter", events.passNoiseFilter) # apply various noise filters
         selection.add("trigger", events.passHLT) # apply trigger selection
         selection.add('twoBjets', events.has_2_bjets) # require 2 b-tagged jets
-        selection.add('njets',  ak.num(events.j_init[events.j_init.preselected],axis=1)>2) # at least 3 ak4 jets
+        selection.add('njets',  events.has_3_presel_jets) # at least 3 ak4 jets
         selection.add('oneBjet', events.has_1_bjet)
         selection.add('oneE', events.e_region)
         selection.add('oneM', events.mu_region)
@@ -122,9 +121,9 @@ class analysis(processor.ProcessorABC):
         selection.add('tau_veto', (events.tau_nmedium==0))
         selection.add('mll_cut', events.pass_mll_cut)
         selection.add('njets_ak8', (events.n_ak8_jets == 0))
-        selection.add('nom_njets4',  ak.num(events.j_init[events.j_init.isnominal],axis=1)>3) # nominal pT region
-        selection.add('nom_njets3',  ak.num(events.j_init[events.j_init.isnominal],axis=1)==3) # exact 3 jets region
-        selection.add('lowpt_njets4', ~selection.all('nom_njets4') & (ak.num(events.j_init[events.j_init.preselected],axis=1)>3) )
+        selection.add('nom_njets4',  events.nom_njets4) # nominal pT region
+        selection.add('nom_njets3',  events.nom_njets3) # exact 3 jets region
+        selection.add('lowpt_njets4', ~selection.all('nom_njets4') & (events.has_4_presel_jets) )
         # veto events with jets affected by EE water leak (2022) and hole in Pixel L3/L4 (2023)
         jet_veto_maps = (ak.all(events.Jet.jet_veto_maps,axis=1) if '202' in self.year
                          else ak.ones_like(events.run,dtype=bool))
@@ -132,7 +131,7 @@ class analysis(processor.ProcessorABC):
         selection.add('jet_veto_mask', jet_veto_maps)
 
         selection_list = {
-            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'oneEorM', 'tau_veto', 'mll_cut', 'njets_ak8'],
+            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'oneEorM', 'tau_veto', 'mll_cut', 'njets_ak8', 'twoBjets' ],
         }
         selection_list['nominal_4j2b'] = selection_list['preselection'] + ['nom_njets4', 'twoBjets']
         selection_list['nominal_3j2b'] = selection_list['preselection'] + ['nom_njets3', 'twoBjets']
@@ -148,6 +147,7 @@ class analysis(processor.ProcessorABC):
         events['preselection'] = selection.all(*selection_list['preselection'])
         events['nominal_4j2b'] = selection.all(*selection_list['nominal_4j2b'])
         events['nominal_3j2b'] = selection.all(*selection_list['nominal_3j2b'])
+        events['lowpt_4j2b']   = selection.all(*selection_list['lowpt_4j2b'])
 
         ## add weights
         weights, list_weight_names = add_weights(
@@ -172,9 +172,16 @@ class analysis(processor.ProcessorABC):
                 cutflow.fill(cut_name, cumulative_cuts, weights.weight())
 
         selected_events = events[events.selection.preselection]
+
+        selected_events = hbb_candidate_selection(selected_events, self.params, self.year) # select HH->bbWW candidates
+        selected_events = candidate_selection(selected_events, self.params, self.year) # select HH->bbWW candidates
+
+
+
         del events
         selected_events = chi_sq(selected_events) # chi square selection and calculation
         selected_events = chi_sq_cut(selected_events)
+
 
         #add regions separated by chi square calculation
         add_to_selection(
@@ -218,6 +225,10 @@ class analysis(processor.ProcessorABC):
             'chi_sq_lowpt_4j2b'
         )
 
+        selected_events['chi_sq_nom_4j2b']   = selected_events.selection.chi_sq_nom_4j2b
+        selected_events['chi_sq_nom_3j2b']   = selected_events.selection.chi_sq_nom_3j2b
+        selected_events['chi_sq_lowpt_4j2b'] = selected_events.selection.chi_sq_lowpt_4j2b
+
         selected_events['channel'] = ak.zip({
             'hadronic_W': selection.all('hadronic_W')[selection.all(*selection_list['preselection'])],
             'leptonic_W': selection.all('leptonic_W')[selection.all(*selection_list['preselection'])]
@@ -237,13 +248,19 @@ class analysis(processor.ProcessorABC):
             }
             cutflow.add_output(output['events_processed'], self.dataset)
 
+        # Hack for debuggging
+        # selected_events = selected_events[selected_events.nominal_4j2b]
+
+
         hists = fill_histograms(
             selected_events,
             processName=self.processName,
             year=self.year_label,
             is_mc=self.is_mc,
-            histCuts=['preselection', 'nominal_4j2b'], #,'chi_sq_nom_4j2b','chi_sq_nom_3j2b',
-            #                      'chi_sq_lowpt_4j2b','nominal_4j2b','nominal_3j2b','lowpt_4j2b'],
+            histCuts=['preselection',
+                      'nominal_4j2b',    'nominal_3j2b',    'lowpt_4j2b',
+                      'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b',
+                      ],
             channel_list=['hadronic_W', 'leptonic_W'],
             flavor_list=['e', 'mu']
         )

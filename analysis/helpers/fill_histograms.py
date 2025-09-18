@@ -45,11 +45,20 @@ def fill_histograms(
     #fill += hist.add("dijets_post_sublead",(15, 15 , 30, ("dijets_post_sublead.pt", r"$jet pT$[GeV]")))
     ###########
 
+    #
+    # Nominal Plots
+    #
+    fill += Jet.plot_pair( ("Hbb", R"$H_{bb}$"), "hbb_cand", skip=["n"], bins={"mass": (120, 0, 200)}, )
+
+    # print("Wqq_cand", events.wqq_cand[0:10].pt.tolist(),"\n")
+    # print("q_cands_nom 0", events.q_cands_nom[0:10,0].pt.tolist(),"\n")
+    # print("q_cands_nom 1", events.q_cands_nom[0:10,1].pt.tolist(),"\n")
+    # print("njets", events.njets[0:10].tolist(),"\n")
+    # fill += Jet.plot_pair( ("Wqq", R"$W_{qq}$"), "wqq_cand", skip=["n"], bins={"mass": (120, 0, 200)}, )
+
     #fill += hist.add("gen_bb", (60, -0.5, 250, ("gen_bb.mass", "gen bb mass [GeV]")))
     #fill += hist.add("genjet_from_b", (60, -0.5, 250, ("genjet_from_b.mass", "gen bb mass [GeV]")))
     #fill += hist.add("mass_reco_b_gen_match", (60, -0.5, 250, ("mass_reco_b_gen_match.mass", "gen bb mass [GeV]")))
-    fill += hist.add("bb_dr", (30, -0.5, 5, ("bb_dr", r'$\Delta$ R between b-candidates')))
-    fill += hist.add("mbb", (50, -0.5, 250, ("mbb", "H-> bb candidate mass[GeV]")))
     fill += hist.add("bjets_genjets_dr", (30, -0.5, 5, ("bjets_genjets_dr", r'$\Delta$ R between b-candidates (genjets)')))
     fill += hist.add("bjets_genjets_mass", (50, -0.5, 250, ("bjets_genjets_mass", "H-> bb candidate (genjets) mass[GeV]")))
     fill += hist.add("nonbjet_pt", (50, -0.5, 250, ("j_nonbcand.pt", "non-bjets pT [GeV]")))

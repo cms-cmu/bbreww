@@ -20,8 +20,8 @@ def lepton_preselection(events, lepton_flavour, params, id):
         etaSC = abs(leptons.deltaEtaSC + leptons.eta)
         passes_SC = (
             # barrel cuts
-            (etaSC < 1.4442) 
-            & (abs(leptons.dxy) < 0.05) 
+            (etaSC < 1.4442)
+            & (abs(leptons.dxy) < 0.05)
             & (abs(leptons.dz) < 0.1)
         ) | (
             # endcap cuts
@@ -43,9 +43,9 @@ def lepton_preselection(events, lepton_flavour, params, id):
         # Requirements on isolation and id
         passes_iso = leptons.pfRelIso04_all < cuts.iso
         passes_id = leptons[cuts.id] == True
-        
+
         good_leptons = passes_pt & passes_eta & passes_iso & passes_id
-    
+
     return good_leptons
 
 
@@ -77,11 +77,12 @@ def jet_preselection(events, params):
     jets = events.Jet
     nominal_cuts = params.object_preselection.Jet.nominal
     soft_cuts = params.object_preselection.Jet.soft
-    
+
     nominal_pt = jets.pt > nominal_cuts.pt
-    soft_pt = (nominal_cuts.pt > jets.pt) & (jets.pt > soft_cuts.pt)
+    soft_pt =  (jets.pt > soft_cuts.pt) & (jets.pt < nominal_cuts.pt)
     presel_pt = jets.pt > soft_cuts.pt
-    passes_eta = abs(jets.eta) < soft_cuts.pt
+
+    passes_eta = abs(jets.eta) < soft_cuts.eta
     passes_jetId  = (jets.jetId & soft_cuts.jetId) == 2
 
     nominal_jets = passes_eta & nominal_pt & passes_jetId
@@ -100,9 +101,9 @@ def ak8_jet_preselection(events, fat_jets, params):
     passes_btag_WP = fat_jets.particleNetWithMass_HbbvsQCD > cuts.btagWP
 
     good_jets = passes_pt & passes_eta & passes_msoftdrop & passes_nsubjettines_ratio & passes_btag_WP
-    
+
     return good_jets
-    
+
 
 def tau_preselection(events, params, id):
 
@@ -117,7 +118,7 @@ def tau_preselection(events, params, id):
     passes_pt = taus.pt > cuts.pt
     passes_eta = abs(taus.eta) < cuts.eta
     passes_dz = abs(taus.dz) < cuts.dz
-    passes_deeptauid = (taus.idDeepTau2018v2p5VSjet == cuts.wp) 
+    passes_deeptauid = (taus.idDeepTau2018v2p5VSjet == cuts.wp)
 
 
     good_taus = passes_pt & passes_eta &  passes_dz & passes_deeptauid & passes_decayModeDMs

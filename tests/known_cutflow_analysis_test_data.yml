@@ -1,92 +1,304 @@
 data__SingleMuon_2022_preEEC:
-  n_events: 1004
-  sum_genweights: 1004
+  n_events: 978
+  sum_genweights: 978
   cutflow:
     e_region:
       events:
-        lumimask: 9.0
-        passNoiseFilter: 9.0
-        trigger: 9.0
-        oneBjet: 9.0
+        lumimask: 22.0
+        passNoiseFilter: 22.0
+        trigger: 22.0
+        jet_veto_mask: 20.0
+        oneEorM: 20.0
+        oneBjet: 18.0
         twoBjets: 7.0
-        oneEorM: 7.0
-        tau_veto: 7.0
-        jet_veto_mask: 6.0
-        njets_ak8: 2.0
+        tau_veto: 5.0
+        njets_ak8: 3.0
+        mll_cut: 3.0
+        nominal_4j2b: 1.0
+        nominal_3j2b: 1.0
+        lowpt_4j2b: 1.0
+        lowpt_3j2b: 1.0
+        chi_sq_nom_4j2b: 1.0
+        chi_sq_nom_3j2b: 1.0
+        chi_sq_lowpt_4j2b: 1.0
       weights:
-        lumimask: 9.0
-        passNoiseFilter: 9.0
-        trigger: 9.0
-        oneBjet: 9.0
+        lumimask: 22.0
+        passNoiseFilter: 22.0
+        trigger: 22.0
+        jet_veto_mask: 20.0
+        oneEorM: 20.0
+        oneBjet: 18.0
         twoBjets: 7.0
-        oneEorM: 7.0
-        tau_veto: 7.0
-        jet_veto_mask: 6.0
-        njets_ak8: 2.0
+        tau_veto: 5.0
+        njets_ak8: 3.0
+        mll_cut: 3.0
+        nominal_4j2b: 1.0
+        nominal_3j2b: 1.0
+        lowpt_4j2b: 1.0
+        lowpt_3j2b: 1.0
+        chi_sq_nom_4j2b: 1.0
+        chi_sq_nom_3j2b: 1.0
+        chi_sq_lowpt_4j2b: 1.0
     mu_region:
       events:
-        lumimask: 995.0
-        passNoiseFilter: 995.0
-        trigger: 995.0
-        oneBjet: 440.0
-        twoBjets: 87.0
-        oneEorM: 87.0
-        tau_veto: 87.0
-        jet_veto_mask: 78.0
-        njets_ak8: 50.0
+        lumimask: 956.0
+        passNoiseFilter: 956.0
+        trigger: 956.0
+        jet_veto_mask: 893.0
+        oneEorM: 893.0
+        oneBjet: 407.0
+        twoBjets: 98.0
+        tau_veto: 95.0
+        njets_ak8: 63.0
+        mll_cut: 61.0
+        nominal_4j2b: 27.0
+        nominal_3j2b: 26.0
+        lowpt_4j2b: 16.0
+        lowpt_3j2b: 16.0
+        chi_sq_nom_4j2b: 13.0
+        chi_sq_nom_3j2b: 7.0
+        chi_sq_lowpt_4j2b: 9.0
       weights:
-        lumimask: 995.0
-        passNoiseFilter: 995.0
-        trigger: 995.0
-        oneBjet: 440.0
-        twoBjets: 87.0
-        oneEorM: 87.0
-        tau_veto: 87.0
-        jet_veto_mask: 78.0
-        njets_ak8: 50.0
+        lumimask: 956.0
+        passNoiseFilter: 956.0
+        trigger: 956.0
+        jet_veto_mask: 893.0
+        oneEorM: 893.0
+        oneBjet: 407.0
+        twoBjets: 98.0
+        tau_veto: 95.0
+        njets_ak8: 63.0
+        mll_cut: 61.0
+        nominal_4j2b: 27.0
+        nominal_3j2b: 26.0
+        lowpt_4j2b: 16.0
+        lowpt_3j2b: 16.0
+        chi_sq_nom_4j2b: 13.0
+        chi_sq_nom_3j2b: 7.0
+        chi_sq_lowpt_4j2b: 9.0
+    SR:
+      events:
+        lumimask: 16.0
+        passNoiseFilter: 16.0
+        trigger: 16.0
+        jet_veto_mask: 15.0
+        oneEorM: 15.0
+        oneBjet: 15.0
+        twoBjets: 15.0
+        tau_veto: 15.0
+        njets_ak8: 12.0
+        mll_cut: 12.0
+        nominal_4j2b: 6.0
+        nominal_3j2b: 6.0
+        lowpt_4j2b: 2.0
+        lowpt_3j2b: 4.0
+        chi_sq_nom_4j2b: 4.0
+        chi_sq_nom_3j2b: 2.0
+        chi_sq_lowpt_4j2b: 2.0
+      weights:
+        lumimask: 16.0
+        passNoiseFilter: 16.0
+        trigger: 16.0
+        jet_veto_mask: 15.0
+        oneEorM: 15.0
+        oneBjet: 15.0
+        twoBjets: 15.0
+        tau_veto: 15.0
+        njets_ak8: 12.0
+        mll_cut: 12.0
+        nominal_4j2b: 6.0
+        nominal_3j2b: 6.0
+        lowpt_4j2b: 2.0
+        lowpt_3j2b: 4.0
+        chi_sq_nom_4j2b: 4.0
+        chi_sq_nom_3j2b: 2.0
+        chi_sq_lowpt_4j2b: 2.0
+    CR:
+      events:
+        lumimask: 21.0
+        passNoiseFilter: 21.0
+        trigger: 21.0
+        jet_veto_mask: 17.0
+        oneEorM: 17.0
+        oneBjet: 17.0
+        twoBjets: 17.0
+        tau_veto: 17.0
+        njets_ak8: 14.0
+        mll_cut: 13.0
+        nominal_4j2b: 3.0
+        nominal_3j2b: 7.0
+        lowpt_4j2b: 7.0
+        lowpt_3j2b: 3.0
+        chi_sq_nom_4j2b: 1.0
+        chi_sq_nom_3j2b: 4.0
+        chi_sq_lowpt_4j2b: 5.0
+      weights:
+        lumimask: 21.0
+        passNoiseFilter: 21.0
+        trigger: 21.0
+        jet_veto_mask: 17.0
+        oneEorM: 17.0
+        oneBjet: 17.0
+        twoBjets: 17.0
+        tau_veto: 17.0
+        njets_ak8: 14.0
+        mll_cut: 13.0
+        nominal_4j2b: 3.0
+        nominal_3j2b: 7.0
+        lowpt_4j2b: 7.0
+        lowpt_3j2b: 3.0
+        chi_sq_nom_4j2b: 1.0
+        chi_sq_nom_3j2b: 4.0
+        chi_sq_lowpt_4j2b: 5.0
 data__SingleMuon_2022_preEED:
-  n_events: 1000
-  sum_genweights: 1000
+  n_events: 1001
+  sum_genweights: 1001
   cutflow:
     e_region:
       events:
-        lumimask: 11.0
-        passNoiseFilter: 11.0
-        trigger: 11.0
-        oneBjet: 11.0
-        twoBjets: 8.0
-        oneEorM: 8.0
-        tau_veto: 8.0
-        jet_veto_mask: 7.0
-        njets_ak8: 2.0
+        lumimask: 12.0
+        passNoiseFilter: 12.0
+        trigger: 12.0
+        jet_veto_mask: 11.0
+        oneEorM: 11.0
+        oneBjet: 8.0
+        twoBjets: 4.0
+        tau_veto: 4.0
+        njets_ak8: 1.0
+        mll_cut: 1.0
+        nominal_4j2b: 1.0
+        nominal_3j2b: 0.0
+        lowpt_4j2b: 0.0
+        lowpt_3j2b: 0.0
+        chi_sq_nom_4j2b: 0.0
+        chi_sq_nom_3j2b: 0.0
+        chi_sq_lowpt_4j2b: 0.0
       weights:
-        lumimask: 11.0
-        passNoiseFilter: 11.0
-        trigger: 11.0
-        oneBjet: 11.0
-        twoBjets: 8.0
-        oneEorM: 8.0
-        tau_veto: 8.0
-        jet_veto_mask: 7.0
-        njets_ak8: 2.0
+        lumimask: 12.0
+        passNoiseFilter: 12.0
+        trigger: 12.0
+        jet_veto_mask: 11.0
+        oneEorM: 11.0
+        oneBjet: 8.0
+        twoBjets: 4.0
+        tau_veto: 4.0
+        njets_ak8: 1.0
+        mll_cut: 1.0
+        nominal_4j2b: 1.0
+        nominal_3j2b: 0.0
+        lowpt_4j2b: 0.0
+        lowpt_3j2b: 0.0
+        chi_sq_nom_4j2b: 0.0
+        chi_sq_nom_3j2b: 0.0
+        chi_sq_lowpt_4j2b: 0.0
     mu_region:
       events:
         lumimask: 989.0
         passNoiseFilter: 989.0
         trigger: 989.0
-        oneBjet: 432.0
-        twoBjets: 87.0
-        oneEorM: 87.0
-        tau_veto: 87.0
-        jet_veto_mask: 84.0
-        njets_ak8: 63.0
+        jet_veto_mask: 922.0
+        oneEorM: 922.0
+        oneBjet: 401.0
+        twoBjets: 92.0
+        tau_veto: 91.0
+        njets_ak8: 64.0
+        mll_cut: 63.0
+        nominal_4j2b: 38.0
+        nominal_3j2b: 15.0
+        lowpt_4j2b: 10.0
+        lowpt_3j2b: 14.0
+        chi_sq_nom_4j2b: 25.0
+        chi_sq_nom_3j2b: 4.0
+        chi_sq_lowpt_4j2b: 6.0
       weights:
         lumimask: 989.0
         passNoiseFilter: 989.0
         trigger: 989.0
-        oneBjet: 432.0
-        twoBjets: 87.0
-        oneEorM: 87.0
-        tau_veto: 87.0
-        jet_veto_mask: 84.0
-        njets_ak8: 63.0
+        jet_veto_mask: 922.0
+        oneEorM: 922.0
+        oneBjet: 401.0
+        twoBjets: 92.0
+        tau_veto: 91.0
+        njets_ak8: 64.0
+        mll_cut: 63.0
+        nominal_4j2b: 38.0
+        nominal_3j2b: 15.0
+        lowpt_4j2b: 10.0
+        lowpt_3j2b: 14.0
+        chi_sq_nom_4j2b: 25.0
+        chi_sq_nom_3j2b: 4.0
+        chi_sq_lowpt_4j2b: 6.0
+    SR:
+      events:
+        lumimask: 21.0
+        passNoiseFilter: 21.0
+        trigger: 21.0
+        jet_veto_mask: 19.0
+        oneEorM: 19.0
+        oneBjet: 19.0
+        twoBjets: 19.0
+        tau_veto: 18.0
+        njets_ak8: 12.0
+        mll_cut: 12.0
+        nominal_4j2b: 9.0
+        nominal_3j2b: 2.0
+        lowpt_4j2b: 1.0
+        lowpt_3j2b: 2.0
+        chi_sq_nom_4j2b: 3.0
+        chi_sq_nom_3j2b: 0.0
+        chi_sq_lowpt_4j2b: 0.0
+      weights:
+        lumimask: 21.0
+        passNoiseFilter: 21.0
+        trigger: 21.0
+        jet_veto_mask: 19.0
+        oneEorM: 19.0
+        oneBjet: 19.0
+        twoBjets: 19.0
+        tau_veto: 18.0
+        njets_ak8: 12.0
+        mll_cut: 12.0
+        nominal_4j2b: 9.0
+        nominal_3j2b: 2.0
+        lowpt_4j2b: 1.0
+        lowpt_3j2b: 2.0
+        chi_sq_nom_4j2b: 3.0
+        chi_sq_nom_3j2b: 0.0
+        chi_sq_lowpt_4j2b: 0.0
+    CR:
+      events:
+        lumimask: 24.0
+        passNoiseFilter: 24.0
+        trigger: 24.0
+        jet_veto_mask: 23.0
+        oneEorM: 23.0
+        oneBjet: 23.0
+        twoBjets: 23.0
+        tau_veto: 23.0
+        njets_ak8: 17.0
+        mll_cut: 16.0
+        nominal_4j2b: 10.0
+        nominal_3j2b: 3.0
+        lowpt_4j2b: 3.0
+        lowpt_3j2b: 3.0
+        chi_sq_nom_4j2b: 8.0
+        chi_sq_nom_3j2b: 0.0
+        chi_sq_lowpt_4j2b: 2.0
+      weights:
+        lumimask: 24.0
+        passNoiseFilter: 24.0
+        trigger: 24.0
+        jet_veto_mask: 23.0
+        oneEorM: 23.0
+        oneBjet: 23.0
+        twoBjets: 23.0
+        tau_veto: 23.0
+        njets_ak8: 17.0
+        mll_cut: 16.0
+        nominal_4j2b: 10.0
+        nominal_3j2b: 3.0
+        lowpt_4j2b: 3.0
+        lowpt_3j2b: 3.0
+        chi_sq_nom_4j2b: 8.0
+        chi_sq_nom_3j2b: 0.0
+        chi_sq_lowpt_4j2b: 2.0

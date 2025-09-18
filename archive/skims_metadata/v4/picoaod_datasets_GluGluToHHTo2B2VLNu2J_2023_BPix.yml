@@ -1,0 +1,53 @@
+GluGluToHHTo2B2VLNu2J_2023_BPix:
+  count: 133053
+  cutflow:
+    e_region:
+      events:
+        all: 15528.0
+        lumimask: 15528.0
+        njets: 10994.0
+        oneBjet: 12120.0
+        passNoiseFilter: 15519.0
+        trigger: 12825.0
+      weights:
+        all: 462.48389926180243
+        lumimask: 462.48389926180243
+        njets: 324.8459433913231
+        oneBjet: 359.2831737585366
+        passNoiseFilter: 462.18582466989756
+        trigger: 380.8802377693355
+    mu_region:
+      events:
+        all: 20075.0
+        lumimask: 20075.0
+        njets: 15130.0
+        oneBjet: 16625.0
+        passNoiseFilter: 20064.0
+        trigger: 17638.0
+      weights:
+        all: 600.1585780009627
+        lumimask: 600.1585780009627
+        njets: 451.9093751274049
+        oneBjet: 497.3618071898818
+        passNoiseFilter: 599.7942646108568
+        trigger: 528.5017211474478
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_2023_BPix/picoAOD.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v3', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_GluGluToHHTo2B2VLNu2J_2023_BPix.yml',
+      output_path='output/skimmer', years=['2023_BPix'], datasets=['GluGluToHHTo2B2VLNu2J'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    date: '2025-09-04 12:47:45'
+    diff: ''
+    hash: bced4739ec5caba8448b5d0a5accc37bfe7cf58a
+  saved_events: 26124
+  sumw: 3947.562658548355
+  sumw2: 146.34720574319363
+  sumw2_raw: 146.34719938923305
+  sumw_raw: 3947.5623330000003
+  total_events: 133053

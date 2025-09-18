@@ -72,12 +72,12 @@ class Skimmer(PicoAOD):
         if self.is_mc:
             weights.add( "genweight_", event.genWeight )
 
-        self._cutFlow.fill( "all", ['all'], weights.weight() )
+        self._cutFlow.fill(event, "all", ['all'], weights.weight(), skim =True )
         cumulative_cuts = []
         for cut in selections.names:
             if ('oneE' in cut) or ('oneM' in cut): continue
             cumulative_cuts.append(cut)
-            self._cutFlow.fill( cut, cumulative_cuts, weights.weight() )
+            self._cutFlow.fill(event, cut, cumulative_cuts, weights.weight(), skim=True )
 
         processOutput = {}
 

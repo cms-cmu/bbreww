@@ -48,7 +48,7 @@ display_config() {
 declare -A DEFAULTS=(
     ["OUTPUT_BASE"]="output/"
     ["PROCESSOR_PATH"]="bbreww/analysis/processors/hh_bbww_processor.py"
-    ["METADATA_PATH"]="bbreww/metadata/skims_v3"
+    ["METADATA_PATH"]="bbreww/metadata/skims_v4"
     ["CONFIG_PATH"]="bbreww/analysis/metadata/HHbbWW.yml"
     ["TRIGGERS_PATH"]="bbreww/metadata/triggers_bbWW.yml"
     ["LUMINOSITIES_PATH"]="bbreww/metadata/luminosities_bbWW.yml"
@@ -166,7 +166,9 @@ declare -A SAVED_VARS=(
 )
 
 # Setup proxy if needed
-setup_proxy "$DO_PROXY"
+if [[ -n "$DO_PROXY" ]]; then
+    setup_proxy "$DO_PROXY"
+fi
 
 # Restore our configuration variables after setup
 OUTPUT_BASE="${SAVED_VARS[OUTPUT_BASE]}"

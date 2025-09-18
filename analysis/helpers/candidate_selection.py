@@ -34,7 +34,6 @@ def candidate_selection(events, params, year):
 
     events['wqq_cand'] = wqq_cand
 
-    #events['qq_nom'] = events.q_cands_nom[:,0] + events.q_cands_nom[:,1]
 
     #
     # soft jets analysis

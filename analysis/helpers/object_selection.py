@@ -52,8 +52,8 @@ def jet_selection(events, params, year):
     j_soft = j_clean[j_clean.issoft]
     events['j_nsoft']= ak.num(j_soft, axis=1)
     events['njets'] = ak.fill_none(ak.num(j_clean[j_clean.isnominal],axis=1),np.nan)
-
     events['has_3_presel_jets'] = (ak.num(j_init[j_init.preselected],axis=1)>2)
+    events['has_exactly_3_presel_jets'] = (ak.num(j_init[j_init.preselected],axis=1)==3)
     events['has_4_presel_jets'] = (ak.num(j_init[j_init.preselected],axis=1)>3)
 
     #
@@ -71,7 +71,7 @@ def jet_selection(events, params, year):
 
     j_btagged = j_candidates_nom[getattr(j_candidates_nom,bTag_key) > btag_threshold]
     j_btagged = j_btagged[ak.argsort(j_btagged.pt, axis=1, ascending=False)] #particleNetAK4_B btagPNetB
-    events['b_cands'] = j_btagged
+    events['b_cands'] = j_btagged[:,:2]
 
     events['has_2_bjets'] = ak.num(j_btagged, axis=1) >= 2
     events['has_1_bjet']  = ak.num(j_btagged, axis=1) >= 1 #add for cutflow plot
@@ -82,7 +82,7 @@ def jet_selection(events, params, year):
     #
     q_cands_nom = ak.mask(j_candidates_nom[:,2:], ak.num(j_candidates_nom[:,2:],axis=1)>=2) # require 2 or more q-jet candidates
     q_cands_nom = q_cands_nom[ak.argsort(q_cands_nom.pt, axis=1, ascending=False)] # pT sort the jets
-    events["q_cands_nom"] = q_cands_nom
+    events["q_cands_nom"] = q_cands_nom[:,:2]
 
     #
     # Soft Jet Selection

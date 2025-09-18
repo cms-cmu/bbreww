@@ -40,14 +40,16 @@ class cutflow_bbWW(cutflow):
             ele_cut = self.selections.all(*cut_list) & (self.selections.require(oneE=True))
             mu_cut = self.selections.all(*cut_list) & (self.selections.require(oneM=True))
             if not skim:
-                SR_cut = self.selections.all(*cut_list) & (events.region.SR)
-                CR_cut = self.selections.all(*cut_list) & (events.region.CR)
+                if fill_region:
+                    SR_cut = self.selections.all(*cut_list) & (events.region.SR)
+                    CR_cut = self.selections.all(*cut_list) & (events.region.CR)
 
         self._cutflow_ele[cut_name] = (np.sum(ele_cut), np.sum(weight[ele_cut]))
         self._cutflow_mu[cut_name] = (np.sum(mu_cut), np.sum(weight[mu_cut]))
         if not skim:
-            self._cutflow_SR[cut_name] = (np.sum(SR_cut), np.sum(weight[SR_cut]))
-            self._cutflow_CR[cut_name] = (np.sum(CR_cut), np.sum(weight[CR_cut]))
+            if fill_region:
+                self._cutflow_SR[cut_name] = (np.sum(SR_cut), np.sum(weight[SR_cut]))
+                self._cutflow_CR[cut_name] = (np.sum(CR_cut), np.sum(weight[CR_cut]))
 
         logging.debug(f"Cutflow {cut_name}: Ele: {self._cutflow_ele[cut_name]}, Mu: {self._cutflow_mu[cut_name]}")
 

@@ -2,20 +2,19 @@ import awkward as ak
 import numpy as np
 
 
-def hbb_candidate_selection(events, params, year):
+def Hbb_candidate_selection(events):
 
     # this funciton called assuming we have applied basic preseleciton
     #   >= 2 bjets
 
-    hbb_cand = events.b_cands[:,0] + events.b_cands[:,1]
-    hbb_cand["lead"] = events.b_cands[:,0]
-    hbb_cand["subl"] = events.b_cands[:,1]
-    hbb_cand["st"]   = hbb_cand["lead"].pt + hbb_cand["subl"].pt
-    hbb_cand["dr"]   = hbb_cand["lead"].delta_r  (hbb_cand["subl"])
-    hbb_cand["dphi"] = hbb_cand["lead"].delta_phi(hbb_cand["subl"])
+    Hbb_cand = events.b_cands[:,0] + events.b_cands[:,1]
+    Hbb_cand["lead"] = events.b_cands[:,0]
+    Hbb_cand["subl"] = events.b_cands[:,1]
+    Hbb_cand["st"]   = Hbb_cand["lead"].pt + Hbb_cand["subl"].pt
+    Hbb_cand["dr"]   = Hbb_cand["lead"].delta_r  (Hbb_cand["subl"])
+    Hbb_cand["dphi"] = Hbb_cand["lead"].delta_phi(Hbb_cand["subl"])
 
-    events['hbb_cand'] = hbb_cand
-    events['mbb'] = hbb_cand.mass
+    events['Hbb_cand'] = Hbb_cand
 
     return events
 
@@ -25,14 +24,14 @@ def candidate_selection(events, params, year):
     #
     #  Nominal Analysis
     #
-    wqq_cand = events.q_cands_nom[:,0] + events.q_cands_nom[:,1]
-    wqq_cand["lead"] = events.q_cands_nom[:,0]
-    wqq_cand["subl"] = events.q_cands_nom[:,1]
-    wqq_cand["st"]   = wqq_cand["lead"].pt + wqq_cand["subl"].pt
-    wqq_cand["dr"]   = wqq_cand["lead"].delta_r  (wqq_cand["subl"])
-    wqq_cand["dphi"] = wqq_cand["lead"].delta_phi(wqq_cand["subl"])
+    Wqq_cand = events.q_cands_nom[:,0] + events.q_cands_nom[:,1]
+    Wqq_cand["lead"] = events.q_cands_nom[:,0]
+    Wqq_cand["subl"] = events.q_cands_nom[:,1]
+    Wqq_cand["st"]   = Wqq_cand["lead"].pt + Wqq_cand["subl"].pt
+    Wqq_cand["dr"]   = Wqq_cand["lead"].delta_r  (Wqq_cand["subl"])
+    Wqq_cand["dphi"] = Wqq_cand["lead"].delta_phi(Wqq_cand["subl"])
 
-    events['wqq_cand'] = wqq_cand
+    events['Wqq_cand'] = Wqq_cand
 
 
     #

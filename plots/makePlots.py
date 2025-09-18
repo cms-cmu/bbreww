@@ -20,7 +20,7 @@ np.seterr(divide='ignore', invalid='ignore')
 def doPlots(varList, debug=False):
 
     if args.doTest:
-        varList = ["qq_mass", "mbb","mbb_vs_bb_dr"]
+        varList = ["qq_mass", "Hbb.mass","mbb_vs_bb_dr"]
 
     cut = "preselection"
 
@@ -60,7 +60,7 @@ def doPlots(varList, debug=False):
                 try:
                     fig = makePlot(cfg, **plot_args)
                 except ValueError:
-                    print(f"ValueError: {v} {region}")
+                    print(f"ValueError: {v} {flavor} {channel} {cut}")
                     pass
 
                 plt.close()
@@ -109,7 +109,7 @@ def doPlots(varList, debug=False):
     #
     varListComp = []
     if args.doTest:
-        varListComp = ["mbb"]
+        varListComp = ["Hbb.mass"]
 
         for v in varListComp:
             if debug: print(v)
@@ -142,6 +142,7 @@ def doPlots(varList, debug=False):
                     plot_args["norm"] = True
                     plot_args = plot_args | vDict
 
+                    if debug: print("comp Cuts ")
                     if debug: print(plot_args)
 
                     fig = makePlot(cfg, **plot_args)
@@ -160,6 +161,9 @@ def doPlots(varList, debug=False):
                 plot_args["process"] = process
                 plot_args["norm"] = True
                 plot_args = plot_args | vDict
+
+                if debug: print("comp channels")
+                if debug: print(plot_args)
 
                 fig = makePlot(cfg,
                                **plot_args,

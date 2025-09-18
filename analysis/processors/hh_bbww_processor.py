@@ -265,6 +265,7 @@ class analysis(processor.ProcessorABC):
         # Hack for debuggging
         # selected_events = selected_events[selected_events.nominal_4j2b]
 
+        #print(selected_events.channel)
 
         hists = fill_histograms(
             selected_events,
@@ -272,7 +273,7 @@ class analysis(processor.ProcessorABC):
             year=self.year_label,
             is_mc=self.is_mc,
             histCuts=['preselection',
-                      'nominal_4j2b',    'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b'
+                      'nominal_4j2b',    'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b',
                       'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b',
                       ],
             channel_list=['hadronic_W', 'leptonic_W'],

@@ -4,11 +4,11 @@ from bbreww.analysis.helpers.common import chi_square, met_reconstr
 
 def chi_sq(events):
     leading_mu = events.Muon[events.Muon.istight]
-    leading_e = events.Electron[events.Electron.istight]
+    leading_e  = events.Electron[events.Electron.istight]
 
     #select leading lepton out of electrons/muons. Use ak.singletons to slice entries, not whole events
     leading_lep = ak.firsts(ak.concatenate([leading_e[ak.singletons(events.flavor.e)],
-                                  leading_mu[ak.singletons(events.flavor.mu)]],axis=1))
+                                            leading_mu[ak.singletons(events.flavor.mu)]],axis=1))
     events['leading_lep'] = ak.with_name(leading_lep, 'PtEtaPhiMLorentzVector') #reapply 4-vector behavior after concatenate
 
     # hadronic W* chi square calculation

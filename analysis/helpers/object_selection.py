@@ -14,6 +14,8 @@ def muon_selection(events,params):
     events['mu_nloose'] = ak.num(events.Muon[events.Muon.isloose], axis=1)
     events['mu_ntight'] = ak.num(events.Muon[events.Muon.istight], axis=1)
 
+    events['sel_muon'] = events.Electron[events.Electron.istight]
+
     return events
 
 def electron_selection(events, params):
@@ -22,6 +24,9 @@ def electron_selection(events, params):
 
     events['e_nloose'] = ak.num(events.Electron[events.Electron.isloose], axis=1)
     events['e_ntight'] = ak.num(events.Electron[events.Electron.istight], axis=1)
+
+    events['sel_elec'] = events.Electron[events.Electron.istight]
+
     return events
 
 def tau_selection(events,params):

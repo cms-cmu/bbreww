@@ -48,13 +48,22 @@ def fill_histograms(
     #
     # Nominal Plots
     #
+
+    # Hbb Candidate
     fill += Jet.plot_pair( ("Hbb", R"$H_{bb}$"), "Hbb_cand", skip=["n"], bins={"mass": (120, 0, 200)}, )
+    fill += hist.add("mbb_vs_bb_dr",
+                    (50, 0, 250, ('Hbb_cand.mass', 'H->bb Candidate Mass [GeV]')),
+                    (50, 0, 5, ('Hbb_cand.dr', r'$\Delta R$ between b-candidates')))
+
+
+    # Leptons
+
 
     # print("Wqq_cand", events.wqq_cand[0:10].pt.tolist(),"\n")
     # print("q_cands_nom 0", events.q_cands_nom[0:10,0].pt.tolist(),"\n")
     # print("q_cands_nom 1", events.q_cands_nom[0:10,1].pt.tolist(),"\n")
     # print("njets", events.njets[0:10].tolist(),"\n")
-    # fill += Jet.plot_pair( ("Wqq", R"$W_{qq}$"), "Hqq_cand", skip=["n"], bins={"mass": (120, 0, 200)}, )
+    # fill += Jet.plot_pair( ("Wqq", R"$W_{qq}$"), "Wqq_cand", skip=["n"], bins={"mass": (120, 0, 200)}, )
 
     #fill += hist.add("gen_bb", (60, -0.5, 250, ("gen_bb.mass", "gen bb mass [GeV]")))
     #fill += hist.add("genjet_from_b", (60, -0.5, 250, ("genjet_from_b.mass", "gen bb mass [GeV]")))
@@ -76,9 +85,6 @@ def fill_histograms(
     fill += hist.add("chi_sq_hadWs", (30, -0.5, 6, ("chi_sq_hadWs", "leptonic W region chi square")))
     fill += hist.add("chi_sq_tt", (30, -0.5, 6, ("chi_sq_tt", "ttbar chi square")))
 
-    fill += hist.add("mbb_vs_bb_dr",
-                    (50, 0, 250, ('mbb', 'H->bb Candidate Mass [GeV]')),
-                    (50, 0, 5, ('bb_dr', r'$\Delta R$ between b-candidates')))
     fill += hist.add("genjets_mbb_vs_bb_dr",
                     (50, 0, 250, ('bjets_genjets_mass', 'H->bb Candidate (genjets) Mass [GeV]')),
                     (50, 0, 5, ('bjets_genjets_dr', r'$\Delta R$ between b-candidates (genjets)')))

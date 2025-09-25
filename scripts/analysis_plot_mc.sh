@@ -26,9 +26,9 @@ python bbreww/plots/makePlots.py $INPUT_DIR/test.coffea --doTest -o $OUTPUT_DIR 
 
 
 echo "############### Checking if pdf files exist"
-ls $OUTPUT_DIR/Run3/preselection/flavor_sum/channel_sum/mbb.pdf
-ls $OUTPUT_DIR/Run3/preselection/flavor_e/channel_sum/mbb.pdf
-ls $OUTPUT_DIR/Run3/preselection/flavor_mu/channel_sum/mbb.pdf
+ls $OUTPUT_DIR/Run3/preselection/flavor_sum/channel_sum/Hbb_mass.pdf
+ls $OUTPUT_DIR/Run3/preselection/flavor_e/channel_sum/Hbb_mass.pdf
+ls $OUTPUT_DIR/Run3/preselection/flavor_mu/channel_sum/Hbb_mass.pdf
 #ls $OUTPUT_DIR/RunII/passPreSel/fourTag/SR/SvB_MA_ps_hh.pdf
 #ls $OUTPUT_DIR/RunII/passPreSel/fourTag/SR_vs_SB/data/SvB_MA_ps.pdf
 #ls $OUTPUT_DIR/RunII/passPreSel/fourTag/SR_vs_SB/HH4b/SvB_MA_ps.pdf

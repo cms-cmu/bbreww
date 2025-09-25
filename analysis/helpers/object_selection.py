@@ -14,7 +14,7 @@ def muon_selection(events,params):
     events['mu_nloose'] = ak.num(events.Muon[events.Muon.isloose], axis=1)
     events['mu_ntight'] = ak.num(events.Muon[events.Muon.istight], axis=1)
 
-    events['sel_muon'] = events.Electron[events.Electron.istight]
+    events['sel_muon'] = events.Muon[events.Muon.istight]
 
     return events
 

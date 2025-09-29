@@ -71,7 +71,7 @@ def dump_input_friend(
         }
         | akext.to_numpy(
             padded(
-                events['region'][
+                events["region"][
                     [
                         "SR",
                         "CR",
@@ -80,6 +80,18 @@ def dump_input_friend(
                 selection,
             )
         )
+        | akext.to_numpy(
+            padded(
+                events[
+                    [
+                        "njets",
+                        "nsoftjets",
+                        "HT"
+		    ]	
+		],
+                selection,
+            )
+	)
         | {"weight": padded(events[weight], selection)}
     )
     return dump_friend(

@@ -44,7 +44,7 @@ def jet_selection(events, params, year):
 
     j_clean = events.Jet[events.Jet.isclean]
     j_soft = j_clean[j_clean.issoft]
-    events['j_nsoft']= ak.num(j_soft, axis=1)
+    events['nsoftjets']= ak.num(j_soft, axis=1)
     ####
 
     return events

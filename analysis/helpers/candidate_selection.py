@@ -31,10 +31,10 @@ def candidate_selection(events, params, year):
     j_candidates_nom = j_candidates[j_candidates.isnominal] # pt > 25 GeV jets (nominal)
     j_candidates_nom = j_candidates_nom[:,2:] # pick other jets after taking two b-jets
     j_candidates_nom = j_candidates_nom[ak.argsort(j_candidates_nom.pt, axis=1, ascending=False)] # pT sort the jets
-    events['j_nonbcand_nom'] = j_candidates_nom
     
     j_candidates_nom = ak.mask(j_candidates_nom, ak.num(j_candidates_nom,axis=1)>=2) # require 2 or more non-bjets
     j_candidates_nom = j_candidates_nom[:,:2] # take leading two pT jets
+    events['j_nonbcand_nom'] = j_candidates_nom
     events['j_nonbcand_nom_lead_pt'] =    ak.fill_none(j_candidates_nom[:,0].pt, np.nan, axis=0)
     events['j_nonbcand_nom_sublead_pt'] = ak.fill_none(j_candidates_nom[:,1].pt, np.nan, axis=0)
     events['qq_nom'] = j_candidates_nom[:,0] + j_candidates_nom[:,1]
@@ -59,7 +59,8 @@ def candidate_selection(events, params, year):
     events['bb_dr'] = events.j_bcand[:,0].delta_r(events.j_bcand[:,1])
 
     events['njets'] = ak.fill_none(ak.num(j_clean[j_clean.isnominal],axis=1),np.nan)
-
+    events['HT'] = ak.sum(events.j_init.pt, axis=1)
+    
     return events
 
 ## function only for skimmer

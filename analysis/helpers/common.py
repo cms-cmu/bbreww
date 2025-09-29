@@ -16,6 +16,27 @@ def sigmoid(x,a,b,c,d):
     """
     return c + (d-c) / (1 + np.exp(-a * (x-b)))
 
+def elliptical_region(x, y, center_x, center_y, width, height):
+    """
+    Check if point (x, y) is inside an ellipse (used for signal and control region)
+    
+    Parameters:
+    - x, y: coordinates of the point to check
+    - center_x, center_y: center of the ellipse
+    - width, height: full width and height of the ellipse
+    
+    Returns:
+    - True if point is inside the ellipse, False otherwise
+    """
+    # Semi-axes (width and height are full dimensions, so divide by 2)
+    a = width / 2
+    b = height / 2
+    
+    # Standard ellipse equation: ((x-h)/a)^2 + ((y-k)/b)^2 <= 1
+    result = ((x - center_x) / a) ** 2 + ((y - center_y) / b) ** 2
+    
+    return result <= 1
+
 
 def update_events(events, collections):
     """Return a shallow copy of events array with some collections swapped out"""

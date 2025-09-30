@@ -140,15 +140,28 @@ def gen_studies(events, is_mc):
         events['genW_mass'] = gen_W.mass[gen_W.mass > 55.0]
         #####################
 
+        ### ### study input parameters to chi square
+        ### events['bjets_genjets_mass'] = ak.fill_none((events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen).mass,np.nan)
+        ### events['bjets_genjets_dr'] = ak.fill_none(events.b_cands[:,0].matched_gen.delta_r(events.b_cands[:,1].matched_gen),np.nan)
+        ### #events['bcand_genjets_mass'] = (events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen)
+        ### events['gen_bb'] = ak.fill_none(gen_b[:,0] + gen_b[:,1], np.nan)
+        ### if 'HH' in events.metadata['dataset']:
+        ###     genjet_from_b =  ak.pad_none(events.b_cands[events.b_cands.isbFromH].matched_gen,2,axis=1)
+        ###     events['genjet_from_b'] = ak.fill_none(genjet_from_b[:,0] + genjet_from_b[:,1], np.nan)
+        ###     recojet_from_b = ak.pad_none(events.b_cands[events.b_cands.isbFromH], 2, axis=1)
+        ###     events['mass_reco_b_gen_match'] = ak.fill_none(recojet_from_b [:,0] + recojet_from_b[:,1], np.nan)
+
         ### study input parameters to chi square
-        events['bjets_genjets_mass'] = ak.fill_none((events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen).mass,np.nan)
-        events['bjets_genjets_dr'] = ak.fill_none(events.b_cands[:,0].matched_gen.delta_r(events.b_cands[:,1].matched_gen),np.nan)
-        #events['bcand_genjets_mass'] = (events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen)
+        events['bjets_genjets_mass'] = ak.fill_none((events.j_bcand[:,0].matched_gen + events.j_bcand[:,1].matched_gen).mass,np.nan)
+        events['bjets_genjets_dr'] = ak.fill_none(events.j_bcand[:,0].matched_gen.delta_r(events.j_bcand[:,1].matched_gen),np.nan)
+        #events['bcand_genjets_mass'] = (events.j_bcand[:,0].matched_gen + events.j_bcand[:,1].matched_gen)
         events['gen_bb'] = ak.fill_none(gen_b[:,0] + gen_b[:,1], np.nan)
         if 'HH' in events.metadata['dataset']:
-            genjet_from_b =  ak.pad_none(events.b_cands[events.b_cands.isbFromH].matched_gen,2,axis=1)
+            genjet_from_b =  ak.pad_none(events.j_bcand[events.j_bcand.isbFromH].matched_gen,2,axis=1)
             events['genjet_from_b'] = ak.fill_none(genjet_from_b[:,0] + genjet_from_b[:,1], np.nan)
-            recojet_from_b = ak.pad_none(events.b_cands[events.b_cands.isbFromH], 2, axis=1)
+            recojet_from_b = ak.pad_none(events.j_bcand[events.j_bcand.isbFromH], 2, axis=1)
             events['mass_reco_b_gen_match'] = ak.fill_none(recojet_from_b [:,0] + recojet_from_b[:,1], np.nan)
+
+
 
     return events

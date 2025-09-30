@@ -15,12 +15,12 @@ from src.physics.objects.jet_corrections import apply_jerc_corrections
 from src.physics.event_weights import add_weights
 
 from bbreww.analysis.helpers.common import update_events, add_lepton_sfs
-from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
+from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut, chi_sq_new, chi_sq_cut_new
 from bbreww.analysis.helpers.cutflow import cutflow_bbWW
 from bbreww.analysis.helpers.dump_friendtrees import dump_input_friend
 from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec
 from bbreww.analysis.helpers.object_selection import apply_bbWW_preselection, apply_mll_cut
-from bbreww.analysis.helpers.candidate_selection import candidate_selection, Hbb_candidate_selection
+from bbreww.analysis.helpers.candidate_selection import candidate_selection, Hbb_candidate_selection, candidate_selection_old
 from bbreww.analysis.helpers.gen_process import gen_process, add_gen_info, gen_studies
 from bbreww.analysis.helpers.fill_histograms import fill_histograms
 
@@ -108,6 +108,7 @@ class analysis(processor.ProcessorABC):
 
         events = add_gen_info(events, self.is_mc) # add gen particle information
         events = apply_bbWW_preselection(events, self.year, self.params, self.is_mc) #preselection
+        events = candidate_selection_old(events, self.params, self.year) # select HH->bbWW candidates
         events = apply_mll_cut(events)
 
         # apply selections before computing chi_square
@@ -133,7 +134,9 @@ class analysis(processor.ProcessorABC):
         selection.add('jet_veto_mask', jet_veto_maps)
 
         selection_list = {
-            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'oneEorM', 'tau_veto', 'mll_cut', 'njets_ak8', 'twoBjets' ],
+            #'preselection_noTwoBJets': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'oneEorM', 'tau_veto', 'mll_cut', 'njets_ak8' ],
+            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'oneEorM', 'tau_veto', 'mll_cut', 'njets_ak8' ],
+            #'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'oneEorM', 'tau_veto', 'mll_cut', 'njets_ak8', ],
         }
         selection_list['nominal_4j2b'] = selection_list['preselection'] + ['nom_njets4', 'twoBjets']
         selection_list['nominal_3j2b'] = selection_list['preselection'] + ['nom_njets3', 'twoBjets']
@@ -164,6 +167,17 @@ class analysis(processor.ProcessorABC):
         weights = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, self.year, self.is_mc)
         events['weight'] = weights.weight()
         ##
+        signal_region = ((events.mbb > 75) & (events.mbb < 135)
+                        & (events.bb_dr > 0.85) & (events.bb_dr < 2.15)) # elliptical signal region
+        control_region = ((events.mbb > 55) & (events.mbb < 155)
+                        & (events.bb_dr > 0.42) & (events.bb_dr < 2.58)
+                        & ~signal_region) # sideband TTbar control region
+
+        events['region'] = ak.zip({
+            'SR': ak.fill_none(signal_region, False),
+            'CR': ak.fill_none(control_region, False)
+        })
+
 
         #study sequential cutflow (get weights and events after each cut)
         if not shift_name:
@@ -172,27 +186,53 @@ class analysis(processor.ProcessorABC):
             cumulative_cuts = []
             for cut_name in full_sel_list:
                 cumulative_cuts.append(cut_name)
-                cutflow.fill(events, cut_name, cumulative_cuts, weights.weight(), fill_region = False)
+                cutflow.fill(events, cut_name, cumulative_cuts, weights.weight())
+
 
         selected_events = events[events.preselection]
 
-        selected_events = Hbb_candidate_selection(selected_events) # select H->bb candidates
+        ### selected_events = Hbb_candidate_selection(selected_events) # select H->bb candidates
 
-        signal_region = ((selected_events.Hbb_cand.mass > 75) & (selected_events.Hbb_cand.mass < 135)
-                        & (selected_events.Hbb_cand.dr > 0.85) & (selected_events.Hbb_cand.dr < 2.15)) # elliptical signal region
-        control_region = ((selected_events.Hbb_cand.mass > 55) & (selected_events.Hbb_cand.mass < 155)
-                        & (selected_events.Hbb_cand.dr > 0.42) & (selected_events.Hbb_cand.dr < 2.58)
-                        & ~signal_region) # sideband TTbar control region
-
-        selected_events['region'] = ak.zip({
-            'SR': ak.fill_none(signal_region, False),
-            'CR': ak.fill_none(control_region, False)
-        })
+        ### signal_region = ((selected_events.Hbb_cand.mass > 75) & (selected_events.Hbb_cand.mass < 135)
+        ###                 & (selected_events.Hbb_cand.dr > 0.85) & (selected_events.Hbb_cand.dr < 2.15)) # elliptical signal region
+        ### control_region = ((selected_events.Hbb_cand.mass > 55) & (selected_events.Hbb_cand.mass < 155)
+        ###                 & (selected_events.Hbb_cand.dr > 0.42) & (selected_events.Hbb_cand.dr < 2.58)
+        ###                 & ~signal_region) # sideband TTbar control region
+        ###
+        ### selected_events['region'] = ak.zip({
+        ###     'SR': ak.fill_none(signal_region, False),
+        ###     'CR': ak.fill_none(control_region, False)
+        ### })
 
 
 
 
         selected_events = candidate_selection(selected_events, self.params, self.year) # select HH->bbWW candidates
+        print("\n")
+
+        pt_diffs = ~(selected_events["qq_soft_new"].pt == selected_events["qq_soft"].pt)
+        print("Diffs",pt_diffs,"\n")
+        print("any Diffs",ak.any(pt_diffs),"\n")
+        print(ak.flatten(pt_diffs),"\n")
+        print("np Diffs",np.any(ak.flatten(pt_diffs)),"\n")
+
+        debug_events = range(4,10)
+        print("Jet",selected_events["Jet"][debug_events].pt.tolist(),"\n")
+        print("j_candidates_test",selected_events["j_candidates_test"][debug_events].pt.tolist(),"\n")
+        print("j_candidates_test nom",selected_events["j_candidates_test"][debug_events].isnominal.tolist(),"\n")
+        print("j_nonbcand_all",selected_events["j_nonbcand_all"][debug_events].pt.tolist(),"\n")
+        print("j_nonbcand_all isnominal",selected_events["j_nonbcand_all"][debug_events].isnominal.tolist(),"\n")
+        print("j_lead",selected_events["j_lead"][debug_events].pt.tolist(),"\n")
+        print("j_sublead",selected_events["j_sublead"][debug_events].pt.tolist(),"\n")
+        print("qq_soft",selected_events["qq_soft"][debug_events].mass.tolist(),"\n")
+
+        print("b_cands",selected_events["b_cands"][debug_events].pt.tolist(),"\n")
+        print("q_cands_nom",selected_events["q_cands_nom"][debug_events].pt.tolist(),"\n")
+        print("q_cands_soft",selected_events["q_cands_soft"][debug_events].pt.tolist(),"\n")
+        print("j_lead_new",selected_events["j_lead_new"][debug_events].pt.tolist(),"\n")
+        print("j_sublead_new",selected_events["j_sublead_new"][debug_events].pt.tolist(),"\n")
+        print("qq_soft_new",selected_events["qq_soft_new"][debug_events].mass.tolist(),"\n")
+
 
 
 

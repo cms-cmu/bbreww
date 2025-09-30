@@ -62,14 +62,14 @@ def chi_sq(events):
     ## ttbar reconstruction
 
     #leptonic top
-    mlvb1 = (events.leading_lep + nu + events.j_bcand[:,0]).mass
-    mlvb2 = (events.leading_lep + nu + events.j_bcand[:,1]).mass
+    mlvb1 = (events.leading_lep + nu + events.b_cands[:,0]).mass
+    mlvb2 = (events.leading_lep + nu + events.b_cands[:,1]).mass
 
 
-    mbqq1_soft = ak.pad_none((events.j_bcand[:,0] + events.qq_soft).mass,3,axis=1) #hadronic candidate 1
-    mbqq2_soft = ak.pad_none((events.j_bcand[:,1] + events.qq_soft).mass,3,axis=1) #hadronic candidate 2
-    mbqq1_nom = ak.singletons((events.j_bcand[:,0] + events.Wqq_cand).mass) #hadronic candidate 1
-    mbqq2_nom = ak.singletons((events.j_bcand[:,1] + events.Wqq_cand).mass) #hadronic candidate 2
+    mbqq1_soft = ak.pad_none((events.b_cands[:,0] + events.qq_soft).mass,3,axis=1) #hadronic candidate 1
+    mbqq2_soft = ak.pad_none((events.b_cands[:,1] + events.qq_soft).mass,3,axis=1) #hadronic candidate 2
+    mbqq1_nom = ak.singletons((events.b_cands[:,0] + events.Wqq_cand).mass) #hadronic candidate 1
+    mbqq2_nom = ak.singletons((events.b_cands[:,1] + events.Wqq_cand).mass) #hadronic candidate 2
 
     def distance(x1,y1,x2,y2):
         return ak.fill_none(np.sqrt((x2-x1)**2+(y2-y1)**2),np.nan)

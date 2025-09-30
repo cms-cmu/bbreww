@@ -75,8 +75,9 @@ def jet_selection(events, params, year):
     events['nom_njets3'] = (ak.num(j_candidates_nom, axis=1) == 3)
 
     j_btagged = j_candidates_nom[getattr(j_candidates_nom,bTag_key) > btag_threshold]
-    j_btagged = j_btagged[ak.argsort(j_btagged.pt, axis=1, ascending=False)] #particleNetAK4_B btagPNetB
-    events['b_cands'] = j_btagged[:,:2]
+    b_cands = j_btagged[:,:2]
+    b_cands = b_cands[ak.argsort(b_cands.pt, axis=1, ascending=False)] #particleNetAK4_B btagPNetB
+    events['b_cands'] = b_cands
 
     events['has_2_bjets'] = ak.num(j_btagged, axis=1) >= 2
     events['has_1_bjet']  = ak.num(j_btagged, axis=1) >= 1 #add for cutflow plot

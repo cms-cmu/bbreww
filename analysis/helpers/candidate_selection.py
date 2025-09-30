@@ -75,7 +75,7 @@ def candidate_selection_old(events, params, year):
     events['j_sublead'] =  j_candidates[jj_i.j2] # subleading jet
 
     events['qq_mass'] = ak.fill_none((j_candidates[jj_i.j1] + j_candidates[jj_i.j2]).mass,np.nan) # plotting gives issues with None values
-    events['qq_soft'] = ak.pad_none(j_candidates[jj_i.j1] + j_candidates[jj_i.j2], 3, axis=1)
+    #events['qq_soft'] = ak.pad_none(j_candidates[jj_i.j1] + j_candidates[jj_i.j2], 3, axis=1)
     events['mbb'] = (events.j_bcand[:,0]+events.j_bcand[:,1]).mass
     events['bb_dr'] = events.j_bcand[:,0].delta_r(events.j_bcand[:,1])
     #events['j_sublead'] =  j_candidates[jj_i.j2] # subleading jet
@@ -124,8 +124,7 @@ def candidate_selection(events, params, year):
 
 
     events['qq_mass'] = ak.fill_none((q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2]).mass,np.nan) # plotting gives issues with None values
-    events['qq_soft_new'] = ak.pad_none(q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2], 3, axis=1)
-    #events['qq_soft'] = ak.pad_none(q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2], 3, axis=1)
+    events['qq_soft'] = ak.pad_none(q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2], 3, axis=1)
 
 
     return events

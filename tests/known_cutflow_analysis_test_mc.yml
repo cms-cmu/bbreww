@@ -20,7 +20,7 @@ GluGluToHHTo2B2VLNu2J_2022_EE:
         lowpt_3j2b: 27.0
         chi_sq_nom_4j2b: 57.0
         chi_sq_nom_3j2b: 14.0
-        chi_sq_lowpt_4j2b: 15.0
+        chi_sq_lowpt_4j2b: 16.0
       weights:
         lumimask: 0.06877221636174874
         passNoiseFilter: 0.06877221636174874
@@ -38,7 +38,7 @@ GluGluToHHTo2B2VLNu2J_2022_EE:
         lowpt_3j2b: 0.003411969944118053
         chi_sq_nom_4j2b: 0.007748754635059341
         chi_sq_nom_3j2b: 0.001913299513796823
-        chi_sq_lowpt_4j2b: 0.00228377937494377
+        chi_sq_lowpt_4j2b: 0.0023498557241363616
     mu_region:
       events:
         lumimask: 540.0
@@ -94,7 +94,7 @@ GluGluToHHTo2B2VLNu2J_2022_EE:
         lowpt_3j2b: 29.0
         chi_sq_nom_4j2b: 89.0
         chi_sq_nom_3j2b: 34.0
-        chi_sq_lowpt_4j2b: 35.0
+        chi_sq_lowpt_4j2b: 36.0
       weights:
         lumimask: 0.04202956013105484
         passNoiseFilter: 0.04202956013105484
@@ -112,7 +112,7 @@ GluGluToHHTo2B2VLNu2J_2022_EE:
         lowpt_3j2b: 0.0034276421926407548
         chi_sq_nom_4j2b: 0.014842418959863489
         chi_sq_nom_3j2b: 0.00563784744763413
-        chi_sq_lowpt_4j2b: 0.005771414142315575
+        chi_sq_lowpt_4j2b: 0.0058374904915081665
     CR:
       events:
         lumimask: 107.0

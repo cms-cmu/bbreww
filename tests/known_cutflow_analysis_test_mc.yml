@@ -78,16 +78,16 @@ GluGluToHHTo2B2VLNu2J_2022_EE:
         chi_sq_lowpt_4j2b: 0.006630609376146763
     SR:
       events:
-        lumimask: 281.0
-        passNoiseFilter: 281.0
-        trigger: 281.0
-        jet_veto_mask: 260.0
-        oneEorM: 260.0
-        oneBjet: 260.0
-        twoBjets: 260.0
-        tau_veto: 258.0
-        njets_ak8: 199.0
-        mll_cut: 199.0
+        lumimask: 0.0
+        passNoiseFilter: 0.0
+        trigger: 0.0
+        jet_veto_mask: 0.0
+        oneEorM: 0.0
+        oneBjet: 0.0
+        twoBjets: 0.0
+        tau_veto: 0.0
+        njets_ak8: 0.0
+        mll_cut: 0.0
         nominal_4j2b: 123.0
         nominal_3j2b: 68.0
         lowpt_4j2b: 47.0
@@ -96,16 +96,16 @@ GluGluToHHTo2B2VLNu2J_2022_EE:
         chi_sq_nom_3j2b: 34.0
         chi_sq_lowpt_4j2b: 36.0
       weights:
-        lumimask: 0.04202956013105484
-        passNoiseFilter: 0.04202956013105484
-        trigger: 0.04202956013105484
-        jet_veto_mask: 0.03849310593488382
-        oneEorM: 0.03849310593488382
-        oneBjet: 0.03849310593488382
-        twoBjets: 0.03849310593488382
-        tau_veto: 0.038346191036313496
-        njets_ak8: 0.02910153334593083
-        mll_cut: 0.02910153334593083
+        lumimask: 0.0
+        passNoiseFilter: 0.0
+        trigger: 0.0
+        jet_veto_mask: 0.0
+        oneEorM: 0.0
+        oneBjet: 0.0
+        twoBjets: 0.0
+        tau_veto: 0.0
+        njets_ak8: 0.0
+        mll_cut: 0.0
         nominal_4j2b: 0.018720694097725723
         nominal_3j2b: 0.009815336601855509
         lowpt_4j2b: 0.006953197055564352
@@ -115,16 +115,16 @@ GluGluToHHTo2B2VLNu2J_2022_EE:
         chi_sq_lowpt_4j2b: 0.0058374904915081665
     CR:
       events:
-        lumimask: 107.0
-        passNoiseFilter: 107.0
-        trigger: 107.0
-        jet_veto_mask: 96.0
-        oneEorM: 96.0
-        oneBjet: 96.0
-        twoBjets: 96.0
-        tau_veto: 96.0
-        njets_ak8: 57.0
-        mll_cut: 57.0
+        lumimask: 0.0
+        passNoiseFilter: 0.0
+        trigger: 0.0
+        jet_veto_mask: 0.0
+        oneEorM: 0.0
+        oneBjet: 0.0
+        twoBjets: 0.0
+        tau_veto: 0.0
+        njets_ak8: 0.0
+        mll_cut: 0.0
         nominal_4j2b: 33.0
         nominal_3j2b: 18.0
         lowpt_4j2b: 12.0
@@ -133,16 +133,16 @@ GluGluToHHTo2B2VLNu2J_2022_EE:
         chi_sq_nom_3j2b: 8.0
         chi_sq_lowpt_4j2b: 11.0
       weights:
-        lumimask: 0.01984205631407151
-        passNoiseFilter: 0.01984205631407151
-        trigger: 0.01984205631407151
-        jet_veto_mask: 0.01732130441039674
-        oneEorM: 0.01732130441039674
-        oneBjet: 0.01732130441039674
-        twoBjets: 0.01732130441039674
-        tau_veto: 0.01732130441039674
-        njets_ak8: 0.01055500542470299
-        mll_cut: 0.01055500542470299
+        lumimask: 0.0
+        passNoiseFilter: 0.0
+        trigger: 0.0
+        jet_veto_mask: 0.0
+        oneEorM: 0.0
+        oneBjet: 0.0
+        twoBjets: 0.0
+        tau_veto: 0.0
+        njets_ak8: 0.0
+        mll_cut: 0.0
         nominal_4j2b: 0.005887500850887571
         nominal_3j2b: 0.003456383856963982
         lowpt_4j2b: 0.0025654885011167227
@@ -230,16 +230,16 @@ TTToSemiLeptonic_2022_EE:
         chi_sq_lowpt_4j2b: 0.7187228562965959
     SR:
       events:
-        lumimask: 69.0
-        passNoiseFilter: 69.0
-        trigger: 69.0
-        jet_veto_mask: 64.0
-        oneEorM: 64.0
-        oneBjet: 64.0
-        twoBjets: 64.0
-        tau_veto: 63.0
-        njets_ak8: 48.0
-        mll_cut: 48.0
+        lumimask: 0.0
+        passNoiseFilter: 0.0
+        trigger: 0.0
+        jet_veto_mask: 0.0
+        oneEorM: 0.0
+        oneBjet: 0.0
+        twoBjets: 0.0
+        tau_veto: 0.0
+        njets_ak8: 0.0
+        mll_cut: 0.0
         nominal_4j2b: 29.0
         nominal_3j2b: 16.0
         lowpt_4j2b: 10.0
@@ -248,16 +248,16 @@ TTToSemiLeptonic_2022_EE:
         chi_sq_nom_3j2b: 4.0
         chi_sq_lowpt_4j2b: 6.0
       weights:
-        lumimask: 2.4814403698013363
-        passNoiseFilter: 2.4814403698013363
-        trigger: 2.4814403698013363
-        jet_veto_mask: 2.254706388164255
-        oneEorM: 2.254706388164255
-        oneBjet: 2.254706388164255
-        twoBjets: 2.254706388164255
-        tau_veto: 2.2164669985379666
-        njets_ak8: 1.6653017090695994
-        mll_cut: 1.6653017090695994
+        lumimask: 0.0
+        passNoiseFilter: 0.0
+        trigger: 0.0
+        jet_veto_mask: 0.0
+        oneEorM: 0.0
+        oneBjet: 0.0
+        twoBjets: 0.0
+        tau_veto: 0.0
+        njets_ak8: 0.0
+        mll_cut: 0.0
         nominal_4j2b: 1.0394663399237583
         nominal_3j2b: 0.5240368227234692
         lowpt_4j2b: 0.2998048975110521
@@ -267,16 +267,16 @@ TTToSemiLeptonic_2022_EE:
         chi_sq_lowpt_4j2b: 0.17101230180200963
     CR:
       events:
-        lumimask: 86.0
-        passNoiseFilter: 86.0
-        trigger: 86.0
-        jet_veto_mask: 80.0
-        oneEorM: 80.0
-        oneBjet: 80.0
-        twoBjets: 80.0
-        tau_veto: 78.0
-        njets_ak8: 71.0
-        mll_cut: 71.0
+        lumimask: 0.0
+        passNoiseFilter: 0.0
+        trigger: 0.0
+        jet_veto_mask: 0.0
+        oneEorM: 0.0
+        oneBjet: 0.0
+        twoBjets: 0.0
+        tau_veto: 0.0
+        njets_ak8: 0.0
+        mll_cut: 0.0
         nominal_4j2b: 47.0
         nominal_3j2b: 22.0
         lowpt_4j2b: 13.0
@@ -285,16 +285,16 @@ TTToSemiLeptonic_2022_EE:
         chi_sq_nom_3j2b: 5.0
         chi_sq_lowpt_4j2b: 5.0
       weights:
-        lumimask: 3.2925149151389954
-        passNoiseFilter: 3.2925149151389954
-        trigger: 3.2925149151389954
-        jet_veto_mask: 3.0415455000231093
-        oneEorM: 3.0415455000231093
-        oneBjet: 3.0415455000231093
-        twoBjets: 3.0415455000231093
-        tau_veto: 2.9259285564594233
-        njets_ak8: 2.653336364278048
-        mll_cut: 2.653336364278048
+        lumimask: 0.0
+        passNoiseFilter: 0.0
+        trigger: 0.0
+        jet_veto_mask: 0.0
+        oneEorM: 0.0
+        oneBjet: 0.0
+        twoBjets: 0.0
+        tau_veto: 0.0
+        njets_ak8: 0.0
+        mll_cut: 0.0
         nominal_4j2b: 1.846318816356054
         nominal_3j2b: 0.7373884340198598
         lowpt_4j2b: 0.4758452559008719

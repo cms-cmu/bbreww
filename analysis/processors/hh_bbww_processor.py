@@ -166,17 +166,6 @@ class analysis(processor.ProcessorABC):
         )
         weights = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, self.year, self.is_mc)
         events['weight'] = weights.weight()
-        ##
-        signal_region = ((events.mbb > 75) & (events.mbb < 135)
-                        & (events.bb_dr > 0.85) & (events.bb_dr < 2.15)) # elliptical signal region
-        control_region = ((events.mbb > 55) & (events.mbb < 155)
-                        & (events.bb_dr > 0.42) & (events.bb_dr < 2.58)
-                        & ~signal_region) # sideband TTbar control region
-
-        events['region'] = ak.zip({
-            'SR': ak.fill_none(signal_region, False),
-            'CR': ak.fill_none(control_region, False)
-        })
 
 
         #study sequential cutflow (get weights and events after each cut)
@@ -190,6 +179,20 @@ class analysis(processor.ProcessorABC):
 
 
         selected_events = events[events.preselection]
+
+        ##
+        signal_region = ((selected_events.mbb > 75) & (selected_events.mbb < 135)
+                        & (selected_events.bb_dr > 0.85) & (selected_events.bb_dr < 2.15)) # elliptical signal region
+        control_region = ((selected_events.mbb > 55) & (selected_events.mbb < 155)
+                        & (selected_events.bb_dr > 0.42) & (selected_events.bb_dr < 2.58)
+                        & ~signal_region) # sideband TTbar control region
+
+        selected_events['region'] = ak.zip({
+            'SR': ak.fill_none(signal_region, False),
+            'CR': ak.fill_none(control_region, False)
+        })
+
+
 
         ### selected_events = Hbb_candidate_selection(selected_events) # select H->bb candidates
 
@@ -227,10 +230,8 @@ class analysis(processor.ProcessorABC):
         print("j_candidates_test nom",selected_events["j_candidates_test"][debug_events].isnominal.tolist(),"\n")
         print("j_bcand",selected_events["j_bcand"][debug_events].pt.tolist(),"\n")
         print("j_bcand nominal",selected_events["j_bcand"][debug_events].isnominal.tolist(),"\n")
-        print("j_nonbcand_all",selected_events["j_nonbcand_all"][debug_events].pt.tolist(),"\n")
-        print("j_nonbcand_all isnominal",selected_events["j_nonbcand_all"][debug_events].isnominal.tolist(),"\n")
-        print("j_lead",selected_events["j_lead"][debug_events].pt.tolist(),"\n")
-        print("j_sublead",selected_events["j_sublead"][debug_events].pt.tolist(),"\n")
+        #print("j_nonbcand_all",selected_events["j_nonbcand_all"][debug_events].pt.tolist(),"\n")
+        #print("j_nonbcand_all isnominal",selected_events["j_nonbcand_all"][debug_events].isnominal.tolist(),"\n")
         print("qq_soft",selected_events["qq_soft"][debug_events].mass.tolist(),"\n")
 
         print("b_cands",selected_events["b_cands"][debug_events].pt.tolist(),"\n")
@@ -305,7 +306,7 @@ class analysis(processor.ProcessorABC):
             # add cuts for different regions
             cutflow_list = ['nominal_4j2b','nominal_3j2b', 'lowpt_4j2b', 'lowpt_3j2b', 'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b']
             for cuts in cutflow_list:
-                cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True)
+                cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True, fill_flavour = True)
             cutflow.add_output(output['events_processed'], self.dataset)
 
 

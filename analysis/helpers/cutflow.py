@@ -15,7 +15,7 @@ class cutflow_bbWW(cutflow):
         self._cutflow_CR= {}
         self.selections = selections
 
-    def fill(self, events, cut_name, cut_list, weight, fill_region: bool = False, skim: bool = False, fill_flavour: bool = True):
+    def fill(self, events, cut_name, cut_list, weight, fill_flavour: bool = False, fill_region: bool = False, skim: bool = False):
 
         if 'oneE' in cut_list: cut_list.remove('oneE')
         if 'oneM' in cut_list: cut_list.remove('oneM')
@@ -29,7 +29,7 @@ class cutflow_bbWW(cutflow):
             self._cutflow_CR[cut_name] = (0, 0)    # weighted, raw
 
         # fill with regions
-        if fill_region:
+        if fill_flavour:
             ele_cut = events[cut_name] & events.flavor.e
             mu_cut =  events[cut_name] & events.flavor.mu
             SR_cut =  events[cut_name] & events.region.SR
@@ -39,16 +39,16 @@ class cutflow_bbWW(cutflow):
             ele_cut = self.selections.all(*cut_list) & (self.selections.require(oneE=True))
             mu_cut = self.selections.all(*cut_list) & (self.selections.require(oneM=True))
             if not skim:
-                #if fill_region:
-                SR_cut = self.selections.all(*cut_list) & (events.region.SR)
-                CR_cut = self.selections.all(*cut_list) & (events.region.CR)
+                if fill_region:
+                    SR_cut = self.selections.all(*cut_list) & (events.region.SR)
+                    CR_cut = self.selections.all(*cut_list) & (events.region.CR)
 
         self._cutflow_ele[cut_name] = (np.sum(ele_cut), np.sum(weight[ele_cut]))
         self._cutflow_mu[cut_name] = (np.sum(mu_cut), np.sum(weight[mu_cut]))
         if not skim:
-            #if fill_region:
-            self._cutflow_SR[cut_name] = (np.sum(SR_cut), np.sum(weight[SR_cut]))
-            self._cutflow_CR[cut_name] = (np.sum(CR_cut), np.sum(weight[CR_cut]))
+            if fill_region:
+                self._cutflow_SR[cut_name] = (np.sum(SR_cut), np.sum(weight[SR_cut]))
+                self._cutflow_CR[cut_name] = (np.sum(CR_cut), np.sum(weight[CR_cut]))
 
         logging.debug(f"Cutflow {cut_name}: Ele: {self._cutflow_ele[cut_name]}, Mu: {self._cutflow_mu[cut_name]}")
 

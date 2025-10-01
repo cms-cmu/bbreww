@@ -78,16 +78,16 @@ data__SingleMuon_2022_preEEC:
         chi_sq_lowpt_4j2b: 9.0
     SR:
       events:
-        lumimask: 16.0
-        passNoiseFilter: 16.0
-        trigger: 16.0
-        jet_veto_mask: 15.0
-        oneEorM: 15.0
-        oneBjet: 15.0
-        twoBjets: 15.0
-        tau_veto: 15.0
-        njets_ak8: 12.0
-        mll_cut: 12.0
+        lumimask: 0.0
+        passNoiseFilter: 0.0
+        trigger: 0.0
+        jet_veto_mask: 0.0
+        oneEorM: 0.0
+        oneBjet: 0.0
+        twoBjets: 0.0
+        tau_veto: 0.0
+        njets_ak8: 0.0
+        mll_cut: 0.0
         nominal_4j2b: 6.0
         nominal_3j2b: 6.0
         lowpt_4j2b: 2.0
@@ -96,16 +96,16 @@ data__SingleMuon_2022_preEEC:
         chi_sq_nom_3j2b: 2.0
         chi_sq_lowpt_4j2b: 2.0
       weights:
-        lumimask: 16.0
-        passNoiseFilter: 16.0
-        trigger: 16.0
-        jet_veto_mask: 15.0
-        oneEorM: 15.0
-        oneBjet: 15.0
-        twoBjets: 15.0
-        tau_veto: 15.0
-        njets_ak8: 12.0
-        mll_cut: 12.0
+        lumimask: 0.0
+        passNoiseFilter: 0.0
+        trigger: 0.0
+        jet_veto_mask: 0.0
+        oneEorM: 0.0
+        oneBjet: 0.0
+        twoBjets: 0.0
+        tau_veto: 0.0
+        njets_ak8: 0.0
+        mll_cut: 0.0
         nominal_4j2b: 6.0
         nominal_3j2b: 6.0
         lowpt_4j2b: 2.0
@@ -115,16 +115,16 @@ data__SingleMuon_2022_preEEC:
         chi_sq_lowpt_4j2b: 2.0
     CR:
       events:
-        lumimask: 21.0
-        passNoiseFilter: 21.0
-        trigger: 21.0
-        jet_veto_mask: 17.0
-        oneEorM: 17.0
-        oneBjet: 17.0
-        twoBjets: 17.0
-        tau_veto: 17.0
-        njets_ak8: 14.0
-        mll_cut: 13.0
+        lumimask: 0.0
+        passNoiseFilter: 0.0
+        trigger: 0.0
+        jet_veto_mask: 0.0
+        oneEorM: 0.0
+        oneBjet: 0.0
+        twoBjets: 0.0
+        tau_veto: 0.0
+        njets_ak8: 0.0
+        mll_cut: 0.0
         nominal_4j2b: 3.0
         nominal_3j2b: 7.0
         lowpt_4j2b: 7.0
@@ -133,16 +133,16 @@ data__SingleMuon_2022_preEEC:
         chi_sq_nom_3j2b: 4.0
         chi_sq_lowpt_4j2b: 5.0
       weights:
-        lumimask: 21.0
-        passNoiseFilter: 21.0
-        trigger: 21.0
-        jet_veto_mask: 17.0
-        oneEorM: 17.0
-        oneBjet: 17.0
-        twoBjets: 17.0
-        tau_veto: 17.0
-        njets_ak8: 14.0
-        mll_cut: 13.0
+        lumimask: 0.0
+        passNoiseFilter: 0.0
+        trigger: 0.0
+        jet_veto_mask: 0.0
+        oneEorM: 0.0
+        oneBjet: 0.0
+        twoBjets: 0.0
+        tau_veto: 0.0
+        njets_ak8: 0.0
+        mll_cut: 0.0
         nominal_4j2b: 3.0
         nominal_3j2b: 7.0
         lowpt_4j2b: 7.0
@@ -230,16 +230,16 @@ data__SingleMuon_2022_preEED:
         chi_sq_lowpt_4j2b: 6.0
     SR:
       events:
-        lumimask: 21.0
-        passNoiseFilter: 21.0
-        trigger: 21.0
-        jet_veto_mask: 19.0
-        oneEorM: 19.0
-        oneBjet: 19.0
-        twoBjets: 19.0
-        tau_veto: 18.0
-        njets_ak8: 12.0
-        mll_cut: 12.0
+        lumimask: 0.0
+        passNoiseFilter: 0.0
+        trigger: 0.0
+        jet_veto_mask: 0.0
+        oneEorM: 0.0
+        oneBjet: 0.0
+        twoBjets: 0.0
+        tau_veto: 0.0
+        njets_ak8: 0.0
+        mll_cut: 0.0
         nominal_4j2b: 9.0
         nominal_3j2b: 2.0
         lowpt_4j2b: 1.0
@@ -248,16 +248,16 @@ data__SingleMuon_2022_preEED:
         chi_sq_nom_3j2b: 0.0
         chi_sq_lowpt_4j2b: 0.0
       weights:
-        lumimask: 21.0
-        passNoiseFilter: 21.0
-        trigger: 21.0
-        jet_veto_mask: 19.0
-        oneEorM: 19.0
-        oneBjet: 19.0
-        twoBjets: 19.0
-        tau_veto: 18.0
-        njets_ak8: 12.0
-        mll_cut: 12.0
+        lumimask: 0.0
+        passNoiseFilter: 0.0
+        trigger: 0.0
+        jet_veto_mask: 0.0
+        oneEorM: 0.0
+        oneBjet: 0.0
+        twoBjets: 0.0
+        tau_veto: 0.0
+        njets_ak8: 0.0
+        mll_cut: 0.0
         nominal_4j2b: 9.0
         nominal_3j2b: 2.0
         lowpt_4j2b: 1.0
@@ -267,16 +267,16 @@ data__SingleMuon_2022_preEED:
         chi_sq_lowpt_4j2b: 0.0
     CR:
       events:
-        lumimask: 24.0
-        passNoiseFilter: 24.0
-        trigger: 24.0
-        jet_veto_mask: 23.0
-        oneEorM: 23.0
-        oneBjet: 23.0
-        twoBjets: 23.0
-        tau_veto: 23.0
-        njets_ak8: 17.0
-        mll_cut: 16.0
+        lumimask: 0.0
+        passNoiseFilter: 0.0
+        trigger: 0.0
+        jet_veto_mask: 0.0
+        oneEorM: 0.0
+        oneBjet: 0.0
+        twoBjets: 0.0
+        tau_veto: 0.0
+        njets_ak8: 0.0
+        mll_cut: 0.0
         nominal_4j2b: 10.0
         nominal_3j2b: 3.0
         lowpt_4j2b: 3.0
@@ -285,16 +285,16 @@ data__SingleMuon_2022_preEED:
         chi_sq_nom_3j2b: 0.0
         chi_sq_lowpt_4j2b: 2.0
       weights:
-        lumimask: 24.0
-        passNoiseFilter: 24.0
-        trigger: 24.0
-        jet_veto_mask: 23.0
-        oneEorM: 23.0
-        oneBjet: 23.0
-        twoBjets: 23.0
-        tau_veto: 23.0
-        njets_ak8: 17.0
-        mll_cut: 16.0
+        lumimask: 0.0
+        passNoiseFilter: 0.0
+        trigger: 0.0
+        jet_veto_mask: 0.0
+        oneEorM: 0.0
+        oneBjet: 0.0
+        twoBjets: 0.0
+        tau_veto: 0.0
+        njets_ak8: 0.0
+        mll_cut: 0.0
         nominal_4j2b: 10.0
         nominal_3j2b: 3.0
         lowpt_4j2b: 3.0

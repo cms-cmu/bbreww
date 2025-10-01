@@ -21,14 +21,14 @@ def add_gen_info(events, is_mc):
             events['Jet', 'isQfromW']= ak.any(gen_qFromW.metric_table(events.Jet)< 0.2,axis=1)
             if 'HH' in events.metadata['dataset']:
                 events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
-        except: 
+        except:
             events['Jet', 'isQfromW'] = ak.zeros_like(events.Jet.pt, dtype=bool)
-    
+
         events['isHtoW'] = events.GenPart[(events.GenPart[events.GenPart[events.GenPart.isW].genPartIdxMother].pdgId== 25)]
 
         if 'HH' in events.metadata['dataset']:
             events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
-    
+
     return events
 
 def gen_process(events, weights):
@@ -36,17 +36,17 @@ def gen_process(events, weights):
     nnlo_nlo = {}
     nlo_qcd = ak.ones_like(events.MET.pt, dtype=float)
     nlo_ewk = ak.ones_like(events.MET.pt, dtype=float)
-                                    
+
 
     ###
     # Isolation weights for muons
     ###
 
-    if hasattr(events, "L1PreFiringWeight"): 
+    if hasattr(events, "L1PreFiringWeight"):
         weights.add('prefiring', events.L1PreFiringWeight.Nom, events.L1PreFiringWeight.Up, events.L1PreFiringWeight.Dn)
     weights.add('genw',events.genWeight)
     weights.add('nlo_ewk',nlo_ewk)
-    #weights.add('nlo',nlo) 
+    #weights.add('nlo',nlo)
     #if 'cen' in nnlo_nlo:
         #weights.add('nnlo_nlo',nnlo_nlo['cen'])
         #weights.add('qcd1',ak.ones_like(events.MET.pt, dtype=float), nnlo_nlo['qcd1up']/nnlo_nlo['cen'], nnlo_nlo['qcd1do']/nnlo_nlo['cen'])
@@ -113,14 +113,14 @@ def gen_studies(events, is_mc):
             matched_jets_pre = matched_jets_pre[ak.argsort(matched_jets_pre.pt, axis=1, ascending=False)]
             events['true_ak4_1'] = matched_jets_pre[:,0]
             events['true_ak4_2'] = matched_jets_pre[:,1]
-        except: 
+        except:
             pass #above sequence will fail for datasets that don't have jets in every event
 
         '''events['Wjets_pre_lead'] = ak.pad_none(matched_jets_pre,2,axis=1)[:,0]
         events['Wjets_pre_sublead'] = ak.pad_none(matched_jets_pre,2,axis=1)[:,1]
 
         ## check if both jets are gen matched within an event
-        true_dijet_mask = (ak.count(matched_jets_pre.pt,axis=1) == 2) 
+        true_dijet_mask = (ak.count(matched_jets_pre.pt,axis=1) == 2)
         events['dijets_pre_lead'] = ak.mask(matched_jets_pre,true_dijet_mask)[:,0]
         events['dijets_pre_sublead'] = ak.mask(matched_jets_pre,true_dijet_mask)[:,1]
 
@@ -129,26 +129,39 @@ def gen_studies(events, is_mc):
         matched_jets_post = matched_jets_post[ak.argsort(matched_jets_post.pt, axis=1, ascending=False)]
         events['Wjets_post_lead'] = ak.pad_none(matched_jets_post,2,axis=1)[:,0]
         events['Wjets_post_sublead'] = ak.pad_none(matched_jets_post,2,axis=1)[:,1]
-        
+
         ## check if both jets are gen matched after quark vs. gluon selection
-        true_dijet_mask = (ak.count(matched_jets_post.pt,axis=1) == 2) 
+        true_dijet_mask = (ak.count(matched_jets_post.pt,axis=1) == 2)
         events['dijets_post_lead'] = ak.mask(matched_jets_post,true_dijet_mask)[:,0]
         events['dijets_post_sublead'] = ak.mask(matched_jets_post,true_dijet_mask)[:,1]'''
 
         ## met and W mass resolution
         events['W_mass_res'] = ak.firsts(gen_W.mass[gen_W.mass < 55.0]) - events.qq_sel_mass
-        events['genW_mass'] = gen_W.mass[gen_W.mass > 55.0] 
+        events['genW_mass'] = gen_W.mass[gen_W.mass > 55.0]
         #####################
 
-        ### study input parameters to chi square 
-        events['bjets_genjets_mass'] = ak.fill_none((events.j_bcand[:,0].matched_gen + events.j_bcand[:,1].matched_gen).mass,np.nan)
-        events['bjets_genjets_dr'] = ak.fill_none(events.j_bcand[:,0].matched_gen.delta_r(events.j_bcand[:,1].matched_gen),np.nan)
-        #events['bcand_genjets_mass'] = (events.j_bcand[:,0].matched_gen + events.j_bcand[:,1].matched_gen)
+        ### ### study input parameters to chi square
+        ### events['bjets_genjets_mass'] = ak.fill_none((events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen).mass,np.nan)
+        ### events['bjets_genjets_dr'] = ak.fill_none(events.b_cands[:,0].matched_gen.delta_r(events.b_cands[:,1].matched_gen),np.nan)
+        ### #events['bcand_genjets_mass'] = (events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen)
+        ### events['gen_bb'] = ak.fill_none(gen_b[:,0] + gen_b[:,1], np.nan)
+        ### if 'HH' in events.metadata['dataset']:
+        ###     genjet_from_b =  ak.pad_none(events.b_cands[events.b_cands.isbFromH].matched_gen,2,axis=1)
+        ###     events['genjet_from_b'] = ak.fill_none(genjet_from_b[:,0] + genjet_from_b[:,1], np.nan)
+        ###     recojet_from_b = ak.pad_none(events.b_cands[events.b_cands.isbFromH], 2, axis=1)
+        ###     events['mass_reco_b_gen_match'] = ak.fill_none(recojet_from_b [:,0] + recojet_from_b[:,1], np.nan)
+
+        ### study input parameters to chi square
+        events['bjets_genjets_mass'] = ak.fill_none((events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen).mass,np.nan)
+        events['bjets_genjets_dr'] = ak.fill_none(events.b_cands[:,0].matched_gen.delta_r(events.b_cands[:,1].matched_gen),np.nan)
+        #events['bcand_genjets_mass'] = (events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen)
         events['gen_bb'] = ak.fill_none(gen_b[:,0] + gen_b[:,1], np.nan)
         if 'HH' in events.metadata['dataset']:
-            genjet_from_b =  ak.pad_none(events.j_bcand[events.j_bcand.isbFromH].matched_gen,2,axis=1)
+            genjet_from_b =  ak.pad_none(events.b_cands[events.b_cands.isbFromH].matched_gen,2,axis=1)
             events['genjet_from_b'] = ak.fill_none(genjet_from_b[:,0] + genjet_from_b[:,1], np.nan)
-            recojet_from_b = ak.pad_none(events.j_bcand[events.j_bcand.isbFromH], 2, axis=1)
+            recojet_from_b = ak.pad_none(events.b_cands[events.b_cands.isbFromH], 2, axis=1)
             events['mass_reco_b_gen_match'] = ak.fill_none(recojet_from_b [:,0] + recojet_from_b[:,1], np.nan)
+
+
 
     return events

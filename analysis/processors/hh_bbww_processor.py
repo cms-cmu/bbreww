@@ -194,43 +194,6 @@ class analysis(processor.ProcessorABC):
 
 
         selected_events = candidate_selection(selected_events, self.params, self.year) # select HH->bbWW candidates
-        print("\n")
-
-        #pt_diffs = ~(selected_events["qq_soft_new"].pt == selected_events["qq_soft"].pt)
-        #debug_events = ak.where(ak.any(pt_diffs,axis=1))
-        #print("debug_events", debug_events,"\n")
-
-        #SR_diffs = ~(signal_region == signal_region_new)
-        #debug_events = ak.where(SR_diffs)
-        #print("Diffs",ak.any(SR_diffs),"\n")
-        #print("any Diffs",ak.any(pt_diffs),"\n")
-        # print(ak.flatten(pt_diffs),"\n")
-        # print("np Diffs",np.any(ak.flatten(pt_diffs)),"\n")
-        #print("new",selected_events["qq_soft_new"].pt[debug_events].tolist(),"\n")
-        #print("old",selected_events["qq_soft"].pt[debug_events].tolist(),"\n")
-
-        debug_events = range(4,10)
-        print("Jet",selected_events["Jet"][debug_events].pt.tolist(),"\n")
-        print("j_candidates_test",selected_events["j_candidates_test"][debug_events].pt.tolist(),"\n")
-        print("j_candidates_test nom",selected_events["j_candidates_test"][debug_events].isnominal.tolist(),"\n")
-        print("j_candidates_test btagScore",selected_events["j_candidates_test"][debug_events].btagScore.tolist(),"\n")
-        #print("j_bcand",selected_events["j_bcand"][debug_events].pt.tolist(),"\n")
-        #print("j_bcand nominal",selected_events["j_bcand"][debug_events].isnominal.tolist(),"\n")
-        #print("j_nonbcand_all",selected_events["j_nonbcand_all"][debug_events].pt.tolist(),"\n")
-        #print("j_nonbcand_all isnominal",selected_events["j_nonbcand_all"][debug_events].isnominal.tolist(),"\n")
-        print("qq_soft",selected_events["qq_soft"][debug_events].mass.tolist(),"\n")
-
-        print("b_cands",selected_events["b_cands"][debug_events].pt.tolist(),"\n")
-        print("b_cands nom",selected_events["b_cands"][debug_events].isnominal.tolist(),"\n")
-
-        print("q_cands_nom",selected_events["q_cands_nom"][debug_events].pt.tolist(),"\n")
-        print("q_cands_soft",selected_events["q_cands_soft"][debug_events].pt.tolist(),"\n")
-        print("j_lead_new",selected_events["j_lead_new"][debug_events].pt.tolist(),"\n")
-        print("j_sublead_new",selected_events["j_sublead_new"][debug_events].pt.tolist(),"\n")
-        #print("qq_soft_new",selected_events["qq_soft_new"][debug_events].mass.tolist(),"\n")
-
-
-
 
         del events
         selected_events = chi_sq(selected_events) # chi square selection and calculation

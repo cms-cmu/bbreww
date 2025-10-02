@@ -11,20 +11,24 @@ fi
 
 INPUT_DIR="${OUTPUT_BASE_DIR}/analysis_test_mc"
 OUTPUT_DIR="${OUTPUT_BASE_DIR}/analysis_plot_mc"
-create_output_directory "$OUTPUT_DIR"
+echo "############### Checking and creating output directory"
+if [ ! -d $OUTPUT_DIR ]; then
+    mkdir -p $OUTPUT_DIR
+fi
 
-display_section_header "ls input file"
+echo "############### ls input file"
 ls $INPUT_DIR/
 ls $INPUT_DIR/test.coffea
 
-display_section_header "Running makePlots.py"
-run_command python bbreww/plots/makePlots.py $INPUT_DIR/test.coffea --doTest -o $OUTPUT_DIR -m bbreww/plots/metadata/plotsAll.yml --modifiers bbreww/plots/metadata/plotModifiers.yml
+echo "############### Running makePlots.py"
+echo python bbreww/plots/makePlots.py $INPUT_DIR/test.coffea --doTest -o $OUTPUT_DIR -m bbreww/plots/metadata/plotsAll.yml --modifiers bbreww/plots/metadata/plotModifiers.yml
+python bbreww/plots/makePlots.py $INPUT_DIR/test.coffea --doTest -o $OUTPUT_DIR -m bbreww/plots/metadata/plotsAll.yml --modifiers bbreww/plots/metadata/plotModifiers.yml
 
 
-display_section_header "Checking if pdf files exist"
-ls $OUTPUT_DIR/Run3/preselection/flavor_sum/channel_sum/mbb.pdf
-ls $OUTPUT_DIR/Run3/preselection/flavor_e/channel_sum/mbb.pdf
-ls $OUTPUT_DIR/Run3/preselection/flavor_mu/channel_sum/mbb.pdf
+echo "############### Checking if pdf files exist"
+ls $OUTPUT_DIR/Run3/preselection/flavor_sum/channel_sum/Hbb_mass.pdf
+ls $OUTPUT_DIR/Run3/preselection/flavor_e/channel_sum/Hbb_mass.pdf
+ls $OUTPUT_DIR/Run3/preselection/flavor_mu/channel_sum/Hbb_mass.pdf
 #ls $OUTPUT_DIR/RunII/passPreSel/fourTag/SR/SvB_MA_ps_hh.pdf
 #ls $OUTPUT_DIR/RunII/passPreSel/fourTag/SR_vs_SB/data/SvB_MA_ps.pdf
 #ls $OUTPUT_DIR/RunII/passPreSel/fourTag/SR_vs_SB/HH4b/SvB_MA_ps.pdf
@@ -35,17 +39,17 @@ ls $OUTPUT_DIR/Run3/preselection/flavor_mu/channel_sum/mbb.pdf
 #ls $OUTPUT_DIR/RunII/passPreSel/threeTag/SR/Multijet/quadJet_min_dr_close_vs_other_m.pdf 
 
 
-display_section_header "check making the plots from yaml "
-run_command python src/plotting/plot_from_yaml.py --input_yaml \
-        $OUTPUT_DIR/Run3/preselection/flavor_sum/channel_sum/mbb.yaml \
-        $OUTPUT_DIR/Run3/preselection/flavor_e/channel_sum/mbb.yaml \
-        $OUTPUT_DIR/Run3/preselection/flavor_mu/channel_sum/mbb.yaml \
-        --out $OUTPUT_DIR/test_plots_from_yaml 
-    
-display_section_header "Checking if pdf files exist"
-ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_sum/channel_sum/mbb.pdf
-ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_e/channel_sum/mbb.pdf
-ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_mu/channel_sum/mbb.pdf
+echo "############### check making the plots from yaml "
+python src/plotting/plot_from_yaml.py --input_yaml \
+       $OUTPUT_DIR/Run3/preselection/flavor_sum/channel_sum/Hbb_mass.yaml \
+       $OUTPUT_DIR/Run3/preselection/flavor_e/channel_sum/Hbb_mass.yaml \
+       $OUTPUT_DIR/Run3/preselection/flavor_mu/channel_sum/Hbb_mass.yaml \
+       --out $OUTPUT_DIR/test_plots_from_yaml 
+ 
+echo "############### Checking if pdf files exist"
+ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_sum/channel_sum/Hbb_mass.pdf
+ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_e/channel_sum/Hbb_mass.pdf
+ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_mu/channel_sum/Hbb_mass.pdf
 # ls $OUTPUT_DIR/test_plots_from_yaml/RunII/passPreSel/fourTag/SR/SvB_MA_ps_zh.pdf
 # ls $OUTPUT_DIR/test_plots_from_yaml/RunII/passPreSel/fourTag/SR/SvB_MA_ps_hh.pdf
 # ls $OUTPUT_DIR/test_plots_from_yaml/RunII/passPreSel/fourTag/SR_vs_SB/data/SvB_MA_ps.pdf

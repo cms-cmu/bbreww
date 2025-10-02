@@ -25,9 +25,9 @@ def lepton_preselection(events, lepton_flavour, params, id):
         # Requirements on isolation and id
         passes_iso = leptons.pfIsoId >= cuts.iso
         passes_id = leptons[cuts.id]
-        
+
         good_leptons = passes_pt & passes_eta & passes_iso & passes_id
-    
+
     return good_leptons
 
 
@@ -59,9 +59,9 @@ def jet_preselection(events, params):
     jets = events.Jet
     nominal_cuts = params.object_preselection.Jet.nominal
     soft_cuts = params.object_preselection.Jet.soft
-    
+
     nominal_pt = jets.pt > nominal_cuts.pt
-    soft_pt = (nominal_cuts.pt > jets.pt) & (jets.pt > soft_cuts.pt)
+    soft_pt =  (jets.pt > soft_cuts.pt) & (jets.pt < nominal_cuts.pt)
     presel_pt = jets.pt > soft_cuts.pt
     passes_eta = abs(jets.eta) < soft_cuts.eta
     passes_jetId  = (jets.jetId & soft_cuts.jetId) == 2
@@ -82,9 +82,9 @@ def ak8_jet_preselection(fat_jets, params):
     passes_btag_WP = fat_jets.particleNetWithMass_HbbvsQCD > cuts.btagWP
 
     good_jets = passes_pt & passes_eta & passes_msoftdrop & passes_nsubjettiness_ratio & passes_btag_WP
-    
+
     return good_jets
-    
+
 
 def tau_preselection(events, params, id):
     taus = events.Tau
@@ -97,7 +97,7 @@ def tau_preselection(events, params, id):
     passes_deeptauid = ((events.Tau.idDeepTau2018v2p5VSe >= cuts.wp_e) &
                         (events.Tau.idDeepTau2018v2p5VSmu >= cuts.wp_mu) &
                         (events.Tau.idDeepTau2018v2p5VSjet >= cuts.wp_jet))
-    
+
     passes_decayMode= ((taus.decayMode == 0) |
                         (taus.decayMode == 1) |
                         (taus.decayMode == 2) |

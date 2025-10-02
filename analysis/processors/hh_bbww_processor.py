@@ -178,16 +178,6 @@ class analysis(processor.ProcessorABC):
         )
         weights = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, self.year, self.is_mc)
         events['weight'] = weights.weight()
-        ##
-        signal_region = elliptical_region(events.mbb, events.bb_dr, 105, 1.5, 70, 1.51 ) # elliptical signal region
-        control_region = ((~signal_region) 
-                          & elliptical_region(events.mbb, events.bb_dr, 105, 1.5, 110, 2.38))
-                          # sideband TTbar control region 
-        
-        events['region'] = ak.zip({
-            'SR': ak.fill_none(signal_region, False),
-            'CR': ak.fill_none(control_region, False)
-        }) 
 
         #study sequential cutflow (get weights and events after each cut)
         if not shift_name:
@@ -203,11 +193,10 @@ class analysis(processor.ProcessorABC):
 
         selected_events = Hbb_candidate_selection(selected_events) # select H->bb candidates
 
-        signal_region = ((selected_events.Hbb_cand.mass > 75) & (selected_events.Hbb_cand.mass < 135)
-                        & (selected_events.Hbb_cand.dr > 0.85) & (selected_events.Hbb_cand.dr < 2.15)) # elliptical signal region
-        control_region = ((selected_events.Hbb_cand.mass > 55) & (selected_events.Hbb_cand.mass < 155)
-                        & (selected_events.Hbb_cand.dr > 0.42) & (selected_events.Hbb_cand.dr < 2.58)
-                        & ~signal_region) # sideband TTbar control region
+        signal_region = elliptical_region(events.mbb, events.bb_dr, 105, 1.5, 70, 1.51 ) # elliptical signal region
+        control_region = ((~signal_region) 
+                          & elliptical_region(events.mbb, events.bb_dr, 105, 1.5, 110, 2.38))
+                          # sideband TTbar control region 
 
         selected_events['region'] = ak.zip({
             'SR': ak.fill_none(signal_region, False),

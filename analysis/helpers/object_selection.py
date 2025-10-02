@@ -55,8 +55,50 @@ def jet_selection(events, params, year):
 
 
     j_soft = j_clean[j_clean.issoft]
-    events['nsoftjets']= ak.num(j_soft, axis=1)
-    ####
+    events['j_nsoft']= ak.num(j_soft, axis=1)
+    events['njets'] = ak.fill_none(ak.num(j_clean[j_clean.isnominal],axis=1),np.nan)
+    events['has_3_presel_jets'] = (ak.num(j_init[j_init.preselected],axis=1)>2)
+    events['has_exactly_3_presel_jets'] = (ak.num(j_init[j_init.preselected],axis=1)==3)
+    events['has_4_presel_jets'] = (ak.num(j_init[j_init.preselected],axis=1)>3)
+
+    #
+    #  b-jet selection
+    #
+    bTag_key = 'btagPNetB' if '202' in year else 'particleNetAK4_B' # use particleNET b-tagging
+    btag_threshold = params[year].btagWP.M # using medium working point
+
+    j_candidates = j_candidates[ak.argsort(getattr(j_candidates,bTag_key), axis=1, ascending=False)]#particleNetAK4_B btagPNetB
+    j_candidates["btagScore"] = getattr(j_candidates,bTag_key)
+    events["j_candidates_test"] = j_candidates
+    j_candidates_nom = j_candidates[j_candidates.isnominal]
+    events['nom_njets4'] = (ak.num(j_candidates_nom, axis=1) > 3)
+    events['nom_njets3'] = (ak.num(j_candidates_nom, axis=1) == 3)
+
+    j_btagged = j_candidates_nom[getattr(j_candidates_nom,bTag_key) > btag_threshold]
+    b_cands = j_btagged[:,:2]
+    b_cands = b_cands[ak.argsort(b_cands.pt, axis=1, ascending=False)] #particleNetAK4_B btagPNetB
+    events['b_cands'] = b_cands
+
+    events['has_2_bjets'] = ak.num(j_btagged, axis=1) >= 2
+    events['has_1_bjet']  = ak.num(j_btagged, axis=1) >= 1 #add for cutflow plot
+
+
+    #
+    # nominal non-bjet selection
+    #
+    q_cands_nom = j_candidates_nom[:,2:] # ak.mask(j_candidates_nom[:,2:], ak.num(j_candidates_nom[:,2:],axis=1)>=2) # require 2 or more q-jet candidates
+    q_cands_nom = q_cands_nom[ak.argsort(q_cands_nom.pt, axis=1, ascending=False)] # pT sort the jets
+    events["q_cands_nom"] = ak.mask(q_cands_nom[:,:2], ak.num(j_candidates_nom[:,2:],axis=1)>=2)
+
+    #
+    # Soft Jet Selection
+    #
+    j_candidates_soft = j_candidates[j_candidates.issoft]
+
+    q_cands_soft = ak.concatenate([q_cands_nom, j_candidates_soft], axis=1)
+    q_cands_soft = q_cands_soft[ak.argsort(q_cands_soft.pt, axis=1, ascending=False)] # pT sort the jets
+    events['q_cands_soft'] = q_cands_soft
+
 
     return events
 

@@ -1,0 +1,54 @@
+WtoLNu-2Jets_1J_2022_preEE:
+  count: 141406789
+  cutflow:
+    e_region:
+      events:
+        all: 17988321.0
+        lumimask: 17988321.0
+        njets: 268794.0
+        oneBjet: 2045127.0
+        passNoiseFilter: 17987097.0
+        trigger: 14493080.0
+      weights:
+        all: 874265622464.5312
+        lumimask: 874265622464.5312
+        njets: 13073036807.4375
+        oneBjet: 100272071693.96875
+        passNoiseFilter: 874199360975.5312
+        trigger: 706976759678.6875
+    mu_region:
+      events:
+        all: 23477648.0
+        lumimask: 23477648.0
+        njets: 354022.0
+        oneBjet: 2932926.0
+        passNoiseFilter: 23475588.0
+        trigger: 21227451.0
+      weights:
+        all: 1139329031267.4375
+        lumimask: 1139329031267.4375
+        njets: 17306475451.375
+        oneBjet: 143772246205.4375
+        passNoiseFilter: 1139224314450.0
+        trigger: 1031099467482.2812
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2022_preEE/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2022_preEE/picoAOD.chunk1.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v4', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_WtoLNu-2Jets_1J_2022_preEE.yml',
+      output_path='output/skimmer', years=['2022_preEE'], datasets=['WtoLNu-2Jets_1J'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    date: '2025-09-11 11:11:09'
+    diff: ''
+    hash: 4d439ab348f066ac1fb0aac8adf8287d0bd5c191
+  saved_events: 622816
+  sumw: 6745765114436.0
+  sumw2: 1.374846379159978e+18
+  sumw2_raw: 1.374846042104132e+18
+  sumw_raw: 6745765160003.126
+  total_events: 141406789

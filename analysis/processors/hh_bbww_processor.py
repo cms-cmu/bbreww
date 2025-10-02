@@ -193,16 +193,16 @@ class analysis(processor.ProcessorABC):
 
         selected_events = Hbb_candidate_selection(selected_events) # select H->bb candidates
 
-        signal_region = elliptical_region(events.mbb, events.bb_dr, 105, 1.5, 70, 1.51 ) # elliptical signal region
+        signal_region = elliptical_region(selected_events.Hbb_cand.mass, selected_events.Hbb_cand.dr, 
+                                         105, 1.5, 70, 1.51 ) # elliptical signal region
         control_region = ((~signal_region) 
-                          & elliptical_region(events.mbb, events.bb_dr, 105, 1.5, 110, 2.38))
-                          # sideband TTbar control region 
+                          & elliptical_region(selected_events.Hbb_cand.mass, selected_events.Hbb_cand.dr, 
+                                              105, 1.5, 110, 2.38)) # sideband TTbar control region 
 
         selected_events['region'] = ak.zip({
             'SR': ak.fill_none(signal_region, False),
             'CR': ak.fill_none(control_region, False)
         })
-
 
         selected_events = candidate_selection(selected_events, self.params, self.year) # select HH->bbWW candidates
 

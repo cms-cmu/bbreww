@@ -19,6 +19,7 @@ def Hbb_candidate_selection(events):
     return events
 
 
+
 def candidate_selection(events, params, year):
 
     #
@@ -33,7 +34,6 @@ def candidate_selection(events, params, year):
 
     events['Wqq_cand'] = Wqq_cand
 
-
     #
     # soft jets analysis
     #
@@ -46,14 +46,14 @@ def candidate_selection(events, params, year):
 
     jj_i = ak.argcombinations(q_cands_soft, 2, replacement = False, fields=["j1","j2"]) #take dijet combinations
     jj_i = jj_i[(q_cands_soft[jj_i.j1] - q_cands_soft[jj_i.j2]).eta<2.0]
-    jj_i = jj_i[(q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2]).mass<120.0] #dijet cuts
-    events['dijet_combs'] = jj_i
+    #jj_i = jj_i[(q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2]).mass<120.0] #dijet cuts
+    events['dijet_combs_new'] = jj_i
 
-    #events['j_sublead'] =  j_candidates[jj_i.j2] # subleading jet
+    events['j_lead_new'] =  q_cands_soft[jj_i.j1] # leading jet
+    events['j_sublead_new'] =  q_cands_soft[jj_i.j2] # subleading jet
 
     events['qq_mass'] = ak.fill_none((q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2]).mass,np.nan) # plotting gives issues with None values
     events['qq_soft'] = ak.pad_none(q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2], 3, axis=1)
-
 
     return events
 

@@ -15,7 +15,7 @@ class cutflow_bbWW(cutflow):
         self._cutflow_CR= {}
         self.selections = selections
 
-    def fill(self, events, cut_name, cut_list, weight, fill_region: bool = False, skim: bool = False ):
+    def fill(self, events, cut_name, cut_list, weight, fill_flavour: bool = False, fill_region: bool = False, skim: bool = False):
 
         if 'oneE' in cut_list: cut_list.remove('oneE')
         if 'oneM' in cut_list: cut_list.remove('oneM')
@@ -29,8 +29,7 @@ class cutflow_bbWW(cutflow):
             self._cutflow_CR[cut_name] = (0, 0)    # weighted, raw
 
         # fill with regions
-
-        if fill_region:
+        if fill_flavour:
             ele_cut = events[cut_name] & events.flavor.e
             mu_cut =  events[cut_name] & events.flavor.mu
             SR_cut =  events[cut_name] & events.region.SR

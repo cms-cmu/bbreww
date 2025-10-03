@@ -15,7 +15,7 @@ from src.physics.objects.jet_corrections import apply_jerc_corrections
 from src.physics.event_weights import add_weights
 
 from bbreww.analysis.helpers.common import update_events, add_lepton_sfs
-from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
+from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut, chi_sq_new, chi_sq_cut_new
 from bbreww.analysis.helpers.cutflow import cutflow_bbWW
 from bbreww.analysis.helpers.dump_friendtrees import dump_input_friend
 from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec
@@ -133,6 +133,8 @@ class analysis(processor.ProcessorABC):
         selection.add('jet_veto_mask', jet_veto_maps)
 
         selection_list = {
+            #'preselection_noTwoBJets': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'oneEorM', 'tau_veto', 'mll_cut', 'njets_ak8' ],
+            #'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'oneEorM', 'tau_veto', 'mll_cut', 'njets_ak8' ],
             'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'oneEorM', 'tau_veto', 'mll_cut', 'njets_ak8', 'twoBjets' ],
         }
         selection_list['nominal_4j2b'] = selection_list['preselection'] + ['nom_njets4', 'twoBjets']
@@ -163,7 +165,7 @@ class analysis(processor.ProcessorABC):
         )
         weights = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, self.year, self.is_mc)
         events['weight'] = weights.weight()
-        ##
+
 
         #study sequential cutflow (get weights and events after each cut)
         if not shift_name:
@@ -172,7 +174,8 @@ class analysis(processor.ProcessorABC):
             cumulative_cuts = []
             for cut_name in full_sel_list:
                 cumulative_cuts.append(cut_name)
-                cutflow.fill(events, cut_name, cumulative_cuts, weights.weight(), fill_region = False)
+                cutflow.fill(events, cut_name, cumulative_cuts, weights.weight())
+
 
         selected_events = events[events.preselection]
 
@@ -190,11 +193,7 @@ class analysis(processor.ProcessorABC):
         })
 
 
-
-
         selected_events = candidate_selection(selected_events, self.params, self.year) # select HH->bbWW candidates
-
-
 
         del events
         selected_events = chi_sq(selected_events) # chi square selection and calculation
@@ -258,7 +257,7 @@ class analysis(processor.ProcessorABC):
             # add cuts for different regions
             cutflow_list = ['nominal_4j2b','nominal_3j2b', 'lowpt_4j2b', 'lowpt_3j2b', 'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b']
             for cuts in cutflow_list:
-                cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True)
+                cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True, fill_flavour = True)
             cutflow.add_output(output['events_processed'], self.dataset)
 
 

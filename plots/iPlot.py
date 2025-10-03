@@ -20,20 +20,21 @@ from src.plotting.plots import (
     makePlot, make2DPlot, load_hists,
     read_axes_and_cuts, parse_args, print_cfg
 )
-import src.plotting.iPlot_config as cfg
+from src.plotting.iPlot_config import plot_config
+cfg = plot_config()
 
 # Constants
 DEFAULT_OUTPUT_FILE = "test.pdf"
 
 
-def ls(option: str = "var", var_match: Optional[str] = None) -> None:
+def ls(option: str = "var", var_match: Optional[str] = None, hist_key = 'hists') -> None:
     """List available variables in the configuration.
 
     Args:
         option: The type of labels to list (default: "var")
         var_match: Optional string to filter variables by
     """
-    for k in cfg.axisLabels[option]:
+    for k in cfg.axisLabelsDict[hist_key][option]:
         if var_match:
             if var_match in k:
                 print(k)
@@ -132,10 +133,10 @@ def handle_wildcards(var: Union[str, List[str]]) -> bool:
         True if wildcards were found and handled, False otherwise
     """
     if isinstance(var, str) and "*" in var:
-        ls(var_match=var.replace("*", ""))
+        ls(var_match=var.replace("*", ""), hist_key=cfg.hist_key)
         return True
     if isinstance(var, list) and var[0].find("*") != -1:
-        ls(var_match=var[0].replace("*", ""))
+        ls(var_match=var[0].replace("*", ""), hist_key=cfg.hist_key)
         return True
     return False
 
@@ -163,9 +164,6 @@ def plot(var: Union[str, List[str]] = 'selJets.pt', *,
     if kwargs.get("debug", False):
         print(f'kwargs = {kwargs}')
 
-    # Handle wildcard matching
-    if handle_wildcards(var):
-        return
 
     # Add channel to axis_opts
     if flavor:
@@ -173,12 +171,35 @@ def plot(var: Union[str, List[str]] = 'selJets.pt', *,
     if channel:
         axis_opts["channel"] = channel
 
+    # Configure the histogram key based on the cut
+    cfg.set_hist_key("hists")
+    if "4j2b" in cut:
+        cfg.set_hist_key("hists_4j2b")
+
+
+    # Handle wildcard matching
+    if handle_wildcards(var):
+        return
+
+
+
+
+
     opts = {"var": var,
             "cut": cut,
             "axis_opts": axis_opts,
             "outputFolder": cfg.outputFolder
             }
     opts.update(kwargs)
+
+    if type(cut) is list:
+        hist_key_list = []
+        for _c in cut:
+            if "4j2b" in _c:
+                hist_key_list.append("hists_4j2b")
+            else:
+                hist_key_list.append("hists")
+        opts.update({"hist_key_list": hist_key_list})
 
     if len(cfg.hists) > 1:
         opts["fileLabels"] = cfg.fileLabels
@@ -252,6 +273,7 @@ def plot2d(var: str = 'quadJet_selected.lead_vs_subl_m',
 def initialize_config() -> None:
     """Initialize the configuration from command line arguments."""
     args = parse_args()
+
     cfg.plotConfig = load_config_bbWW(args.metadata)
     cfg.outputFolder = args.outputFolder
     cfg.combine_input_files = args.combine_input_files
@@ -261,8 +283,8 @@ def initialize_config() -> None:
 
     cfg.hists = load_hists(args.inputFile)
     cfg.fileLabels = args.fileLabels
-    cfg.axisLabels, cfg.cutList = read_axes_and_cuts(cfg.hists, cfg.plotConfig)
-
+    cfg.axisLabelsDict, cfg.cutListDict = read_axes_and_cuts(cfg.hists, cfg.plotConfig, hist_keys=['hists','hists_4j2b'])
+    cfg.set_hist_key("hists")
 
 if __name__ == '__main__':
     initialize_config()

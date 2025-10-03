@@ -4,9 +4,6 @@ import awkward as ak
 import logging
 from src.skimmer.cutflow import cutflow
 
-########### IT IS NOT READY
-########### NEEDS WORK
-
 class cutflow_bbWW(cutflow):
     def __init__(self, selections=None, weights=None):
         self._cutflow_ele = {}
@@ -25,8 +22,9 @@ class cutflow_bbWW(cutflow):
         if cut_name not in self._cutflow_ele:
             self._cutflow_ele[cut_name] = (0, 0)    # weighted, raw
             self._cutflow_mu[cut_name] = (0, 0)    # weighted, raw
-            self._cutflow_SR[cut_name] = (0, 0)    # weighted, raw
-            self._cutflow_CR[cut_name] = (0, 0)    # weighted, raw
+            if fill_region:
+                self._cutflow_SR[cut_name] = (0, 0)    # weighted, raw
+                self._cutflow_CR[cut_name] = (0, 0)    # weighted, raw
 
         # fill with regions
         if fill_flavour:

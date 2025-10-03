@@ -13,7 +13,8 @@ import numpy as np
 sys.path.insert(0, os.getcwd())
 from bbreww.plots.plots import load_config_bbWW
 from src.plotting.plots import makePlot, make2DPlot, load_hists, read_axes_and_cuts, parse_args
-import src.plotting.iPlot_config as cfg
+from src.plotting.iPlot_config import plot_config
+cfg = plot_config()
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -23,6 +24,7 @@ def doPlots(varList, debug=False):
         varList = ["qq_mass", "Hbb.mass","mbb_vs_bb_dr"]
 
     cut = "preselection"
+    cfg.set_hist_key("hists")
 
     #
     #  Nominal 1D Plots
@@ -127,7 +129,7 @@ def doPlots(varList, debug=False):
             for process in ["HHbbWW", "TTbar"]:
 
                 #
-                # Comp Cuts
+                # Comp channels
                 #
                 for channel in ["hadronic_W", "leptonic_W", sum]:
 
@@ -136,6 +138,7 @@ def doPlots(varList, debug=False):
                     plot_args  = {}
                     plot_args["var"] = v
                     plot_args["cut"] = ["preselection", "nominal_4j2b"]
+                    plot_args["hist_key_list"] = ["hists", "hists_4j2b"]
                     plot_args["axis_opts"] = {"flavor":flavor, "channel":channel}
                     plot_args["outputFolder"] = args.outputFolder
                     plot_args["process"] = process
@@ -187,7 +190,7 @@ if __name__ == '__main__':
 
     cfg.hists = load_hists(args.inputFile)
     cfg.fileLabels = args.fileLabels
-    cfg.axisLabels, cfg.cutList = read_axes_and_cuts(cfg.hists, cfg.plotConfig)
+    cfg.axisLabelsDict, cfg.cutListDict = read_axes_and_cuts(cfg.hists, cfg.plotConfig, hist_keys=['hists','hists_4j2b'])
 
     if args.list_of_hists:
         varList = args.list_of_hists

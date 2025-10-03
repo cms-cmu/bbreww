@@ -46,110 +46,70 @@ data__SingleMuon_2022_preEEC:
         trigger: 956.0
         jet_veto_mask: 893.0
         oneEorM: 893.0
-        oneBjet: 407.0
-        twoBjets: 98.0
-        tau_veto: 95.0
-        njets_ak8: 63.0
-        mll_cut: 61.0
-        nominal_4j2b: 27.0
-        nominal_3j2b: 26.0
-        lowpt_4j2b: 16.0
-        lowpt_3j2b: 16.0
-        chi_sq_nom_4j2b: 13.0
-        chi_sq_nom_3j2b: 7.0
-        chi_sq_lowpt_4j2b: 9.0
+        oneBjet: 406.0
+        twoBjets: 109.0
+        tau_veto: 106.0
+        njets_ak8: 74.0
+        mll_cut: 72.0
+        nominal_4j2b: 28.0
+        nominal_3j2b: 36.0
+        lowpt_4j2b: 21.0
+        lowpt_3j2b: 21.0
+        chi_sq_nom_4j2b: 12.0
+        chi_sq_nom_3j2b: 8.0
+        chi_sq_lowpt_4j2b: 10.0
       weights:
         lumimask: 956.0
         passNoiseFilter: 956.0
         trigger: 956.0
         jet_veto_mask: 893.0
         oneEorM: 893.0
-        oneBjet: 407.0
-        twoBjets: 98.0
-        tau_veto: 95.0
-        njets_ak8: 63.0
-        mll_cut: 61.0
-        nominal_4j2b: 27.0
-        nominal_3j2b: 26.0
-        lowpt_4j2b: 16.0
-        lowpt_3j2b: 16.0
-        chi_sq_nom_4j2b: 13.0
-        chi_sq_nom_3j2b: 7.0
-        chi_sq_lowpt_4j2b: 9.0
+        oneBjet: 406.0
+        twoBjets: 109.0
+        tau_veto: 106.0
+        njets_ak8: 74.0
+        mll_cut: 72.0
+        nominal_4j2b: 28.0
+        nominal_3j2b: 36.0
+        lowpt_4j2b: 21.0
+        lowpt_3j2b: 21.0
+        chi_sq_nom_4j2b: 12.0
+        chi_sq_nom_3j2b: 8.0
+        chi_sq_lowpt_4j2b: 10.0
     SR:
       events:
-        lumimask: 0.0
-        passNoiseFilter: 0.0
-        trigger: 0.0
-        jet_veto_mask: 0.0
-        oneEorM: 0.0
-        oneBjet: 0.0
-        twoBjets: 0.0
-        tau_veto: 0.0
-        njets_ak8: 0.0
-        mll_cut: 0.0
-        nominal_4j2b: 6.0
-        nominal_3j2b: 6.0
-        lowpt_4j2b: 2.0
+        nominal_4j2b: 5.0
+        nominal_3j2b: 7.0
+        lowpt_4j2b: 4.0
         lowpt_3j2b: 4.0
-        chi_sq_nom_4j2b: 4.0
+        chi_sq_nom_4j2b: 3.0
         chi_sq_nom_3j2b: 2.0
-        chi_sq_lowpt_4j2b: 2.0
+        chi_sq_lowpt_4j2b: 3.0
       weights:
-        lumimask: 0.0
-        passNoiseFilter: 0.0
-        trigger: 0.0
-        jet_veto_mask: 0.0
-        oneEorM: 0.0
-        oneBjet: 0.0
-        twoBjets: 0.0
-        tau_veto: 0.0
-        njets_ak8: 0.0
-        mll_cut: 0.0
-        nominal_4j2b: 6.0
-        nominal_3j2b: 6.0
-        lowpt_4j2b: 2.0
+        nominal_4j2b: 5.0
+        nominal_3j2b: 7.0
+        lowpt_4j2b: 4.0
         lowpt_3j2b: 4.0
-        chi_sq_nom_4j2b: 4.0
+        chi_sq_nom_4j2b: 3.0
         chi_sq_nom_3j2b: 2.0
-        chi_sq_lowpt_4j2b: 2.0
+        chi_sq_lowpt_4j2b: 3.0
     CR:
       events:
-        lumimask: 0.0
-        passNoiseFilter: 0.0
-        trigger: 0.0
-        jet_veto_mask: 0.0
-        oneEorM: 0.0
-        oneBjet: 0.0
-        twoBjets: 0.0
-        tau_veto: 0.0
-        njets_ak8: 0.0
-        mll_cut: 0.0
-        nominal_4j2b: 3.0
-        nominal_3j2b: 7.0
+        nominal_4j2b: 6.0
+        nominal_3j2b: 10.0
         lowpt_4j2b: 7.0
-        lowpt_3j2b: 3.0
-        chi_sq_nom_4j2b: 1.0
-        chi_sq_nom_3j2b: 4.0
-        chi_sq_lowpt_4j2b: 5.0
+        lowpt_3j2b: 5.0
+        chi_sq_nom_4j2b: 2.0
+        chi_sq_nom_3j2b: 3.0
+        chi_sq_lowpt_4j2b: 3.0
       weights:
-        lumimask: 0.0
-        passNoiseFilter: 0.0
-        trigger: 0.0
-        jet_veto_mask: 0.0
-        oneEorM: 0.0
-        oneBjet: 0.0
-        twoBjets: 0.0
-        tau_veto: 0.0
-        njets_ak8: 0.0
-        mll_cut: 0.0
-        nominal_4j2b: 3.0
-        nominal_3j2b: 7.0
+        nominal_4j2b: 6.0
+        nominal_3j2b: 10.0
         lowpt_4j2b: 7.0
-        lowpt_3j2b: 3.0
-        chi_sq_nom_4j2b: 1.0
-        chi_sq_nom_3j2b: 4.0
-        chi_sq_lowpt_4j2b: 5.0
+        lowpt_3j2b: 5.0
+        chi_sq_nom_4j2b: 2.0
+        chi_sq_nom_3j2b: 3.0
+        chi_sq_lowpt_4j2b: 3.0
 data__SingleMuon_2022_preEED:
   n_events: 1001
   sum_genweights: 1001
@@ -161,9 +121,9 @@ data__SingleMuon_2022_preEED:
         trigger: 12.0
         jet_veto_mask: 11.0
         oneEorM: 11.0
-        oneBjet: 8.0
-        twoBjets: 4.0
-        tau_veto: 4.0
+        oneBjet: 9.0
+        twoBjets: 5.0
+        tau_veto: 5.0
         njets_ak8: 1.0
         mll_cut: 1.0
         nominal_4j2b: 1.0
@@ -179,9 +139,9 @@ data__SingleMuon_2022_preEED:
         trigger: 12.0
         jet_veto_mask: 11.0
         oneEorM: 11.0
-        oneBjet: 8.0
-        twoBjets: 4.0
-        tau_veto: 4.0
+        oneBjet: 9.0
+        twoBjets: 5.0
+        tau_veto: 5.0
         njets_ak8: 1.0
         mll_cut: 1.0
         nominal_4j2b: 1.0
@@ -198,107 +158,67 @@ data__SingleMuon_2022_preEED:
         trigger: 989.0
         jet_veto_mask: 922.0
         oneEorM: 922.0
-        oneBjet: 401.0
-        twoBjets: 92.0
-        tau_veto: 91.0
-        njets_ak8: 64.0
-        mll_cut: 63.0
-        nominal_4j2b: 38.0
-        nominal_3j2b: 15.0
-        lowpt_4j2b: 10.0
-        lowpt_3j2b: 14.0
-        chi_sq_nom_4j2b: 25.0
-        chi_sq_nom_3j2b: 4.0
-        chi_sq_lowpt_4j2b: 6.0
+        oneBjet: 400.0
+        twoBjets: 101.0
+        tau_veto: 100.0
+        njets_ak8: 72.0
+        mll_cut: 71.0
+        nominal_4j2b: 41.0
+        nominal_3j2b: 20.0
+        lowpt_4j2b: 13.0
+        lowpt_3j2b: 16.0
+        chi_sq_nom_4j2b: 26.0
+        chi_sq_nom_3j2b: 6.0
+        chi_sq_lowpt_4j2b: 7.0
       weights:
         lumimask: 989.0
         passNoiseFilter: 989.0
         trigger: 989.0
         jet_veto_mask: 922.0
         oneEorM: 922.0
-        oneBjet: 401.0
-        twoBjets: 92.0
-        tau_veto: 91.0
-        njets_ak8: 64.0
-        mll_cut: 63.0
-        nominal_4j2b: 38.0
-        nominal_3j2b: 15.0
-        lowpt_4j2b: 10.0
-        lowpt_3j2b: 14.0
-        chi_sq_nom_4j2b: 25.0
-        chi_sq_nom_3j2b: 4.0
-        chi_sq_lowpt_4j2b: 6.0
+        oneBjet: 400.0
+        twoBjets: 101.0
+        tau_veto: 100.0
+        njets_ak8: 72.0
+        mll_cut: 71.0
+        nominal_4j2b: 41.0
+        nominal_3j2b: 20.0
+        lowpt_4j2b: 13.0
+        lowpt_3j2b: 16.0
+        chi_sq_nom_4j2b: 26.0
+        chi_sq_nom_3j2b: 6.0
+        chi_sq_lowpt_4j2b: 7.0
     SR:
       events:
-        lumimask: 0.0
-        passNoiseFilter: 0.0
-        trigger: 0.0
-        jet_veto_mask: 0.0
-        oneEorM: 0.0
-        oneBjet: 0.0
-        twoBjets: 0.0
-        tau_veto: 0.0
-        njets_ak8: 0.0
-        mll_cut: 0.0
-        nominal_4j2b: 9.0
+        nominal_4j2b: 10.0
         nominal_3j2b: 2.0
-        lowpt_4j2b: 1.0
+        lowpt_4j2b: 2.0
         lowpt_3j2b: 2.0
-        chi_sq_nom_4j2b: 3.0
+        chi_sq_nom_4j2b: 4.0
         chi_sq_nom_3j2b: 0.0
-        chi_sq_lowpt_4j2b: 0.0
+        chi_sq_lowpt_4j2b: 1.0
       weights:
-        lumimask: 0.0
-        passNoiseFilter: 0.0
-        trigger: 0.0
-        jet_veto_mask: 0.0
-        oneEorM: 0.0
-        oneBjet: 0.0
-        twoBjets: 0.0
-        tau_veto: 0.0
-        njets_ak8: 0.0
-        mll_cut: 0.0
-        nominal_4j2b: 9.0
+        nominal_4j2b: 10.0
         nominal_3j2b: 2.0
-        lowpt_4j2b: 1.0
+        lowpt_4j2b: 2.0
         lowpt_3j2b: 2.0
-        chi_sq_nom_4j2b: 3.0
+        chi_sq_nom_4j2b: 4.0
         chi_sq_nom_3j2b: 0.0
-        chi_sq_lowpt_4j2b: 0.0
+        chi_sq_lowpt_4j2b: 1.0
     CR:
       events:
-        lumimask: 0.0
-        passNoiseFilter: 0.0
-        trigger: 0.0
-        jet_veto_mask: 0.0
-        oneEorM: 0.0
-        oneBjet: 0.0
-        twoBjets: 0.0
-        tau_veto: 0.0
-        njets_ak8: 0.0
-        mll_cut: 0.0
-        nominal_4j2b: 10.0
-        nominal_3j2b: 3.0
-        lowpt_4j2b: 3.0
-        lowpt_3j2b: 3.0
+        nominal_4j2b: 12.0
+        nominal_3j2b: 2.0
+        lowpt_4j2b: 2.0
+        lowpt_3j2b: 1.0
         chi_sq_nom_4j2b: 8.0
         chi_sq_nom_3j2b: 0.0
-        chi_sq_lowpt_4j2b: 2.0
+        chi_sq_lowpt_4j2b: 0.0
       weights:
-        lumimask: 0.0
-        passNoiseFilter: 0.0
-        trigger: 0.0
-        jet_veto_mask: 0.0
-        oneEorM: 0.0
-        oneBjet: 0.0
-        twoBjets: 0.0
-        tau_veto: 0.0
-        njets_ak8: 0.0
-        mll_cut: 0.0
-        nominal_4j2b: 10.0
-        nominal_3j2b: 3.0
-        lowpt_4j2b: 3.0
-        lowpt_3j2b: 3.0
+        nominal_4j2b: 12.0
+        nominal_3j2b: 2.0
+        lowpt_4j2b: 2.0
+        lowpt_3j2b: 1.0
         chi_sq_nom_4j2b: 8.0
         chi_sq_nom_3j2b: 0.0
-        chi_sq_lowpt_4j2b: 2.0
+        chi_sq_lowpt_4j2b: 0.0

@@ -53,7 +53,6 @@ def jet_selection(events, params, year):
     # pt sort to take higher pT when b-tag scores are tied
     j_candidates = j_init[ak.argsort(j_init.pt, axis=1, ascending=False)]
 
-
     j_soft = j_clean[j_clean.issoft]
     events['nsoftjets']= ak.num(j_soft, axis=1)
     events['njets'] = ak.fill_none(ak.num(j_clean[j_clean.isnominal],axis=1),np.nan)
@@ -61,6 +60,9 @@ def jet_selection(events, params, year):
     events['has_exactly_3_presel_jets'] = (ak.num(j_init[j_init.preselected],axis=1)==3)
     events['has_4_presel_jets'] = (ak.num(j_init[j_init.preselected],axis=1)>3)
 
+    events['HT'] = ak.sum(j_init.pt, axis=1) # HT of all jets
+    events['HTsoft'] = ak.sum(j_soft.pt, axis=1) # HT of soft jets
+    
     #
     #  b-jet selection
     #
@@ -73,7 +75,7 @@ def jet_selection(events, params, year):
     j_candidates_nom = j_candidates[j_candidates.isnominal]
     events['nom_njets4'] = (ak.num(j_candidates_nom, axis=1) > 3)
     events['nom_njets3'] = (ak.num(j_candidates_nom, axis=1) == 3)
-
+    
     j_btagged = j_candidates_nom[getattr(j_candidates_nom,bTag_key) > btag_threshold]
     b_cands = j_btagged[:,:2]
     b_cands = b_cands[ak.argsort(b_cands.pt, axis=1, ascending=False)] #particleNetAK4_B btagPNetB

@@ -86,7 +86,8 @@ def dump_input_friend(
                     [
                         "njets",
                         "nsoftjets",
-                        "HT"
+                        "HT",
+                        "HTsoft"
 		    ]	
 		],
                 selection,

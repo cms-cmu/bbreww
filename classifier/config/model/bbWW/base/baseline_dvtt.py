@@ -12,15 +12,19 @@ if TYPE_CHECKING:
 
 
 def _roc_data_selection(batch: BatchType):
-    import torch
+    
+    def __call__(self, batch: BatchType):
+        selected = self._select(batch)
+        return {
+            "y_pred": batch[Output.tt_prob][selected],  # Signal probability
+            "y_true": batch[Input.label][selected],
+            "weight": batch[Input.weight][selected],
+        }
 
-    is_data = batch[Input.label].new(MultiClass.indices("data"))
-    is_data = torch.isin(batch[Input.label], is_data)
-    return {
-        "y_pred": batch[Output.tt_prob][is_data],
-        "y_true": batch[Input.label][is_data],
-        "weight": batch[Input.weight][is_data],
-    }
+    def _select(self, batch: BatchType):
+        import torch
+        label = batch[Input.label]
+        return torch.isin(label, label.new_tensor(MultiClass.indices("ttbar", "data")))
 
 
 class Train(HCRTrain):
@@ -41,7 +45,7 @@ class Train(HCRTrain):
         # calculate loss
         cross_entropy = torch.zeros_like(weight)
         cross_entropy[~is_SR] = F.cross_entropy(
-            c_score[~is_SR], batch[Input.label][~is_SR], reduction="none"
+            tt_score[~is_SR], batch[Input.label][~is_SR], reduction="none"
         )
         loss = (cross_entropy * weight).sum() / weight.sum()
         return loss
@@ -49,20 +53,16 @@ class Train(HCRTrain):
     @property
     def rocs(self):
         from src.classifier.ml.benchmarks.multiclass import ROC
-        rocs = []
         
-        if "ttbar" in MultiClass.labels:
-            rocs.append(
-                ROC(
-                    name="ttbar vs data",
-                    selection=roc_nominal_selection,
-                    bins=ROC_BIN,
-                    pos=["ttbar"],
-                    neg=["data"],  # Explicitly specify data as negative class
-                )
+        return[
+            ROC(
+                name="ttbar vs data",
+                selection=_roc_data_selection,
+                bins=ROC_BIN,
+                pos=["ttbar"],
+                neg=["data"]
             )
-        return rocs
-
+        ]
 
 class Eval(HCREval):
     model = "dvtt"

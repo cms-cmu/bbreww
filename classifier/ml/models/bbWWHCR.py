@@ -176,7 +176,7 @@ class HCRModel(Model):
             batch |= {
                 Output.hh_raw: hh,
                 Output.tt_raw: tt,
-                Output.hh_prob: F.softmax(hh, dim=1),
+                Output.hh_prob: F.softmax(torch.stack([hh,tt],dim=1), dim=1),
             }
             sumw = to_num(batch[Input.weight].sum())
             if scalar_funcs is None:
@@ -328,8 +328,7 @@ class HCRModelEval(Model):
         selection = self._splitter.split(batch)[SplitterKeys.validation]
         selector = Selector(selection)
         HH, TT = self._nn(*_HCRInput(batch, self._device, selection))
-        HH_prob = F.softmax(HH, dim=1).cpu()
-        TT_prob = F.softmax(TT, dim=1).cpu()
+        HH_prob = F.softmax(torch.stack([HH,TT],dim=1), dim=1).cpu()
         #q_prob = F.softmax(q, dim=1).cpu()
         #output = {
         #    "q_1234": q_prob[:, 0],

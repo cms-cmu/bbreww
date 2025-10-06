@@ -29,6 +29,7 @@ class _roc_signal_selection:
         label = batch[Input.label]
         return torch.isin(label, label.new_tensor(MultiClass.indices(*_BKG, self.sig)))
 
+
 class Train(HCRTrain):
     argparser = ArgParser(description="Train bbWW Model")
     model = "svb"
@@ -39,7 +40,7 @@ class Train(HCRTrain):
         import torch.nn.functional as F
         
         # Simple binary classification
-        logits = batch[Output.hh_raw]
+        logits = batch[Output.hh_prob]
         labels = batch[Input.label]  # 0 for background files, 1 for signal files
         weight = batch[Input.weight]
         weight[weight < 0] = 0
@@ -58,6 +59,12 @@ class Train(HCRTrain):
                 selection=_roc_signal_selection("signal"),
                 bins=ROC_BIN,
                 pos=("signal",),  # Signal class
+            ),
+            ROC(
+                name="TTbar vs Signal",
+                selection=_roc_signal_selection("signal"),
+                bins=ROC_BIN,
+                pos=("ttbar",),  # ttbar class
             ),
         ]
 

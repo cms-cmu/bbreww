@@ -47,6 +47,7 @@ class Output(GlobalSetting):
     hh_raw: str = "hh_raw"
     tt_raw: str = "tt_raw"
     hh_prob: str = "hh_prob"
+    tt_prob: str = "tt_prob"
 
 # Keep only the regions you're using
 class MassRegion(IntEnum):

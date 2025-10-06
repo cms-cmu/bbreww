@@ -113,14 +113,16 @@ class _signal(_MCDataset):
 
 def _data(self: Data, metadata: str):
     filelists = []
+    data_processes = ["EGamma", "SingleMuon"]
     if "detector" in self.data_sources:
-        for year, eras in CollisionData.eras.items():
-            filelists.append(
-                [
-                    f"label:data,year:{year},source:detector",
-                    *(metadata + f".data.{year}.picoAOD.{e}.files" for e in eras),
-                ]
-            )
+        for process in data_processes:
+            for year, eras in CollisionData.eras.items():
+                filelists.append(
+                    [
+                        f"label:data,year:{year},source:detector",
+                        *(metadata + f".data__{process}.{year}.picoAOD.{e}.files" for e in eras),
+                    ]
+                )
     return filelists
 
 

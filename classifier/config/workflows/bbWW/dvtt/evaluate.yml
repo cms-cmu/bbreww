@@ -10,10 +10,10 @@ main:
 dataset:
   - module: bbWW.dvtt.Eval
     option:
-      - --metadata bbreww/metadata/classifier/datasets_v4
+      - --metadata bbreww/metadata/classifier/datasets_data_v4
       - --max-workers 8 # use 8 workers to fetch metadatas for ROOT files
-      - --mc-processes GluGluToHHTo2B2VLNu2J ttbar
-      - --friends "" bbreww/metadata/classifier/output_friend.json@@classifier_input
+      - --data-source detector
+      - --friends "" bbreww/metadata/classifier/data_friend.json@@classifier_input
 
 model:
   - module: bbWW.base.baseline.Eval
@@ -25,7 +25,7 @@ model:
 analysis:
   - module: kfold.Merge # merge different k-folds
     option:
-      - --name FvT # set the name of friend tree
+      - --name dvtt # set the name of friend tree
       - --step 100000 # set the step to read ROOT files
       - --workers 5
       - --clean # remove the original files

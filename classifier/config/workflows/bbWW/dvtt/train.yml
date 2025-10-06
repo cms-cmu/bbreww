@@ -12,11 +12,17 @@ main:
     - --max-trainers 3 # use 3 workers to train
 
 dataset:
-  - module: bbWW.dvtt.TrainBaseline # use the baseline dataset for FvT training
+  - module: bbWW.dvtt.Train # use the baseline dataset for FvT training
     option:
-      - --metadata bbreww/metadata/classifier/datasets_v4 # choose dataset
-      - --max-workers 20 # use 20 workers to load ROOT files
-      - --mc-processes GluGluToHHTo2B2VLNu2J ttbar
+      - --no-SR # remove SR
+      - --data-source detector # loads data
+      - --metadata bbreww/metadata/classifier/datasets_data_v4 # choose dataset
+      - --max-workers 8 # use 8 workers to load ROOT files
+      - --friends "" bbreww/metadata/classifier/data_friend.json@@classifier_input # set input friend tree
+
+  - module: bbWW.dvtt.TrainBaseline
+    option:
+      - --metadata bbreww/metadata/classifier/datasets_v4 # this module loads TTbar by default
       - --friends "" bbreww/metadata/classifier/output_friend.json@@classifier_input # set input friend tree
 
 model:

@@ -3,11 +3,11 @@ export LPCUSER="akhanal"
 export CERNUSER="a/akhanal"
 export BASE="root://cmseos.fnal.gov//store/user/${LPCUSER}/HHbbWW_classifier_v1"
 export MODEL="${BASE}/classifier/bbWWHCR/"
-export FvT="${BASE}/friend/FvT/"
+export FvT="${BASE}/friend/dvtt/"
 export PLOT="root://eosuser.cern.ch//eos/user/${CERNUSER}/HHbbWW_classifier_v1/"
 #####################
 
-export WFS="classifier/config/workflows/bbWW/dvtt"
+export WFS="bbreww/classifier/config/workflows/bbWW/dvtt"
 
 # the first argument can be a port
 if [ -z "$1" ]; then
@@ -33,6 +33,6 @@ fi
 
 # evaluate with evaluate.yml and common.yml configs
 ./pyml.py \
-    template "{model: ${MODEL}, FvT: ${FvT}}" $WFS/evaluate.yml \
+    template "{model: ${MODEL}, FvT: ${FVT}}" $WFS/evaluate.yml \
     -from $WFS/common.yml \
     -setting Monitor "address: :${port}"

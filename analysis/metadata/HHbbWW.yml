@@ -1,6 +1,6 @@
 runner:
   max_workers: 400 
-  skipbadfiles: True
+  skipbadfiles: False
   workers: 4
   condor_memory: 4GB
   data_tier: picoAOD

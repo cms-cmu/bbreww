@@ -55,7 +55,7 @@ def jet_selection(events, params, year):
 
 
     j_soft = j_clean[j_clean.issoft]
-    events['j_nsoft']= ak.num(j_soft, axis=1)
+    events['nsoftjets']= ak.num(j_soft, axis=1)
     events['njets'] = ak.fill_none(ak.num(j_clean[j_clean.isnominal],axis=1),np.nan)
     events['has_3_presel_jets'] = (ak.num(j_init[j_init.preselected],axis=1)>2)
     events['has_exactly_3_presel_jets'] = (ak.num(j_init[j_init.preselected],axis=1)==3)

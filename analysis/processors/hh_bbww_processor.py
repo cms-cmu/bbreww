@@ -22,7 +22,7 @@ from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec
 from bbreww.analysis.helpers.object_selection import apply_bbWW_preselection, apply_mll_cut
 from bbreww.analysis.helpers.candidate_selection import candidate_selection, Hbb_candidate_selection
 from bbreww.analysis.helpers.gen_process import gen_process, add_gen_info, gen_studies
-from bbreww.analysis.helpers.fill_histograms import fill_histograms
+from bbreww.analysis.helpers.fill_histograms import fill_histograms, fill_histograms_nominal
 
 warnings.filterwarnings("ignore", "Missing cross-reference index for")
 warnings.filterwarnings("ignore", "Please ensure")
@@ -272,20 +272,34 @@ class analysis(processor.ProcessorABC):
                 cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True, fill_flavour = True)
             cutflow.add_output(output['events_processed'], self.dataset)
 
-        hists = {}
-        if self.fill_histograms:
-            hists = fill_histograms(
-                selected_events,
-                processName=self.processName,
-                year=self.year_label,
-                is_mc=self.is_mc,
-                histCuts=['preselection', 'chi_sq_nom_4j2b','chi_sq_nom_3j2b',
-                          'chi_sq_lowpt_4j2b','nominal_4j2b','nominal_3j2b','lowpt_4j2b', 'lowpt_3j2b'],
-                channel_list=['hadronic_W', 'leptonic_W'],
-                flavor_list=['e', 'mu']
+
+
+        hists = fill_histograms(
+            selected_events,
+            processName=self.processName,
+            year=self.year_label,
+            is_mc=self.is_mc,
+            histCuts=['preselection',
+                      'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b',
+                      'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b',
+                      ],
+            channel_list=['hadronic_W', 'leptonic_W'],
+            flavor_list=['e', 'mu']
+        )
+
+        hists_4j2b = fill_histograms_nominal(
+            selected_events[selected_events.nominal_4j2b],
+            processName=self.processName,
+            year=self.year_label,
+            is_mc=self.is_mc,
+            histCuts=['nominal_4j2b',    ],
+            channel_list=['hadronic_W', 'leptonic_W'],
+            flavor_list=['e', 'mu']
             )
 
-        return hists| output | friends
+
+
+        return hists | output | friends | {"hists_4j2b": hists_4j2b["hists"]}
 
     def postprocess(self, accumulator):
         return accumulator

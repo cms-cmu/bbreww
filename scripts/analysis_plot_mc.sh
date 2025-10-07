@@ -26,9 +26,9 @@ python bbreww/plots/makePlots.py $INPUT_DIR/test.coffea --doTest -o $OUTPUT_DIR 
 
 
 display_section_header "Checking if pdf files exist"
-ls $OUTPUT_DIR/Run3/preselection/flavor_sum/channel_sum/mbb.pdf
-ls $OUTPUT_DIR/Run3/preselection/flavor_e/channel_sum/mbb.pdf
-ls $OUTPUT_DIR/Run3/preselection/flavor_mu/channel_sum/mbb.pdf
+ls $OUTPUT_DIR/Run3/preselection/flavor_sum/channel_sum/Hbb_mass.pdf
+ls $OUTPUT_DIR/Run3/preselection/flavor_e/channel_sum/Hbb_mass.pdf
+ls $OUTPUT_DIR/Run3/preselection/flavor_mu/channel_sum/Hbb_mass.pdf
 #ls $OUTPUT_DIR/RunII/passPreSel/fourTag/SR/SvB_MA_ps_hh.pdf
 #ls $OUTPUT_DIR/RunII/passPreSel/fourTag/SR_vs_SB/data/SvB_MA_ps.pdf
 #ls $OUTPUT_DIR/RunII/passPreSel/fourTag/SR_vs_SB/HH4b/SvB_MA_ps.pdf
@@ -47,9 +47,9 @@ run_command python src/plotting/plot_from_yaml.py --input_yaml \
         --out $OUTPUT_DIR/test_plots_from_yaml 
     
 display_section_header "Checking if pdf files exist"
-ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_sum/channel_sum/mbb.pdf
-ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_e/channel_sum/mbb.pdf
-ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_mu/channel_sum/mbb.pdf
+ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_sum/channel_sum/Hbb_mass.pdf
+ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_e/channel_sum/Hbb_mass.pdf
+ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_mu/channel_sum/Hbb_mass.pdf
 # ls $OUTPUT_DIR/test_plots_from_yaml/RunII/passPreSel/fourTag/SR/SvB_MA_ps_zh.pdf
 # ls $OUTPUT_DIR/test_plots_from_yaml/RunII/passPreSel/fourTag/SR/SvB_MA_ps_hh.pdf
 # ls $OUTPUT_DIR/test_plots_from_yaml/RunII/passPreSel/fourTag/SR_vs_SB/data/SvB_MA_ps.pdf
@@ -59,4 +59,3 @@ ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_mu/channel_sum/mbb.
 # ls $OUTPUT_DIR/test_plots_from_yaml/RunII/passPreSel/fourTag/SR/data/quadJet_min_dr_close_vs_other_m.pdf 
 # ls $OUTPUT_DIR/test_plots_from_yaml/RunII/passPreSel/fourTag/SR/HH4b/quadJet_min_dr_close_vs_other_m.pdf
 # ls $OUTPUT_DIR/test_plots_from_yaml/RunII/passPreSel/threeTag/SR/Multijet/quadJet_min_dr_close_vs_other_m.pdf 
-

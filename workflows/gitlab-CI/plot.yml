@@ -14,3 +14,16 @@ analysis_plot_mc_bbreww:
     paths:
       - output/analysis_plot_mc/
     expire_in: 1 day
+
+analysis_iplot_mc_bbreww:
+  stage: plot
+  extends:
+    - .base_analysis
+  needs:
+    - setup_workspace
+    - analysis_test_mc_bbreww
+    - voms_proxy
+
+  script:
+    - echo "Running bbww plot_mc analysis in barista framework"
+    - source bbreww/scripts/analysis_iplot_mc.sh --output-base /builds/$CI_PROJECT_PATH/output/

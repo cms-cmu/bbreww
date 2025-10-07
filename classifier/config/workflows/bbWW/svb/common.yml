@@ -8,8 +8,8 @@ setting:
   ## remove the whole block below if you want to use all years ##
   #- module: cms.CollisionData
   #  option:
-  #    #- eras:
-  #        #2022_preEE: [C, D]
+  #    - eras:
+  #      2022_preEE: [C, D]
   #        # only use 2022_preEE data for test
   - module: bbWWHCR.InputBranch
     option:

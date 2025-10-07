@@ -40,7 +40,7 @@ class Train(HCRTrain):
         import torch.nn.functional as F
         
         # Simple binary classification
-        logits = batch[Output.hh_prob]
+        logits = batch[Output.hh_raw]
         labels = batch[Input.label]  # 0 for background files, 1 for signal files
         weight = batch[Input.weight]
         weight[weight < 0] = 0
@@ -74,6 +74,6 @@ class Eval(HCREval):
     @staticmethod
     def output_definition(batch: BatchType):
         return {
-            "signal_prob": batch["p_signal"], 
-            "background_prob": batch["p_ttbar"], 
+            "signal_prob": batch["p_HH_signal"], 
+            "background_prob": batch["p_TT_ttbar"], 
         }

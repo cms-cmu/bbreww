@@ -14,8 +14,8 @@ from src.physics.event_selection import apply_event_selection
 from src.physics.objects.jet_corrections import apply_jerc_corrections
 from src.physics.event_weights import add_weights
 
-from bbreww.analysis.helpers.common import update_events, add_lepton_sfs
-from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut, chi_sq_new, chi_sq_cut_new
+from bbreww.analysis.helpers.common import update_events, add_lepton_sfs, elliptical_region
+from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
 from bbreww.analysis.helpers.cutflow import cutflow_bbWW
 from bbreww.analysis.helpers.dump_friendtrees import dump_input_friend
 from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec
@@ -45,11 +45,15 @@ class analysis(processor.ProcessorABC):
         self,
         parameters: str = "bbreww/analysis/metadata/object_preselection_run3.yaml",
         corrections_metadata: str = "src/physics/corrections.yml",
+        make_classifier_input:str = None,
+        fill_hists: bool = True,
     ):
         self.parameters = parameters
         loaded_parameters = OmegaConf.load(self.parameters)
         self.params = OmegaConf.merge(corrections_metadata, loaded_parameters)
-
+        self.make_classifier_input = make_classifier_input
+        self.fill_histograms = fill_hists
+        
     def process(self, events):
 
         logging.debug(f"Metadata: {events.metadata}\n")
@@ -59,7 +63,6 @@ class analysis(processor.ProcessorABC):
         self.processName = events.metadata['processName']
         self.is_mc = hasattr(events, "genWeight")
         self.n_events = len(events)
-        self.make_classifier_input = False
 
         events = apply_event_selection(
             events,
@@ -67,13 +70,25 @@ class analysis(processor.ProcessorABC):
             not self.is_mc
         )
 
-        jets = apply_jerc_corrections(
-            events,
-            corrections_metadata=self.params[self.year],
-            isMC=self.is_mc,
-            run_systematics=False, ###self.run_systematics,
-            dataset=self.dataset,
-            jet_type='AK4PFPuppi.txt',
+        jets = ak.where(
+            events.Jet.btagPNetB >= self.params[self.year].btagWP.M,
+            apply_jerc_corrections(
+                events,
+                corrections_metadata=self.params[self.year],
+                isMC=self.is_mc,
+                run_systematics=False,
+                dataset=self.dataset,
+                jet_corr_factor=events.Jet.PNetRegPtRawCorr * events.Jet.PNetRegPtRawCorrNeutrino,
+                jet_type="AK4PFPuppiPNetRegressionPlusNeutrino"
+            ),
+            apply_jerc_corrections(
+                events,
+                corrections_metadata=self.params[self.year],
+                isMC=self.is_mc,
+                run_systematics=False,
+                dataset=self.dataset,
+                jet_type="AK4PFPuppi.txt"
+            )
         )
         met = apply_met_corrections_after_jec(events, jets)
 
@@ -133,19 +148,17 @@ class analysis(processor.ProcessorABC):
         selection.add('jet_veto_mask', jet_veto_maps)
 
         selection_list = {
-            #'preselection_noTwoBJets': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'oneEorM', 'tau_veto', 'mll_cut', 'njets_ak8' ],
-            #'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'oneEorM', 'tau_veto', 'mll_cut', 'njets_ak8' ],
-            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'oneEorM', 'tau_veto', 'mll_cut', 'njets_ak8', 'twoBjets' ],
+            'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'oneEorM', 'tau_veto', 'mll_cut', 'twoBjets', 'njets_ak8'],
         }
-        selection_list['nominal_4j2b'] = selection_list['preselection'] + ['nom_njets4', 'twoBjets']
-        selection_list['nominal_3j2b'] = selection_list['preselection'] + ['nom_njets3', 'twoBjets']
-        selection_list['lowpt_4j2b'] = selection_list['preselection'] + ['lowpt_njets4', 'twoBjets']
-        selection_list['lowpt_3j2b'] = selection_list['preselection'] + ['lowpt_njets3', 'twoBjets']
+        selection_list['nominal_4j2b'] = selection_list['preselection'] + ['nom_njets4']
+        selection_list['nominal_3j2b'] = selection_list['preselection'] + ['nom_njets3']
+        selection_list['lowpt_4j2b'] = selection_list['preselection'] + ['lowpt_njets4']
+        selection_list['lowpt_3j2b'] = selection_list['preselection'] + ['lowpt_njets3']
 
         events['preselection'] = selection.all(*selection_list['preselection'])
         events['nominal_4j2b'] = selection.all(*selection_list['nominal_4j2b'])
         events['nominal_3j2b'] = selection.all(*selection_list['nominal_3j2b'])
-        events['lowpt_4j2b'] = selection.all('lowpt_njets4') & selection.all('twoBjets')
+        events['lowpt_4j2b'] = selection.all(*selection_list['lowpt_4j2b'])
         events['lowpt_3j2b'] =  selection.all(*selection_list['lowpt_3j2b'])
 
 
@@ -166,7 +179,6 @@ class analysis(processor.ProcessorABC):
         weights = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, self.year, self.is_mc)
         events['weight'] = weights.weight()
 
-
         #study sequential cutflow (get weights and events after each cut)
         if not shift_name:
             # list below contains individual selections that we might wanna study
@@ -181,17 +193,16 @@ class analysis(processor.ProcessorABC):
 
         selected_events = Hbb_candidate_selection(selected_events) # select H->bb candidates
 
-        signal_region = ((selected_events.Hbb_cand.mass > 75) & (selected_events.Hbb_cand.mass < 135)
-                        & (selected_events.Hbb_cand.dr > 0.85) & (selected_events.Hbb_cand.dr < 2.15)) # elliptical signal region
-        control_region = ((selected_events.Hbb_cand.mass > 55) & (selected_events.Hbb_cand.mass < 155)
-                        & (selected_events.Hbb_cand.dr > 0.42) & (selected_events.Hbb_cand.dr < 2.58)
-                        & ~signal_region) # sideband TTbar control region
+        signal_region = elliptical_region(selected_events.Hbb_cand.mass, selected_events.Hbb_cand.dr, 
+                                         105, 1.5, 70, 1.51 ) # elliptical signal region
+        control_region = ((~signal_region) 
+                          & elliptical_region(selected_events.Hbb_cand.mass, selected_events.Hbb_cand.dr, 
+                                              105, 1.5, 110, 2.38)) # sideband TTbar control region 
 
         selected_events['region'] = ak.zip({
             'SR': ak.fill_none(signal_region, False),
             'CR': ak.fill_none(control_region, False)
         })
-
 
         selected_events = candidate_selection(selected_events, self.params, self.year) # select HH->bbWW candidates
 
@@ -235,19 +246,20 @@ class analysis(processor.ProcessorABC):
         })
         selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
         analysis_selections = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
-
+        
+        friends = { 'friends': {} }
         if self.make_classifier_input is not None:
             selev = selected_events[selected_events.nominal_4j2b]
-            friends = { 'friends': {} }
             friends["friends"] = ( friends["friends"]
                 | dump_input_friend(
                     selev,
-                    'output/friendtrees',
+                    self.make_classifier_input,
                     "classifier_input",
                     analysis_selections,
                     weight = "weight"
                 )
             )
+
         if not shift_name:
             output['events_processed'] = {}
             output['events_processed'][self.dataset] = {
@@ -287,7 +299,7 @@ class analysis(processor.ProcessorABC):
 
 
 
-        return hists | output | {"hists_4j2b": hists_4j2b["hists"]}
+        return hists | output | friends | {"hists_4j2b": hists_4j2b["hists"]}
 
     def postprocess(self, accumulator):
         return accumulator

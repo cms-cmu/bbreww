@@ -1,0 +1,53 @@
+TBbarQ_2022_preEE:
+  count: 2973675
+  cutflow:
+    e_region:
+      events:
+        all: 156006.0
+        lumimask: 156006.0
+        njets: 38789.0
+        oneBjet: 96432.0
+        passNoiseFilter: 155975.0
+        trigger: 129895.0
+      weights:
+        all: 19371522.22113037
+        lumimask: 19371522.22113037
+        njets: 4609297.192047119
+        oneBjet: 11824608.135986328
+        passNoiseFilter: 19367598.72415161
+        trigger: 16109202.12979126
+    mu_region:
+      events:
+        all: 224673.0
+        lumimask: 224673.0
+        njets: 57937.0
+        oneBjet: 148014.0
+        passNoiseFilter: 224606.0
+        trigger: 201330.0
+      weights:
+        all: 27916763.347869873
+        lumimask: 27916763.347869873
+        njets: 6881948.9937438965
+        oneBjet: 18176343.865600586
+        passNoiseFilter: 27908781.060913086
+        trigger: 25029475.45050049
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TBbarQ_2022_preEE/picoAOD.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v4', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_TBbarQ_2022_preEE.yml',
+      output_path='output/skimmer', years=['2022_preEE'], datasets=['TBbarQ'], era=['A',
+      'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    date: '2025-09-10 09:42:15'
+    diff: ''
+    hash: 4d439ab348f066ac1fb0aac8adf8287d0bd5c191
+  saved_events: 96726
+  sumw: 370365216.828125
+  sumw2: 54430711575.0
+  sumw2_raw: 54430729591.275085
+  sumw_raw: 370365263.965
+  total_events: 2973675

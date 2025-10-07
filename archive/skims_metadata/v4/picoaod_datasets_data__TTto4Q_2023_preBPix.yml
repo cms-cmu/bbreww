@@ -1,0 +1,53 @@
+TTto4Q_2023_preBPix:
+  count: 104393000
+  cutflow:
+    e_region:
+      events:
+        all: 48364.0
+        lumimask: 48364.0
+        njets: 15298.0
+        oneBjet: 15649.0
+        passNoiseFilter: 48336.0
+        trigger: 18526.0
+      weights:
+        all: 16813063.02471924
+        lumimask: 16813063.02471924
+        njets: 5326786.244262695
+        oneBjet: 5446894.558868408
+        passNoiseFilter: 16803258.26434326
+        trigger: 6445229.267150879
+    mu_region:
+      events:
+        all: 234160.0
+        lumimask: 234160.0
+        njets: 37708.0
+        oneBjet: 38566.0
+        passNoiseFilter: 234008.0
+        trigger: 45990.0
+      weights:
+        all: 81218432.91442871
+        lumimask: 81218432.91442871
+        njets: 13108264.282653809
+        oneBjet: 13404508.114013672
+        passNoiseFilter: 81165207.0723877
+        trigger: 15976156.692626953
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TTto4Q_2023_preBPix/picoAOD.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v3', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_data__TTto4Q_2023_preBPix.yml',
+      output_path='output/skimmer', years=['2023_preBPix'], datasets=['TTto4Q'], era=['A',
+      'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    date: '2025-09-06 00:13:39'
+    diff: ''
+    hash: bced4739ec5caba8448b5d0a5accc37bfe7cf58a
+  saved_events: 62642
+  sumw: 36259121252.875
+  sumw2: 12800566430752.0
+  sumw2_raw: 12800568283957.69
+  sumw_raw: 36259125125.020004
+  total_events: 104393000

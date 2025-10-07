@@ -1,0 +1,59 @@
+WtoLNu-2Jets_2J_2022_preEE:
+  count: 102791770
+  cutflow:
+    e_region:
+      events:
+        all: 13347473.0
+        lumimask: 13347473.0
+        njets: 1378260.0
+        oneBjet: 2823098.0
+        passNoiseFilter: 13344621.0
+        trigger: 11069200.0
+      weights:
+        all: 360855792934.7656
+        lumimask: 360855792934.7656
+        njets: 37219033397.65625
+        oneBjet: 77794253331.875
+        passNoiseFilter: 360765012761.9531
+        trigger: 300875138624.21875
+    mu_region:
+      events:
+        all: 17025042.0
+        lumimask: 17025042.0
+        njets: 1852913.0
+        oneBjet: 3878496.0
+        passNoiseFilter: 17021108.0
+        trigger: 15374501.0
+      weights:
+        all: 459169798889.6875
+        lumimask: 459169798889.6875
+        njets: 49762022680.859375
+        oneBjet: 106406756877.1875
+        passNoiseFilter: 459054732508.28125
+        trigger: 415554196876.1719
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2022_preEE/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2022_preEE/picoAOD.chunk1.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2022_preEE/picoAOD.chunk2.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2022_preEE/picoAOD.chunk3.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2022_preEE/picoAOD.chunk4.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2022_preEE/picoAOD.chunk5.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2022_preEE/picoAOD.chunk6.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v4', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_WtoLNu-2Jets_2J_2022_preEE.yml',
+      output_path='output/skimmer', years=['2022_preEE'], datasets=['WtoLNu-2Jets_2J'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    date: '2025-09-10 11:42:22'
+    diff: ''
+    hash: 4d439ab348f066ac1fb0aac8adf8287d0bd5c191
+  saved_events: 3231173
+  sumw: 2652487296811.0
+  sumw2: 7.209113670170706e+17
+  sumw2_raw: 7.209112656688895e+17
+  sumw_raw: 2652487177711.4272
+  total_events: 102791770

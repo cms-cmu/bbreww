@@ -4,9 +4,6 @@ import awkward as ak
 import logging
 from src.skimmer.cutflow import cutflow
 
-########### IT IS NOT READY
-########### NEEDS WORK
-
 class cutflow_bbWW(cutflow):
     def __init__(self, selections=None, weights=None):
         self._cutflow_ele = {}
@@ -25,8 +22,9 @@ class cutflow_bbWW(cutflow):
         if cut_name not in self._cutflow_ele:
             self._cutflow_ele[cut_name] = (0, 0)    # weighted, raw
             self._cutflow_mu[cut_name] = (0, 0)    # weighted, raw
-            self._cutflow_SR[cut_name] = (0, 0)    # weighted, raw
-            self._cutflow_CR[cut_name] = (0, 0)    # weighted, raw
+            if fill_region:
+                self._cutflow_SR[cut_name] = (0, 0)    # weighted, raw
+                self._cutflow_CR[cut_name] = (0, 0)    # weighted, raw
 
         # fill with regions
         if fill_flavour:
@@ -38,10 +36,10 @@ class cutflow_bbWW(cutflow):
         else:
             ele_cut = self.selections.all(*cut_list) & (self.selections.require(oneE=True))
             mu_cut = self.selections.all(*cut_list) & (self.selections.require(oneM=True))
-            if not skim:
-                if fill_region:
-                    SR_cut = self.selections.all(*cut_list) & (events.region.SR)
-                    CR_cut = self.selections.all(*cut_list) & (events.region.CR)
+            #if not skim:
+                #if fill_region:
+                #    SR_cut = self.selections.all(*cut_list) #& (events.region.SR) # currently not separating CR and SR before these cuts 
+                #    CR_cut = self.selections.all(*cut_list) #& (events.region.CR)
 
         self._cutflow_ele[cut_name] = (np.sum(ele_cut), np.sum(weight[ele_cut]))
         self._cutflow_mu[cut_name] = (np.sum(mu_cut), np.sum(weight[mu_cut]))

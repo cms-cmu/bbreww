@@ -162,6 +162,4 @@ def gen_studies(events, is_mc):
             recojet_from_b = ak.pad_none(events.b_cands[events.b_cands.isbFromH], 2, axis=1)
             events['mass_reco_b_gen_match'] = ak.fill_none(recojet_from_b [:,0] + recojet_from_b[:,1], np.nan)
 
-
-
     return events

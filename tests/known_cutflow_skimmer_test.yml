@@ -1,6 +1,6 @@
 GluGluToHHTo2B2VLNu2J_2022_EE:
   n_events: 63646
-  sum_genweights: 473.59881591796875
+  sum_genweights: 514.7921752929688
   cutflow:
     e_region:
       events:
@@ -9,36 +9,36 @@ GluGluToHHTo2B2VLNu2J_2022_EE:
         trigger: 23787.0
         jet_veto_mask: 21665.0
         oneEorM: 21665.0
-        oneBjet: 20167.0
-        twoBjets: 9067.0
-        tau_veto: 9008.0
-        njets_ak8: 6284.0
-        mll_cut: 6282.0
-        nominal_4j2b: 3244.0
-        nominal_3j2b: 2317.0
-        lowpt_4j2b: 1630.0
-        lowpt_3j2b: 1289.0
-        chi_sq_nom_4j2b: 2231.0
-        chi_sq_nom_3j2b: 1081.0
-        chi_sq_lowpt_4j2b: 1247.0
+        oneBjet: 20273.0
+        twoBjets: 9812.0
+        tau_veto: 9749.0
+        njets_ak8: 6821.0
+        mll_cut: 6819.0
+        nominal_4j2b: 3584.0
+        nominal_3j2b: 2466.0
+        lowpt_4j2b: 1724.0
+        lowpt_3j2b: 1379.0
+        chi_sq_nom_4j2b: 2473.0
+        chi_sq_nom_3j2b: 1144.0
+        chi_sq_lowpt_4j2b: 1310.0
       weights:
         lumimask: 3.8679300073947975
         passNoiseFilter: 3.8679300073947975
         trigger: 3.8679300073947975
         jet_veto_mask: 3.527153774948435
         oneEorM: 3.527153774948435
-        oneBjet: 3.2768824091397146
-        twoBjets: 1.4537861478226537
-        tau_veto: 1.4454398471777867
-        njets_ak8: 1.0184509650973106
-        mll_cut: 1.018299092653972
-        nominal_4j2b: 0.5215832196889544
-        nominal_3j2b: 0.3774402578096625
-        lowpt_4j2b: 0.2640005415243828
-        lowpt_3j2b: 0.21191889593059896
-        chi_sq_nom_4j2b: 0.3580311623563406
-        chi_sq_nom_3j2b: 0.17236768034305208
-        chi_sq_lowpt_4j2b: 0.2001109301935431
+        oneBjet: 3.2972647287249868
+        twoBjets: 1.5729787477960824
+        tau_veto: 1.5639858052373616
+        njets_ak8: 1.1056102789948024
+        mll_cut: 1.1054584065514639
+        nominal_4j2b: 0.573916411708101
+        nominal_3j2b: 0.40322688752908487
+        lowpt_4j2b: 0.2824563921797719
+        lowpt_3j2b: 0.2262291062673464
+        chi_sq_nom_4j2b: 0.3979711746087323
+        chi_sq_nom_3j2b: 0.1838350381481189
+        chi_sq_lowpt_4j2b: 0.2110139361761672
     mu_region:
       events:
         lumimask: 37355.0
@@ -46,107 +46,67 @@ GluGluToHHTo2B2VLNu2J_2022_EE:
         trigger: 37355.0
         jet_veto_mask: 34019.0
         oneEorM: 34019.0
-        oneBjet: 31576.0
-        twoBjets: 14013.0
-        tau_veto: 13912.0
-        njets_ak8: 9865.0
-        mll_cut: 9859.0
-        nominal_4j2b: 5232.0
-        nominal_3j2b: 3562.0
-        lowpt_4j2b: 2514.0
-        lowpt_3j2b: 1895.0
-        chi_sq_nom_4j2b: 3666.0
-        chi_sq_nom_3j2b: 1694.0
-        chi_sq_lowpt_4j2b: 1937.0
+        oneBjet: 31730.0
+        twoBjets: 15173.0
+        tau_veto: 15063.0
+        njets_ak8: 10711.0
+        mll_cut: 10705.0
+        nominal_4j2b: 5744.0
+        nominal_3j2b: 3829.0
+        lowpt_4j2b: 2674.0
+        lowpt_3j2b: 2056.0
+        chi_sq_nom_4j2b: 4042.0
+        chi_sq_nom_3j2b: 1814.0
+        chi_sq_lowpt_4j2b: 2065.0
       weights:
         lumimask: 7.009946731535181
         passNoiseFilter: 7.009946731535181
         trigger: 7.009946731535181
         jet_veto_mask: 6.383687576607439
         oneEorM: 6.383687576607439
-        oneBjet: 5.916037762850645
-        twoBjets: 2.585085045998431
-        tau_veto: 2.5671749686973753
-        njets_ak8: 1.8614336971317567
-        mll_cut: 1.8599205918335695
-        nominal_4j2b: 0.9885352148770361
-        nominal_3j2b: 0.668342119824441
-        lowpt_4j2b: 0.47386428488987214
-        lowpt_3j2b: 0.3557628659261417
-        chi_sq_nom_4j2b: 0.6879879329131977
-        chi_sq_nom_3j2b: 0.3114003123332293
-        chi_sq_lowpt_4j2b: 0.36129419128959944
+        oneBjet: 5.945857242364717
+        twoBjets: 2.801702368197544
+        tau_veto: 2.782092675124544
+        njets_ak8: 2.023612123729613
+        mll_cut: 2.0220990184314265
+        nominal_4j2b: 1.087109145625495
+        nominal_3j2b: 0.7151459860149907
+        lowpt_4j2b: 0.5039601771571235
+        lowpt_3j2b: 0.3860714889617898
+        chi_sq_nom_4j2b: 0.7626416737072136
+        chi_sq_nom_3j2b: 0.3372083919657098
+        chi_sq_lowpt_4j2b: 0.39091182342280084
     SR:
       events:
-        lumimask: 0.0
-        passNoiseFilter: 0.0
-        trigger: 0.0
-        jet_veto_mask: 0.0
-        oneEorM: 0.0
-        oneBjet: 0.0
-        twoBjets: 0.0
-        tau_veto: 0.0
-        njets_ak8: 0.0
-        mll_cut: 0.0
-        nominal_4j2b: 5775.0
-        nominal_3j2b: 4052.0
-        lowpt_4j2b: 2802.0
-        lowpt_3j2b: 2114.0
-        chi_sq_nom_4j2b: 4212.0
-        chi_sq_nom_3j2b: 2057.0
-        chi_sq_lowpt_4j2b: 2310.0
+        nominal_4j2b: 6372.0
+        nominal_3j2b: 4301.0
+        lowpt_4j2b: 2950.0
+        lowpt_3j2b: 2292.0
+        chi_sq_nom_4j2b: 4671.0
+        chi_sq_nom_3j2b: 2159.0
+        chi_sq_lowpt_4j2b: 2435.0
       weights:
-        lumimask: 0.0
-        passNoiseFilter: 0.0
-        trigger: 0.0
-        jet_veto_mask: 0.0
-        oneEorM: 0.0
-        oneBjet: 0.0
-        twoBjets: 0.0
-        tau_veto: 0.0
-        njets_ak8: 0.0
-        mll_cut: 0.0
-        nominal_4j2b: 1.0248431140092675
-        nominal_3j2b: 0.7131059059641863
-        lowpt_4j2b: 0.49054326295579126
-        lowpt_3j2b: 0.37446971312919236
-        chi_sq_nom_4j2b: 0.7405982874353243
-        chi_sq_nom_3j2b: 0.35586948199387997
-        chi_sq_lowpt_4j2b: 0.4021130630149164
+        nominal_4j2b: 1.1261292157001765
+        nominal_3j2b: 0.7521041702374247
+        lowpt_4j2b: 0.5154179910241325
+        lowpt_3j2b: 0.4040462525334254
+        chi_sq_nom_4j2b: 0.8255889802681062
+        chi_sq_nom_3j2b: 0.37501660722358154
+        chi_sq_lowpt_4j2b: 0.42621967966774543
     CR:
       events:
-        lumimask: 0.0
-        passNoiseFilter: 0.0
-        trigger: 0.0
-        jet_veto_mask: 0.0
-        oneEorM: 0.0
-        oneBjet: 0.0
-        twoBjets: 0.0
-        tau_veto: 0.0
-        njets_ak8: 0.0
-        mll_cut: 0.0
-        nominal_4j2b: 1551.0
-        nominal_3j2b: 1026.0
-        lowpt_4j2b: 727.0
-        lowpt_3j2b: 597.0
-        chi_sq_nom_4j2b: 1028.0
-        chi_sq_nom_3j2b: 438.0
-        chi_sq_lowpt_4j2b: 535.0
+        nominal_4j2b: 1616.0
+        nominal_3j2b: 1063.0
+        lowpt_4j2b: 754.0
+        lowpt_3j2b: 596.0
+        chi_sq_nom_4j2b: 1071.0
+        chi_sq_nom_3j2b: 464.0
+        chi_sq_lowpt_4j2b: 551.0
       weights:
-        lumimask: 0.0
-        passNoiseFilter: 0.0
-        trigger: 0.0
-        jet_veto_mask: 0.0
-        oneEorM: 0.0
-        oneBjet: 0.0
-        twoBjets: 0.0
-        tau_veto: 0.0
-        njets_ak8: 0.0
-        mll_cut: 0.0
-        nominal_4j2b: 0.27472031197916336
-        nominal_3j2b: 0.18434960465654032
-        lowpt_4j2b: 0.13044719882105443
-        lowpt_3j2b: 0.1118222591515111
-        chi_sq_nom_4j2b: 0.1846140877489677
-        chi_sq_nom_3j2b: 0.07516617185053232
-        chi_sq_lowpt_4j2b: 0.09412878740959937
+        nominal_4j2b: 0.29149999647893954
+        nominal_3j2b: 0.19944790440569632
+        lowpt_4j2b: 0.14147763741501898
+        lowpt_3j2b: 0.11519308950667992
+        chi_sq_nom_4j2b: 0.19449991057298113
+        chi_sq_nom_3j2b: 0.08351904699709764
+        chi_sq_lowpt_4j2b: 0.10181828912830496

@@ -92,7 +92,7 @@ rule analysis_plot_mc:
     input: 
         f"{config['default_dir']}/analysis_test_mc/test.coffea"
     output: 
-        f"{config['default_dir']}/analysis_plot_mc"
+        f"{config['default_dir']}/analysis_plot_mc/test_plots_from_yaml/Run3/preselection/flavor_mu/channel_sum/Hbb_mass.pdf"
     container: 
         config["analysis_container"]
     log: 

@@ -20,9 +20,8 @@ echo "############### ls input file"
 ls $INPUT_DIR/
 ls $INPUT_DIR/test.coffea
 
-echo "############### Running makePlots.py"
-echo python bbreww/plots/makePlots.py $INPUT_DIR/test.coffea --doTest -o $OUTPUT_DIR -m bbreww/plots/metadata/plotsAll.yml --modifiers bbreww/plots/metadata/plotModifiers.yml
-python bbreww/plots/makePlots.py $INPUT_DIR/test.coffea --doTest -o $OUTPUT_DIR -m bbreww/plots/metadata/plotsAll.yml --modifiers bbreww/plots/metadata/plotModifiers.yml
+display_section_header "Running makePlots.py"
+run_command python bbreww/plots/makePlots.py $INPUT_DIR/test.coffea --doTest -o $OUTPUT_DIR -m bbreww/plots/metadata/plotsAll.yml --modifiers bbreww/plots/metadata/plotModifiers.yml
 
 
 display_section_header "Checking if pdf files exist"
@@ -44,7 +43,6 @@ run_command python src/plotting/plot_from_yaml.py --input_yaml \
         $OUTPUT_DIR/Run3/preselection/flavor_sum/channel_sum/Hbb_mass.yaml \
         $OUTPUT_DIR/Run3/preselection/flavor_e/channel_sum/Hbb_mass.yaml \
         $OUTPUT_DIR/Run3/preselection/flavor_mu/channel_sum/Hbb_mass.yaml \
-
         --out $OUTPUT_DIR/test_plots_from_yaml 
     
 display_section_header "Checking if pdf files exist"

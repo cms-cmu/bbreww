@@ -13,8 +13,8 @@ def dump_input_friend(
     output: PathLike,
     name: str,
     *selections: ak.Array,
-    bcand: str = "j_bcand",
-    nonbcand: str = "j_nonbcand_nom",
+    bcand: str = "b_cands",
+    nonbcand: str = "q_cands_nom",
     lepton: str = "leading_lep",
     met: str = "MET",
     weight: str = "weight",
@@ -89,5 +89,3 @@ def dump_input_friend(
         data=data,
         dump_naming=dump_naming,
     )
-
-

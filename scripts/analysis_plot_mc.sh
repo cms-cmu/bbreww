@@ -41,9 +41,10 @@ ls $OUTPUT_DIR/Run3/preselection/flavor_mu/channel_sum/Hbb_mass.pdf
 
 display_section_header "check making the plots from yaml "
 run_command python src/plotting/plot_from_yaml.py --input_yaml \
-        $OUTPUT_DIR/Run3/preselection/flavor_sum/channel_sum/mbb.yaml \
-        $OUTPUT_DIR/Run3/preselection/flavor_e/channel_sum/mbb.yaml \
-        $OUTPUT_DIR/Run3/preselection/flavor_mu/channel_sum/mbb.yaml \
+        $OUTPUT_DIR/Run3/preselection/flavor_sum/channel_sum/Hbb_mass.yaml \
+        $OUTPUT_DIR/Run3/preselection/flavor_e/channel_sum/Hbb_mass.yaml \
+        $OUTPUT_DIR/Run3/preselection/flavor_mu/channel_sum/Hbb_mass.yaml \
+
         --out $OUTPUT_DIR/test_plots_from_yaml 
     
 display_section_header "Checking if pdf files exist"

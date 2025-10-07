@@ -1845,14 +1845,22 @@ class HCR(nn.Module):
             name="HH final embed"
         )
 
+        self.TT_final_embed = GhostBatchNorm1d(
+            self.dD,
+            features_out=self.dD, 
+            conv=True,
+            name="TT final embed"
+        )
+
         self.layers.addLayer(self.WW_final_embed, [self.attention_WW])
         self.layers.addLayer(self.HH_final_embed, [self.attention_hh])
+        self.layers.addLayer(self.TT_final_embed, [self.attention_tt])
 
         self.final_combine = GhostBatchNorm1d(
-            self.dD,  # Input from concatenated WW + HH 
+            self.dD *2,  # Input from concatenated WW + HH 
             features_out=self.nC, 
             conv=True, 
-            name="combine WW and HH"
+            name="combine WW and HH and TT"
         )
         # self.layers.addLayer(self.dijetEmbedInQuadjetSpace, [previousLayer])
         self.layers.addLayer(self.final_combine, [self.WW_final_embed, self.HH_final_embed])
@@ -2003,9 +2011,10 @@ class HCR(nn.Module):
 
         WW_final = self.WW_final_embed(WW)
         HH_final = self.HH_final_embed(HH)   
-
         HH_score = WW_final + HH_final
-        HH_logits = self.final_combine(HH_score)
+
+        merged_features = torch.cat([HH_score, TT_sel], dim=1)
+        HH_logits = self.final_combine(merged_features)
         HH_logits = HH_logits.view(n, self.nC)
 
         # Convert to probabilities for output/storage

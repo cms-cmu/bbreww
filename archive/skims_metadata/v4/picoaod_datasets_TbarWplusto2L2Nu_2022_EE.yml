@@ -1,0 +1,66 @@
+TbarWplusto2L2Nu_2022_EE:
+  count: 8183339
+  cutflow:
+    e_region:
+      events:
+        all: 1749952.0
+        lumimask: 1749952.0
+        njets: 641021.0
+        oneBjet: 1208856.0
+        passNoiseFilter: 1749056.0
+        trigger: 1518164.0
+      weights:
+        all: 6660069.835665226
+        lumimask: 6660069.835665226
+        njets: 2439617.708757162
+        oneBjet: 4600708.390002251
+        passNoiseFilter: 6656659.704531193
+        trigger: 5777911.537930012
+    mu_region:
+      events:
+        all: 2249027.0
+        lumimask: 2249027.0
+        njets: 862984.0
+        oneBjet: 1649470.0
+        passNoiseFilter: 2247789.0
+        trigger: 2069494.0
+      weights:
+        all: 8559295.938175917
+        lumimask: 8559295.938175917
+        njets: 3284283.593767643
+        oneBjet: 6277495.749065876
+        passNoiseFilter: 8554591.784066916
+        trigger: 7876032.777643204
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_EE/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_EE/picoAOD.chunk1.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_EE/picoAOD.chunk2.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_EE/picoAOD.chunk3.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v4', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_TbarWplusto2L2Nu_2022_EE.yml',
+      output_path='output/skimmer', years=['2022_EE'], datasets=['TbarWplusto2L2Nu'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    date: '2025-10-06 13:37:47'
+    diff: "diff --git a/runner.py b/runner.py\nindex 2a09154c..a4917097 100644\n---\
+      \ a/runner.py\n+++ b/runner.py\n@@ -336,7 +336,7 @@ def setup_condor_cluster(config_runner):\n\
+      \     logging.info('Waiting for at least one worker...')\n     client.wait_for_workers(1)\n\
+      \     logging.info('HTCondor cluster setup complete!')\n-    return client\n\
+      +    return client, cluster\n \n \n def setup_local_cluster(config_runner, args):\n\
+      @@ -921,7 +921,7 @@ if __name__ == '__main__':\n     if args.condor:\n     \
+      \    logging.info(\"Configuring HTCondor cluster execution...\")\n         args.run_dask\
+      \ = True\n-        client = setup_condor_cluster(config_runner)\n+        client,\
+      \ cluster = setup_condor_cluster(config_runner)\n     elif args.run_dask:\n\
+      \         logging.info(\"Configuring local Dask cluster execution...\")\n  \
+      \       client = setup_local_cluster(config_runner, args)\n"
+    hash: c48b03a30f0043391f46b7e4f503249f6c06c0fb
+  saved_events: 1504005
+  sumw: 31144335.41748047
+  sumw2: 118537781.09570312
+  sumw2_raw: 118537755.46023895
+  sumw_raw: 31144336.23675
+  total_events: 8183339

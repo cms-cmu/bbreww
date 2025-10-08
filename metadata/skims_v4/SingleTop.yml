@@ -12,6 +12,13 @@ TBbarQ:
     2022_EE:
       nanoAOD: /TBbarQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
       picoAOD:
+        count: 10153433
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TBbarQ_2022_EE/picoAOD.root
+        saved_events: 326256
+        sumw: 1264425644.40625
+        sumw2: 185850358788.0
+        total_events: 10153433
     xs: 145.0
   
 TbarBQ:
@@ -27,6 +34,13 @@ TbarBQ:
   2022_EE:
     nanoAOD: /TbarBQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
     picoAOD:
+      count: 5206568
+      files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarBQ_2022_EE/picoAOD.root
+      saved_events: 175233
+      sumw: 394682417.515625
+      sumw2: 34988823722.0
+      total_events: 5206568
   xs: 87.2
 
 TBbartoLplusNuBbar:
@@ -42,6 +56,13 @@ TBbartoLplusNuBbar:
   2022_EE:
     nanoAOD: /TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
     picoAOD: 
+      count: 4363850
+      files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TBbartoLplusNuBbar_2022_EE/picoAOD.root
+      saved_events: 424276
+      sumw: 9937724.769897461
+      sumw2: 59736462.55859375
+      total_events: 4363850
   xs: 2.405
   
 TbarBtoLminusNuB:
@@ -56,4 +77,12 @@ TbarBtoLminusNuB:
       total_events: 785520
   2022_EE:
     nanoAOD: /TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
+    picoAOD:
+      count: 2762668
+      files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarBtoLminusNuB_2022_EE/picoAOD.root
+      saved_events: 282868
+      sumw: 3945013.146118164
+      sumw2: 14864199.937988281
+      total_events: 2762668
   xs: 1.505

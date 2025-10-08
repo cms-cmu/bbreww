@@ -1795,6 +1795,27 @@ class HCR(nn.Module):
             inputLayers=[self.inputEmbed.bWlepConv, self.inputEmbed.bJetConv, self.inputEmbed.lepConv],
         )
 
+        self.attention_WW = MinimalAttention(
+            self.dD,
+            heads=2,
+            phase_symmetric=self.phase_symmetric,
+            scalar_dim = 2,
+            layers=self.layers,
+            inputLayers=[self.lepWResNetBlock.conv[-1], self.nonbDiJetResNetBlock.reinforce[-1]],
+            device=self.device,
+        )
+        self.layers.addLayer(self.attention_WW, self.attention_WW.inputLayers)
+
+        self.attention_hh = MinimalAttention(
+            self.dD,
+            heads=2,
+            phase_symmetric=self.phase_symmetric,
+            scalar_dim = 2,
+            layers=self.layers,
+            inputLayers=[self.inputEmbed.bJetConv, self.attention_WW],
+            device=self.device,
+        )
+        self.layers.addLayer(self.attention_hh, self.attention_hh.inputLayers)
 
         self.attention_tt = MinimalAttention(
             self.dD,
@@ -1808,16 +1829,10 @@ class HCR(nn.Module):
 
         self.layers.addLayer(self.attention_tt, self.attention_tt.inputLayers)
 
-        self.scalars_embed = GhostBatchNorm1d(
-            1, 
-            features_out=self.dD,
-            conv=True, 
-            name="scalar physics relationships embed"
-        )
         # Embed enhanced WW representation
         self.WW_final_embed = GhostBatchNorm1d(
             self.dD, 
-            features_out=self.dD,
+            features_out=self.dD,  # or some common dimension
             conv=True, 
             name="WW final embed"
         )
@@ -1837,24 +1852,21 @@ class HCR(nn.Module):
             name="TT final embed"
         )
 
-        self.layers.addLayer(self.WW_final_embed, [self.lepWResNetBlock.conv[-1], self.nonbDiJetResNetBlock.reinforce[-1]])
-        self.layers.addLayer(self.HH_final_embed, [self.inputEmbed.bJetConv, self.WW_final_embed])
+        self.layers.addLayer(self.WW_final_embed, [self.attention_WW])
+        self.layers.addLayer(self.HH_final_embed, [self.attention_hh])
         self.layers.addLayer(self.TT_final_embed, [self.attention_tt])
 
         self.final_combine = GhostBatchNorm1d(
-            self.dD,  # Input from concatenated WW + HH 
+            self.dD *2,  # Input from concatenated WW + HH 
             features_out=self.nC, 
             conv=True, 
             name="combine WW and HH and TT"
         )
+        # self.layers.addLayer(self.dijetEmbedInQuadjetSpace, [previousLayer])
         self.layers.addLayer(self.final_combine, [self.WW_final_embed, self.HH_final_embed])
 
-        self.out = nn.Sequential(
-            nn.Flatten(),
-            linear(in_channels= 36, out_channels = 64),
-            nn.ReLU(),
-            nn.Dropout(p =0.1),
-            linear(in_channels = 64, out_channels = 2)
+        self.out = GhostBatchNorm1d(
+            self.dD, features_out=self.nC, conv=True, name="out"
         )
 
         self.select_tt = GhostBatchNorm1d(
@@ -1874,7 +1886,7 @@ class HCR(nn.Module):
         )
 
         self.layers.addLayer(self.select_tt, [self.attention_tt]) 
-        self.layers.addLayer(self.out_tt, [self.select_tt])
+        self.layers.addLayer(self.out_tt, [self.select_tt]) 
         self.forwardCalls = 0
 
     def embedding_layers(self):
@@ -1894,6 +1906,7 @@ class HCR(nn.Module):
         self.WW_final_embed.setGhostBatches(nGhostBatches)
         self.HH_final_embed.setGhostBatches(nGhostBatches)
         self.final_combine.setGhostBatches(nGhostBatches)
+        self.out.setGhostBatches(nGhostBatches)
         self.nGhostBatches = nGhostBatches
 
     def forward(self, b, nb, l, nu, a):
@@ -1945,12 +1958,33 @@ class HCR(nn.Module):
         qqMdR = NonLU(qqMdR)
         bbnMdR = NonLU(bbnMdR)
         scalars = torch.cat([lepQQdR, lnu_mT], dim= -1)
+        scalars = scalars.squeeze(1)
+
+        WW, WW0, WW_weights = self.attention_WW(
+            lep_W,        # queries: leptonic W candidate
+            qq,           # values: hadronic W candidate (non-bjet dijets) 
+            None,         # mask: None as we have exactly one lep_W and qq candidate right now
+            lep_W0,       # residual for leptonic W
+            qqMdR[:, :, 0, 1:2].unsqueeze(2), # reshape (n, 8, 2, 2) -> (n, 8, 1, 1) 
+            scalars,       # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))
+            self.debug
+        )
 
         qv = torch.cat([
-            bbMdR[:, :, 0, 1:2],  # Shape: (n, features, 1) - b0-b1 relationship
-            bbnMdR[:, :, 0, :],               # Shape: (n, features, 2) - bb-nb[0] and bb-nb[1] 
-            qqMdR[:, :, 0, 1:2]   # Shape: (n, features, 1) - q0-q1 relationship
-        ], dim=-1)  # Result shape: (n, features, 4)
+                bbMdR[:, :, 0, 1].unsqueeze(-1),  # Shape: (n, features, 1) - b0-b1 relationship
+                bbnMdR[:, :, 0, :],               # Shape: (n, features, 2) - bb-nb[0] and bb-nb[1] 
+                qqMdR[:, :, 0, 1].unsqueeze(-1)   # Shape: (n, features, 1) - q0-q1 relationship
+            ], dim=-1)  # Result shape: (n, features, 4)
+
+        HH, HH0, HH_weights = self.attention_hh(
+            bb,       # queries: HH candidate (bb dijets)
+            WW,       # values: WW system from previous attention
+            None,     # mask: None
+            bb0,      # residual for bb
+            qv,       # physics relationships (delta R and mass between b-jets and nonb-jets)
+            scalars,  # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))
+            debug=self.debug
+        )
 
         TT, TT0, TT_weights = self.attention_tt(
             bWhad,    # queries: hadronic top candidate
@@ -1958,7 +1992,7 @@ class HCR(nn.Module):
             None,     # mask: None
             bWhad0,   # residual for hadronic top
             qv,       # physics relationships (delta R and mass between b-jets and nonb-jets)
-            scalars.squeeze(1),  # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))
+            scalars,  # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))
             debug=self.debug
         )
 
@@ -1971,32 +2005,17 @@ class HCR(nn.Module):
         TT_logits = self.out_tt(TT_sel)  # Shape: (n, nC)
         TT_logits = TT_logits.squeeze(-1)
 
-        # final HH reconstruction scores
-        scalars = self.scalars_embed(scalars)
-        WW = torch.cat([lep_W, # leptonic W candidate
-                        qq, 
-                        qqMdR[:, :, 0, 1:2], # there are duplicate pairs, so only keep 1
-                        scalars], dim=-1)        
-        WW_final = self.WW_final_embed(WW)
-
-        HH = torch.cat([
-                bb,
-                WW,
-                bbMdR[:, :, 0, 1:2],  # Shape: (n, features, 1, 1) - b0-b1 relationship
-                bbnMdR[:, :, 0, :],   # Shape: (n, features, 2, 1) - bb-nb[0] and bb-nb[1] 
-                qqMdR[:, :, 0, 1:2],   # Shape: (n, features, 1, 1) - q0-q1 relationship
-                scalars
-            ], dim=-1)  # Result shape: (n, features, 4)
-        HH_final = self.HH_final_embed(HH)
-
         if self.store:
             self.storeData["WW"] = WW.detach().to("cpu").numpy()
             self.storeData["HH"] = HH.detach().to("cpu").numpy()
 
-        HH_score = torch.cat([HH_final, WW_final], dim=-1) # combine HH and H-> WW scores
-        HH_logits = torch.cat([HH_score, TT_sel], dim=-1)
-        HH_logits = self.final_combine(HH_logits)
-        HH_logits = self.out(HH_logits) # use a simple MLP to combine outputs
+        WW_final = self.WW_final_embed(WW)
+        HH_final = self.HH_final_embed(HH)   
+        HH_score = WW_final + HH_final
+
+        merged_features = torch.cat([HH_score, TT_sel], dim=1)
+        HH_logits = self.final_combine(merged_features)
+        HH_logits = HH_logits.view(n, self.nC)
 
         # Convert to probabilities for output/storage
         if self.store:

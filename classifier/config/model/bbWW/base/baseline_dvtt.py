@@ -37,7 +37,8 @@ class Train(HCRTrain):
         import torch.nn.functional as F
 
         # get tensors
-        tt_score = batch[Output.tt_raw]
+        ## use hh score below, as it already captures TTbar info and excludes signal in reweighting
+        tt_score = batch[Output.hh_raw]
         weight = batch[Input.weight]
         weight[weight < 0] = 0
         is_SR = MassRegion.SR

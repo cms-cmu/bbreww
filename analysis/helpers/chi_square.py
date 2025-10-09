@@ -4,14 +4,14 @@ from bbreww.analysis.helpers.common import chi_square, met_reconstr
 
 def chi_sq(events):
 
+
     # hadronic W* chi square calculation
-    mlvqq_hadWs_nom = (events.Wlnu_cand + events.Wqq_cand ).mass # H -> lvqq candidates (nonbjet_pt > 25 GeV)
     mlvqq_hadWs_soft = (events.Wlnu_cand + events.qq_soft ).mass # H -> lvqq candidates (15 GeV > nonbjet_pt > 25 GeV)
-    events['mlvqq_hadWs'] = ak.fill_none(mlvqq_hadWs_nom,np.nan)
+    # events['mlvqq_hadWs'] = ak.fill_none(mlvqq_hadWs_nom,np.nan)
 
     #individual chi squares for hadronic W* signal selection
     chi1_hadWs      = chi_square(events.Hbb_cand.mass, 113.22, 30.74) # H -> bb
-    chi2_hadWs_nom  = chi_square(mlvqq_hadWs_nom,      161.15, 34.23) # H -> lvqq in nominal region
+    chi2_hadWs_nom  = chi_square(events.Hww_cand.mass, 161.15, 34.23) # H -> lvqq in nominal region
     chi3_hadWs_nom  = chi_square(events.Wqq_cand.mass,  39.13, 10.02) # W* -> qq in nominal region
     chi4_hadWs      = chi_square(events.Hbb_cand.dr,     1.90, 0.70) #delta R between b-jets
 
@@ -34,11 +34,11 @@ def chi_sq(events):
 
 
     #individual chi squares for hadronic W signal selection
-    chi1_hadW = chi_square(events.Hbb_cand.mass,111.13, 23.63) # H -> bb
-    chi2_hadW = chi_square(events.Wlnu_cand.mT, 58.87, 37.35) #transverse mass
-    chi3_hadW_nom = chi_square(events.Wqq_cand.mass,76.84, 10.98) #hadronic W
-    chi3_hadW_soft = chi_square(events.qq_soft.mass,76.84, 10.98) #hadronic W
-    chi4_hadW = chi_square(events.Hbb_cand.dr,1.69, 0.60) #delta R between b-jets
+    chi1_hadW       = chi_square(events.Hbb_cand.mass,111.13, 23.63) # H -> bb
+    chi2_hadW       = chi_square(events.Wlnu_cand.mT, 58.87, 37.35) #transverse mass
+    chi3_hadW_nom   = chi_square(events.Wqq_cand.mass,76.84, 10.98) #hadronic W
+    chi3_hadW_soft  = chi_square(events.qq_soft.mass,76.84, 10.98) #hadronic W
+    chi4_hadW       = chi_square(events.Hbb_cand.dr,1.69, 0.60) #delta R between b-jets
 
     chi_sq_hadW_nom_4j = ak.singletons(np.sqrt(chi1_hadW + chi2_hadW + chi3_hadW_nom + chi4_hadW))
     chi_sq_hadW_nom_3j = ak.singletons(np.sqrt(chi1_hadW + chi2_hadW + chi4_hadW)) # don't use dijet variables for 3j region

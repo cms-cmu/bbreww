@@ -53,7 +53,7 @@ class analysis(processor.ProcessorABC):
         self.params = OmegaConf.merge(corrections_metadata, loaded_parameters)
         self.make_classifier_input = make_classifier_input
         self.fill_histograms = fill_hists
-        
+
     def process(self, events):
 
         logging.debug(f"Metadata: {events.metadata}\n")
@@ -193,11 +193,11 @@ class analysis(processor.ProcessorABC):
 
         selected_events = Hbb_candidate_selection(selected_events) # select H->bb candidates
 
-        signal_region = elliptical_region(selected_events.Hbb_cand.mass, selected_events.Hbb_cand.dr, 
+        signal_region = elliptical_region(selected_events.Hbb_cand.mass, selected_events.Hbb_cand.dr,
                                          105, 1.5, 70, 1.51 ) # elliptical signal region
-        control_region = ((~signal_region) 
-                          & elliptical_region(selected_events.Hbb_cand.mass, selected_events.Hbb_cand.dr, 
-                                              105, 1.5, 110, 2.38)) # sideband TTbar control region 
+        control_region = ((~signal_region)
+                          & elliptical_region(selected_events.Hbb_cand.mass, selected_events.Hbb_cand.dr,
+                                              105, 1.5, 110, 2.38)) # sideband TTbar control region
 
         selected_events['region'] = ak.zip({
             'SR': ak.fill_none(signal_region, False),
@@ -246,7 +246,7 @@ class analysis(processor.ProcessorABC):
         })
         selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
         analysis_selections = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
-        
+
         friends = { 'friends': {} }
         if self.make_classifier_input is not None:
             selev = selected_events[selected_events.nominal_4j2b]
@@ -281,7 +281,7 @@ class analysis(processor.ProcessorABC):
             is_mc=self.is_mc,
             histCuts=['preselection',
                       'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b',
-                      'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b',
+                      'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b',
                       ],
             channel_list=['hadronic_W', 'leptonic_W'],
             flavor_list=['e', 'mu']
@@ -292,14 +292,12 @@ class analysis(processor.ProcessorABC):
             processName=self.processName,
             year=self.year_label,
             is_mc=self.is_mc,
-            histCuts=['nominal_4j2b',    ],
+            histCuts=['nominal_4j2b',   'chi_sq_nom_4j2b' ],
             channel_list=['hadronic_W', 'leptonic_W'],
             flavor_list=['e', 'mu']
             )
 
-
-
-        return hists | output | friends | {"hists_4j2b": hists_4j2b["hists"]}
+        return hists | output | friends | {"hists_4j2b": hists_4j2b["hists"], "categories_4j2b": hists_4j2b["categories"]}
 
     def postprocess(self, accumulator):
         return accumulator

@@ -50,6 +50,16 @@ def candidate_selection(events, params, year):
 
     events['Wqq_cand'] = Wqq_cand
 
+
+    #
+    #  HWW Candidate
+    #
+    Hww_cand = events.Wlnu_cand + events.Wqq_cand
+    Hww_cand["dr"]   = events.Wlnu_cand.delta_r  (events.Wqq_cand)
+    Hww_cand["dphi"] = events.Wlnu_cand.delta_phi(events.Wqq_cand)
+
+    events['Hww_cand'] = Hww_cand
+
     #
     # soft jets analysis
     #

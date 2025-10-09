@@ -3,16 +3,9 @@ import numpy as np
 from bbreww.analysis.helpers.common import chi_square, met_reconstr
 
 def chi_sq(events):
-    leading_mu = events.Muon[events.Muon.istight]
-    leading_e = events.Electron[events.Electron.istight]
-
-    #select leading lepton out of electrons/muons. Use ak.singletons to slice entries, not whole events
-    leading_lep = ak.firsts(ak.concatenate([leading_e[ak.singletons(events.flavor.e)],
-                                            leading_mu[ak.singletons(events.flavor.mu)]],axis=1))
-    events['leading_lep'] = ak.with_name(leading_lep, 'PtEtaPhiMLorentzVector') #reapply 4-vector behavior after concatenate
 
     # hadronic W* chi square calculation
-    nu = met_reconstr(events, events.leading_lep) # calculate MET pz requiring (lepton + nu).mass == W_mass
+    # nu = met_reconstr(events, events.leading_lep) # calculate MET pz requiring (lepton + nu).mass == W_mass
     mlvqq_hadWs_nom = (events.leading_lep + nu + events.Wqq_cand ).mass # H -> lvqq candidates (nonbjet_pt > 25 GeV)
     mlvqq_hadWs_soft = (events.leading_lep + nu + events.qq_soft ).mass # H -> lvqq candidates (15 GeV > nonbjet_pt > 25 GeV)
     events['mlvqq_hadWs'] = ak.fill_none(mlvqq_hadWs_nom,np.nan)

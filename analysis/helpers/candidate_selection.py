@@ -1,6 +1,6 @@
 import awkward as ak
 import numpy as np
-
+from bbreww.analysis.helpers.common import met_reconstr
 
 def Hbb_candidate_selection(events):
 
@@ -23,7 +23,23 @@ def Hbb_candidate_selection(events):
 def candidate_selection(events, params, year):
 
     #
-    #  Nominal Analysis
+    #  Wlnu Cand
+    #
+
+    # calculate MET pz requiring (lepton + nu).mass == W_mass
+    nu = met_reconstr(events, events.leading_lep)
+
+    Wlnu_cand = events.leading_lep + nu
+    Wlnu_cand["lep"] = events.leading_lep
+    Wlnu_cand["nu"]  = nu
+    Wlnu_cand["dr"]   = Wlnu_cand["lep"].delta_r  (Wlnu_cand["nu"])
+    Wlnu_cand["dphi"] = Wlnu_cand["lep"].delta_phi(Wlnu_cand["nu"])
+    Wlnu_cand["mT"]   = np.sqrt(2 * Wlnu_cand.lep.pt * Wlnu_cand.nu.pt * (1 - np.cos(Wlnu_cand.dphi)))
+
+    events['Wlnu_cand'] = Wlnu_cand
+
+    #
+    #  Wqq for Nominal Analysis
     #
     Wqq_cand = events.q_cands_nom[:,0] + events.q_cands_nom[:,1]
     Wqq_cand["lead"] = events.q_cands_nom[:,0]

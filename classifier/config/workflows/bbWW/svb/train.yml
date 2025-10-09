@@ -15,7 +15,7 @@ dataset:
   - module: bbWW.svb.Background
     option:
       - --metadata bbreww/metadata/classifier/datasets_v4
-      - --norm 4 #set TTbar to be 4 times weight of signal
+      - --norm 1 #set TTbar weight times weight of signal
       - --friends "" bbreww/metadata/classifier/output_friend.json@@classifier_input # set input friend tree
 
   - module: bbWW.svb.Signal

@@ -24,6 +24,7 @@ def dump_input_friend(
     padded = akext.pad.selected()
     data = ak.Array(
         {
+
             "bJetCand": padded(
                 ak.zip(
                     {
@@ -31,6 +32,7 @@ def dump_input_friend(
                         "eta": events[bcand].eta,
                         "phi": events[bcand].phi,
                         "mass": events[bcand].mass,
+                        "btagScore": events[bcand].btagScore
                     }
                 ),
                 selection,

@@ -120,7 +120,7 @@ def _data(self: Data, metadata: str):
                 filelists.append(
                     [
                         f"label:data,year:{year},source:detector",
-                        *(metadata + f".data__{process}.{year}.picoAOD.{e}.files" for e in eras),
+                        *(metadata +f".data__{process}.{year}.picoAOD.{e}.files" for e in eras),
                     ]
                 )
     return filelists

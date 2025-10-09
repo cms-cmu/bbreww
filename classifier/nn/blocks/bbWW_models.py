@@ -381,6 +381,10 @@ def NonLU(x):  # Non-Linear Unit
     return SiLU(x)
     # return F.elu(x)
 
+class NonLUModule(nn.Module):
+    def forward(self, x):
+        return NonLU(x)
+
 def diObjectMass(v1PxPyPzE, v2PxPyPzE):
     v12PxPyPzE = v1PxPyPzE + v2PxPyPzE
     M = F.relu(
@@ -1850,11 +1854,17 @@ class HCR(nn.Module):
         self.layers.addLayer(self.final_combine, [self.WW_final_embed, self.HH_final_embed])
 
         self.out = nn.Sequential(
+            GhostBatchNorm1d(
+                8, 
+                features_out=16, 
+                conv=True, 
+                bias=False,
+                name="final event score"
+            ),
+            NonLUModule(),
+            nn.AdaptiveAvgPool1d(1),
             nn.Flatten(),
-            linear(in_channels= 36, out_channels = 64),
-            nn.ReLU(),
-            nn.Dropout(p =0.1),
-            linear(in_channels = 64, out_channels = 2)
+            linear(in_channels=16, out_channels=2)
         )
 
         self.select_tt = GhostBatchNorm1d(
@@ -1993,20 +2003,18 @@ class HCR(nn.Module):
             self.storeData["WW"] = WW.detach().to("cpu").numpy()
             self.storeData["HH"] = HH.detach().to("cpu").numpy()
 
-        HH_score = torch.cat([HH_final, WW_final], dim=-1) # combine HH and H-> WW scores
-        HH_logits = torch.cat([HH_score, TT_sel], dim=-1)
-        HH_logits = self.final_combine(HH_logits)
-        HH_logits = self.out(HH_logits) # use a simple MLP to combine outputs
+        HH_logits = torch.cat([HH_final, WW_final, TT_sel], dim=-1) # combine HH and H-> WW scores
+        HH_logits = self.out(HH_logits)
 
         # Convert to probabilities for output/storage
         if self.store:
             HH_score = F.softmax(HH_logits, dim=1)
             if self.store:
                 
-                self.storeData["HH_score"] = HH_score.detach().to("cpu").numpy()
-                self.storeData["TT_score"] = TT_score.detach().to("cpu").numpy()
-                self.storeData["WW_weights"] = WW_weights.detach().to("cpu").numpy() # see how much H->WW contributes to discrimination
-                self.storeData["HH_weights"] = HH_weights.detach().to("cpu").numpy()
+                self.storeData["HH_logits"] = HH_score.detach().to("cpu").numpy()
+                self.storeData["TT_logits"] = TT_score.detach().to("cpu").numpy()
+                #self.storeData["WW_weights"] = WW_weights.detach().to("cpu").numpy() # see how much H->WW contributes to discrimination
+                #self.storeData["HH_weights"] = HH_weights.detach().to("cpu").numpy()
                 self.storeData["TT_weights"] = TT_weights.detach().to("cpu").numpy()
 
 

@@ -46,15 +46,15 @@ class Train(CommonTrain):
     )
 
     def preprocess_by_group(self):
-        from src.classifier.df.tools import add_label_index, add_label_index_from_column, prescale
+        from src.classifier.df.tools import add_label_index, prescale
 
         ps = []
         ps.append(
             _group.fullmatch(
                 ("label:data",),
                 processors=[
-                    lambda: _signal_selection,
-                    lambda: add_label_index_from_column(CR="control", SR="signal"),
+                    lambda: _data_selection,
+                    lambda: add_label_index("data"),
                 ],
                 name="data selection",
             ),
@@ -63,8 +63,8 @@ class Train(CommonTrain):
             _group.fullmatch(
                 ("label:ttbar",),
                 processors=[
-                    lambda: _signal_selection,
-                    lambda: add_label_index_from_column(CR="control", SR="signal"),
+                    lambda: _data_selection,
+                    lambda: add_label_index("ttbar"),
                 ],
                 name="ttbar selection",
             ),
@@ -85,6 +85,10 @@ class Train(CommonTrain):
 
         return list(super().preprocess_by_group()) + ps
 
+class TrainData(_picoAOD.Data, Train): 
+    """Baseline training with data"""
+    ...
+    
 class TrainBaseline(_picoAOD.Background, Train): 
     """Baseline training with background processes"""
     ...

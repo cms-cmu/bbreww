@@ -16,7 +16,7 @@ dataset:
       - --friends "" bbreww/metadata/classifier/data_friend.json@@classifier_input
 
 model:
-  - module: bbWW.base.baseline.Eval
+  - module: bbWW.base.baseline_dvtt.Eval
     option:
       - --models
       - Final # choose name of the model to evaluate, for now only Final is available

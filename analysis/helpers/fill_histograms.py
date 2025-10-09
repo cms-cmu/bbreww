@@ -2,6 +2,33 @@ from src.hist_tools import Collection, Fill
 from src.hist_tools.object import Elec, Jet, LorentzVector, Muon
 
 
+def add_bbWW_common_hists(fill, hist):
+
+    #
+    #  Event Level
+    #
+    fill += hist.add("nPVs", (101, -0.5, 100.5, ("PV.npvs", "Number of Primary Vertices")))
+    fill += hist.add("nPVsGood", (101, -0.5, 100.5, ("PV.npvsGood", "Number of Good Primary Vertices")))
+    fill += hist.add("MET", (50, -0.5, 250, ("MET.pt", "MET pT [GeV]")))
+    fill += hist.add("njets", (10, -0.5, 9.5, ("njets", "jet multiplicity")))
+
+    #
+    # Hbb Candidate
+    #
+    fill += Jet.plot_pair( ("Hbb", R"$H_{bb}$"), "Hbb_cand", skip=["n"], bins={"mass": (120, 0, 200)}, )
+    fill += hist.add("mbb_vs_bb_dr",
+                    (50, 0, 250, ('Hbb_cand.mass', 'H->bb Candidate Mass [GeV]')),
+                    (50, 0,   5, ('Hbb_cand.dr', r'$\Delta R$ between b-candidates')))
+
+    #
+    # Leptons
+    #
+    fill += Elec.plot( ("Elec", R"$Elec$"), "sel_elec", skip=["n"], )
+    fill += Muon.plot( ("Muon", R"$Muon$"), "sel_muon", skip=["n"], )
+
+
+    return fill, hist
+
 
 def fill_histograms_nominal(
     events,
@@ -28,44 +55,17 @@ def fill_histograms_nominal(
         **dict((s, ...) for s in histCuts)
     )
 
-    fill += hist.add("nPVs", (101, -0.5, 100.5, ("PV.npvs", "Number of Primary Vertices")))
-    fill += hist.add("nPVsGood", (101, -0.5, 100.5, ("PV.npvsGood", "Number of Good Primary Vertices")))
-
-    ### gen studies plots ###
-    #fill += hist.add("W_mass_res", (50, -100, 100, ("W_mass_res", "leptonic W mass resolution [GeV]")))
-    #fill += hist.add("genW_mass", (50, 30, 150, ("genW_mass", "leptonic W mass resolution [GeV]")))
-    #fill += hist.add("mlvqq_hadWs", (50, 50, 300, ("mlvqq_hadWs", "reconstructed H->lvqq mass [GeV]")))
-
-    ### these histograms are just to study the quark vs. gluon selection efficiency
-    #fill += hist.add("Wjets_pre_lead",    (15, 15 , 30,    ("Wjets_pre_lead.pt", r"$jet pT$[GeV]")))
-    #fill += hist.add("Wjets_post_lead",   (15, 15 , 30,   ("Wjets_post_lead.pt", r"$jet pT$[GeV]")))
-    #fill += hist.add("Wjets_pre_sublead", (15, 15 , 30, ("Wjets_pre_sublead.pt", r"$jet pT$[GeV]")))
-    #fill += hist.add("Wjets_post_sublead",(15, 15 , 30,("Wjets_post_sublead.pt", r"$jet pT$[GeV]")))
-    #fill += hist.add("dijets_pre_lead",    (15, 15 , 30,  ("dijets_pre_lead.pt", r"$jet pT$[GeV]")))
-    #fill += hist.add("dijets_post_lead",   (15, 15 , 30, ("dijets_post_lead.pt", r"$jet pT$[GeV]")))
-    #fill += hist.add("dijets_pre_sublead", (15, 15 , 30,  ("dijets_pre_sublead.pt", r"$jet pT$[GeV]")))
-    #fill += hist.add("dijets_post_sublead",(15, 15 , 30, ("dijets_post_sublead.pt", r"$jet pT$[GeV]")))
-    ###########
 
     #
-    # Nominal Plots
+    #  Common Histograms:  Hbb and leptons
     #
+    fill, hist = add_bbWW_common_hists(fill, hist)
 
-    # Hbb Candidate
-    fill += Jet.plot_pair( ("Hbb", R"$H_{bb}$"), "Hbb_cand", skip=["n"], bins={"mass": (120, 0, 200)}, )
-    fill += hist.add("mbb_vs_bb_dr",
-                    (50, 0, 250, ('Hbb_cand.mass', 'H->bb Candidate Mass [GeV]')),
-                    (50, 0, 5, ('Hbb_cand.dr', r'$\Delta R$ between b-candidates')))
-
-
-    # Leptons
-
-
-    # print("Wqq_cand", events.wqq_cand[0:10].pt.tolist(),"\n")
-    # print("q_cands_nom 0", events.q_cands_nom[0:10,0].pt.tolist(),"\n")
-    # print("q_cands_nom 1", events.q_cands_nom[0:10,1].pt.tolist(),"\n")
-    # print("njets", events.njets[0:10].tolist(),"\n")
+    #
+    # Wqq Candidate
+    #
     fill += Jet.plot_pair( ("Wqq", R"$W_{qq}$"), "Wqq_cand", skip=["n"], bins={"mass": (120, 0, 200)}, )
+
 
     #fill += hist.add("gen_bb", (60, -0.5, 250, ("gen_bb.mass", "gen bb mass [GeV]")))
     #fill += hist.add("genjet_from_b", (60, -0.5, 250, ("genjet_from_b.mass", "gen bb mass [GeV]")))
@@ -76,12 +76,7 @@ def fill_histograms_nominal(
     fill += hist.add("nonbjet_pt_sublead", (50, -0.5, 250, ("j_nonbcand_nom_sublead_pt", "subleading non-bjet pT [GeV]")))
     fill += hist.add("nonbjets_pt", (50, -0.5, 250, ("j_nonbcand_nom.pt", "non-bjets pT [GeV]")))
 
-    fill += hist.add("qq_mass", (50, -0.5, 250, ("qq_mass", "non-bjets pT [GeV]")))
     fill += hist.add("mT", (60, -0.5, 250, ("mT_leading_lep", "transverse mass W->lv [GeV]")))
-    fill += hist.add("leading_e", (50, -0.5, 250, ("leading_e.pt", "electron pT [GeV]")))
-    fill += hist.add("leading_mu", (50, -0.5, 250, ("leading_mu.pt", "muon pT [GeV]")))
-    fill += hist.add("MET", (50, -0.5, 250, ("MET.pt", "MET pT [GeV]")))
-    fill += hist.add("njets", (10, -0.5, 9.5, ("njets", "jet multiplicity")))
 
     fill += hist.add("chi_sq_hadW", (30, -0.5, 6, ("chi_sq_hadW", "hadronic W region chi square")))
     fill += hist.add("chi_sq_hadWs", (30, -0.5, 6, ("chi_sq_hadWs", "leptonic W region chi square")))
@@ -158,37 +153,7 @@ def fill_histograms(
         **dict((s, ...) for s in histCuts)
     )
 
-    fill += hist.add("nPVs", (101, -0.5, 100.5, ("PV.npvs", "Number of Primary Vertices")))
-    fill += hist.add("nPVsGood", (101, -0.5, 100.5, ("PV.npvsGood", "Number of Good Primary Vertices")))
-
-    ### gen studies plots ###
-    #fill += hist.add("W_mass_res", (50, -100, 100, ("W_mass_res", "leptonic W mass resolution [GeV]")))
-    #fill += hist.add("genW_mass", (50, 30, 150, ("genW_mass", "leptonic W mass resolution [GeV]")))
-    #fill += hist.add("mlvqq_hadWs", (50, 50, 300, ("mlvqq_hadWs", "reconstructed H->lvqq mass [GeV]")))
-
-    ### these histograms are just to study the quark vs. gluon selection efficiency
-    #fill += hist.add("Wjets_pre_lead",    (15, 15 , 30,    ("Wjets_pre_lead.pt", r"$jet pT$[GeV]")))
-    #fill += hist.add("Wjets_post_lead",   (15, 15 , 30,   ("Wjets_post_lead.pt", r"$jet pT$[GeV]")))
-    #fill += hist.add("Wjets_pre_sublead", (15, 15 , 30, ("Wjets_pre_sublead.pt", r"$jet pT$[GeV]")))
-    #fill += hist.add("Wjets_post_sublead",(15, 15 , 30,("Wjets_post_sublead.pt", r"$jet pT$[GeV]")))
-    #fill += hist.add("dijets_pre_lead",    (15, 15 , 30,  ("dijets_pre_lead.pt", r"$jet pT$[GeV]")))
-    #fill += hist.add("dijets_post_lead",   (15, 15 , 30, ("dijets_post_lead.pt", r"$jet pT$[GeV]")))
-    #fill += hist.add("dijets_pre_sublead", (15, 15 , 30,  ("dijets_pre_sublead.pt", r"$jet pT$[GeV]")))
-    #fill += hist.add("dijets_post_sublead",(15, 15 , 30, ("dijets_post_sublead.pt", r"$jet pT$[GeV]")))
-    ###########
-
-    #
-    # Nominal Plots
-    #
-
-    # Hbb Candidate
-    fill += Jet.plot_pair( ("Hbb", R"$H_{bb}$"), "Hbb_cand", skip=["n"], bins={"mass": (120, 0, 200)}, )
-    fill += hist.add("mbb_vs_bb_dr",
-                    (50, 0, 250, ('Hbb_cand.mass', 'H->bb Candidate Mass [GeV]')),
-                    (50, 0, 5, ('Hbb_cand.dr', r'$\Delta R$ between b-candidates')))
-
-
-    # Leptons
+    fill, hist = add_bbWW_common_hists(fill, hist)
 
 
     # print("Wqq_cand", events.wqq_cand[0:10].pt.tolist(),"\n")
@@ -206,12 +171,7 @@ def fill_histograms(
     fill += hist.add("nonbjet_pt_sublead", (50, -0.5, 250, ("j_nonbcand_nom_sublead_pt", "subleading non-bjet pT [GeV]")))
     fill += hist.add("nonbjets_pt", (50, -0.5, 250, ("j_nonbcand_nom.pt", "non-bjets pT [GeV]")))
 
-    fill += hist.add("qq_mass", (50, -0.5, 250, ("qq_mass", "non-bjets pT [GeV]")))
     fill += hist.add("mT", (60, -0.5, 250, ("mT_leading_lep", "transverse mass W->lv [GeV]")))
-    fill += hist.add("leading_e", (50, -0.5, 250, ("leading_e.pt", "electron pT [GeV]")))
-    fill += hist.add("leading_mu", (50, -0.5, 250, ("leading_mu.pt", "muon pT [GeV]")))
-    fill += hist.add("MET", (50, -0.5, 250, ("MET.pt", "MET pT [GeV]")))
-    fill += hist.add("njets", (10, -0.5, 9.5, ("njets", "jet multiplicity")))
 
     fill += hist.add("chi_sq_hadW", (30, -0.5, 6, ("chi_sq_hadW", "hadronic W region chi square")))
     fill += hist.add("chi_sq_hadWs", (30, -0.5, 6, ("chi_sq_hadWs", "leptonic W region chi square")))

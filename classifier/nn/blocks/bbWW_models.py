@@ -1175,7 +1175,7 @@ class InputEmbed(nn.Module):
         self,
         dijetFeatures,
         quadjetFeatures,
-        ancillaryFeatures=["HT", "njets", "nsoftjets"],
+        ancillaryFeatures=[],
         layers=None,
         device="cuda",
         phase_symmetric=False,
@@ -1209,7 +1209,7 @@ class InputEmbed(nn.Module):
         ## to do section
         # embed inputs to dijetResNetBlock in target feature space
         self.bJetEmbed = GhostBatchNorm1d(
-            4,
+            5,
             features_out=self.dD,
             phase_symmetric=phase_symmetric,
             conv=True,
@@ -1392,7 +1392,7 @@ class InputEmbed(nn.Module):
         # a = a.clone()
 
         n = b.shape[0]
-        b = b.view(n, 4, 2)
+        b = b.view(n, 5, 2)
         nb = nb.view(n, 4, 2)
         l = l.view(n, 6, 1)
         nu = nu.view(n, 2, 1)

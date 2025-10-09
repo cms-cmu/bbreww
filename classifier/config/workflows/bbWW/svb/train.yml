@@ -8,14 +8,14 @@
 main:
   module: train # run training task
   option:
-    - --max-loaders 2 # use 2 workers to load dataset
-    - --max-trainers 3 # use 3 workers to train
+    - --max-loaders 3 # use 3 workers to load dataset
+    - --max-trainers 20 # use 20 workers to train
 
 dataset:
   - module: bbWW.svb.Background
     option:
       - --metadata bbreww/metadata/classifier/datasets_v4
-      - --norm 1 #set TTbar weight times weight of signal
+      - --norm 4 #set TTbar weight times weight of signal
       - --friends "" bbreww/metadata/classifier/output_friend.json@@classifier_input # set input friend tree
 
   - module: bbWW.svb.Signal
@@ -32,7 +32,7 @@ model:
       # --kfold-seed-offsets 0-14 will use seed ("FvT", "random", 0), ... ("FvT", "random", 14) to train 15 models
       - --training FixedStep # setup training schedule
       # FixedStep is defined in config/scheduler
-      - epoch: 25 # setup kwargs for FixedStep
+      - epoch: 20 # setup kwargs for FixedStep
         bs_init: 1024 # equivalent to use FixedStep(epoch=20, bs_init=1024)
 
 setting:

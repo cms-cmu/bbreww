@@ -5,18 +5,19 @@ from bbreww.analysis.helpers.common import chi_square, met_reconstr
 def chi_sq(events):
 
     # hadronic W* chi square calculation
-    # nu = met_reconstr(events, events.leading_lep) # calculate MET pz requiring (lepton + nu).mass == W_mass
-    mlvqq_hadWs_nom = (events.leading_lep + events.Wlnu_cand + events.Wqq_cand ).mass # H -> lvqq candidates (nonbjet_pt > 25 GeV)
-    mlvqq_hadWs_soft = (events.leading_lep + events.Wlnu_cand + events.qq_soft ).mass # H -> lvqq candidates (15 GeV > nonbjet_pt > 25 GeV)
+    mlvqq_hadWs_nom = (events.Wlnu_cand + events.Wqq_cand ).mass # H -> lvqq candidates (nonbjet_pt > 25 GeV)
+    mlvqq_hadWs_soft = (events.Wlnu_cand + events.qq_soft ).mass # H -> lvqq candidates (15 GeV > nonbjet_pt > 25 GeV)
     events['mlvqq_hadWs'] = ak.fill_none(mlvqq_hadWs_nom,np.nan)
 
     #individual chi squares for hadronic W* signal selection
-    chi1_hadWs = chi_square(events.Hbb_cand.mass,113.22, 30.74) # H -> bb
-    chi2_hadWs_nom = chi_square(mlvqq_hadWs_nom, 161.15, 34.23) # H -> lvqq in nominal region
-    chi2_hadWs_soft = chi_square(mlvqq_hadWs_soft, 161.15, 34.23) # H -> lvqq in low pt region
-    chi3_hadWs_nom = chi_square(events.Wqq_cand.mass,39.13, 10.02) # W* -> qq in nominal region
-    chi3_hadWs_soft = chi_square(events.qq_soft.mass,39.13, 10.02) # W* -> qq in low pt region
-    chi4_hadWs = chi_square(events.Hbb_cand.dr,1.90, 0.70) #delta R between b-jets
+    chi1_hadWs      = chi_square(events.Hbb_cand.mass, 113.22, 30.74) # H -> bb
+    chi2_hadWs_nom  = chi_square(mlvqq_hadWs_nom,      161.15, 34.23) # H -> lvqq in nominal region
+    chi3_hadWs_nom  = chi_square(events.Wqq_cand.mass,  39.13, 10.02) # W* -> qq in nominal region
+    chi4_hadWs      = chi_square(events.Hbb_cand.dr,     1.90, 0.70) #delta R between b-jets
+
+    chi2_hadWs_soft = chi_square(mlvqq_hadWs_soft,     161.15, 34.23) # H -> lvqq in low pt region
+    chi3_hadWs_soft = chi_square(events.qq_soft.mass,   39.13, 10.02) # W* -> qq in low pt region
+
 
 
     #total chi square

@@ -1,5 +1,15 @@
 from src.hist_tools import Collection, Fill
 from src.hist_tools.object import Elec, Jet, LorentzVector, Muon, Lepton
+from src.hist_tools import H, Template
+
+class Chi2Hists(Template):
+    tot_4j   = H((50, -0.1, 6, ('tot_4j', 'tot chi square 4j2b')))
+    tot_3j   = H((50, -0.1, 6, ('tot_3j', 'tot chi square 3j2b')))
+    Hbb_mass = H((50, -0.1, 6, ('Hbb_mass',  'chi square for Hbb_mass')))
+    Hww_mass = H((50, -0.1, 6, ('Hww_mass',  'chi square for Hww_mass')))
+    Wqq_mass = H((50, -0.1, 6, ('Wqq_mass',  'chi square for Wqq_mass')))
+    Hbb_dr   = H((50, -0.1, 6, ('Hbb_dr',    'chi square for Hbb_dr')))
+
 
 
 def add_bbWW_common_hists(fill, hist):
@@ -11,6 +21,8 @@ def add_bbWW_common_hists(fill, hist):
     fill += hist.add("nPVsGood", (101, -0.5, 100.5, ("PV.npvsGood", "Number of Good Primary Vertices")))
     fill += hist.add("MET", (50, -0.5, 250, ("MET.pt", "MET pT [GeV]")))
     fill += hist.add("njets", (10, -0.5, 9.5, ("njets", "jet multiplicity")))
+
+
 
     fill += hist.add("chi_sq_hadW",  (30, -0.5, 6, ("chi_sq_hadW",  "hadronic W region chi square")))
     fill += hist.add("chi_sq_hadWs", (30, -0.5, 6, ("chi_sq_hadWs", "leptonic W region chi square")))
@@ -73,6 +85,8 @@ def fill_histograms_nominal(
     #
     fill, hist = add_bbWW_common_hists(fill, hist)
 
+    fill += Chi2Hists(("chi2_hadWs", "chi2 hadWs"), "chi2_hadWs")
+
 
     #
     # Wqq Candidate
@@ -132,6 +146,10 @@ def fill_histograms(
 
     fill, hist = add_bbWW_common_hists(fill, hist)
 
+    fill += Chi2Hists(("chi2_hadWs", "chi2 hadWs"), "chi2_hadWs", skip=["tot_4j",
+                                                                        "Hww_mass",
+                                                                        "Wqq_mass",
+                                                                        ])
 
     fill += hist.add("bjets_genjets_dr",   (30, -0.5, 5, ("bjets_genjets_dr", r'$\Delta$ R between b-candidates (genjets)')))
     fill += hist.add("bjets_genjets_mass", (50, -0.5, 250, ("bjets_genjets_mass", "H-> bb candidate (genjets) mass[GeV]")))

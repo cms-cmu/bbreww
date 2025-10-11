@@ -13,10 +13,10 @@ def chi_sq(events):
                            "Hbb_dr"   : chi_square(events.Hbb_cand.dr,     1.90,  0.70)  #delta R between b-jets
                           })
     # 4 jet region chi square
-    chi2_hadWs["tot_4j"] = np.sqrt(chi2_hadWs.Hbb_mass + chi2_hadWs.Hww_mass + chi2_hadWs.Wqq_mass + chi2_hadWs.Hbb_dr)
+    chi2_hadWs["tot_4j"] = np.sqrt(chi2_hadWs.Hbb_mass**2 + chi2_hadWs.Hww_mass**2 + chi2_hadWs.Wqq_mass**2 + chi2_hadWs.Hbb_dr**2)
 
     # 3 jet region chi square (can't use di-jet variables for 3 jet region)
-    chi2_hadWs["tot_3j"] = np.sqrt(chi2_hadWs.Hbb_mass + chi2_hadWs.Hbb_dr)
+    chi2_hadWs["tot_3j"] = np.sqrt(chi2_hadWs.Hbb_mass**2 + chi2_hadWs.Hbb_dr**2)
 
     events['chi2_hadWs'] = chi2_hadWs
 
@@ -25,10 +25,10 @@ def chi_sq(events):
     #
     mlvqq_hadWs_soft = (events.Wlnu_cand + events.qq_soft ).mass # H -> lvqq candidates (15 GeV > nonbjet_pt > 25 GeV)
 
-    chi2_hadWs_soft = chi_square(mlvqq_hadWs_soft,     161.15, 34.23) # H -> lvqq in low pt region
-    chi3_hadWs_soft = chi_square(events.qq_soft.mass,   39.13, 10.02) # W* -> qq in low pt region
+    chi2_hadWs_soft = chi_square(mlvqq_hadWs_soft,     161.15, 34.23, power=2) # H -> lvqq in low pt region
+    chi3_hadWs_soft = chi_square(events.qq_soft.mass,   39.13, 10.02, power=2) # W* -> qq in low pt region
 
-    chi_sq_hadWs_soft   = np.sqrt(chi2_hadWs.Hbb_mass + chi2_hadWs_soft + chi3_hadWs_soft + chi2_hadWs.Hbb_dr)
+    chi_sq_hadWs_soft   = np.sqrt(chi2_hadWs.Hbb_mass**2 + chi2_hadWs_soft + chi3_hadWs_soft + chi2_hadWs.Hbb_dr**2)
     min_chi_sq_hadWs_soft = ak.argmin(chi_sq_hadWs_soft, axis=1, keepdims = True) #index of the minimum chi square non-bjet pairs
     chi_sq_hadWs_soft = chi_sq_hadWs_soft[min_chi_sq_hadWs_soft]
 
@@ -41,12 +41,12 @@ def chi_sq(events):
     #
 
     #individual chi squares for hadronic W signal selection
-    chi1_hadW       = chi_square(events.Hbb_cand.mass, 111.13, 23.63) # H -> bb
-    chi2_hadW       = chi_square(events.Wlnu_cand.mT,   58.87, 37.35) #transverse mass
-    chi3_hadW       = chi_square(events.Wqq_cand.mass,  76.84, 10.98) #hadronic W
-    chi4_hadW       = chi_square(events.Hbb_cand.dr,     1.69,  0.60) #delta R between b-jets
+    chi1_hadW       = chi_square(events.Hbb_cand.mass, 111.13, 23.63, power=2) # H -> bb
+    chi2_hadW       = chi_square(events.Wlnu_cand.mT,   58.87, 37.35, power=2) #transverse mass
+    chi3_hadW       = chi_square(events.Wqq_cand.mass,  76.84, 10.98, power=2) #hadronic W
+    chi4_hadW       = chi_square(events.Hbb_cand.dr,     1.69,  0.60, power=2) #delta R between b-jets
 
-    chi3_hadW_soft  = chi_square(events.qq_soft.mass,   76.84, 10.98) #hadronic W
+    chi3_hadW_soft  = chi_square(events.qq_soft.mass,   76.84, 10.98, power=2) #hadronic W
 
     chi_sq_hadW_nom_4j = ak.singletons(np.sqrt(chi1_hadW + chi2_hadW + chi3_hadW + chi4_hadW))
     chi_sq_hadW_nom_3j = ak.singletons(np.sqrt(chi1_hadW + chi2_hadW + chi4_hadW)) # don't use dijet variables for 3j region
@@ -86,13 +86,13 @@ def chi_sq(events):
     tt_soft = ak.where(b_sel_soft, tt1_soft , tt2_soft)
     tt_nom = ak.where(b_sel_nom, tt1_nom , tt2_nom)
 
-    chi1_tt_soft = chi_square(tt_soft.t1,165.55 , 35.49 ) #leptonic top
-    chi2_tt_soft = chi_square(tt_soft.t2, 171.55, 44.95 ) #hadronic top
-    chi1_tt_nom =  chi_square(tt_nom.t1,165.55 , 35.49 ) #leptonic top
-    chi2_tt_nom =  chi_square(tt_nom.t2, 171.55, 44.95 ) #hadronic top
-    chi3_tt_soft = chi_square(events.qq_soft.mass,73.9, 23.56) #hadronic W
-    chi3_tt_nom = chi_square(events.Wqq_cand.mass,73.9, 23.56) #hadronic W
-    chi4_tt = chi_square(events.Hbb_cand.dr,2.30, 0.81) #delta R between b-jets
+    chi1_tt_soft = chi_square(tt_soft.t1,           165.55,    35.49, power=2) #leptonic top
+    chi2_tt_soft = chi_square(tt_soft.t2,           171.55,    44.95, power=2) #hadronic top
+    chi1_tt_nom  = chi_square(tt_nom.t1,            165.55,    35.49, power=2) #leptonic top
+    chi2_tt_nom  = chi_square(tt_nom.t2,            171.55,    44.95, power=2) #hadronic top
+    chi3_tt_soft = chi_square(events.qq_soft.mass,   73.9,     23.56, power=2) #hadronic W
+    chi3_tt_nom  = chi_square(events.Wqq_cand.mass,  73.9,     23.56, power=2) #hadronic W
+    chi4_tt      = chi_square(events.Hbb_cand.dr,     2.30,     0.81, power=2) #delta R between b-jets
 
     chi_sq_tt_soft = np.sqrt(chi1_tt_soft + chi2_tt_soft + chi3_tt_soft + chi4_tt)
     chi_sq_tt_nom_4j =  np.sqrt(chi1_tt_nom + chi2_tt_nom + chi3_tt_nom + chi4_tt)
@@ -114,6 +114,6 @@ def chi_sq_cut(events):
     #apply cuts on chi square calculation in leptonic W region and 4 jets hadronic W region
     events['passChiSqTT'] = ak.firsts(events.sr_boolean == 0) | ak.firsts(events.chi_sq_tt > 1.0) # hadronic W region cut
     events['passChiSqLepW'] = ak.firsts(events.sr_boolean == 1) | (events.chi_sq_hadWs < 2.0) #leptonic W region cut
-    events['passChiSqHadW'] = ak.where(events.nominal_3j2b, ak.firsts(events.chi_sq_hadW < 1.2), False)
+    #events['passChiSqHadW'] = ak.where(events.nominal_3j2b, ak.firsts(events.chi_sq_hadW < 1.2), False)
 
     return events

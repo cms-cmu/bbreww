@@ -63,7 +63,7 @@ def nu_pz(l,v):
     pz_2 = ak.fill_none((2*A*l.pz - sqrt_discriminant)/(2*C), np.nan)
     return ak.where(abs(pz_1) <= abs(pz_2), pz_1, pz_2)
 
-def chi_square(data, mean, std, power=2):
+def chi_square(data, mean, std, power=1):
     chi2 = ((data - mean)/std)**power
     return chi2
 

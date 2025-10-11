@@ -39,27 +39,38 @@ def chi_sq(events):
     #
     #  Nominal hadronic W chi square calculation
     #
+    chi2_hadW = ak.zip( { "Hbb_mass" : chi_square(events.Hbb_cand.mass, 111.13, 23.63), # H -> bb
+                          "Wln_mT"   : chi_square(events.Wlnu_cand.mT,   58.87, 37.35), #transverse mass
+                          "Wqq_mass" : chi_square(events.Wqq_cand.mass,  76.84, 10.98), #hadronic W
+                          "Hbb_dr"   : chi_square(events.Hbb_cand.dr,     1.69,  0.60), #delta R between b-jets
+                          })
 
-    #individual chi squares for hadronic W signal selection
-    chi1_hadW       = chi_square(events.Hbb_cand.mass, 111.13, 23.63, power=2) # H -> bb
-    chi2_hadW       = chi_square(events.Wlnu_cand.mT,   58.87, 37.35, power=2) #transverse mass
-    chi3_hadW       = chi_square(events.Wqq_cand.mass,  76.84, 10.98, power=2) #hadronic W
-    chi4_hadW       = chi_square(events.Hbb_cand.dr,     1.69,  0.60, power=2) #delta R between b-jets
+    # 4 jet region chi square
+    chi2_hadW["tot_4j"] = np.sqrt(chi2_hadW.Hbb_mass**2 + chi2_hadW.Wln_mT**2 + chi2_hadW.Wqq_mass**2 + chi2_hadW.Hbb_dr**2)
 
+    # 3 jet region chi square
+    chi2_hadW["tot_3j"] = np.sqrt(chi2_hadW.Hbb_mass**2 + chi2_hadW.Wln_mT**2 + chi2_hadW.Hbb_dr**2) # don't use dijet variables for 3j region
+
+    events['chi2_hadW'] = chi2_hadW
+
+    #
+    # Soft hadronic W chi square calculation
+    #
     chi3_hadW_soft  = chi_square(events.qq_soft.mass,   76.84, 10.98, power=2) #hadronic W
 
-    chi_sq_hadW_nom_4j = ak.singletons(np.sqrt(chi1_hadW + chi2_hadW + chi3_hadW + chi4_hadW))
-    chi_sq_hadW_nom_3j = ak.singletons(np.sqrt(chi1_hadW + chi2_hadW + chi4_hadW)) # don't use dijet variables for 3j region
-    chi_sq_hadW_soft   = np.sqrt(chi1_hadW + chi2_hadW + chi3_hadW_soft + chi4_hadW)
+    chi_sq_hadW_soft   = np.sqrt(chi2_hadW.Hbb_mass**2 + chi2_hadW.Wln_mT**2 + chi3_hadW_soft + chi2_hadW.Hbb_dr**2)
     min_chi_sq_hadW_soft= ak.argmin(chi_sq_hadW_soft, axis=1, keepdims = True) #index of the minimum chi square non-bjet pair
     chi_sq_hadW_soft = chi_sq_hadW_soft[min_chi_sq_hadW_soft]
 
-    # combine chi square values for all selection regions
-    chi_sq_hadW =   ak.concatenate([chi_sq_hadW_soft[ak.singletons(events.lowpt_4j2b)],
-                                    chi_sq_hadW_nom_4j[ak.singletons(events.nominal_4j2b)],
-                                    chi_sq_hadW_nom_3j[ak.singletons(events.nominal_3j2b)]], axis=1)
 
-    ## ttbar reconstruction
+    chi_sq_hadW_soft_flat = ak.flatten(chi_sq_hadW_soft)
+    chi_sq_hadW = ak.where(events.nominal_4j2b, events.chi2_hadW.tot_4j , events.chi2_hadW.tot_3j)
+    chi_sq_hadW = ak.where(events.lowpt_4j2b,   chi_sq_hadW_soft_flat, chi_sq_hadW )
+
+
+    #
+    # ttbar reconstruction
+    #
 
     #leptonic top
     mlvb1 = (events.leading_lep + events.Wlnu_cand.nu + events.b_cands[:,0]).mass

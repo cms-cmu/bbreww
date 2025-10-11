@@ -8,6 +8,7 @@ class Chi2Hists(Template):
     Hbb_mass = H((50, -0.1, 6, ('Hbb_mass',  'chi square for Hbb_mass')))
     Hww_mass = H((50, -0.1, 6, ('Hww_mass',  'chi square for Hww_mass')))
     Wqq_mass = H((50, -0.1, 6, ('Wqq_mass',  'chi square for Wqq_mass')))
+    Wln_mT   = H((50, -0.1, 6, ('Wln_mT',    'chi square for Wln_mT')))
     Hbb_dr   = H((50, -0.1, 6, ('Hbb_dr',    'chi square for Hbb_dr')))
 
 
@@ -86,6 +87,7 @@ def fill_histograms_nominal(
     fill, hist = add_bbWW_common_hists(fill, hist)
 
     fill += Chi2Hists(("chi2_hadWs", "chi2 hadWs"), "chi2_hadWs")
+    fill += Chi2Hists(("chi2_hadW",  "chi2 hadW"),  "chi2_hadW")
 
 
     #
@@ -146,10 +148,14 @@ def fill_histograms(
 
     fill, hist = add_bbWW_common_hists(fill, hist)
 
-    fill += Chi2Hists(("chi2_hadWs", "chi2 hadWs"), "chi2_hadWs", skip=["tot_4j",
-                                                                        "Hww_mass",
-                                                                        "Wqq_mass",
-                                                                        ])
+    fill += Chi2Hists(("chi2_hadWs", "chi2 hadWs"), "chi2_hadWs",
+                      skip=["tot_4j", "Hww_mass", "Wqq_mass",]
+                      )
+
+
+    fill += Chi2Hists(("chi2_hadW",  "chi2 hadW"),  "chi2_hadW",
+                      skip=["tot_4j", "Hww_mass", "Wqq_mass",]
+                      )
 
     fill += hist.add("bjets_genjets_dr",   (30, -0.5, 5, ("bjets_genjets_dr", r'$\Delta$ R between b-candidates (genjets)')))
     fill += hist.add("bjets_genjets_mass", (50, -0.5, 250, ("bjets_genjets_mass", "H-> bb candidate (genjets) mass[GeV]")))

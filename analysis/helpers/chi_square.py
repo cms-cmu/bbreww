@@ -72,43 +72,57 @@ def chi_sq(events):
     # ttbar reconstruction
     #
 
-    #leptonic top
+
+    # Nominal
     mlvb1 = (events.leading_lep + events.Wlnu_cand.nu + events.b_cands[:,0]).mass
-    mlvb2 = (events.leading_lep + events.Wlnu_cand.nu + events.b_cands[:,1]).mass
-
-
-    mbqq1_soft = ak.pad_none((events.b_cands[:,0] + events.qq_soft).mass,3,axis=1) #hadronic candidate 1
-    mbqq2_soft = ak.pad_none((events.b_cands[:,1] + events.qq_soft).mass,3,axis=1) #hadronic candidate 2
-    mbqq1_nom = ak.singletons((events.b_cands[:,0] + events.Wqq_cand).mass) #hadronic candidate 1
     mbqq2_nom = ak.singletons((events.b_cands[:,1] + events.Wqq_cand).mass) #hadronic candidate 2
+    tt1_nom = ak.cartesian({"t1":mlvb1,"t2":mbqq2_nom},axis=1)
+
+    mlvb2 = (events.leading_lep + events.Wlnu_cand.nu + events.b_cands[:,1]).mass
+    mbqq1_nom = ak.singletons((events.b_cands[:,0] + events.Wqq_cand).mass) #hadronic candidate 1
+    tt2_nom = ak.cartesian({"t1":mlvb2,"t2":mbqq1_nom},axis=1)
 
     def distance(x1,y1,x2,y2):
         return ak.fill_none(np.sqrt((x2-x1)**2+(y2-y1)**2),np.nan)
 
-    #ttbar candidates
+    b_sel_nom =  abs(distance(tt1_nom.t1,  tt1_nom.t2,  172.5, 172.5)) < abs(distance(tt2_nom.t1,  tt2_nom.t2,  172.5, 172.5)) #pick pair closest to ttbar mass
+    tt_nom  = ak.where(b_sel_nom,  tt1_nom ,  tt2_nom)
+
+
+    chi2_tt_bjet_dr = chi_square(events.Hbb_cand.dr,     2.30,     0.81)  #delta R between b-jets
+
+    chi2_tt = ak.zip( {"lepTop_mass" : chi_square(tt_nom.t1,            165.55,    35.49), #leptonic top
+                       "hadTop_mass" : chi_square(tt_nom.t2,            171.55,    44.95), #hadronic top
+                       "Wqq_mass"    : chi_square(events.Wqq_cand.mass,  73.9,     23.56), #hadronic W
+                       "Hbb_dr"      : chi2_tt_bjet_dr
+                        })
+
+    chi2_tt["tot_4j"] = np.sqrt(chi2_tt.lepTop_mass**2 + chi2_tt.hadTop_mass**2 + chi2_tt.Wqq_mass**2 + chi2_tt.Hbb_dr**2)
+
+    events['chi2_tt'] = chi2_tt
+
+    # Soft
+
+    mbqq1_soft = ak.pad_none((events.b_cands[:,0] + events.qq_soft).mass,3,axis=1) #hadronic candidate 1
+    mbqq2_soft = ak.pad_none((events.b_cands[:,1] + events.qq_soft).mass,3,axis=1) #hadronic candidate 2
+
     tt1_soft = ak.cartesian({"t1":mlvb1,"t2":mbqq2_soft},axis=1)
     tt2_soft = ak.cartesian({"t1":mlvb2,"t2":mbqq1_soft},axis=1)
-    tt1_nom = ak.cartesian({"t1":mlvb1,"t2":mbqq2_nom},axis=1)
-    tt2_nom = ak.cartesian({"t1":mlvb2,"t2":mbqq1_nom},axis=1)
-    b_sel_soft = abs(distance(tt1_soft.t1,tt1_soft.t2,172.5,172.5))< abs(distance(tt2_soft.t1,tt2_soft.t2,172.5,172.5)) #pick pair closest to ttbar mass
-    b_sel_nom =  abs(distance(tt1_nom.t1,tt1_nom.t2,172.5,172.5)) < abs(distance(tt2_nom.t1,tt2_nom.t2,172.5,172.5)) #pick pair closest to ttbar mass
+
+    b_sel_soft = abs(distance(tt1_soft.t1, tt1_soft.t2, 172.5, 172.5)) < abs(distance(tt2_soft.t1, tt2_soft.t2, 172.5, 172.5)) #pick pair closest to ttbar mass
 
     #final ttbar candidates
     tt_soft = ak.where(b_sel_soft, tt1_soft , tt2_soft)
-    tt_nom = ak.where(b_sel_nom, tt1_nom , tt2_nom)
 
     chi1_tt_soft = chi_square(tt_soft.t1,           165.55,    35.49, power=2) #leptonic top
     chi2_tt_soft = chi_square(tt_soft.t2,           171.55,    44.95, power=2) #hadronic top
-    chi1_tt_nom  = chi_square(tt_nom.t1,            165.55,    35.49, power=2) #leptonic top
-    chi2_tt_nom  = chi_square(tt_nom.t2,            171.55,    44.95, power=2) #hadronic top
     chi3_tt_soft = chi_square(events.qq_soft.mass,   73.9,     23.56, power=2) #hadronic W
-    chi3_tt_nom  = chi_square(events.Wqq_cand.mass,  73.9,     23.56, power=2) #hadronic W
-    chi4_tt      = chi_square(events.Hbb_cand.dr,     2.30,     0.81, power=2) #delta R between b-jets
+    chi4_tt      = chi_square(events.Hbb_cand.dr,     2.30,     0.81, power=2) #hadronic W
 
-    chi_sq_tt_soft = np.sqrt(chi1_tt_soft + chi2_tt_soft + chi3_tt_soft + chi4_tt)
-    chi_sq_tt_nom_4j =  np.sqrt(chi1_tt_nom + chi2_tt_nom + chi3_tt_nom + chi4_tt)
+    chi_sq_tt_soft = np.sqrt(chi1_tt_soft + chi2_tt_soft + chi3_tt_soft + chi2_tt_bjet_dr**2 )
+
     min_chi_sq_tt_soft = ak.argmin(chi_sq_tt_soft, axis=1, keepdims = True) #get index of the minimum chi square
-    events['chi_sq_tt'] = ak.where(events.lowpt_4j2b, chi_sq_tt_soft[min_chi_sq_tt_soft], chi_sq_tt_nom_4j)
+    events['chi_sq_tt'] = ak.where(events.lowpt_4j2b, chi_sq_tt_soft[min_chi_sq_tt_soft], chi2_tt.tot_4j)
 
     # select jets with lower chi square across two signal regions
     qq_sel_index = ak.where(chi_sq_hadW_soft <= chi_sq_hadWs_soft, min_chi_sq_hadW_soft, min_chi_sq_hadWs_soft)
@@ -116,7 +130,7 @@ def chi_sq(events):
     events['sr_boolean'] = ak.where(events.qq_sel_mass > 55.0, 1, 0)
 
     events['chi_sq_hadWs'] = chi_sq_hadWs
-    events['chi_sq_hadW'] = chi_sq_hadW
+    events['chi_sq_hadW']  = chi_sq_hadW
 
     return events
 

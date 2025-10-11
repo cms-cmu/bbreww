@@ -3,13 +3,15 @@ from src.hist_tools.object import Elec, Jet, LorentzVector, Muon, Lepton
 from src.hist_tools import H, Template
 
 class Chi2Hists(Template):
-    tot_4j   = H((50, -0.1, 6, ('tot_4j', 'tot chi square 4j2b')))
-    tot_3j   = H((50, -0.1, 6, ('tot_3j', 'tot chi square 3j2b')))
-    Hbb_mass = H((50, -0.1, 6, ('Hbb_mass',  'chi square for Hbb_mass')))
-    Hww_mass = H((50, -0.1, 6, ('Hww_mass',  'chi square for Hww_mass')))
-    Wqq_mass = H((50, -0.1, 6, ('Wqq_mass',  'chi square for Wqq_mass')))
-    Wln_mT   = H((50, -0.1, 6, ('Wln_mT',    'chi square for Wln_mT')))
-    Hbb_dr   = H((50, -0.1, 6, ('Hbb_dr',    'chi square for Hbb_dr')))
+    tot_4j      = H((50, -0.1, 10, ('tot_4j', 'tot chi square 4j2b')))
+    tot_3j      = H((50, -0.1, 10, ('tot_3j', 'tot chi square 3j2b')))
+    Hbb_mass    = H((50, -0.1, 10, ('Hbb_mass',  'chi square for Hbb_mass')))
+    Hww_mass    = H((50, -0.1, 10, ('Hww_mass',  'chi square for Hww_mass')))
+    Wqq_mass    = H((50, -0.1, 10, ('Wqq_mass',  'chi square for Wqq_mass')))
+    Wln_mT      = H((50, -0.1, 10, ('Wln_mT',    'chi square for Wln_mT')))
+    Hbb_dr      = H((50, -0.1, 10, ('Hbb_dr',    'chi square for Hbb_dr')))
+    lepTop_mass = H((50, -0.1, 10, ('lepTop_mass','chi square for lep top mass')))
+    hadTop_mass = H((50, -0.1, 10, ('hadTop_mass','chi square for had top mass')))
 
 
 
@@ -52,6 +54,23 @@ def add_bbWW_common_hists(fill, hist):
     fill += Muon.plot( ("Muon", R"$Muon$"), "sel_muon", skip=["n"], )
 
 
+    #
+    #  From before
+    #
+    fill += hist.add("bjets_genjets_dr",   (30, -0.5, 5, ("bjets_genjets_dr", r'$\Delta$ R between b-candidates (genjets)')))
+    fill += hist.add("bjets_genjets_mass", (50, -0.5, 250, ("bjets_genjets_mass", "H-> bb candidate (genjets) mass[GeV]")))
+
+
+    fill += hist.add("genjets_mbb_vs_bb_dr",
+                    (50, 0, 250, ('bjets_genjets_mass', 'H->bb Candidate (genjets) Mass [GeV]')),
+                    (50, 0, 5, ('bjets_genjets_dr', r'$\Delta R$ between b-candidates (genjets)')))
+
+    fill += hist.add("lep_qq_pt_dr",
+                (50, 0, 250, ('leading_lep.pt', 'leading lepton pT [GeV]')),
+                (50, 0, 5, ('lep_qq_dr', r'$\Delta R$ between leading lepton and selected qq')))
+
+
+
     return fill, hist
 
 
@@ -88,6 +107,7 @@ def fill_histograms_nominal(
 
     fill += Chi2Hists(("chi2_hadWs", "chi2 hadWs"), "chi2_hadWs")
     fill += Chi2Hists(("chi2_hadW",  "chi2 hadW"),  "chi2_hadW")
+    fill += Chi2Hists(("chi2_tt",    "chi2 tt"),    "chi2_tt")
 
 
     #
@@ -99,18 +119,6 @@ def fill_histograms_nominal(
     #  HWW Candidate
     #
     fill += LorentzVector.plot_pair( ("HWW", R"$H_{WW}$"), "Hww_cand", skip=["n","lead","subl","st"], bins={"mass": (100, 100, 400)}, )
-
-
-    fill += hist.add("bjets_genjets_dr",   (30, -0.5, 5, ("bjets_genjets_dr", r'$\Delta$ R between b-candidates (genjets)')))
-    fill += hist.add("bjets_genjets_mass", (50, -0.5, 250, ("bjets_genjets_mass", "H-> bb candidate (genjets) mass[GeV]")))
-
-    fill += hist.add("genjets_mbb_vs_bb_dr",
-                     (50, 0, 250, ('bjets_genjets_mass', 'H->bb Candidate (genjets) Mass [GeV]')),
-                     (50, 0, 5, ('bjets_genjets_dr', r'$\Delta R$ between b-candidates (genjets)')))
-
-    fill += hist.add("lep_qq_pt_dr",
-                (50, 0, 250, ('leading_lep.pt', 'leading lepton pT [GeV]')),
-                (50, 0, 5, ('lep_qq_dr', r'$\Delta R$ between leading lepton and selected qq')))
 
 
     # fill histograms
@@ -152,23 +160,13 @@ def fill_histograms(
                       skip=["tot_4j", "Hww_mass", "Wqq_mass",]
                       )
 
-
     fill += Chi2Hists(("chi2_hadW",  "chi2 hadW"),  "chi2_hadW",
                       skip=["tot_4j", "Hww_mass", "Wqq_mass",]
                       )
 
-    fill += hist.add("bjets_genjets_dr",   (30, -0.5, 5, ("bjets_genjets_dr", r'$\Delta$ R between b-candidates (genjets)')))
-    fill += hist.add("bjets_genjets_mass", (50, -0.5, 250, ("bjets_genjets_mass", "H-> bb candidate (genjets) mass[GeV]")))
-
-
-    fill += hist.add("genjets_mbb_vs_bb_dr",
-                    (50, 0, 250, ('bjets_genjets_mass', 'H->bb Candidate (genjets) Mass [GeV]')),
-                    (50, 0, 5, ('bjets_genjets_dr', r'$\Delta R$ between b-candidates (genjets)')))
-
-    fill += hist.add("lep_qq_pt_dr",
-                (50, 0, 250, ('leading_lep.pt', 'leading lepton pT [GeV]')),
-                (50, 0, 5, ('lep_qq_dr', r'$\Delta R$ between leading lepton and selected qq')))
-
+    fill += Chi2Hists(("chi2_tt",    "chi2 tt"),    "chi2_tt",
+                      skip=["tot_4j", "Hww_mass", "Wqq_mass",]
+                      )
 
 
     # fill histograms

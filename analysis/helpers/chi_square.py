@@ -40,7 +40,7 @@ def chi_sq(events):
     min_chi_sq_hadWs_soft = ak.argmin(chi2_hadWs_soft.tot_4j, axis=1, keepdims = True) #index of the minimum chi square non-bjet pairs
     chi2_hadWs_soft = chi2_hadWs_soft[min_chi_sq_hadWs_soft]
 
-    events["chi_sq_hadWs_soft"] = chi2_hadWs_soft
+    events["chi2_hadWs_soft"] = chi2_hadWs_soft
 
     chi_sq_hadWs_soft_flat = ak.flatten(chi2_hadWs_soft.tot_4j)
     chi_sq_hadWs = ak.where(events.nominal_4j2b, events.chi2_hadWs.tot_4j , events.chi2_hadWs.tot_3j)

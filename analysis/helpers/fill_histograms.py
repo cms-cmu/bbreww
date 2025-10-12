@@ -29,13 +29,6 @@ def add_bbWW_common_hists(fill, hist):
     fill += hist.add("MET", (50, -0.5, 250, ("MET.pt", "MET pT [GeV]")))
     fill += hist.add("njets", (10, -0.5, 9.5, ("njets", "jet multiplicity")))
 
-
-
-    fill += hist.add("chi_sq_hadW",  (30, -0.5, 6, ("chi_sq_hadW",  "hadronic W region chi square")))
-    fill += hist.add("chi_sq_hadWs", (30, -0.5, 6, ("chi_sq_hadWs", "leptonic W region chi square")))
-    fill += hist.add("chi_sq_tt",    (30, -0.5, 6, ("chi_sq_tt",    "ttbar chi square")))
-
-
     #
     # Hbb Candidate
     #
@@ -112,6 +105,7 @@ def fill_histograms_nominal(
     fill += Chi2Hists(("chi2_hadWs", "chi2 hadWs"), "chi2_hadWs")
     fill += Chi2Hists(("chi2_hadW",  "chi2 hadW"),  "chi2_hadW")
     fill += Chi2Hists(("chi2_tt",    "chi2 tt"),    "chi2_tt")
+    fill += Chi2Hists(("chi2_hadWs_soft", "chi2 hadWs soft"),    "chi2_hadWs_soft")
 
 
     #
@@ -171,6 +165,7 @@ def fill_histograms(
     fill += Chi2Hists(("chi2_hadW",  "chi2 hadW"),  "chi2_hadW",
                       skip=["tot_4j", "Hww_mass", "Wqq_mass",]
                       )
+    fill += Chi2Hists(("chi2_hadWs_soft", "chi2 hadWs soft"),    "chi2_hadWs_soft")
 
 
     # fill histograms

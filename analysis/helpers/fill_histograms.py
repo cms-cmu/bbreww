@@ -13,6 +13,10 @@ class Chi2Hists(Template):
     lepTop_mass = H((50, -0.1, 10, ('lepTop_mass','chi square for lep top mass')))
     hadTop_mass = H((50, -0.1, 10, ('hadTop_mass','chi square for had top mass')))
 
+class TTbarHists(Template):
+    p      = LorentzVector.plot_pair(("...", R"$t\bar{t}$"), "p",  skip=["n","lead","subl","st"], bins={"mass": (100, 0, 1200)}, )
+    lepTop = LorentzVector.plot_pair(("...", R"lepTop"), "lepTop", skip=["n","lead","subl","st"], bins={"mass": (100, 0, 400)}, )
+    hadTop = LorentzVector.plot_pair(("...", R"hadTop"), "hadTop", skip=["n","lead","subl","st"], bins={"mass": (100, 0, 400)}, )
 
 
 def add_bbWW_common_hists(fill, hist):
@@ -120,6 +124,10 @@ def fill_histograms_nominal(
     #
     fill += LorentzVector.plot_pair( ("HWW", R"$H_{WW}$"), "Hww_cand", skip=["n","lead","subl","st"], bins={"mass": (100, 100, 400)}, )
 
+    #
+    #  TTbar Candidate
+    #
+    fill += TTbarHists( ("tt", R"$t\bar{t}$"), "tt_sel" )
 
     # fill histograms
     fill(events, hist)
@@ -161,10 +169,6 @@ def fill_histograms(
                       )
 
     fill += Chi2Hists(("chi2_hadW",  "chi2 hadW"),  "chi2_hadW",
-                      skip=["tot_4j", "Hww_mass", "Wqq_mass",]
-                      )
-
-    fill += Chi2Hists(("chi2_tt",    "chi2 tt"),    "chi2_tt",
                       skip=["tot_4j", "Hww_mass", "Wqq_mass",]
                       )
 

@@ -5,6 +5,9 @@ import correctionlib
 from coffea.nanoevents.methods import vector
 from bbreww.analysis.helpers.corrections import get_ele_sf, get_mu_id_sf, get_mu_iso_sf, get_mu_trig_sf, get_ele_trig_sf
 
+def distance(x1,y1,x2,y2):
+    return abs(ak.fill_none(np.sqrt((x2-x1)**2+(y2-y1)**2),np.nan))
+
 def match(a, b, val):
     combinations = a.cross(b, nested=True)
     return (combinations.i0.delta_r(combinations.i1)<val).any()

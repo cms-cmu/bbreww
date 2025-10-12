@@ -1,6 +1,6 @@
 import awkward as ak
 import numpy as np
-from bbreww.analysis.helpers.common import met_reconstr
+from bbreww.analysis.helpers.common import met_reconstr, distance
 
 def Hbb_candidate_selection(events):
 
@@ -59,6 +59,51 @@ def candidate_selection(events, params, year):
     Hww_cand["dphi"] = events.Wlnu_cand.delta_phi(events.Wqq_cand)
 
     events['Hww_cand'] = Hww_cand
+
+
+    #
+    # ttbar Candidate
+    #
+    lepTop_1 = (events.b_cands[:,0] + events.Wlnu_cand)
+    hadTop_1 = (events.b_cands[:,1] + events.Wqq_cand)
+    tt_1 = lepTop_1 + hadTop_1
+    tt_1["lepTop"] = lepTop_1
+    tt_1["lepTop", "dr"]   = events.b_cands[:,0].delta_r  (events.Wlnu_cand)
+    tt_1["lepTop", "dphi"] = events.b_cands[:,0].delta_phi(events.Wlnu_cand)
+
+    tt_1["hadTop"] = hadTop_1
+    tt_1["hadTop", "dr"]   = events.b_cands[:,1].delta_r  (events.Wqq_cand)
+    tt_1["hadTop", "dphi"] = events.b_cands[:,1].delta_phi(events.Wqq_cand)
+
+    tt_1["mass_distance"] = distance(lepTop_1.mass,  hadTop_1.mass,  172.5, 172.5)
+
+    lepTop_2 = (events.b_cands[:,1] + events.Wlnu_cand)
+    hadTop_2 = (events.b_cands[:,0] + events.Wqq_cand)
+    tt_2 = lepTop_2 + hadTop_2
+    tt_2["lepTop"] = lepTop_2
+    tt_2["lepTop", "dr"]   = events.b_cands[:,1].delta_r  (events.Wlnu_cand)
+    tt_2["lepTop", "dphi"] = events.b_cands[:,1].delta_phi(events.Wlnu_cand)
+
+    tt_2["hadTop"] = hadTop_2
+    tt_2["hadTop", "dr"]   = events.b_cands[:,0].delta_r  (events.Wqq_cand)
+    tt_2["hadTop", "dphi"] = events.b_cands[:,0].delta_phi(events.Wqq_cand)
+
+    tt_2["mass_distance"] = distance(lepTop_2.mass,  hadTop_2.mass,  172.5, 172.5)
+
+    b_sel_nom =  tt_1.mass_distance < tt_2.mass_distance #pick pair closest to ttbar mass
+    tt_best  = ak.where(b_sel_nom,  tt_1 ,  tt_2)
+
+
+    tt_sel = ak.zip({"p": tt_best.lepTop + tt_best.hadTop,
+                     "lepTop": tt_best.lepTop,
+                     "hadTop": tt_best.hadTop,
+                     })
+
+    tt_sel["p","dr"]   = tt_best.lepTop.delta_r(tt_best.hadTop)
+    tt_sel["p","dphi"] = tt_best.lepTop.delta_r(tt_best.hadTop)
+
+    events['tt_sel'] = tt_sel
+
 
     #
     # soft jets analysis

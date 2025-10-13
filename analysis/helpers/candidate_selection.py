@@ -136,6 +136,57 @@ def candidate_selection(events, params, year):
     events['Hww_cand_soft'] = Hww_cand_soft
 
 
+    #
+    # ttbar Candidate Soft
+    #
+
+    lepTop_soft_1 = (events.Wlnu_cand + events.b_cands[:,1])
+    hadTop_soft_1 = (events.b_cands[:,0] + events.qq_soft) #hadronic candidate 1
+
+    tt_soft_1 = lepTop_soft_1 + hadTop_soft_1
+    tt_soft_1["lepTop"] = lepTop_soft_1
+    tt_soft_1["lepTop", "dr"]   = events.b_cands[:,1].delta_r  (events.Wlnu_cand)
+    tt_soft_1["lepTop", "dphi"] = events.b_cands[:,1].delta_phi(events.Wlnu_cand)
+
+    tt_soft_1["hadTop"] = hadTop_soft_1
+    tt_soft_1["hadTop", "dr"]   = events.b_cands[:,0].delta_r  (events.qq_soft)
+    tt_soft_1["hadTop", "dphi"] = events.b_cands[:,0].delta_phi(events.qq_soft)
+
+    tt_soft_1["mass_distance"] = distance(lepTop_soft_1.mass,  hadTop_soft_1.mass,  172.5, 172.5)
+
+
+    lepTop_soft_2 = (events.Wlnu_cand + events.b_cands[:,0])
+    hadTop_soft_2 = (events.b_cands[:,1] + events.qq_soft) #hadronic candidate 2
+
+    tt_soft_2 = lepTop_soft_2 + hadTop_soft_2
+    tt_soft_2["lepTop"] = lepTop_soft_2
+    tt_soft_2["lepTop", "dr"]   = events.b_cands[:,0].delta_r  (events.Wlnu_cand)
+    tt_soft_2["lepTop", "dphi"] = events.b_cands[:,0].delta_phi(events.Wlnu_cand)
+
+    tt_soft_2["hadTop"] = hadTop_soft_2
+    tt_soft_2["hadTop", "dr"]   = events.b_cands[:,1].delta_r  (events.qq_soft)
+    tt_soft_2["hadTop", "dphi"] = events.b_cands[:,1].delta_phi(events.qq_soft)
+
+    tt_soft_2["mass_distance"] = distance(lepTop_soft_2.mass,  hadTop_soft_2.mass,  172.5, 172.5)
+
+
+    b_sel_soft =  tt_soft_1.mass_distance < tt_soft_2.mass_distance
+
+    #final ttbar candidates
+    tt_best_soft = ak.where(b_sel_soft, tt_soft_1 , tt_soft_2)
+
+    tt_soft = ak.zip({"p": tt_best_soft.lepTop + tt_best_soft.hadTop,
+                      "lepTop": tt_best_soft.lepTop,
+                      "hadTop": tt_best_soft.hadTop,
+                      })
+
+    tt_soft["p","dr"]   = tt_best_soft.lepTop.delta_r(tt_best_soft.hadTop)
+    tt_soft["p","dphi"] = tt_best_soft.lepTop.delta_r(tt_best_soft.hadTop)
+
+    events['tt_soft'] = tt_soft
+
+
+
     return events
 
 ## function only for skimmer

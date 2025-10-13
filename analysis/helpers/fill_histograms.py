@@ -117,6 +117,7 @@ def fill_histograms_nominal(
     #  HWW Candidate
     #
     fill += LorentzVector.plot_pair( ("HWW", R"$H_{WW}$"), "Hww_cand", skip=["n","lead","subl","st"], bins={"mass": (100, 100, 400)}, )
+    fill += LorentzVector.plot_pair( ("HWW_soft", R"$H_{WW}$ (soft)"), "Hww_cand_soft", skip=["n","lead","subl","st"], bins={"mass": (100, 100, 400)}, )
 
     #
     #  TTbar Candidate
@@ -167,6 +168,12 @@ def fill_histograms(
                       )
     fill += Chi2Hists(("chi2_hadWs_soft", "chi2 hadWs soft"),    "chi2_hadWs_soft")
     fill += Chi2Hists(("chi2_hadW_soft",  "chi2 hadW soft"),     "chi2_hadW_soft")
+
+
+    #
+    #  HWW Candidate
+    #
+    fill += LorentzVector.plot_pair( ("HWW_soft", R"$H_{WW}$ (soft)"), "Hww_cand_soft", skip=["n","lead","subl","st"], bins={"mass": (100, 100, 400)}, )
 
 
     # fill histograms

@@ -23,11 +23,9 @@ def chi_sq(events):
     #
     # Soft hadronic W* chi square calculation
     #
-    mlvqq_hadWs_soft = (events.Wlnu_cand + events.qq_soft ).mass # H -> lvqq candidates (15 GeV > nonbjet_pt > 25 GeV)
-
     chi2_hadWs_soft = ak.zip( { "Hbb_mass" : chi2_hadWs.Hbb_mass,   # H -> bb
-                                "Hww_mass" : chi_square(mlvqq_hadWs_soft, 161.15, 34.23), # H -> lvqq in low pt region
-                                "Wqq_mass" : chi_square(events.qq_soft.mass,   39.13, 10.02), # W* -> qq in low pt region
+                                "Hww_mass" : chi_square(events.Hww_cand_soft.mass, 161.15, 34.23), # H -> lvqq in low pt region
+                                "Wqq_mass" : chi_square(events.qq_soft.mass,        39.13, 10.02), # W* -> qq in low pt region
                                 "Hbb_dr"   : chi2_hadWs.Hbb_dr  #delta
                                 })
 

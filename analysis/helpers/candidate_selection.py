@@ -19,12 +19,7 @@ def Hbb_candidate_selection(events):
     return events
 
 
-
-def candidate_selection(events, params, year):
-
-    #
-    #  Wlnu Cand
-    #
+def Wlnu_candidate_selection(events):
 
     # calculate MET pz requiring (lepton + nu).mass == W_mass
     nu = met_reconstr(events, events.leading_lep)
@@ -37,10 +32,10 @@ def candidate_selection(events, params, year):
     Wlnu_cand["mT"]   = np.sqrt(2 * Wlnu_cand.lep.pt * Wlnu_cand.nu.pt * (1 - np.cos(Wlnu_cand.dphi)))
 
     events['Wlnu_cand'] = Wlnu_cand
+    return events
 
-    #
-    #  Wqq for Nominal Analysis
-    #
+
+def Wqq_candidate_selection(events):
     Wqq_cand = events.q_cands_nom[:,0] + events.q_cands_nom[:,1]
     Wqq_cand["lead"] = events.q_cands_nom[:,0]
     Wqq_cand["subl"] = events.q_cands_nom[:,1]
@@ -49,21 +44,18 @@ def candidate_selection(events, params, year):
     Wqq_cand["dphi"] = Wqq_cand["lead"].delta_phi(Wqq_cand["subl"])
 
     events['Wqq_cand'] = Wqq_cand
+    return events
 
-
-    #
-    #  HWW Candidate
-    #
+def Hww_candidate_selection(events):
     Hww_cand = events.Wlnu_cand + events.Wqq_cand
     Hww_cand["dr"]   = events.Wlnu_cand.delta_r  (events.Wqq_cand)
     Hww_cand["dphi"] = events.Wlnu_cand.delta_phi(events.Wqq_cand)
 
     events['Hww_cand'] = Hww_cand
+    return events
 
+def ttbar_candidate_selection(events):
 
-    #
-    # ttbar Candidate
-    #
     lepTop_1 = (events.b_cands[:,0] + events.Wlnu_cand)
     hadTop_1 = (events.b_cands[:,1] + events.Wqq_cand)
     tt_1 = lepTop_1 + hadTop_1
@@ -103,11 +95,10 @@ def candidate_selection(events, params, year):
     tt_sel["p","dphi"] = tt_best.lepTop.delta_r(tt_best.hadTop)
 
     events['tt_sel'] = tt_sel
+    return events
 
 
-    #
-    # soft jets analysis
-    #
+def Wqq_soft_candidate_selection(events, year):
     QvG_key = 'btagPNetQvG' if '202' in year else 'particleNetAK4_QvsG' # use particleNET for quark vs. gluon tagging
 
     q_cands_soft = events.q_cands_soft[ak.argsort(getattr(events.q_cands_soft,QvG_key), axis=1, ascending=False)] #particleNetAK4_QvsG btagPNetQvG
@@ -125,20 +116,19 @@ def candidate_selection(events, params, year):
 
     events['qq_mass'] = ak.fill_none((q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2]).mass,np.nan) # plotting gives issues with None values
     events['qq_soft'] = ak.pad_none(q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2], 3, axis=1)
+    return events
 
-    #
-    #  HWW Candidate Soft
-    #
+
+def Hww_soft_candidate_selection(events):
     Hww_cand_soft = events.Wlnu_cand + events.qq_soft
     Hww_cand_soft["dr"]   = events.Wlnu_cand.delta_r  (events.qq_soft)
     Hww_cand_soft["dphi"] = events.Wlnu_cand.delta_phi(events.qq_soft)
 
     events['Hww_cand_soft'] = Hww_cand_soft
+    return events
 
 
-    #
-    # ttbar Candidate Soft
-    #
+def ttbar_soft_candidate_selection(events):
 
     lepTop_soft_1 = (events.Wlnu_cand + events.b_cands[:,1])
     hadTop_soft_1 = (events.b_cands[:,0] + events.qq_soft) #hadronic candidate 1
@@ -184,8 +174,31 @@ def candidate_selection(events, params, year):
     tt_soft["p","dphi"] = tt_best_soft.lepTop.delta_r(tt_best_soft.hadTop)
 
     events['tt_soft'] = tt_soft
+    return events
 
 
+def candidate_selection(events, params, year):
+
+    #
+    # Common
+    #
+    events = Hbb_candidate_selection(events)
+    events = Wlnu_candidate_selection(events)
+
+    #
+    #  Nomninal Candidate selection
+    #
+    events = Wqq_candidate_selection(events)
+    events = Hww_candidate_selection(events)
+    events = ttbar_candidate_selection(events)
+
+
+    #
+    # soft jets analysis
+    #
+    events = Wqq_soft_candidate_selection(events, year)
+    events = Hww_soft_candidate_selection(events)
+    events = ttbar_soft_candidate_selection(events)
 
     return events
 

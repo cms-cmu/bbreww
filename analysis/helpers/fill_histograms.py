@@ -106,10 +106,6 @@ def fill_histograms_nominal(
     fill += Chi2Hists(("chi2_hadW",       "chi2 hadW"),          "chi2_hadW")
     fill += Chi2Hists(("chi2_tt",         "chi2 tt"),            "chi2_tt")
 
-    fill += Chi2Hists(("chi2_hadWs_soft", "chi2 hadWs soft"),    "chi2_hadWs_soft")
-    fill += Chi2Hists(("chi2_hadW_soft",  "chi2 hadW soft"),     "chi2_hadW_soft")
-    fill += Chi2Hists(("chi2_tt_soft",    "chi2 tt soft"),       "chi2_tt_soft")
-
     #
     # Wqq Candidate
     #
@@ -119,13 +115,11 @@ def fill_histograms_nominal(
     #  HWW Candidate
     #
     fill += LorentzVector.plot_pair( ("HWW", R"$H_{WW}$"), "Hww_cand", skip=["n","lead","subl","st"], bins={"mass": (100, 100, 400)}, )
-    fill += LorentzVector.plot_pair( ("HWW_soft", R"$H_{WW}$ (soft)"), "Hww_cand_soft", skip=["n","lead","subl","st"], bins={"mass": (100, 100, 400)}, )
 
     #
     #  TTbar Candidate
     #
     fill += TTbarHists( ("tt", R"$t\bar{t}$"), "tt_sel" )
-    fill += TTbarHists( ("tt_soft", R"$t\bar{t}$"), "tt_soft_minChi2" )
 
     # fill histograms
     fill(events, hist)
@@ -178,7 +172,6 @@ def fill_histograms(
     #  HWW Candidate
     #
     fill += LorentzVector.plot_pair( ("HWW_soft", R"$H_{WW}$ (soft)"), "Hww_cand_soft", skip=["n","lead","subl","st"], bins={"mass": (100, 100, 400)}, )
-
 
     fill += TTbarHists( ("tt_soft", R"$t\bar{t}$"), "tt_soft_minChi2" )
 

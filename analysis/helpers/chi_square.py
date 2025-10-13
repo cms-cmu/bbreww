@@ -67,7 +67,7 @@ def chi_sq(events):
 
 
     chi2_hadW_soft["tot_4j"]  =  np.sqrt(chi2_hadW_soft.Hbb_mass**2 + chi2_hadW_soft.Wln_mT**2 + chi2_hadW_soft.Wqq_mass**2 + chi2_hadW_soft.Hbb_dr**2)
-    # chi_sq_hadW_soft   = np.sqrt(chi2_hadW.Hbb_mass**2 + chi2_hadW.Wln_mT**2 + chi3_hadW_soft + chi2_hadW.Hbb_dr**2)
+
     min_chi_sq_hadW_soft= ak.argmin(chi2_hadW_soft.tot_4j, axis=1, keepdims = True) #index of the minimum chi square non-bjet pair
     chi2_hadW_soft = chi2_hadW_soft[min_chi_sq_hadW_soft]
 
@@ -79,7 +79,7 @@ def chi_sq(events):
 
 
     #
-    # ttbar reconstruction
+    # ttbar chi2
     #
     chi2_tt_bjet_dr = chi_square(events.Hbb_cand.dr,     2.30,     0.81)  #delta R between b-jets
 
@@ -93,26 +93,14 @@ def chi_sq(events):
 
     events['chi2_tt'] = chi2_tt
 
-    # Soft
+    #
+    # ttbar chi2 Soft jet analysis
+    #
 
-    mbqq1_soft = ak.pad_none((events.b_cands[:,0] + events.qq_soft).mass,3,axis=1) #hadronic candidate 1
-    mbqq2_soft = ak.pad_none((events.b_cands[:,1] + events.qq_soft).mass,3,axis=1) #hadronic candidate 2
-
-    mlvb1 = (events.Wlnu_cand + events.b_cands[:,0]).mass
-    mlvb2 = (events.Wlnu_cand + events.b_cands[:,1]).mass
-
-    tt1_soft = ak.cartesian({"t1":mlvb1, "t2":mbqq2_soft},axis=1)
-    tt2_soft = ak.cartesian({"t1":mlvb2, "t2":mbqq1_soft},axis=1)
-
-    b_sel_soft = abs(distance(tt1_soft.t1, tt1_soft.t2, 172.5, 172.5)) < abs(distance(tt2_soft.t1, tt2_soft.t2, 172.5, 172.5)) #pick pair closest to ttbar mass
-
-    #final ttbar candidates
-    tt_soft = ak.where(b_sel_soft, tt1_soft , tt2_soft)
-
-    chi2_tt_soft = ak.zip( {"lepTop_mass" : chi_square(tt_soft.t1,           165.55,    35.49), #leptonic top
-                            "hadTop_mass" : chi_square(tt_soft.t2,           171.55,    44.95), #hadronic top
-                            "Wqq_mass"    : chi_square(events.qq_soft.mass,   73.9,     23.56), #
-                            "Hbb_dr"      : chi_square(events.Hbb_cand.dr,     2.30,     0.81)  #delta R between b-jets
+    chi2_tt_soft = ak.zip( {"lepTop_mass" : chi_square(events.tt_soft.lepTop.mass,    165.55,    35.49), #leptonic top
+                            "hadTop_mass" : chi_square(events.tt_soft.hadTop.mass,    171.55,    44.95), #hadronic top
+                            "Wqq_mass"    : chi_square(events.qq_soft.mass,            73.9,     23.56), #
+                            "Hbb_dr"      : chi_square(events.Hbb_cand.dr,              2.30,     0.81)  #delta R between b-jets
                         })
 
     chi2_tt_soft["tot_4j"] = np.sqrt(chi2_tt_soft.lepTop_mass**2 + chi2_tt_soft.hadTop_mass**2 + chi2_tt_soft.Wqq_mass**2 + chi2_tt_soft.Hbb_dr**2)

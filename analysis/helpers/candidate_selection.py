@@ -155,8 +155,6 @@ def candidate_selection(events, params, year):
     tt_soft_1["mass_distance"] = distance(lepTop_soft_1.mass,  hadTop_soft_1.mass,  172.5, 172.5)
 
 
-
-
     lepTop_soft_2 = (events.Wlnu_cand + events.b_cands[:,0])
     hadTop_soft_2 = (events.b_cands[:,1] + events.qq_soft) #hadronic candidate 2
 

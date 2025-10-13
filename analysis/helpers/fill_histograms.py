@@ -125,6 +125,7 @@ def fill_histograms_nominal(
     #  TTbar Candidate
     #
     fill += TTbarHists( ("tt", R"$t\bar{t}$"), "tt_sel" )
+    fill += TTbarHists( ("tt_soft", R"$t\bar{t}$"), "tt_soft_minChi2" )
 
     # fill histograms
     fill(events, hist)
@@ -178,6 +179,8 @@ def fill_histograms(
     #
     fill += LorentzVector.plot_pair( ("HWW_soft", R"$H_{WW}$ (soft)"), "Hww_cand_soft", skip=["n","lead","subl","st"], bins={"mass": (100, 100, 400)}, )
 
+
+    fill += TTbarHists( ("tt_soft", R"$t\bar{t}$"), "tt_soft_minChi2" )
 
     # fill histograms
     fill(events, hist)

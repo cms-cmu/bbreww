@@ -106,6 +106,9 @@ def chi_sq(events):
     chi2_tt_soft["tot_4j"] = np.sqrt(chi2_tt_soft.lepTop_mass**2 + chi2_tt_soft.hadTop_mass**2 + chi2_tt_soft.Wqq_mass**2 + chi2_tt_soft.Hbb_dr**2)
 
     min_chi_sq_tt_soft = ak.argmin(chi2_tt_soft.tot_4j, axis=1, keepdims = True) #get index of the minimum chi square
+
+    events["tt_soft_minChi2"] = events.tt_soft[min_chi_sq_tt_soft] #selected ttbar candidate with minimum chi square
+
     events['chi_sq_tt'] = ak.where(events.lowpt_4j2b, ak.firsts(chi2_tt_soft[min_chi_sq_tt_soft].tot_4j), chi2_tt.tot_4j)
 
     # select jets with lower chi square across two signal regions

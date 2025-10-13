@@ -126,6 +126,16 @@ def candidate_selection(events, params, year):
     events['qq_mass'] = ak.fill_none((q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2]).mass,np.nan) # plotting gives issues with None values
     events['qq_soft'] = ak.pad_none(q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2], 3, axis=1)
 
+    #
+    #  HWW Candidate Soft
+    #
+    Hww_cand_soft = events.Wlnu_cand + events.qq_soft
+    Hww_cand_soft["dr"]   = events.Wlnu_cand.delta_r  (events.qq_soft)
+    Hww_cand_soft["dphi"] = events.Wlnu_cand.delta_phi(events.qq_soft)
+
+    events['Hww_cand_soft'] = Hww_cand_soft
+
+
     return events
 
 ## function only for skimmer

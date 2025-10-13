@@ -23,16 +23,19 @@ def chi_sq(events):
     #
     # Soft hadronic W* chi square calculation
     #
-    mlvqq_hadWs_soft = (events.Wlnu_cand + events.qq_soft ).mass # H -> lvqq candidates (15 GeV > nonbjet_pt > 25 GeV)
+    chi2_hadWs_soft = ak.zip( { "Hbb_mass" : chi2_hadWs.Hbb_mass,   # H -> bb
+                                "Hww_mass" : chi_square(events.Hww_cand_soft.mass, 161.15, 34.23), # H -> lvqq in low pt region
+                                "Wqq_mass" : chi_square(events.qq_soft.mass,        39.13, 10.02), # W* -> qq in low pt region
+                                "Hbb_dr"   : chi2_hadWs.Hbb_dr  #delta
+                                })
 
-    chi2_hadWs_soft = chi_square(mlvqq_hadWs_soft,     161.15, 34.23, power=2) # H -> lvqq in low pt region
-    chi3_hadWs_soft = chi_square(events.qq_soft.mass,   39.13, 10.02, power=2) # W* -> qq in low pt region
+    chi2_hadWs_soft["tot_4j"] = np.sqrt(chi2_hadWs_soft.Hbb_mass**2 + chi2_hadWs_soft.Hww_mass**2 + chi2_hadWs_soft.Wqq_mass**2 + chi2_hadWs_soft.Hbb_dr**2)
+    min_chi_sq_hadWs_soft = ak.argmin(chi2_hadWs_soft.tot_4j, axis=1, keepdims = True) #index of the minimum chi square non-bjet pairs
+    chi2_hadWs_soft = chi2_hadWs_soft[min_chi_sq_hadWs_soft]
 
-    chi_sq_hadWs_soft   = np.sqrt(chi2_hadWs.Hbb_mass**2 + chi2_hadWs_soft + chi3_hadWs_soft + chi2_hadWs.Hbb_dr**2)
-    min_chi_sq_hadWs_soft = ak.argmin(chi_sq_hadWs_soft, axis=1, keepdims = True) #index of the minimum chi square non-bjet pairs
-    chi_sq_hadWs_soft = chi_sq_hadWs_soft[min_chi_sq_hadWs_soft]
+    events["chi2_hadWs_soft"] = chi2_hadWs_soft
 
-    chi_sq_hadWs_soft_flat = ak.flatten(chi_sq_hadWs_soft)
+    chi_sq_hadWs_soft_flat = ak.flatten(chi2_hadWs_soft.tot_4j)
     chi_sq_hadWs = ak.where(events.nominal_4j2b, events.chi2_hadWs.tot_4j , events.chi2_hadWs.tot_3j)
     chi_sq_hadWs = ak.where(events.lowpt_4j2b,   chi_sq_hadWs_soft_flat, chi_sq_hadWs )
 
@@ -56,14 +59,21 @@ def chi_sq(events):
     #
     # Soft hadronic W chi square calculation
     #
-    chi3_hadW_soft  = chi_square(events.qq_soft.mass,   76.84, 10.98, power=2) #hadronic W
+    chi2_hadW_soft = ak.zip( { "Hbb_mass" : chi2_hadW.Hbb_mass,   # H -> bb
+                               "Wln_mT"   : chi2_hadW.Wln_mT, #transverse mass
+                               "Wqq_mass" : chi_square(events.qq_soft.mass,   76.84, 10.98), #hadronic W
+                               "Hbb_dr"   : chi2_hadW.Hbb_dr  #delta
+                                })
 
-    chi_sq_hadW_soft   = np.sqrt(chi2_hadW.Hbb_mass**2 + chi2_hadW.Wln_mT**2 + chi3_hadW_soft + chi2_hadW.Hbb_dr**2)
-    min_chi_sq_hadW_soft= ak.argmin(chi_sq_hadW_soft, axis=1, keepdims = True) #index of the minimum chi square non-bjet pair
-    chi_sq_hadW_soft = chi_sq_hadW_soft[min_chi_sq_hadW_soft]
 
+    chi2_hadW_soft["tot_4j"]  =  np.sqrt(chi2_hadW_soft.Hbb_mass**2 + chi2_hadW_soft.Wln_mT**2 + chi2_hadW_soft.Wqq_mass**2 + chi2_hadW_soft.Hbb_dr**2)
+    # chi_sq_hadW_soft   = np.sqrt(chi2_hadW.Hbb_mass**2 + chi2_hadW.Wln_mT**2 + chi3_hadW_soft + chi2_hadW.Hbb_dr**2)
+    min_chi_sq_hadW_soft= ak.argmin(chi2_hadW_soft.tot_4j, axis=1, keepdims = True) #index of the minimum chi square non-bjet pair
+    chi2_hadW_soft = chi2_hadW_soft[min_chi_sq_hadW_soft]
 
-    chi_sq_hadW_soft_flat = ak.flatten(chi_sq_hadW_soft)
+    events["chi2_hadW_soft"] = chi2_hadW_soft
+
+    chi_sq_hadW_soft_flat = ak.flatten(chi2_hadW_soft.tot_4j)
     chi_sq_hadW = ak.where(events.nominal_4j2b, events.chi2_hadW.tot_4j , events.chi2_hadW.tot_3j)
     chi_sq_hadW = ak.where(events.lowpt_4j2b,   chi_sq_hadW_soft_flat, chi_sq_hadW )
 
@@ -111,7 +121,7 @@ def chi_sq(events):
     events['chi_sq_tt'] = ak.where(events.lowpt_4j2b, ak.firsts(chi_sq_tt_soft[min_chi_sq_tt_soft]), chi2_tt.tot_4j)
 
     # select jets with lower chi square across two signal regions
-    qq_sel_index = ak.where(chi_sq_hadW_soft <= chi_sq_hadWs_soft, min_chi_sq_hadW_soft, min_chi_sq_hadWs_soft)
+    qq_sel_index = ak.where(chi2_hadW_soft.tot_4j <= chi2_hadWs_soft.tot_4j, min_chi_sq_hadW_soft, min_chi_sq_hadWs_soft)
     events['qq_sel_mass'] = events.qq_soft[qq_sel_index].mass
     events['sr_boolean'] = ak.where(events.qq_sel_mass > 55.0, 1, 0)
 

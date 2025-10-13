@@ -105,8 +105,10 @@ def fill_histograms_nominal(
     fill += Chi2Hists(("chi2_hadWs",      "chi2 hadWs"),         "chi2_hadWs")
     fill += Chi2Hists(("chi2_hadW",       "chi2 hadW"),          "chi2_hadW")
     fill += Chi2Hists(("chi2_tt",         "chi2 tt"),            "chi2_tt")
+
     fill += Chi2Hists(("chi2_hadWs_soft", "chi2 hadWs soft"),    "chi2_hadWs_soft")
     fill += Chi2Hists(("chi2_hadW_soft",  "chi2 hadW soft"),     "chi2_hadW_soft")
+    fill += Chi2Hists(("chi2_tt_soft",    "chi2 tt soft"),       "chi2_tt_soft")
 
     #
     # Wqq Candidate
@@ -166,9 +168,10 @@ def fill_histograms(
     fill += Chi2Hists(("chi2_hadW",  "chi2 hadW"),  "chi2_hadW",
                       skip=["tot_4j", "Hww_mass", "Wqq_mass",]
                       )
+
     fill += Chi2Hists(("chi2_hadWs_soft", "chi2 hadWs soft"),    "chi2_hadWs_soft")
     fill += Chi2Hists(("chi2_hadW_soft",  "chi2 hadW soft"),     "chi2_hadW_soft")
-
+    fill += Chi2Hists(("chi2_tt_soft",    "chi2 tt soft"),       "chi2_tt_soft")
 
     #
     #  HWW Candidate

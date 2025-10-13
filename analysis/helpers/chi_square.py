@@ -81,7 +81,6 @@ def chi_sq(events):
     #
     # ttbar reconstruction
     #
-
     chi2_tt_bjet_dr = chi_square(events.Hbb_cand.dr,     2.30,     0.81)  #delta R between b-jets
 
     chi2_tt = ak.zip( {"lepTop_mass" : chi_square(events.tt_sel.lepTop.mass,    165.55,    35.49), #leptonic top
@@ -110,15 +109,16 @@ def chi_sq(events):
     #final ttbar candidates
     tt_soft = ak.where(b_sel_soft, tt1_soft , tt2_soft)
 
-    chi1_tt_soft = chi_square(tt_soft.t1,           165.55,    35.49, power=2) #leptonic top
-    chi2_tt_soft = chi_square(tt_soft.t2,           171.55,    44.95, power=2) #hadronic top
-    chi3_tt_soft = chi_square(events.qq_soft.mass,   73.9,     23.56, power=2) #hadronic W
-    chi4_tt      = chi_square(events.Hbb_cand.dr,     2.30,     0.81, power=2) #hadronic W
+    chi2_tt_soft = ak.zip( {"lepTop_mass" : chi_square(tt_soft.t1,           165.55,    35.49), #leptonic top
+                            "hadTop_mass" : chi_square(tt_soft.t2,           171.55,    44.95), #hadronic top
+                            "Wqq_mass"    : chi_square(events.qq_soft.mass,   73.9,     23.56), #
+                            "Hbb_dr"      : chi_square(events.Hbb_cand.dr,     2.30,     0.81)  #delta R between b-jets
+                        })
 
-    chi_sq_tt_soft = np.sqrt(chi1_tt_soft + chi2_tt_soft + chi3_tt_soft + chi2_tt_bjet_dr**2 )
+    chi2_tt_soft["tot_4j"] = np.sqrt(chi2_tt_soft.lepTop_mass**2 + chi2_tt_soft.hadTop_mass**2 + chi2_tt_soft.Wqq_mass**2 + chi2_tt_soft.Hbb_dr**2)
 
-    min_chi_sq_tt_soft = ak.argmin(chi_sq_tt_soft, axis=1, keepdims = True) #get index of the minimum chi square
-    events['chi_sq_tt'] = ak.where(events.lowpt_4j2b, ak.firsts(chi_sq_tt_soft[min_chi_sq_tt_soft]), chi2_tt.tot_4j)
+    min_chi_sq_tt_soft = ak.argmin(chi2_tt_soft.tot_4j, axis=1, keepdims = True) #get index of the minimum chi square
+    events['chi_sq_tt'] = ak.where(events.lowpt_4j2b, ak.firsts(chi2_tt_soft[min_chi_sq_tt_soft].tot_4j), chi2_tt.tot_4j)
 
     # select jets with lower chi square across two signal regions
     qq_sel_index = ak.where(chi2_hadW_soft.tot_4j <= chi2_hadWs_soft.tot_4j, min_chi_sq_hadW_soft, min_chi_sq_hadWs_soft)

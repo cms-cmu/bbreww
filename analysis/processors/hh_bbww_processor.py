@@ -191,8 +191,11 @@ class analysis(processor.ProcessorABC):
 
         selected_events = events[events.preselection]
 
-        selected_events = Hbb_candidate_selection(selected_events) # select H->bb candidates
+        selected_events = candidate_selection(selected_events, self.params, self.year) # select HH->bbWW candidates
 
+        #
+        #  Define the SR and CR regions
+        #   (Maybe move to Hbb_candidate_selection ?)
         signal_region = elliptical_region(selected_events.Hbb_cand.mass, selected_events.Hbb_cand.dr,
                                          105, 1.5, 70, 1.51 ) # elliptical signal region
         control_region = ((~signal_region)
@@ -204,7 +207,6 @@ class analysis(processor.ProcessorABC):
             'CR': ak.fill_none(control_region, False)
         })
 
-        selected_events = candidate_selection(selected_events, self.params, self.year) # select HH->bbWW candidates
 
         del events
         selected_events = chi_sq(selected_events) # chi square selection and calculation

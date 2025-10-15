@@ -8,14 +8,14 @@
 main:
   module: train # run training task
   option:
-    - --max-loaders 3 # use 3 workers to load dataset
-    - --max-trainers 20 # use 20 workers to train
+    - --max-loaders 2 # use 2 workers to load dataset
+    - --max-trainers 3 # use 3 workers to train
 
 dataset:
   - module: bbWW.svb.Background
     option:
       - --metadata bbreww/metadata/classifier/datasets_v4
-      - --norm 4 #set TTbar weight times weight of signal
+      - --norm 4 #set TTbar to be 4 times weight of signal
       - --friends "" bbreww/metadata/classifier/output_friend.json@@classifier_input # set input friend tree
 
   - module: bbWW.svb.Signal

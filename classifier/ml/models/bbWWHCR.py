@@ -128,7 +128,6 @@ class HCRModel(Model):
         self._arch = arch
         self._nn = HCR(
             dijetFeatures=arch.n_features,
-            quadjetFeatures=arch.n_features,
             ancillaryFeatures=InputBranch.feature_ancillary,
             device=device,
             nClasses=MultiClass.n_trainable(),
@@ -314,7 +313,6 @@ class HCRModelEval(Model):
         self._arch = HCRArch.load(saved["arch"])
         self._nn = HCR(
             dijetFeatures=self._arch.n_features,
-            quadjetFeatures=self._arch.n_features,
             ancillaryFeatures=InputBranch.feature_ancillary,
             device=device,
             nClasses=len(self._classes),

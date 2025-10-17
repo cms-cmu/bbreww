@@ -15,23 +15,21 @@ from rich.table import Table
 # transvserse mass of two two-dimensional vectors
 def transverse_mass(v1, v2):
     # Determine indices for the first vector
-    if v1.shape[1] == 6:  # Case for (pt, eta, phi, m, is_e, is_m)
-        pt_idx1 = 0
-        phi_idx1 = 2 # phi is at index 2
-    elif v1.shape[1] == 2: # Case for (pt, phi)
+    if v1.shape[1] == 2: # Case for (pt, phi)
         pt_idx1 = 0
         phi_idx1 = 1
     else:
-        raise ValueError(f"Unsupported feature size for v1: {v1.shape[1]}")
+        pt_idx1 = 0 # case for (pt, eta phi, ...)
+        phi_idx1 = 2 # phi is at index 2 
 
     # Determine indices for the second vector (e.g., MET)
-    if v2.shape[1] == 2: # MET is likely (pt, phi)
+    if v2.shape[1] == 2: 
         pt_idx2 = 0
         phi_idx2 = 1
     else:
-        # Add handling for other v2 formats if necessary
-        raise ValueError(f"Unsupported feature size for v2: {v2.shape[1]}")
-
+        pt_idx2 = 0 # case for (pt, eta phi, ...)
+        phi_idx2 = 2 # phi is at index 2
+        
     pt1  = v1[:, pt_idx1:pt_idx1+1, :]
     phi1 = v1[:, phi_idx1:phi_idx1+1, :]
     pt2  = v2[:, pt_idx2:pt_idx2+1, :]
@@ -208,8 +206,8 @@ def PtEtaPhiM(v):
 
 ## New
 def calcDeltaPhi(v1, v2):  # expects eta, phi representation
-    phi_idx1 = 1 if (v1.shape[-1] == 2) else 2 # works with both 2d and 4d vectors
-    phi_idx2 = 1 if (v2.shape[-1] == 2) else 2 
+    phi_idx1 = 1 if (v1.shape[1] == 2) else 2 # works with both 2d and 4d vectors
+    phi_idx2 = 1 if (v2.shape[1] == 2) else 2 
 
     dPhi12 = (v1[:, phi_idx1:phi_idx1+1] - v2[:, phi_idx2:phi_idx2+1]) % math.tau
     dPhi21 = (v2[:, phi_idx2:phi_idx2+1] - v1[:, phi_idx1:phi_idx1+1]) % math.tau
@@ -1705,7 +1703,6 @@ class InputEmbed(nn.Module):
         bWhad = self.bWhadConv(NonLU(bWhad))
         bWlep = self.bWlepConv(NonLU(bWlep))
 
-
         return b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bWhadMdR, bWlepMdR, mask_bbMdR, mask_qqMdR, mask_bbn, mask_bWhad, mask_bWlep
 
 class HCR(nn.Module):
@@ -2067,6 +2064,9 @@ class GCN(nn.Module):
 
     def embedding_layers(self):
         return sorted(set(self.layers.layers).difference(self.output_layers()))
+    
+    def output_layers(self):
+        return [self.final_linear_layer.index]
 
     def setGhostBatches(self, nGhostBatches, subset=False):
         for module in self.modules():
@@ -2081,22 +2081,24 @@ class GCN(nn.Module):
         
         # Edge feature processor (transforms edge features for message passing)
         edge_nn = nn.Sequential(
-            nn.Linear(edge_dim, self.dD * self.dD),
+            linear(edge_dim, self.dD * self.dD),
             nn.ReLU()
         )
         
-        self.gcn_layers = nn.ModuleList([
-            NNConv(self.dD, self.dD, edge_nn),
-            NNConv(self.dD, self.dD, edge_nn),
-            NNConv(self.dD, self.dD, edge_nn)
-        ])
+        gcn_layers_list = []
+        gcn_norms_list = []
+        for _ in range(3): # using 3 GCN layers
+            gcn_layer = NNConv(self.dD, self.dD, edge_nn)
+            self.layers.addLayer(gcn_layer)
+            gcn_layers_list.append(gcn_layer)
 
-        self.gcn_norms = nn.ModuleList([
-            nn.LayerNorm(self.dD),
-            nn.LayerNorm(self.dD),
-            nn.LayerNorm(self.dD)
-        ])
-    
+            norm_layer = nn.LayerNorm(self.dD)
+            self.layers.addLayer(norm_layer)
+            gcn_norms_list.append(norm_layer)
+		
+        self.gcn_layers = nn.ModuleList(gcn_layers_list)
+        self.gcn_norms = nn.ModuleList(gcn_norms_list)
+	    
     def apply_gcn_layers(self, node_features, edge_index, edge_features):
         """Apply GCN layers with residual connections"""
         x = node_features
@@ -2106,26 +2108,26 @@ class GCN(nn.Module):
             
             # Message passing with edge features
             x = gcn_layer(x, edge_index, edge_features)
-            x = F.relu(x)
-            x = norm(x)
-            
-            # Residual connection
             x = x + x0
+            x = norm(x) 
+            x = F.relu(x)
             
         return x
     
     def build_pooling_layers(self):
-    """Define the HH and TT specific pooling layers"""
+        """Define the HH and TT specific pooling layers"""
     
+        self.final_linear_layer = linear(in_channels=self.dD, out_channels=self.dD // 2)
+        self.layers.addLayer(self.final_linear_layer)
         # HH pooling: Takes H->bb + W->qq + W->lv features
         self.HH_pooling_layer = nn.Sequential(
-            nn.Linear(self.dD * 3, self.dD * 2),  # 3 objects (H, W, W) to combine
+            linear(self.dD * 4, self.dD * 2),  # 4 objects (H, Whad, Wlep, ancillary) to combine
             nn.ReLU(),
             nn.LayerNorm(self.dD * 2),
-            nn.Linear(self.dD * 2, self.dD),
+            linear(self.dD * 2, self.dD),
             nn.ReLU(),
             nn.LayerNorm(self.dD),
-            nn.Linear(self.dD, self.dD // 2)  # Final event representation
+            self.final_linear_layer  # Final event representation
         )
         
         # TT pooling: More complex due to pairing ambiguity
@@ -2134,14 +2136,14 @@ class GCN(nn.Module):
             heads=2,
             phase_symmetric=self.phase_symmetric,
             layers=self.layers,
-            scalar_dim = 2,
-            inputLayers=[self.bWhadResNetBlock.conv[-1], self.bWlepResNetBlock.conv[-1]],
+            scalar_dim = 10, # due to embedding, ancillary tensor has dimension 8
+            inputLayers=[self.gcn_layers[-1], self.gcn_layers[-1]],
             device=self.device,
         )
 
         self.out = nn.Sequential(
             GhostBatchNorm1d(
-                self.dD, 
+                6, 
                 features_out=16, 
                 conv=True, 
                 bias=False,
@@ -2154,7 +2156,7 @@ class GCN(nn.Module):
         )
 
         self.select_tt = GhostBatchNorm1d(
-            self.dD * 2, 
+            self.dD, 
             features_out=1,  # Single score per candidate
             conv=True, 
             bias=False, 
@@ -2162,7 +2164,7 @@ class GCN(nn.Module):
         )
 
         self.out_tt = GhostBatchNorm1d(
-            features=self.dD * 2,
+            features=self.dD,
             features_out=self.nC, 
             conv=True,
             name="TT_final_classifier"
@@ -2198,19 +2200,33 @@ class GCN(nn.Module):
         return node_features, edge_index
         
     def compute_edge_features(self, b, nb, l, nu):
-        all_particles = torch.cat([b, nb, l, nu], dim=-1)  
+        batch_size = b.shape[0]
+        n = b.shape[0]
+
+        b = b.view(n, 5, 2)
+        nb = nb.view(n, 4, 2)
+        l = l.view(n, 6, 1)
+        nu = nu.view(n, 2, 1)
+
+        all_particles = torch.cat([b[:,:4, :], nb[:, :4, :], l[:,:4,:]], dim=-1)
         
         # Compute all pairwise features
         MdR = matrixMdR(all_particles, all_particles) # Shape: (batch, 2, 6, 6)
         MdR = MdR.permute(0, 2, 3, 1) # Transpose to get (batch, 6, 6, 2)
+        nuMdPhi = torch.stack([transverse_mass(all_particles, nu).squeeze(1), calcDeltaPhi(all_particles, nu).squeeze(1)], dim=-1)
 
+        edge_features = torch.zeros(batch_size, 6, 6, 2, device=self.device) # 6x6 matrix
+        edge_features[:, :5, :5, :] = MdR
+        edge_features[:, 5, :5, :] = nuMdPhi # Last row
+        edge_features[:, :5, 5, :] = nuMdPhi # Last column
+        
         mask = ~torch.eye(6, dtype=torch.bool, device=self.device) # mask diagonal elements (self loop)
-        edge_features = MdR[:, mask]  # Extract non-diagonal elements and flatten the selected elements
+        edge_features = edge_features[:, mask]  # Extract non-diagonal elements and flatten the selected elements
         # Shape: (batch, 30, 2)
         
         return edge_features
 
-    def hierarchical_pooling(self, node_features, lepQQdR, lnu_mT, bbMdR, bbnMdR, qqMdR):
+    def hierarchical_pooling(self, node_features, a,lepQQdR, lnu_mT, bbMdR, bbnMdR, qqMdR,bWhadMdR, bWlepMdR, n):
         """
         First pool into physics objects, then into event
         Mimics: particles -> resonances (H, W, top) -> event
@@ -2226,7 +2242,7 @@ class GCN(nn.Module):
         # For HH: H->bb and H->WW->qqℓν
         # Combine the Higgs candidate with the two W candidates
         HH_logits = self.HH_pooling_layer(
-            torch.cat([bb, qq, lv], dim=-1)
+            torch.cat([bb, qq, lv, a.squeeze(-1)], dim=-1) # adding global event features with a (ancillary)
         )
         # For TTbar: need to select right pairing
         # Option 1: t->b0W(qq), tbar->b1W(lv), option 2: t->b1W(qq), tbar->b0W(lv)
@@ -2238,11 +2254,14 @@ class GCN(nn.Module):
         bWlep2 = (b0 + lv) / 2
         bWlep = torch.stack([bWlep1, bWlep2], dim=2)
 
-        scalars = torch.cat([lepQQdR, lnu_mT], dim=-1)
+        scalars = torch.cat([lepQQdR, lnu_mT, a.transpose(1, 2)], dim=-1)
         qv = torch.cat([
             bbMdR[:, :, 0, 1:2],  # b0-b1 relationship
             bbnMdR[:, :, 0, :],   # bb-nb relationships
-            qqMdR[:, :, 0, 1:2]   # q0-q1 relationship
+            qqMdR[:, :, 0, 1:2],   # q0-q1 relationship
+            bWhadMdR[: ,: , 0,:],
+            bWlepMdR[: ,: , 0,:]
+            
         ], dim=-1)  # Final shape should be (n, features, 4)
 
         bWhad0 = bWhad
@@ -2268,21 +2287,32 @@ class GCN(nn.Module):
         return HH_logits, TT_logits
 
     def forward(self, b, nb, l, nu, a):
+        n = b.shape[0]
+        edge_features = self.compute_edge_features(b, nb, l, nu) # compute masses and deltaR between all particles
+        edge_features = edge_features.view(-1, 2)
+
         (b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bWhadMdR, bWlepMdR, 
         mask_bbMdR, mask_qqMdR, mask_bbn, mask_bWhad, mask_bWlep)  = self.inputEmbed(b, nb, l, nu, a)  
 
         node_features, edge_index = self.construct_graph(b, nb, l, nu) # build graph    
-        edge_features = self.compute_edge_features(b, nb, l, nu) # compute masses and deltaR between all particles
-        
+        num_nodes = node_features.shape[1]
+        node_features = node_features.reshape(-1, self.dD)  # Shape: (batch * 6, features)        
+
+        ### these two lines below are needed because we're using pytorch standard dataloader (PyG dataloader does this automatically)
+        offset = torch.arange(0, n * num_nodes, step=num_nodes, device=self.device)
+        edge_index = edge_index.repeat(1, n) + offset.repeat_interleave(edge_index.shape[1])
+
         node_features = self.apply_gcn_layers(
             node_features, 
             edge_index, 
             edge_features
         )
-        
-        HH_logits, TT_logits = self.hierarchical_pooling(node_features)
+        node_features = node_features.view(n, num_nodes, -1)
 
+        HH_logits, TT_logits = self.hierarchical_pooling(node_features, a, lepQQdR, lnu_mT, bbMdR, 
+                                                         bbnMdR, qqMdR, bWhadMdR, bWlepMdR, n)
+        
         HH_logits = torch.cat([HH_logits, TT_logits], dim=-1)
-        HH_logits = self.out(HH_logits)
+        HH_logits = self.out(HH_logits.unsqueeze(-1))
         
         return HH_logits, TT_logits

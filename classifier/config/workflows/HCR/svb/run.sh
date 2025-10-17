@@ -8,7 +8,7 @@ export SvB="${BASE}/friend/SvB/"
 export PLOT="root://eosuser.cern.ch//eos/user/${CERNUSER}/HHbbWW_classifier_v1/"
 export CLASSIFIER_CONFIG_PATHS="bbreww"
 #####################
-export WFS="bbreww/classifier/config/workflows/bbWW/svb"
+export WFS="bbreww/classifier/config/workflows/HCR/svb"
 
 # the first argument can be a port
 if [ -z "$1" ]; then

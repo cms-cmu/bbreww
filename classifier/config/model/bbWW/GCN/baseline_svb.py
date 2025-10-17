@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 from src.classifier.config.state.label import MultiClass
 from src.classifier.task import ArgParser
-from bbreww.classifier.config.model.bbWW.base._HCR import ROC_BIN, HCREval, HCRTrain
+from bbreww.classifier.config.model.bbWW.GCN._GCN import ROC_BIN, HCREval, HCRTrain
 from bbreww.classifier.config.setting.bbWWHCR import Input, Output
 
 if TYPE_CHECKING:

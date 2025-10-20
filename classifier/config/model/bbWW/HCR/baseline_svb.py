@@ -9,7 +9,7 @@ from bbreww.classifier.config.setting.bbWWHCR import Input, Output
 if TYPE_CHECKING:
     from src.classifier.ml import BatchType
 
-_BKG = ("ttbar",)
+_BKG = ("ttbar", "other")
 
 class _roc_signal_selection:
     def __init__(self, sig: str):
@@ -65,6 +65,12 @@ class Train(HCRTrain):
                 selection=_roc_signal_selection("signal"),
                 bins=ROC_BIN,
                 pos=("ttbar",),  # ttbar class
+            ),
+            ROC(
+                name="Minor backgrounds vs everything",
+                selection=_roc_signal_selection("signal"),
+                bins=ROC_BIN,
+                pos=("other",),  # minor backgrounds class
             ),
         ]
 

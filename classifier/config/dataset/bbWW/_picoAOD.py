@@ -78,8 +78,27 @@ class _ttbar(_MCDataset):
                 )
         return filelists
 
+class _minorbkg(_MCDataset):
+    WplusJets = ["WtoLNu-2Jets_0J", "WtoLNu-2Jets_1J", "WtoLNu-2Jets_2J"]
+    tW = ["TbarWplustoLNu2Q", "TbarWplusto2L2Nu", "TWminustoLNu2Q", "TWminusto2L2Nu"]
+    singleTop = ["TBbarQ", "TbarBQ", "TBbartoLplusNuBbar", "TbarBtoLminusNuB"]
+    processes = ("WplusJets", "tW", "singleTop",)
 
-
+    def __new__(cls, processes, self: MC, metadata: str):
+        filelists = []
+        if processes in self.mc_processes:
+            process_list = getattr(cls, processes, None)
+            for year in CollisionData.eras:
+                filelists.append(
+                    [
+                        f"label:{processes},year:{year}",
+                        *(
+                            metadata + f".{process}.{year}.picoAOD.files"
+                            for process in process_list
+                        ),
+                    ]
+                )
+        return filelists
 
 class _signal(_MCDataset):
     processes = ("GluGluToHHTo2B2VLNu2J",)
@@ -95,7 +114,6 @@ class _signal(_MCDataset):
     def __new__(cls, self: MC, metadata: str):
         filelists = []
         
-        # This will be "GluGluToHHTo2B2VLNu2J" based on your command
         process_name = "GluGluToHHTo2B2VLNu2J" 
 
         if process_name in self.mc_processes:
@@ -177,7 +195,7 @@ class MC(_PicoAOD):
 
 
 class Background(MC):
-    pico_filelists = (_ttbar,)
+    pico_filelists = (_ttbar, _minorbkg)
 
 
 class Signal(MC):

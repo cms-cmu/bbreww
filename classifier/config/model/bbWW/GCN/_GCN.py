@@ -62,7 +62,7 @@ class HCRTrain(KFoldTrain):
     )
 
     def initializer(self, splitter: Splitter, **kwargs):
-        from nobackup.bbWW.new_processor.barista.bbreww.classifier.ml.models.GCN import (
+        from bbreww.classifier.ml.models.GCN import (
             GBNSchedule,
             HCRArch,
             HCRBenchmarks,
@@ -93,7 +93,7 @@ class HCREval(KFoldEval):
     output_definition: Callable[[BatchType], BatchType]
 
     def initializer(self, model, splitter, **kwargs):
-        from nobackup.bbWW.new_processor.barista.bbreww.classifier.ml.models.GCN import HCREvaluation
+        from bbreww.classifier.ml.models.GCN import HCREvaluation
 
         return HCREvaluation(
             saved_model=model,

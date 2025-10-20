@@ -84,20 +84,25 @@ class _minorbkg(_MCDataset):
     singleTop = ["TBbarQ", "TbarBQ", "TBbartoLplusNuBbar", "TbarBtoLminusNuB"]
     processes = ("WplusJets", "tW", "singleTop",)
 
-    def __new__(cls, processes, self: MC, metadata: str):
+    def __new__(cls, self: MC, metadata: str):
         filelists = []
-        if processes in self.mc_processes:
-            process_list = getattr(cls, processes, None)
-            for year in CollisionData.eras:
-                filelists.append(
-                    [
-                        f"label:{processes},year:{year}",
-                        *(
-                            metadata + f".{process}.{year}.picoAOD.files"
-                            for process in process_list
-                        ),
-                    ]
-                )
+        selected = self.mc_processes
+        groups_to_load = selected.intersection(cls.processes)
+        
+        for group in groups_to_load:
+            process_list = getattr(cls, group, None)
+
+            if process_list:
+                for year in CollisionData.eras:
+                    filelists.append(
+                        [
+                            f"label:{group},year:{year}",
+                            *(
+                                metadata + f".{process}.{year}.picoAOD.files"
+                                for process in process_list
+                            ),
+                        ]
+                    )
         return filelists
 
 class _signal(_MCDataset):

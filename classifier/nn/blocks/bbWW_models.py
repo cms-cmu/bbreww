@@ -1571,8 +1571,6 @@ class InputEmbed(nn.Module):
 
         mask_MdRtt =  mask_bWhad.view(n, -1) # mask is same for had and lep tt
         
-        # self. diMdPhi_embed.setMeanStd(ooMdPhi.view(n, 2, self.bsl*self.bsl), mask_oo.view(n, self.bsl*self.bsl))
-        # self.triMdPhi_embed.setMeanStd(doMdPhi.view(n, 2, self.wsl*self.bsl), mask_do.view(n, self.wsl*self.bsl))
         self.ancillaryEmbed.updateMeanStd(a)
         self.bJetEmbed.updateMeanStd(b) 
         self.bbDiJetEmbed.updateMeanStd(bb) 
@@ -1879,7 +1877,7 @@ class HCR(nn.Module):
         return sorted(set(self.layers.layers).difference(self.output_layers()))
 
     def output_layers(self):
-        return [self.out.index]
+        return [self.final_linear_layer.index]
 
     def updateMeanStd(self,  b, nb, l, nu, a):
         self.inputEmbed.updateMeanStd( b, nb, l, nu, a)
@@ -1909,7 +1907,6 @@ class HCR(nn.Module):
         nb0 = nb.clone()
         qq0 = qq.clone()
         l0 = l.clone()
-        nu0 = nu.clone()
         bWhad0 = bWhad.clone()
         bWlep0 = bWlep.clone()
 
@@ -1929,7 +1926,6 @@ class HCR(nn.Module):
 
         # Create unified W candidate with all information available
         lep_W = l + nu  # can add them because inputs have been embedded
-        lep_W0 = lep_W.clone()
         lep_W = NonLU(lep_W)
 
         bWhad, bWhad0 = self.bWhadResNetBlock(qq, bWhad, qq0, bWhad0, debug=self.debug)

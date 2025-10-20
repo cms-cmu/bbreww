@@ -953,7 +953,8 @@ class MinimalAttention(
         phase_symmetric=True,
         do_qv=True,
         device="cuda",
-        scalar_dim = 0
+        scalar_dim = 0,
+        qv_dim = 6
     ):
         super().__init__()
 
@@ -968,11 +969,11 @@ class MinimalAttention(
         self.inputLayers = inputLayers
         self.scalar_dim = scalar_dim
         # self.iter = iterations
-
         self.q_GBN = GhostBatchNorm1d(self.d, name="attention q GBN")
         self.v_GBN = GhostBatchNorm1d(self.d, name="attention v GBN")
         if self.do_qv:
             self.qv_GBN = GhostBatchNorm1d(self.d, name="attention qv GBN")
+
         # self.origin = nn.Parameter(torch.zeros(1,self.h, self.dh,1,1))
         # self.qv_ref = nn.Parameter(torch. ones(1,self.h, self.dh,1,1))
         self.score_GBN = GhostBatchNorm1d(self.h, name="attention score GBN")
@@ -982,7 +983,7 @@ class MinimalAttention(
             conv=True,
             name="attention out convolution",
         )
-
+        
         self.negativeInfinity = torch.tensor(-1e9, dtype=torch.float).to(device)
 
         if layers:
@@ -1219,7 +1220,7 @@ class InputEmbed(nn.Module):
             name="jet convolution"
         )
         self.nonbJetEmbed = GhostBatchNorm1d(
-            5,
+            4,
             features_out=self.dD,
             phase_symmetric=phase_symmetric,
             conv=True,
@@ -1424,12 +1425,6 @@ class InputEmbed(nn.Module):
         )
 
         mask, bbMdR, qqMdR, bbnMdR, mask_bbMdR, mask_qqMdR, mask_bbn = None, None, None, None, None, None, None
-        j_isbJet = torch.cat(
-            [b, 2 * torch.ones((n, 1, 2), dtype=torch.float).to(device)], 1
-        )  # label bJets with 2 (-1 for mask, 0 for not preselected, 1 for preselected jet)
-        nb = torch.cat(
-            [nb, 1 * torch.ones((n, 1, 2), dtype=torch.float).to(device)], 1
-        ) 
         mask = (nb[:, 2, :] == -1).to(device)
         bPxPyPzE = PxPyPzE(b)
         nbPxPyPzE = PxPyPzE(nb)
@@ -1509,7 +1504,7 @@ class InputEmbed(nn.Module):
         bWlepMdR = torch.cat(
             [
                 bWlepMdR,
-                torch.zeros((n, 1, self.bsl, 1), dtype=torch.float).to(
+                torch.ones((n, 1, self.bsl, 1), dtype=torch.float).to(
                     device
                 ),
             ],
@@ -1578,10 +1573,9 @@ class InputEmbed(nn.Module):
         
         # self. diMdPhi_embed.setMeanStd(ooMdPhi.view(n, 2, self.bsl*self.bsl), mask_oo.view(n, self.bsl*self.bsl))
         # self.triMdPhi_embed.setMeanStd(doMdPhi.view(n, 2, self.wsl*self.bsl), mask_do.view(n, self.wsl*self.bsl))
-
         self.ancillaryEmbed.updateMeanStd(a)
-        self.bJetEmbed.updateMeanStd(b)
-        self.bbDiJetEmbed.updateMeanStd(bb)
+        self.bJetEmbed.updateMeanStd(b) 
+        self.bbDiJetEmbed.updateMeanStd(bb) 
         self.nonbJetEmbed.updateMeanStd(nb)
         self.nonbDiJetEmbed.updateMeanStd(qq)
         self.MdREmbed.updateMeanStd(MdR, mask_MdR)
@@ -1637,11 +1631,10 @@ class InputEmbed(nn.Module):
 
         a = self.ancillaryEmbed(a)
         # a = self.ancillaryConv(NonLU(a))
-        mask_nb =  torch.cat([mask, mask[:, [1,0]]], 1) # augment mask from 2 to 4, matching pattern for jets
-        nb = self.nonbJetEmbed(nb, mask_nb)
+        nb = self.nonbJetEmbed(nb)
         qq = self.nonbDiJetEmbed(qq)
         nb = nb + a
-        nb = self.nonbJetConv(NonLU(nb), mask_nb)
+        nb = self.nonbJetConv(NonLU(nb))
         # print('o after conv a\n',o[0])
         # o = o+o0
 
@@ -1703,7 +1696,9 @@ class InputEmbed(nn.Module):
         bWhad = self.bWhadConv(NonLU(bWhad))
         bWlep = self.bWlepConv(NonLU(bWlep))
 
+
         return b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bWhadMdR, bWlepMdR, mask_bbMdR, mask_qqMdR, mask_bbn, mask_bWhad, mask_bWlep
+
 
 class HCR(nn.Module):
     def __init__(
@@ -1844,6 +1839,8 @@ class HCR(nn.Module):
         )
         self.layers.addLayer(self.final_combine, [self.WW_final_embed, self.HH_final_embed])
 
+        self.final_linear_layer = linear(in_channels=16, out_channels=2)
+        self.layers.addLayer(self.final_linear_layer)
         self.out = nn.Sequential(
             GhostBatchNorm1d(
                 self.dD, 
@@ -1855,7 +1852,7 @@ class HCR(nn.Module):
             NonLUModule(),
             nn.AdaptiveAvgPool1d(1),
             nn.Flatten(),
-            linear(in_channels=16, out_channels=2)
+            self.final_linear_layer
         )
 
         self.select_tt = GhostBatchNorm1d(
@@ -1891,9 +1888,12 @@ class HCR(nn.Module):
         self.inputEmbed.initMeanStd()
 
     def setGhostBatches(self, nGhostBatches, subset=False):
-        for module in self.modules():
-            if hasattr(module, 'setGhostBatches') and module is not self:
-                module.setGhostBatches(nGhostBatches)
+        self.inputEmbed.setGhostBatches(nGhostBatches)
+        self.WW_final_embed.setGhostBatches(nGhostBatches)
+        self.HH_final_embed.setGhostBatches(nGhostBatches)
+        self.final_combine.setGhostBatches(nGhostBatches)
+        self.nGhostBatches = nGhostBatches
+
 
     def forward(self, b, nb, l, nu, a):
         self.forwardCalls += 1
@@ -1941,9 +1941,9 @@ class HCR(nn.Module):
         scalars = torch.cat([lepQQdR, lnu_mT], dim= -1)
 
         qv = torch.cat([
-            bbMdR[:, :, 0, 1:2],  # Shape: (n, features, 1) - b0-b1 relationship
+            bWhadMdR[:, :, 0, :],  # Shape: (n, features, 1) - b0-b1 relationship
             bbnMdR[:, :, 0, :],               # Shape: (n, features, 2) - bb-nb[0] and bb-nb[1] 
-            qqMdR[:, :, 0, 1:2]   # Shape: (n, features, 1) - q0-q1 relationship
+            bWlepMdR[:, :, 0, :]   # Shape: (n, features, 1) - q0-q1 relationship
         ], dim=-1)  # Result shape: (n, features, 4)
 
         TT, TT0, TT_weights = self.attention_tt(
@@ -2076,8 +2076,8 @@ class GCN(nn.Module):
     def build_gcn_layers(self):    
         from torch_geometric.nn import NNConv, CGConv
         
-        # Edge feature dimension (deltaR + invariant_mass + more)
-        edge_dim = 2  # or however many edge features you have
+        # Edge feature dimension (deltaR + invariant_mass + resonance indicator + interaction_weights (2))
+        edge_dim = 5 
         
         # Edge feature processor (transforms edge features for message passing)
         edge_nn = nn.Sequential(
@@ -2099,25 +2099,10 @@ class GCN(nn.Module):
         self.gcn_layers = nn.ModuleList(gcn_layers_list)
         self.gcn_norms = nn.ModuleList(gcn_norms_list)
 	    
-    def apply_gcn_layers(self, node_features, edge_index, edge_features):
-        """Apply GCN layers with residual connections"""
-        x = node_features
-        
-        for gcn_layer, norm in zip(self.gcn_layers, self.gcn_norms):
-            x0 = x
-            
-            # Message passing with edge features
-            x = gcn_layer(x, edge_index, edge_features)
-            x = x + x0
-            x = norm(x) 
-            x = F.relu(x)
-            
-        return x
-    
     def build_pooling_layers(self):
         """Define the HH and TT specific pooling layers"""
     
-        self.final_linear_layer = linear(in_channels=self.dD, out_channels=self.dD // 2)
+        self.final_linear_layer = linear(in_channels=16, out_channels=2)
         self.layers.addLayer(self.final_linear_layer)
         # HH pooling: Takes H->bb + W->qq + W->lv features
         self.HH_pooling_layer = nn.Sequential(
@@ -2130,13 +2115,13 @@ class GCN(nn.Module):
             self.final_linear_layer  # Final event representation
         )
         
-        # TT pooling: More complex due to pairing ambiguity
+        # TT pooling with attention
         self.attention_tt = MinimalAttention(
             self.dD,
             heads=2,
             phase_symmetric=self.phase_symmetric,
             layers=self.layers,
-            scalar_dim = 10, # due to embedding, ancillary tensor has dimension 8
+            scalar_dim = 9, # due to embedding, ancillary tensor has dimension 8
             inputLayers=[self.gcn_layers[-1], self.gcn_layers[-1]],
             device=self.device,
         )
@@ -2152,7 +2137,7 @@ class GCN(nn.Module):
             NonLUModule(),
             nn.AdaptiveAvgPool1d(1),
             nn.Flatten(),
-            linear(in_channels=16, out_channels=2)
+            self.final_linear_layer
         )
 
         self.select_tt = GhostBatchNorm1d(
@@ -2176,6 +2161,36 @@ class GCN(nn.Module):
             conv=True,
             name="HH_final_classifier"
         )
+
+    def apply_gcn_layers(self, node_features, edge_index, edge_features):
+        """Enhanced GCN with physics-aware edge weighting"""
+        x = node_features
+        
+        # Add learnable "resonance weights" for special pairs
+        resonance_edges = torch.zeros(edge_features.shape[0], dtype=torch.bool) # Shape: (batch_size, num_edges, 1)
+        
+        # Mark b-b, q-q, and l-nu edges as potential resonances
+        edge_list = edge_index.T.cpu().numpy()
+        for i, (src, dst) in enumerate(edge_list):
+            if (src, dst) in [(0,1), (1,0), (2,3), (3,2), (4,5), (5,4)]:
+                resonance_edges[i] = True
+        
+        # Add resonance indicator to edge features
+        resonance_indicator = resonance_edges.float().unsqueeze(-1).to(edge_features.device)
+        edge_features = torch.cat([
+            edge_features,
+            resonance_indicator,
+            edge_features * resonance_indicator  # Interaction term
+        ], dim=-1)
+        
+        for gcn_layer, norm in zip(self.gcn_layers, self.gcn_norms):
+            x0 = x
+            x = gcn_layer(x, edge_index, edge_features)
+            x = x + x0
+            x = norm(x)
+            x = F.relu(x)
+        
+        return x
 
     ## construct fully connected graph
     def construct_graph(self, b, nb, l, nu):
@@ -2254,15 +2269,12 @@ class GCN(nn.Module):
         bWlep2 = (b0 + lv) / 2
         bWlep = torch.stack([bWlep1, bWlep2], dim=2)
 
-        scalars = torch.cat([lepQQdR, lnu_mT, a.transpose(1, 2)], dim=-1)
+        scalars = torch.cat([lepQQdR, a.transpose(1, 2)], dim=-1)
         qv = torch.cat([
-            bbMdR[:, :, 0, 1:2],  # b0-b1 relationship
-            bbnMdR[:, :, 0, :],   # bb-nb relationships
-            qqMdR[:, :, 0, 1:2],   # q0-q1 relationship
-            bWhadMdR[: ,: , 0,:],
-            bWlepMdR[: ,: , 0,:]
-            
-        ], dim=-1)  # Final shape should be (n, features, 4)
+            bbnMdR[:, :, 0, :], # bb-nb relationships
+            bWhadMdR[: ,: , 0,:], # b-qq relationships
+            bWlepMdR[: ,: , 0,:] # b-lep relationships 
+        ], dim=-1)
 
         bWhad0 = bWhad
         TT, TT0, TT_weights = self.attention_tt(

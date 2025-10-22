@@ -1837,7 +1837,7 @@ class HCR(nn.Module):
         )
         self.layers.addLayer(self.final_combine, [self.WW_final_embed, self.HH_final_embed])
 
-        self.final_linear_layer = linear(in_channels=16, out_channels=2)
+        self.final_linear_layer = linear(in_channels=16, out_channels=3)
         self.layers.addLayer(self.final_linear_layer)
         self.out = nn.Sequential(
             GhostBatchNorm1d(
@@ -2098,7 +2098,7 @@ class GCN(nn.Module):
     def build_pooling_layers(self):
         """Define the HH and TT specific pooling layers"""
     
-        self.final_linear_layer = linear(in_channels=16, out_channels=2)
+        self.final_linear_layer = linear(in_channels= self.dD, out_channels=2)
         self.layers.addLayer(self.final_linear_layer)
         # HH pooling: Takes H->bb + W->qq + W->lv features
         self.HH_pooling_layer = nn.Sequential(
@@ -2124,8 +2124,8 @@ class GCN(nn.Module):
 
         self.out = nn.Sequential(
             GhostBatchNorm1d(
-                6, 
-                features_out=16, 
+                4, 
+                features_out=self.dD, 
                 conv=True, 
                 bias=False,
                 name="final event score"

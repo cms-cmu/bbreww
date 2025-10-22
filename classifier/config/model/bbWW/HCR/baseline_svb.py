@@ -9,19 +9,25 @@ from bbreww.classifier.config.setting.bbWWHCR import Input, Output
 if TYPE_CHECKING:
     from src.classifier.ml import BatchType
 
-_BKG = ("ttbar", "other")
+_BKG = ("ttbar",)
 
 class _roc_signal_selection:
-    def __init__(self, sig: str):
+    def __init__(self, sig: str, save_full_predictions=False):
         self.sig = sig
+        self.save_full_predictions = save_full_predictions
 
     def __call__(self, batch: BatchType):
         selected = self._select(batch)
-        return {
+        result = {
             "y_pred": batch[Output.hh_prob][selected],  # Signal probability
             "y_true": batch[Input.label][selected],
             "weight": batch[Input.weight][selected],
         }
+        if self.save_full_predictions:
+            result["y_pred_full"] = batch[Output.hh_prob]  # ALL samples, ALL classes for confusion matrix
+            result["y_true_full"] = batch[Input.label]  
+
+        return result
 
     def _select(self, batch: BatchType):
         import torch
@@ -54,23 +60,12 @@ class Train(HCRTrain):
         from src.classifier.ml.benchmarks.multiclass import ROC
         
         return [
+            # this ROC is for plotting ROC and AUC of signal vs background
             ROC(
                 name="Signal vs Background",
-                selection=_roc_signal_selection("signal"),
+                selection=_roc_signal_selection("signal", save_full_predictions = True),
                 bins=ROC_BIN,
                 pos=("signal",),  # Signal class
-            ),
-            ROC(
-                name="TTbar vs Signal",
-                selection=_roc_signal_selection("signal"),
-                bins=ROC_BIN,
-                pos=("ttbar",),  # ttbar class
-            ),
-            ROC(
-                name="Minor backgrounds vs everything",
-                selection=_roc_signal_selection("signal"),
-                bins=ROC_BIN,
-                pos=("other",),  # minor backgrounds class
             ),
         ]
 

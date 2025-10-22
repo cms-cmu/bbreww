@@ -81,16 +81,17 @@ class Train(CommonTrain):
                 name="HH signal selection",
             ),
         )
-        ps.append(
-            _group.fullmatch(
-                ("label:ttbar",),
-                processors=[
-                    lambda: _signal_selection,
-                    lambda: add_label_index("ttbar"),
-                ],
-                name="ttbar selection",
-            ),
-        )
+        if "ttbar" in self.mc_processes:
+            ps.append(
+                _group.fullmatch(
+                    ("label:ttbar",),
+                    processors=[
+                        lambda: _signal_selection,
+                        lambda: add_label_index("ttbar"),
+                    ],
+                    name="ttbar selection",
+                ),
+            )
         minor_bkgs =  ["WplusJets", "tW", "singleTop"]
         for bkg in minor_bkgs:
             if bkg in self.mc_processes:
@@ -99,7 +100,7 @@ class Train(CommonTrain):
                         (f"label:{bkg}",),
                         processors=[
                             lambda: _signal_selection,
-                            lambda: add_label_index("other"),
+                            lambda: add_label_index("ttbar"),
                         ],
                         name="minor background selection",
                     ),

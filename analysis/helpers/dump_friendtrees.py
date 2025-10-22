@@ -56,7 +56,6 @@ def dump_input_friend(
                         "phi":  events[lepton].phi,
                         "mass": events[lepton].mass,
                         "isE" : events.flavor.e,
-                        "isM" : events.flavor.mu
                     }
                 ),
                 selection,
@@ -89,13 +88,13 @@ def dump_input_friend(
                         "njets",
                         "nsoftjets",
                         "HT",
-                        "HTsoft"
 		    ]	
 		],
                 selection,
             )
 	)
         | {"weight": padded(events[weight], selection)}
+        | {"year" : padded(ak.full_like(events.HT, events.metadata['year']), selection)}
     )
     return dump_friend(
         events=events,

@@ -88,7 +88,7 @@ class _minorbkg(_MCDataset):
         filelists = []
         selected = self.mc_processes
         groups_to_load = selected.intersection(cls.processes)
-        
+
         for group in groups_to_load:
             process_list = getattr(cls, group, None)
 
@@ -201,7 +201,6 @@ class MC(_PicoAOD):
 
 class Background(MC):
     pico_filelists = (_ttbar, _minorbkg)
-
 
 class Signal(MC):
     pico_filelists = (_signal,)

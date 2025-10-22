@@ -12,8 +12,14 @@ dataset:
     option:
       - --metadata bbreww/metadata/classifier/datasets_v4
       - --max-workers 8 # use 8 workers to fetch metadatas for ROOT files
-      - --mc-processes GluGluToHHTo2B2VLNu2J ttbar
+      - --mc-processes GluGluToHHTo2B2VLNu2J ttbar 
       - --friends "" bbreww/metadata/classifier/output_friend.json@@classifier_input
+  - module: bbWW.svb.Eval
+    option:
+      - --metadata bbreww/metadata/classifier/datasets_minor_bkgs_v4
+      - --max-workers 8 # use 8 workers to fetch metadatas for ROOT files
+      - --mc-processes  WplusJets tW singleTop
+      - --friends "" bbreww/metadata/classifier/minorbkg_friend.json@@classifier_input
 
 model:
   - module: bbWW.HCR.baseline_svb.Eval

@@ -94,7 +94,7 @@ def dump_input_friend(
             )
 	)
         | {"weight": padded(events[weight], selection)}
-        | {"year" : padded(ak.full_like(events.HT, events.metadata['year']), selection)}
+        | {"year" : padded(ak.full_like(events.HT, (events.metadata['year']).split('_', 1)[0]), selection)}
     )
     return dump_friend(
         events=events,

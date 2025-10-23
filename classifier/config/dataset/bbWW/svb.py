@@ -100,7 +100,7 @@ class Train(CommonTrain):
                         (f"label:{bkg}",),
                         processors=[
                             lambda: _signal_selection,
-                            lambda: add_label_index("ttbar"),
+                            lambda: add_label_index("other"),
                         ],
                         name="minor background selection",
                     ),

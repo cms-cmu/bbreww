@@ -2,15 +2,24 @@ GluGluToHHTo2B2VLNu2J_kl_0p00:
   2022_preEE:
     nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-0p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv13-133X_mcRun3_2022_realistic_ForNanov13_v1-v2/NANOAODSIM
     picoAOD: 
-      count: 
-      files:
+      count: 86758
+      files: 
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_kl_0p00_2022_preEE/picoAOD.root
+      saved_events: 16774
+      sumw: 5675.451651573181
+      sumw2: 421.8348045349121
+      total_events: 86758
   2022_EE:
     nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-0p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv13-133X_mcRun3_2022_realistic_postEE_ForNanov13_v1-v1/NANOAODSIM
     picoAOD: 
-      count:
+      count: 305116
       files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_kl_0p00_2022_EE/picoAOD.root
+      saved_events: 58440
+      sumw: 19936.747202396393
+      sumw2: 1482.8239470720291
+      total_events: 305116
   xs: 0.008356
-
 
 GluGluToHHTo2B2VLNu2J_kl_1p00:
   2022_preEE:
@@ -60,24 +69,45 @@ GluGluToHHTo2B2VLNu2J_kl_2p45:
   2022_preEE:
     nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-2p45_kt-1p00_c2-0p00_LHEweights_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
     picoAOD:
-      count: 
+      count: 99103
       files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_kl_2p45_2022_preEE/picoAOD.root
+      saved_events: 18598
+      sumw: 1266.6577880382538
+      sumw2: 21.811901681125164
+      total_events: 99103
+
   2022_EE:
     nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-2p45_kt-1p00_c2-0p00_LHEweights_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v1/NANOAODSIM
     picoAOD: 
-      count:
+      count: 346104
       files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_kl_2p45_2022_EE/picoAOD.root
+      saved_events: 63741
+      sumw: 4449.171519517899
+      sumw2: 76.15095929801464
+      total_events: 346104
   xs: 0.001645
 
 GluGluToHHTo2B2VLNu2J_kl_5p00:
   2022_preEE:
     nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv13-133X_mcRun3_2022_realistic_ForNanov13_v1-v2/NANOAODSIM
     picoAOD:
-      count: 
+      count: 87393
       files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_kl_5p00_2022_preEE/picoAOD.root
+      saved_events: 14132
+      sumw: 7324.596176147461
+      sumw2: 635.6789634227753
+      total_events: 87393
   2022_EE:
     nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv13-133X_mcRun3_2022_realistic_postEE_ForNanov13_v1-v2/NANOAODSIM
     picoAOD: 
-      count:
+      count: 298369
       files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_kl_5p00_2022_EE/picoAOD.root
+      saved_events: 47428
+      sumw: 25032.678651809692
+      sumw2: 2170.425330042839
+      total_events: 298369
   xs: 0.01099

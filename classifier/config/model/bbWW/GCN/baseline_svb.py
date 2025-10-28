@@ -9,7 +9,7 @@ from bbreww.classifier.config.setting.bbWWHCR import Input, Output
 if TYPE_CHECKING:
     from src.classifier.ml import BatchType
 
-_BKG = ("ttbar",)
+_BKG = ("ttbar", "other",)
 
 class _roc_signal_selection:
     def __init__(self, sig: str):
@@ -17,11 +17,13 @@ class _roc_signal_selection:
 
     def __call__(self, batch: BatchType):
         selected = self._select(batch)
-        return {
+        result = {
             "y_pred": batch[Output.hh_prob][selected],  # Signal probability
             "y_true": batch[Input.label][selected],
             "weight": batch[Input.weight][selected],
         }
+
+        return result
 
     def _select(self, batch: BatchType):
         import torch
@@ -54,6 +56,7 @@ class Train(HCRTrain):
         from src.classifier.ml.benchmarks.multiclass import ROC
         
         return [
+            # this ROC is for plotting ROC and AUC of signal vs background
             ROC(
                 name="Signal vs Background",
                 selection=_roc_signal_selection("signal"),
@@ -61,10 +64,16 @@ class Train(HCRTrain):
                 pos=("signal",),  # Signal class
             ),
             ROC(
-                name="TTbar vs Signal",
+                name="TTbar vs Others",
                 selection=_roc_signal_selection("signal"),
                 bins=ROC_BIN,
-                pos=("ttbar",),  # ttbar class
+                pos=("ttbar",), 
+            ),
+            ROC(
+                name="Minor backgrounds vs others",
+                selection=_roc_signal_selection("signal"),
+                bins=ROC_BIN,
+                pos=("other",), 
             ),
         ]
 

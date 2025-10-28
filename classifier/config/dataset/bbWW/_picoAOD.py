@@ -117,19 +117,24 @@ class _signal(_MCDataset):
         return ",".join(f"{k}:{v:.6g}" for k, v in couplings.items())
 
     def __new__(cls, self: MC, metadata: str):
+        from src.physics.dihiggs.kappa_framework import Coupling
         filelists = []
         
         process_name = "GluGluToHHTo2B2VLNu2J" 
 
         if process_name in self.mc_processes:
+            kl_values = Coupling(kl=MC_HH_ggF.kl)
             for year in CollisionData.eras:
-                # The label for the data being loaded
-                label = f"label:signal,year:{year}"
-                
-                # The exact path it will look for in the YAML
-                lookup_path = f"{metadata}.{process_name}.{year}.picoAOD.files"
-                
-                filelists.append([label, lookup_path])
+                for item in kl_values:
+                    kl = str(format(item['kl'], '.2f')).split(".") 
+                    kl = f"{kl[0]}p{kl[1]}"
+                    process = f"{process_name}_kl_{kl}"
+                    label = f"label:signal,year:{year},kl:{kl}"
+                    
+                    # The exact path it will look for in the YAML
+                    lookup_path = f"{metadata}.{process}.{year}.picoAOD.files"
+                    
+                    filelists.append([label, lookup_path])
                 
         return filelists
 

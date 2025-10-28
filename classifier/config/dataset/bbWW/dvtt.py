@@ -29,12 +29,6 @@ def _remove_sr(df: pd.DataFrame):
     """Remove signal region events"""
     return df[~df["SR"]]
 
-
-def _remove_sr(df: pd.DataFrame):
-    """Remove signal region events"""
-    return df
-
-
 class Train(CommonTrain):
     """Training dataset configuration for HH→bbWW classifier"""
     

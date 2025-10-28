@@ -76,6 +76,39 @@ class Train(HCRTrain):
                 pos=("other",), 
             ),
         ]
+    
+    @staticmethod
+    def feature_importance(batch: BatchType, model):
+        """Compute gradient-based feature importance"""
+        import torch
+        model.eval()
+        
+        # Get inputs and enable gradients
+        inputs = {
+            Input.ancillary: batch[Input.ancillary].requires_grad_(True),
+            Input.bJetCand: batch[Input.bJetCand].requires_grad_(True),
+            Input.nonbJetCand: batch[Input.nonbJetCand].requires_grad_(True),
+            Input.leadingLep: batch[Input.leadingLep].requires_grad_(True),
+            Input.MET: batch[Input.MET].requires_grad_(True),
+        }
+        
+        # Forward pass
+        output = model(inputs)
+        
+        # Backward pass (use signal class probability)
+        output[:, MultiClass.index("signal")].sum().backward()
+        
+        # Compute importance as mean absolute gradient
+        importance = {
+            "ancillary": inputs[Input.ancillary].grad.abs().mean().item(),
+            "bJetCand": inputs[Input.bJetCand].grad.abs().mean().item(),
+            "nonbJetCand": inputs[Input.nonbJetCand].grad.abs().mean().item(),
+            "leadingLep": inputs[Input.leadingLep].grad.abs().mean().item(),
+            "MET": inputs[Input.MET].grad.abs().mean().item(),
+        }
+        
+        model.train()
+        return importance
 
 class Eval(HCREval):
     model = "svb"

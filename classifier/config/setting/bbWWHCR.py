@@ -5,9 +5,9 @@ class InputBranch(GlobalSetting):
     "Name of branches in the input root file"
     feature_bJetCand: list[str] = ["pt", "eta", "phi", "mass", "btagScore"]  
     feature_nonbJetCand: list[str] = ["pt", "eta", "phi", "mass"]
-    feature_leadingLep: list[str] = ["pt", "eta", "phi", "mass", "isE", "isM"]
+    feature_leadingLep: list[str] = ["pt", "eta", "phi", "mass", "isE"]
     feature_MET: list[str] = ["pt", "phi"]
-    feature_ancillary: list[str] = ["HT", "HTsoft", "njets", "nsoftjets"]
+    feature_ancillary: list[str] = ["HT", "njets", "nsoftjets"]
     nbJetCand: int = 2
     nnonbJetCand: int = 2
 

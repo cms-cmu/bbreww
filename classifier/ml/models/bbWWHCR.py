@@ -164,12 +164,14 @@ class HCRModel(Model):
         batch[Output.hh_raw] = hh
         batch[Output.tt_raw] = tt
         return self._loss(batch)
-
+    
     def validate(self, batches: Iterable[BatchType]) -> dict[str]:
         weight = 0.0
         scalars = defaultdict(float)
         scalar_funcs = self._benchmarks.scalars
         rocs = [r.copy() for r in self._benchmarks.rocs]
+        #feature_importance = self.feature_importance(batches)
+
         for batch in batches:
             hh, tt = self._nn(*_HCRInput(batch, self._device))
             batch |= {
@@ -192,7 +194,79 @@ class HCRModel(Model):
                 roc.update(batch)
         for k in scalars:
             scalars[k] /= weight
-        return {"scalars": scalars, "roc": [r.to_json() for r in rocs]}
+
+        return {"scalars": scalars, 
+                "roc": [r.to_json() for r in rocs],
+                }#"feature_importance": feature_importance,}
+
+    def compute_integrated_gradients(self, val_batches, input_groups, n_steps=50):
+        model = self._nn
+        model.eval()
+
+        total_gradients = None
+    
+        for batch in val_batches:
+            # Prepare input tensors
+            inputs = [
+                batch[key].to(self._device, non_blocking=True).float().requires_grad_(True)
+                for key in input_groups
+            ]
+
+            base = [torch.zeros_like(t) for t in inputs]
+
+            # Number of steps for integrated gradients
+            n_steps = 20
+            accumulated_gradients = [torch.zeros_like(t) for t in inputs]
+
+            for step in range(1, n_steps + 1):
+                alpha = float(step) / n_steps
+                interpolated = [
+                    (base[i] + alpha * (inputs[i] - base[i])).clone().detach().requires_grad_(True)
+                    for i in range(len(inputs))
+                ]
+
+                # Forward pass
+                hh, tt = model(*interpolated)
+                signal_idx = MultiClass.index("signal")
+                loss = hh[:, signal_idx].sum()
+
+                # Zero grads
+                model.zero_grad(set_to_none=True)
+                for t in interpolated:
+                    if t.grad is not None:
+                        t.grad.zero_()
+
+                # Backward
+                loss.backward()
+
+                # Accumulate grads
+                for i, t in enumerate(interpolated):
+                    if t.grad is not None:
+                        accumulated_gradients[i] += t.grad.detach()
+
+            # Integrated gradients estimate
+            integrated_grads = [
+                (inputs[i] - base[i]) * accumulated_gradients[i] / n_steps
+                for i in range(len(inputs))
+            ]
+
+            if total_gradients is None:
+                total_gradients = integrated_grads
+            else:
+                total_gradients += integrated_grads
+
+        return total_gradients / len(val_batches)
+
+
+    def feature_importance(self, val_batches: list[BatchType]) -> dict[str, dict[str, float]]:
+        input_groups = {
+            "bJetCand": Input.bJetCand,
+            "nonbJetCand": Input.nonbJetCand,
+            "leadingLep": Input.leadingLep,
+            "MET": Input.MET,
+            "ancillary": Input.ancillary,
+        }
+        return self.compute_integrated_gradients(val_batches, input_groups)
 
     def step(self, epoch: int = None):
         if self.ghost_batch is not None and self.ghost_batch.step(epoch):

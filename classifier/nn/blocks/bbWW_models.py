@@ -1233,7 +1233,7 @@ class InputEmbed(nn.Module):
             name="attention jet convolution",
         )
         self.lepEmbed = GhostBatchNorm1d(
-            6,
+            5,
             features_out=self.dD,
             phase_symmetric=phase_symmetric,
             conv=True,
@@ -1391,7 +1391,7 @@ class InputEmbed(nn.Module):
         n = b.shape[0]
         b = b.view(n, 5, 2)
         nb = nb.view(n, 4, 2)
-        l = l.view(n, 6, 1)
+        l = l.view(n, 5, 1)
         nu = nu.view(n, 2, 1)
         a = a.view(n, self.dA, 1)
 
@@ -1693,7 +1693,6 @@ class InputEmbed(nn.Module):
         bWlep = self.bWlepEmbed(bWlep)
         bWhad = self.bWhadConv(NonLU(bWhad))
         bWlep = self.bWlepConv(NonLU(bWlep))
-
 
         return b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bWhadMdR, bWlepMdR, mask_bbMdR, mask_qqMdR, mask_bbn, mask_bWhad, mask_bWlep
 
@@ -2098,7 +2097,7 @@ class GCN(nn.Module):
     def build_pooling_layers(self):
         """Define the HH and TT specific pooling layers"""
     
-        self.final_linear_layer = linear(in_channels= self.dD, out_channels=2)
+        self.final_linear_layer = linear(in_channels= self.dD, out_channels=3)
         self.layers.addLayer(self.final_linear_layer)
         # HH pooling: Takes H->bb + W->qq + W->lv features
         self.HH_pooling_layer = nn.Sequential(
@@ -2124,7 +2123,7 @@ class GCN(nn.Module):
 
         self.out = nn.Sequential(
             GhostBatchNorm1d(
-                4, 
+                6, 
                 features_out=self.dD, 
                 conv=True, 
                 bias=False,
@@ -2164,15 +2163,17 @@ class GCN(nn.Module):
         
         # Add learnable "resonance weights" for special pairs
         resonance_edges = torch.zeros(edge_features.shape[0], dtype=torch.bool) # Shape: (batch_size, num_edges, 1)
+        resonance_pairs = set([(0,1), (1,0), (2,3), (3,2), (4,5), (5,4)]) # Mark b-b, q-q, and l-nu edges as potential resonances
+        edge_list_batched = edge_index.T.cpu().numpy()
+        num_nodes_per_graph = node_features.shape[1]
         
-        # Mark b-b, q-q, and l-nu edges as potential resonances
-        edge_list = edge_index.T.cpu().numpy()
-        for i, (src, dst) in enumerate(edge_list):
-            if (src, dst) in [(0,1), (1,0), (2,3), (3,2), (4,5), (5,4)]:
+        for i, (src, dst) in enumerate(edge_list_batched):
+            relative_src, relative_dst = src % num_nodes_per_graph, dst % num_nodes_per_graph
+            if (relative_src, relative_dst) in resonance_pairs: # Check if the relative pair is a resonance
                 resonance_edges[i] = True
         
         # Add resonance indicator to edge features
-        resonance_indicator = resonance_edges.float().unsqueeze(-1).to(edge_features.device)
+        resonance_indicator = resonance_edges.float().unsqueeze(-1)
         edge_features = torch.cat([
             edge_features,
             resonance_indicator,
@@ -2216,7 +2217,7 @@ class GCN(nn.Module):
 
         b = b.view(n, 5, 2)
         nb = nb.view(n, 4, 2)
-        l = l.view(n, 6, 1)
+        l = l.view(n, 5, 1)
         nu = nu.view(n, 2, 1)
 
         all_particles = torch.cat([b[:,:4, :], nb[:, :4, :], l[:,:4,:]], dim=-1)
@@ -2250,10 +2251,10 @@ class GCN(nn.Module):
         qq = (q0 + q1) / 2 # W->qq candidate  
         lv = (lep + nu) / 2 # W->lv candidate
         
-        # For HH: H->bb and H->WW->qqℓν
+        WW = torch.cat([qq, lv], dim=-1)
         # Combine the Higgs candidate with the two W candidates
         HH_logits = self.HH_pooling_layer(
-            torch.cat([bb, qq, lv, a.squeeze(-1)], dim=-1) # adding global event features with a (ancillary)
+            torch.cat([bb, WW, a.squeeze(-1)], dim=-1) # adding global event features with a (ancillary)
         )
         # For TTbar: need to select right pairing
         # Option 1: t->b0W(qq), tbar->b1W(lv), option 2: t->b1W(qq), tbar->b0W(lv)

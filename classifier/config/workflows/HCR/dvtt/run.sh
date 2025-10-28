@@ -2,9 +2,9 @@
 export LPCUSER="akhanal"
 export CERNUSER="a/akhanal"
 export BASE="root://cmseos.fnal.gov//store/user/${LPCUSER}/HHbbWW_classifier_v1"
-export MODEL="${BASE}/classifier/DvTT/"
+export MODEL="${BASE}/classifier/HCR/DvTT/"
 export FvT="${BASE}/friend/DvTT/"
-export PLOT="root://eosuser.cern.ch//eos/user/${CERNUSER}/HHbbWW_classifier_v1/"
+export PLOT="root://eosuser.cern.ch//eos/user/${CERNUSER}/HHbbWW_classifier_v1/DvTT/"
 #####################
 
 export WFS="bbreww/classifier/config/workflows/HCR/dvtt"

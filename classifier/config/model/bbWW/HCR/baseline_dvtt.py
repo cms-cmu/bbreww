@@ -16,7 +16,7 @@ def _roc_data_selection(batch: BatchType):
     def __call__(self, batch: BatchType):
         selected = self._select(batch)
         return {
-            "y_pred": batch[Output.tt_prob][selected],  # Signal probability
+            "y_pred": batch[Output.hh_prob][selected], # hh_prob is okay as it contains signal + ttbar reconstruction
             "y_true": batch[Input.label][selected],
             "weight": batch[Input.weight][selected],
         }
@@ -38,7 +38,7 @@ class Train(HCRTrain):
 
         # get tensors
         ## use hh score below, as it already captures TTbar info and excludes signal in reweighting
-        tt_score = batch[Output.hh_raw]
+        tt_score = batch[Output.hh_raw] # hh_raw contains signal and ttbar information, so it's okay to use here
         weight = batch[Input.weight]
         weight[weight < 0] = 0
         is_SR = MassRegion.SR

@@ -6,7 +6,7 @@ export MODEL="${BASE}/classifier/HCR/SvB/"
 export FvT="${BASE}/friend/FvT/"
 export SvB="${BASE}/friend/SvB/"
 export PLOT="root://eosuser.cern.ch//eos/user/${CERNUSER}/HHbbWW_classifier_v1/"
-export CLASSIFIER_CONFIG_PATHS="bbreww"
+export CLASSIFIER_CONFIG_PATHS="bbreww" 
 #####################
 export WFS="bbreww/classifier/config/workflows/HCR/svb"
 
@@ -27,7 +27,7 @@ fi
 # plot the AUC and ROC
 ./src/pyml.py analyze \
     --results ${MODEL}/result.json \
-    -analysis HCR.LossROC \ 
+    -analysis HCR.LossROC \
     -setting IO "output: ${PLOT}" \
     -setting IO "report: FvT" \
     -setting Monitor "address: :${port}"

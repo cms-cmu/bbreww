@@ -18,7 +18,7 @@ dataset:
     option:
       - --metadata bbreww/metadata/classifier/datasets_minor_bkgs_v4
       - --max-workers 8 # use 8 workers to fetch metadatas for ROOT files
-      - --mc-processes  WplusJets tW singleTop
+      - --mc-processes  WplusJets tW
       - --friends "" bbreww/metadata/classifier/minorbkg_friend.json@@classifier_input
 
 model:

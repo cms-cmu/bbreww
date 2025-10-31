@@ -2069,10 +2069,11 @@ class GCN(nn.Module):
                 module.setGhostBatches(nGhostBatches)
 
     def build_gcn_layers(self):    
-        from torch_geometric.nn import NNConv, CGConv
+        from torch_geometric.nn import NNConv, CGConv, GATv2Conv
         
         # Edge feature dimension (deltaR + invariant_mass + resonance indicator + interaction_weights (2))
         edge_dim = 5 
+        n_heads = 4
         
         # Edge feature processor (transforms edge features for message passing)
         edge_nn = nn.Sequential(
@@ -2082,10 +2083,17 @@ class GCN(nn.Module):
         
         gcn_layers_list = []
         gcn_norms_list = []
-        for _ in range(3): # using 3 GCN layers
-            gcn_layer = NNConv(self.dD, self.dD, edge_nn)
-            self.layers.addLayer(gcn_layer)
-            gcn_layers_list.append(gcn_layer)
+        for _ in range(3):
+            #gcn_layer = NNConv(self.dD, self.dD, edge_nn) use this layer to use convolution instead of attention
+            gat_layer = GATv2Conv(
+                    self.dD,             
+                    self.dD,             
+                    heads=n_heads,         
+                    concat=False,
+                    edge_dim= edge_dim
+                )
+            gcn_layers_list.append(gat_layer)
+            self.layers.addLayer(gat_layer)
 
             norm_layer = nn.LayerNorm(self.dD)
             self.layers.addLayer(norm_layer)
@@ -2160,17 +2168,22 @@ class GCN(nn.Module):
     def apply_gcn_layers(self, node_features, edge_index, edge_features):
         """Enhanced GCN with physics-aware edge weighting"""
         x = node_features
-        
-        # Add learnable "resonance weights" for special pairs
-        resonance_edges = torch.zeros(edge_features.shape[0], dtype=torch.bool) # Shape: (batch_size, num_edges, 1)
-        resonance_pairs = set([(0,1), (1,0), (2,3), (3,2), (4,5), (5,4)]) # Mark b-b, q-q, and l-nu edges as potential resonances
-        edge_list_batched = edge_index.T.cpu().numpy()
         num_nodes_per_graph = node_features.shape[1]
+
+        relative_indices = edge_index % num_nodes_per_graph
+        relative_src = relative_indices[0]
+        relative_dst = relative_indices[1]
         
-        for i, (src, dst) in enumerate(edge_list_batched):
-            relative_src, relative_dst = src % num_nodes_per_graph, dst % num_nodes_per_graph
-            if (relative_src, relative_dst) in resonance_pairs: # Check if the relative pair is a resonance
-                resonance_edges[i] = True
+        # create physics resonances using source and destinate edges
+        is_bb = ((relative_src == 0) & (relative_dst == 1) |
+                (relative_src == 1) & (relative_dst == 0))
+        is_qq = ((relative_src == 2) & (relative_dst == 3) | 
+                (relative_src == 3) & (relative_dst == 2))
+        is_lnu = ((relative_src == 4) & (relative_dst == 5) |
+                (relative_src == 5) & (relative_dst == 4))
+        
+        resonance_edges = is_bb | is_qq | is_lnu
+        resonance_indicator = resonance_edges.float().unsqueeze(-1)
         
         # Add resonance indicator to edge features
         resonance_indicator = resonance_edges.float().unsqueeze(-1)

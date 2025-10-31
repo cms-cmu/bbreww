@@ -133,7 +133,8 @@ class HCRModel(Model):
             nClasses=MultiClass.n_trainable(),
         )
         self._benchmarks = benchmarks
-
+        self._shap_results = None
+    
     @property
     def ghost_batch(self):
         return self._gbn
@@ -159,18 +160,24 @@ class HCRModel(Model):
     def nn(self):
         return self._nn
 
-    def train(self, batch: BatchType) -> Tensor:
+    def train(self, batch: BatchType, compute_shap: bool = False) -> Tensor:
         hh, tt = self._nn(*_HCRInput(batch, self._device))
         batch[Output.hh_raw] = hh
         batch[Output.tt_raw] = tt
-        return self._loss(batch)
+        
+        loss = self._loss(batch)
+        
+        ## shap is still work in progress
+        if compute_shap and self._compute_shap:
+            self._shap_results = self._compute_shap_gradient(batch)
+        
+        return loss
     
     def validate(self, batches: Iterable[BatchType]) -> dict[str]:
         weight = 0.0
         scalars = defaultdict(float)
         scalar_funcs = self._benchmarks.scalars
         rocs = [r.copy() for r in self._benchmarks.rocs]
-        #feature_importance = self.feature_importance(batches)
 
         for batch in batches:
             hh, tt = self._nn(*_HCRInput(batch, self._device))
@@ -197,76 +204,55 @@ class HCRModel(Model):
 
         return {"scalars": scalars, 
                 "roc": [r.to_json() for r in rocs],
-                }#"feature_importance": feature_importance,}
+                "shap": self._shap_results
+                }
 
-    def compute_integrated_gradients(self, val_batches, input_groups, n_steps=50):
-        model = self._nn
-        model.eval()
-
-        total_gradients = None
-    
-        for batch in val_batches:
-            # Prepare input tensors
-            inputs = [
-                batch[key].to(self._device, non_blocking=True).float().requires_grad_(True)
-                for key in input_groups
-            ]
-
-            base = [torch.zeros_like(t) for t in inputs]
-
-            # Number of steps for integrated gradients
-            n_steps = 20
-            accumulated_gradients = [torch.zeros_like(t) for t in inputs]
-
-            for step in range(1, n_steps + 1):
-                alpha = float(step) / n_steps
-                interpolated = [
-                    (base[i] + alpha * (inputs[i] - base[i])).clone().detach().requires_grad_(True)
-                    for i in range(len(inputs))
-                ]
-
-                # Forward pass
-                hh, tt = model(*interpolated)
-                signal_idx = MultiClass.index("signal")
-                loss = hh[:, signal_idx].sum()
-
-                # Zero grads
-                model.zero_grad(set_to_none=True)
-                for t in interpolated:
-                    if t.grad is not None:
-                        t.grad.zero_()
-
-                # Backward
-                loss.backward()
-
-                # Accumulate grads
-                for i, t in enumerate(interpolated):
-                    if t.grad is not None:
-                        accumulated_gradients[i] += t.grad.detach()
-
-            # Integrated gradients estimate
-            integrated_grads = [
-                (inputs[i] - base[i]) * accumulated_gradients[i] / n_steps
-                for i in range(len(inputs))
-            ]
-
-            if total_gradients is None:
-                total_gradients = integrated_grads
-            else:
-                total_gradients += integrated_grads
-
-        return total_gradients / len(val_batches)
-
-
-    def feature_importance(self, val_batches: list[BatchType]) -> dict[str, dict[str, float]]:
-        input_groups = {
-            "bJetCand": Input.bJetCand,
-            "nonbJetCand": Input.nonbJetCand,
-            "leadingLep": Input.leadingLep,
-            "MET": Input.MET,
-            "ancillary": Input.ancillary,
-        }
-        return self.compute_integrated_gradients(val_batches, input_groups)
+    ## work in progress feature
+    def _compute_shap_gradient(self, batch):
+        """Compute SHAP using gradients during training"""
+        import shap
+        import numpy as np
+        
+        all_feature_names = (
+            [f"bJet_{f}" for f in InputBranch.feature_bJetCand] +
+            [f"nonbJet_{f}" for f in InputBranch.feature_nonbJetCand] +
+            [f"lep_{f}" for f in InputBranch.feature_leadingLep] +
+            [f"MET_{f}" for f in InputBranch.feature_MET] +
+            list(InputBranch.feature_ancillary)
+        )
+        
+        # Wrapper model for SHAP
+        class ConcatenatedModel(torch.nn.Module):
+            def __init__(self, original_model, n_features=[10, 8, 5, 2, 3]):
+                super().__init__()
+                self.model = original_model
+                self.n_features = n_features
+            
+            def forward(self, X):
+                splits = torch.split(X, self.n_features, dim=1)
+                hh, _ = self.model(*splits)
+                signal_idx = MultiClass.trainable_labels.index("signal")
+                probs = F.softmax(hh, dim=1)[:, signal_idx]
+                return probs.unsqueeze(1)
+        
+        wrapped_model = ConcatenatedModel(self._nn)
+        
+        # Use current batch as test data
+        inputs = _HCRInput(batch, self._device)
+        test_data = torch.cat(inputs, dim=1)[:500]  # Sample subset
+        
+        # Use subset as background
+        background = test_data[:100]
+        explainer = shap.GradientExplainer(wrapped_model, background)
+        shap_values = explainer.shap_values(test_data)
+        
+        # Aggregate importance
+        importance = {}
+        feature_importance = np.abs(shap_values).mean(axis=0)
+        for i, name in enumerate(all_feature_names):
+            importance[name] = float(feature_importance[i])
+        
+        return importance
 
     def step(self, epoch: int = None):
         if self.ghost_batch is not None and self.ghost_batch.step(epoch):
@@ -447,3 +433,4 @@ class HCREvaluation(Evaluation):
             dataset=self.dataset,
             dumper_kwargs={"name": self.name},
         )
+

@@ -106,6 +106,12 @@ class _minorbkg(_MCDataset):
         return filelists
 
 class _signal(_MCDataset):
+    argparser = _PicoAOD.argparser
+    argparser.add_argument(
+        "--train-bsm",
+        action="store_true",
+        help="Specify whether to train on BSM signal samples (default False)",
+    )
     processes = ("GluGluToHHTo2B2VLNu2J",)
 
     @classmethod
@@ -118,12 +124,15 @@ class _signal(_MCDataset):
 
     def __new__(cls, self: MC, metadata: str):
         from src.physics.dihiggs.kappa_framework import Coupling
-        filelists = []
-        
+        filelists = [] 
         process_name = "GluGluToHHTo2B2VLNu2J" 
 
         if process_name in self.mc_processes:
-            kl_values = Coupling(kl=MC_HH_ggF.kl)
+            if self.opts.train_bsm:
+                kl_values = Coupling(kl=MC_HH_ggF.kl) # train samples with kl values (0, 1, 2.45, 5)
+            else:
+                kl_values = Coupling(kl=[1.0]) # train only on SM signal (kl = 1)
+
             for year in CollisionData.eras:
                 for item in kl_values:
                     kl = str(format(item['kl'], '.2f')).split(".") 
@@ -174,7 +183,7 @@ class Data(_PicoAOD):
 
 
 class MC(_PicoAOD):
-    argparser = ArgParser()
+    argparser = _PicoAOD.argparser
     argparser.add_argument(
         "--mc-processes",
         metavar="PROCESS",

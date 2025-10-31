@@ -56,6 +56,7 @@ def dump_input_friend(
                         "phi":  events[lepton].phi,
                         "mass": events[lepton].mass,
                         "isE" : events.flavor.e,
+                        "isM" : events.flavor.mu,
                     }
                 ),
                 selection,

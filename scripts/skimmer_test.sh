@@ -2,7 +2,7 @@
 
 JOB_NAME="skimmer_test"
 CONFIG_PATH="bbreww/skimmer/metadata/HHbbWW.yml"
-METADATA_PATH="bbreww/metadata/datasets.yml"
+METADATA_PATH="bbreww/metadata/"
 
 # Source common functions
 source "src/scripts/common.sh"

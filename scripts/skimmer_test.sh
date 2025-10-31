@@ -37,7 +37,7 @@ bash bbreww/scripts/run_processor.sh \
     --processor "bbreww/skimmer/processors/skimmer_bbWW.py" \
     --metadata "$OUTPUT_DIR/datasets.yml" \
     --config "$OUTPUT_DIR/HHbbWW.yml" \
-    --datasets "GluGluToHHTo2B2VLNu2J" \
+    --datasets "GluGluToHHTo2B2VLNu2J_kl_1p00" \
     --year "2022_preEE" \
     --output-filename "output.coffea" \
     --output-subdir "${JOB_NAME}" 

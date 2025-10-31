@@ -27,7 +27,9 @@ bash bbreww/scripts/run_processor.sh \
     --processor "bbreww/analysis/processors/hh_bbww_processor.py" \
     --metadata "bbreww/metadata/skims_v4" \
     --config "$JOB_CONFIG" \
-    --datasets "GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic" \
-    --year "2022_EE" \
-    --output-filename "test.coffea" \
-    --output-subdir "${JOB_NAME}" 
+    --datasets "GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic TTto4Q TTTo2L2Nu" \
+    --year "2022_EE 2022_preEE 2023_preBPix 2023_BPix" \
+    --output-filename "output_friend.coffea" \
+    --output-subdir "${JOB_NAME}" \
+    --no-test \
+    --condor

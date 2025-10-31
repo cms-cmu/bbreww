@@ -7,7 +7,7 @@ hists:
         #         fillcolor: k            
 
         HHbbWW:
-                process: GluGluToHHTo2B2VLNu2J
+                process: GluGluToHHTo2B2VLNu2J_kl_1p00
                 tag: fourTag
                 label: HH4b (x100)
                 edgecolor: "#e42536"

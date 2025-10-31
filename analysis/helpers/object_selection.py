@@ -62,7 +62,7 @@ def jet_selection(events, params, year):
 
     events['HT'] = ak.sum(j_init.pt, axis=1) # HT of all jets
     events['HTsoft'] = ak.sum(j_soft.pt, axis=1) # HT of soft jets
-    
+
     #
     #  b-jet selection
     #
@@ -75,7 +75,7 @@ def jet_selection(events, params, year):
     j_candidates_nom = j_candidates[j_candidates.isnominal]
     events['nom_njets4'] = (ak.num(j_candidates_nom, axis=1) > 3)
     events['nom_njets3'] = (ak.num(j_candidates_nom, axis=1) == 3)
-    
+
     j_btagged = j_candidates_nom[getattr(j_candidates_nom,bTag_key) > btag_threshold]
     b_cands = j_btagged[:,:2]
     b_cands = b_cands[ak.argsort(b_cands.pt, axis=1, ascending=False)] #particleNetAK4_B btagPNetB
@@ -147,6 +147,14 @@ def apply_mll_cut(events):
 def apply_bbWW_preselection(events, year,params, isMC):
     events = muon_selection(events, params) #muons
     events = electron_selection(events, params) #electrons
+
+    leading_mu = events.Muon[events.Muon.istight]
+    leading_e = events.Electron[events.Electron.istight]
+
+    #select leading lepton out of electrons/muons. Use ak.singletons to slice entries, not whole events
+    events["leptons"] = ak.concatenate([events.sel_muon, events.sel_elec], axis=1)
+    events['leading_lep'] = ak.with_name(ak.firsts(events.leptons), 'PtEtaPhiMLorentzVector') #reapply 4-vector behavior after concatenate
+
     events = tau_selection(events,params)
     events = jet_selection(events,params, year)
     events = ak8_jet_selection(events, params)

@@ -181,10 +181,6 @@ def plot(var: Union[str, List[str]] = 'selJets.pt', *,
     if handle_wildcards(var):
         return
 
-
-
-
-
     opts = {"var": var,
             "cut": cut,
             "axis_opts": axis_opts,
@@ -247,8 +243,15 @@ def plot2d(var: str = 'quadJet_selected.lead_vs_subl_m',
     if kwargs.get("debug", False):
         print(f'kwargs = {kwargs}')
 
+    # Configure the histogram key based on the cut
+    cfg.set_hist_key("hists")
+    if "4j2b" in cut:
+        cfg.set_hist_key("hists_4j2b")
+
+
     if handle_wildcards(var):
         return
+
 
     # Add channel to axis_opts
     if flavor:
@@ -256,9 +259,28 @@ def plot2d(var: str = 'quadJet_selected.lead_vs_subl_m',
     if channel:
         axis_opts["channel"] = channel
 
+
+    opts = {"var": var,
+            "cut": cut,
+            "axis_opts": axis_opts,
+            "outputFolder": cfg.outputFolder
+            }
+    opts.update(kwargs)
+
+
+    if type(cut) is list:
+        hist_key_list = []
+        for _c in cut:
+            if "4j2b" in _c:
+                hist_key_list.append("hists_4j2b")
+            else:
+                hist_key_list.append("hists")
+        opts.update({"hist_key_list": hist_key_list})
+
+
     try:
-        fig, ax = make2DPlot(cfg, process, var=var, cut=cut,
-                             axis_opts=axis_opts, outputFolder=cfg.outputFolder, **kwargs)
+        fig, ax = make2DPlot(cfg, process, **opts)
+
     except Exception as e:
         print(f"Error creating 2D plot: {e}")
         return

@@ -1,6 +1,6 @@
 import awkward as ak
 import numpy as np
-
+from bbreww.analysis.helpers.common import met_reconstr, distance
 
 def Hbb_candidate_selection(events):
 
@@ -19,12 +19,23 @@ def Hbb_candidate_selection(events):
     return events
 
 
+def Wlnu_candidate_selection(events):
 
-def candidate_selection(events, params, year):
+    # calculate MET pz requiring (lepton + nu).mass == W_mass
+    nu = met_reconstr(events, events.leading_lep)
 
-    #
-    #  Nominal Analysis
-    #
+    Wlnu_cand = events.leading_lep + nu
+    Wlnu_cand["lep"] = events.leading_lep
+    Wlnu_cand["nu"]  = nu
+    Wlnu_cand["dr"]   = Wlnu_cand["lep"].delta_r  (Wlnu_cand["nu"])
+    Wlnu_cand["dphi"] = Wlnu_cand["lep"].delta_phi(Wlnu_cand["nu"])
+    Wlnu_cand["mT"]   = np.sqrt(2 * Wlnu_cand.lep.pt * Wlnu_cand.nu.pt * (1 - np.cos(Wlnu_cand.dphi)))
+
+    events['Wlnu_cand'] = Wlnu_cand
+    return events
+
+
+def Wqq_candidate_selection(events):
     Wqq_cand = events.q_cands_nom[:,0] + events.q_cands_nom[:,1]
     Wqq_cand["lead"] = events.q_cands_nom[:,0]
     Wqq_cand["subl"] = events.q_cands_nom[:,1]
@@ -33,10 +44,61 @@ def candidate_selection(events, params, year):
     Wqq_cand["dphi"] = Wqq_cand["lead"].delta_phi(Wqq_cand["subl"])
 
     events['Wqq_cand'] = Wqq_cand
+    return events
 
-    #
-    # soft jets analysis
-    #
+def Hww_candidate_selection(events):
+    Hww_cand = events.Wlnu_cand + events.Wqq_cand
+    Hww_cand["dr"]   = events.Wlnu_cand.delta_r  (events.Wqq_cand)
+    Hww_cand["dphi"] = events.Wlnu_cand.delta_phi(events.Wqq_cand)
+
+    events['Hww_cand'] = Hww_cand
+    return events
+
+def ttbar_candidate_selection(events):
+
+    lepTop_1 = (events.b_cands[:,0] + events.Wlnu_cand)
+    hadTop_1 = (events.b_cands[:,1] + events.Wqq_cand)
+    tt_1 = lepTop_1 + hadTop_1
+    tt_1["lepTop"] = lepTop_1
+    tt_1["lepTop", "dr"]   = events.b_cands[:,0].delta_r  (events.Wlnu_cand)
+    tt_1["lepTop", "dphi"] = events.b_cands[:,0].delta_phi(events.Wlnu_cand)
+
+    tt_1["hadTop"] = hadTop_1
+    tt_1["hadTop", "dr"]   = events.b_cands[:,1].delta_r  (events.Wqq_cand)
+    tt_1["hadTop", "dphi"] = events.b_cands[:,1].delta_phi(events.Wqq_cand)
+
+    tt_1["mass_distance"] = distance(lepTop_1.mass,  hadTop_1.mass,  172.5, 172.5)
+
+    lepTop_2 = (events.b_cands[:,1] + events.Wlnu_cand)
+    hadTop_2 = (events.b_cands[:,0] + events.Wqq_cand)
+    tt_2 = lepTop_2 + hadTop_2
+    tt_2["lepTop"] = lepTop_2
+    tt_2["lepTop", "dr"]   = events.b_cands[:,1].delta_r  (events.Wlnu_cand)
+    tt_2["lepTop", "dphi"] = events.b_cands[:,1].delta_phi(events.Wlnu_cand)
+
+    tt_2["hadTop"] = hadTop_2
+    tt_2["hadTop", "dr"]   = events.b_cands[:,0].delta_r  (events.Wqq_cand)
+    tt_2["hadTop", "dphi"] = events.b_cands[:,0].delta_phi(events.Wqq_cand)
+
+    tt_2["mass_distance"] = distance(lepTop_2.mass,  hadTop_2.mass,  172.5, 172.5)
+
+    b_sel_nom =  tt_1.mass_distance < tt_2.mass_distance #pick pair closest to ttbar mass
+    tt_best  = ak.where(b_sel_nom,  tt_1 ,  tt_2)
+
+
+    tt_sel = ak.zip({"p": tt_best.lepTop + tt_best.hadTop,
+                     "lepTop": tt_best.lepTop,
+                     "hadTop": tt_best.hadTop,
+                     })
+
+    tt_sel["p","dr"]   = tt_best.lepTop.delta_r(tt_best.hadTop)
+    tt_sel["p","dphi"] = tt_best.lepTop.delta_r(tt_best.hadTop)
+
+    events['tt_sel'] = tt_sel
+    return events
+
+
+def Wqq_soft_candidate_selection(events, year):
     QvG_key = 'btagPNetQvG' if '202' in year else 'particleNetAK4_QvsG' # use particleNET for quark vs. gluon tagging
 
     q_cands_soft = events.q_cands_soft[ak.argsort(getattr(events.q_cands_soft,QvG_key), axis=1, ascending=False)] #particleNetAK4_QvsG btagPNetQvG
@@ -54,6 +116,89 @@ def candidate_selection(events, params, year):
 
     events['qq_mass'] = ak.fill_none((q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2]).mass,np.nan) # plotting gives issues with None values
     events['qq_soft'] = ak.pad_none(q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2], 3, axis=1)
+    return events
+
+
+def Hww_soft_candidate_selection(events):
+    Hww_cand_soft = events.Wlnu_cand + events.qq_soft
+    Hww_cand_soft["dr"]   = events.Wlnu_cand.delta_r  (events.qq_soft)
+    Hww_cand_soft["dphi"] = events.Wlnu_cand.delta_phi(events.qq_soft)
+
+    events['Hww_cand_soft'] = Hww_cand_soft
+    return events
+
+
+def ttbar_soft_candidate_selection(events):
+
+    lepTop_soft_1 = (events.Wlnu_cand + events.b_cands[:,1])
+    hadTop_soft_1 = (events.b_cands[:,0] + events.qq_soft) #hadronic candidate 1
+
+    tt_soft_1 = lepTop_soft_1 + hadTop_soft_1
+    tt_soft_1["lepTop"] = lepTop_soft_1
+    tt_soft_1["lepTop", "dr"]   = events.b_cands[:,1].delta_r  (events.Wlnu_cand)
+    tt_soft_1["lepTop", "dphi"] = events.b_cands[:,1].delta_phi(events.Wlnu_cand)
+
+    tt_soft_1["hadTop"] = hadTop_soft_1
+    tt_soft_1["hadTop", "dr"]   = events.b_cands[:,0].delta_r  (events.qq_soft)
+    tt_soft_1["hadTop", "dphi"] = events.b_cands[:,0].delta_phi(events.qq_soft)
+
+    tt_soft_1["mass_distance"] = distance(lepTop_soft_1.mass,  hadTop_soft_1.mass,  172.5, 172.5)
+
+
+    lepTop_soft_2 = (events.Wlnu_cand + events.b_cands[:,0])
+    hadTop_soft_2 = (events.b_cands[:,1] + events.qq_soft) #hadronic candidate 2
+
+    tt_soft_2 = lepTop_soft_2 + hadTop_soft_2
+    tt_soft_2["lepTop"] = lepTop_soft_2
+    tt_soft_2["lepTop", "dr"]   = events.b_cands[:,0].delta_r  (events.Wlnu_cand)
+    tt_soft_2["lepTop", "dphi"] = events.b_cands[:,0].delta_phi(events.Wlnu_cand)
+
+    tt_soft_2["hadTop"] = hadTop_soft_2
+    tt_soft_2["hadTop", "dr"]   = events.b_cands[:,1].delta_r  (events.qq_soft)
+    tt_soft_2["hadTop", "dphi"] = events.b_cands[:,1].delta_phi(events.qq_soft)
+
+    tt_soft_2["mass_distance"] = distance(lepTop_soft_2.mass,  hadTop_soft_2.mass,  172.5, 172.5)
+
+
+    b_sel_soft =  tt_soft_1.mass_distance < tt_soft_2.mass_distance
+
+    #final ttbar candidates
+    tt_best_soft = ak.where(b_sel_soft, tt_soft_1 , tt_soft_2)
+
+    tt_soft = ak.zip({"p": tt_best_soft.lepTop + tt_best_soft.hadTop,
+                      "lepTop": tt_best_soft.lepTop,
+                      "hadTop": tt_best_soft.hadTop,
+                      })
+
+    tt_soft["p","dr"]   = tt_best_soft.lepTop.delta_r(tt_best_soft.hadTop)
+    tt_soft["p","dphi"] = tt_best_soft.lepTop.delta_r(tt_best_soft.hadTop)
+
+    events['tt_soft'] = tt_soft
+    return events
+
+
+def candidate_selection(events, params, year):
+
+    #
+    # Common
+    #
+    events = Hbb_candidate_selection(events)
+    events = Wlnu_candidate_selection(events)
+
+    #
+    #  Nomninal Candidate selection
+    #
+    events = Wqq_candidate_selection(events)
+    events = Hww_candidate_selection(events)
+    events = ttbar_candidate_selection(events)
+
+
+    #
+    # soft jets analysis
+    #
+    events = Wqq_soft_candidate_selection(events, year)
+    events = Hww_soft_candidate_selection(events)
+    events = ttbar_soft_candidate_selection(events)
 
     return events
 

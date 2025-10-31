@@ -30,6 +30,7 @@ dataset:
     option:
       - --metadata bbreww/metadata/classifier/datasets_v4
       - --friends "" bbreww/metadata/classifier/output_friend.json@@classifier_input # set input friend tree
+      #- --train-bsm
 
 model:
   - module: bbWW.HCR.baseline_svb.Train # use the baseline bbWW HCR model

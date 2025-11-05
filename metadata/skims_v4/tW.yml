@@ -13,6 +13,21 @@ TbarWplustoLNu2Q:
     2022_EE:
       nanoAOD: /TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
       picoAOD:
+        count: 16485994
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk1.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk2.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk3.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk4.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk5.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk6.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk7.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk8.root
+        saved_events: 4180234
+        sumw: 594379468.1132812
+        sumw2: 21431066200.75
+        total_events: 16485994
     xs: 19.31
 
 TbarWplusto2L2Nu:
@@ -28,6 +43,16 @@ TbarWplusto2L2Nu:
   2022_EE:
     nanoAOD: /TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
     picoAOD:
+      count: 8183339
+      files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_EE/picoAOD.chunk0.root
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_EE/picoAOD.chunk1.root
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_EE/picoAOD.chunk2.root
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_EE/picoAOD.chunk3.root
+      saved_events: 1504005
+      sumw: 31144335.41748047
+      sumw2: 118537781.09570312
+      total_events: 8183339
   xs: 4.67
 
 TWminustoLNu2Q:
@@ -45,6 +70,21 @@ TWminustoLNu2Q:
   2022_EE:
     nanoAOD: /TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
     picoAOD: 
+      count: 16666206
+      files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk0.root
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk1.root
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk2.root
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk3.root
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk4.root
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk5.root
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk6.root
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk7.root
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk8.root
+      saved_events: 4226792
+      sumw: 599749862.1347656
+      sumw2: 21584284446.75
+      total_events: 16666206
   xs: 19.31
 
 TWminusto2L2Nu:
@@ -60,4 +100,13 @@ TWminusto2L2Nu:
   2022_EE:
     nanoAOD: /TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
     picoAOD:
+      count: 8129084
+      files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2022_EE/picoAOD.chunk0.root
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2022_EE/picoAOD.chunk1.root
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2022_EE/picoAOD.chunk2.root
+      saved_events: 1490143
+      sumw: 30879841.719726562
+      sumw2: 117311688.54492188
+      total_events: 8129084
   xs: 4.67

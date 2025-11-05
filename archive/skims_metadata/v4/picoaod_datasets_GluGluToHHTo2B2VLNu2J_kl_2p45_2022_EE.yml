@@ -1,0 +1,67 @@
+GluGluToHHTo2B2VLNu2J_kl_2p45_2022_EE:
+  count: 346104
+  cutflow:
+    e_region:
+      events:
+        all: 38635.0
+        lumimask: 38635.0
+        njets: 27052.0
+        oneBjet: 29843.0
+        passNoiseFilter: 38618.0
+        trigger: 32109.0
+      weights:
+        all: 490.1185229429975
+        lumimask: 490.1185229429975
+        njets: 338.662078675814
+        oneBjet: 375.2195526249707
+        passNoiseFilter: 489.955612947233
+        trigger: 405.85277712810785
+    mu_region:
+      events:
+        all: 48754.0
+        lumimask: 48754.0
+        njets: 36689.0
+        oneBjet: 40390.0
+        passNoiseFilter: 48741.0
+        trigger: 43647.0
+      weights:
+        all: 624.5771108968183
+        lumimask: 624.5771108968183
+        njets: 465.9865963095799
+        oneBjet: 515.431392124854
+        passNoiseFilter: 624.4142009010538
+        trigger: 560.1129820691422
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_kl_2p45_2022_EE/picoAOD.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v4', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_GluGluToHHTo2B2VLNu2J_kl_2p45_2022_EE.yml',
+      output_path='output/skimmer', years=['2022_EE'], datasets=['GluGluToHHTo2B2VLNu2J_kl_2p45'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    date: '2025-10-23 13:33:40'
+    diff: "diff --git a/src/classifier/algorithm/metrics/roc.py b/src/classifier/algorithm/metrics/roc.py\n\
+      index 956afbd6..3905d9d3 100644\n--- a/src/classifier/algorithm/metrics/roc.py\n\
+      +++ b/src/classifier/algorithm/metrics/roc.py\n@@ -106,12 +106,6 @@ class FixedThresholdROC:\n\
+      \             y_pred.device,\n         )\n \n-        if y_pred_full is not\
+      \ None:\n-            if not hasattr(self, '_y_pred_full'):\n-             \
+      \   self._y_pred_full = []\n-                self._y_true_full = []\n-     \
+      \       self._y_pred_full.append(to_arr(y_pred_full))\n-            self._y_true_full.append(to_arr(y_true_full))\n\
+      \         # prepare data\n         self._check_shape(y_pred=(y_pred, 2), y_true=(y_true,\
+      \ 1))\n         if y_pred.dim() == 2:\n@@ -166,9 +160,5 @@ class FixedThresholdROC:\n\
+      \             \"TP\": npext.to.base64(to_arr(tp)), # true positives\n      \
+      \       \"FP\": npext.to.base64(to_arr(fp)), # false positives\n         }\n\
+      -\n-        if hasattr(self, '_y_pred_full') and self._y_pred_full:\n-     \
+      \       result[\"y_pred_full\"] = npext.to.base64(np.concatenate(self._y_pred_full))\n\
+      -            result[\"y_true_full\"] = npext.to.base64(np.concatenate(self._y_true_full))\n\
+      \         \n         return result\n"
+    hash: 1d584ad15cdafcfc706fd4365fc57441bbbeaf61
+  saved_events: 63741
+  sumw: 4449.171519517899
+  sumw2: 76.15095929801464
+  sumw2_raw: 76.1509739347744
+  sumw_raw: 4449.1723437
+  total_events: 346104

@@ -30,7 +30,7 @@ bash bbreww/scripts/run_processor.sh \
     --processor "bbreww/analysis/processors/hh_bbww_processor.py" \
     --metadata $OUTPUT_DIR/datasets.yml \
     --config "bbreww/analysis/metadata/HHbbWW.yml" \
-    --datasets "GluGluToHHTo2B2VLNu2J" \
+    --datasets "GluGluToHHTo2B2VLNu2J_kl_1p00" \
     --year "2022_EE" \
     --output-filename "test.coffea" \
     --output-subdir "${JOB_NAME}" \

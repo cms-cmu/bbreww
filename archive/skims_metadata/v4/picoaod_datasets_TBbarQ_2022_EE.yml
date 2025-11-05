@@ -1,0 +1,63 @@
+TBbarQ_2022_EE:
+  count: 10153433
+  cutflow:
+    e_region:
+      events:
+        all: 516613.0
+        lumimask: 516613.0
+        njets: 128822.0
+        oneBjet: 313087.0
+        passNoiseFilter: 516434.0
+        trigger: 423470.0
+      weights:
+        all: 64181240.043548584
+        lumimask: 64181240.043548584
+        njets: 15266191.45135498
+        oneBjet: 38364088.751312256
+        passNoiseFilter: 64159457.870666504
+        trigger: 52501530.70977783
+    mu_region:
+      events:
+        all: 750958.0
+        lumimask: 750958.0
+        njets: 197434.0
+        oneBjet: 493087.0
+        passNoiseFilter: 750703.0
+        trigger: 673900.0
+      weights:
+        all: 93377604.57849121
+        lumimask: 93377604.57849121
+        njets: 23478205.920898438
+        oneBjet: 60630881.1567688
+        passNoiseFilter: 93346622.48165894
+        trigger: 83825918.8302002
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TBbarQ_2022_EE/picoAOD.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v4', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_TBbarQ_2022_EE.yml',
+      output_path='output/skimmer', years=['2022_EE'], datasets=['TBbarQ'], era=['A',
+      'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    date: '2025-10-06 15:14:11'
+    diff: "diff --git a/runner.py b/runner.py\nindex 2a09154c..a4917097 100644\n---\
+      \ a/runner.py\n+++ b/runner.py\n@@ -336,7 +336,7 @@ def setup_condor_cluster(config_runner):\n\
+      \     logging.info('Waiting for at least one worker...')\n     client.wait_for_workers(1)\n\
+      \     logging.info('HTCondor cluster setup complete!')\n-    return client\n\
+      +    return client, cluster\n \n \n def setup_local_cluster(config_runner, args):\n\
+      @@ -921,7 +921,7 @@ if __name__ == '__main__':\n     if args.condor:\n     \
+      \    logging.info(\"Configuring HTCondor cluster execution...\")\n         args.run_dask\
+      \ = True\n-        client = setup_condor_cluster(config_runner)\n+        client,\
+      \ cluster = setup_condor_cluster(config_runner)\n     elif args.run_dask:\n\
+      \         logging.info(\"Configuring local Dask cluster execution...\")\n  \
+      \       client = setup_local_cluster(config_runner, args)\n"
+    hash: c48b03a30f0043391f46b7e4f503249f6c06c0fb
+  saved_events: 326256
+  sumw: 1264425644.40625
+  sumw2: 185850358788.0
+  sumw2_raw: 185850426171.69965
+  sumw_raw: 1264425784.0690002
+  total_events: 10153433

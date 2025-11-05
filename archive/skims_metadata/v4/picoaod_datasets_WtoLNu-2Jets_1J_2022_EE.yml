@@ -1,0 +1,57 @@
+WtoLNu-2Jets_1J_2022_EE:
+  count: 522553517
+  cutflow:
+    e_region:
+      events:
+        all: 48595018.0
+        lumimask: 48595018.0
+        njets: 732966.0
+        oneBjet: 5216842.0
+        passNoiseFilter: 48591594.0
+        trigger: 38789201.0
+      weights:
+        all: 2363716713281.9375
+        lumimask: 2363716713281.9375
+        njets: 35518130172.125
+        oneBjet: 256033013048.3125
+        passNoiseFilter: 2363544157321.0
+        trigger: 1893438120530.2188
+    mu_region:
+      events:
+        all: 64771823.0
+        lumimask: 64771823.0
+        njets: 998242.0
+        oneBjet: 7705039.0
+        passNoiseFilter: 64766232.0
+        trigger: 58687612.0
+      weights:
+        all: 3145643598309.1562
+        lumimask: 3145643598309.1562
+        njets: 48677149149.8125
+        oneBjet: 377974563713.40625
+        passNoiseFilter: 3145364452066.0625
+        trigger: 2853020931873.0
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2022_EE/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2022_EE/picoAOD.chunk1.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2022_EE/picoAOD.chunk2.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2022_EE/picoAOD.chunk3.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2022_EE/picoAOD.chunk4.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v4', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_WtoLNu-2Jets_1J_2022_EE.yml',
+      output_path='output/skimmer', years=['2022_EE'], datasets=['WtoLNu-2Jets_1J'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    date: '2025-10-08 22:16:05'
+    diff: ''
+    hash: 0c1def0051e765fd8ca44482d318a0367fd3869c
+  saved_events: 2308667
+  sumw: 24933248681242.0
+  sumw2: 5.0805963362169e+18
+  sumw2_raw: 5.080595067009443e+18
+  sumw_raw: 24933248825520.547
+  total_events: 522553517

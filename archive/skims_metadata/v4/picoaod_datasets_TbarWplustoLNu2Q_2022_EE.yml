@@ -1,0 +1,71 @@
+TbarWplustoLNu2Q_2022_EE:
+  count: 16485994
+  cutflow:
+    e_region:
+      events:
+        all: 3000000.0
+        lumimask: 3000000.0
+        njets: 1776007.0
+        oneBjet: 2070793.0
+        passNoiseFilter: 2998951.0
+        trigger: 2600567.0
+      weights:
+        all: 108161242.09863281
+        lumimask: 108161242.09863281
+        njets: 64031881.92398071
+        oneBjet: 74659424.57901001
+        passNoiseFilter: 108123492.61715698
+        trigger: 93760157.4371643
+    mu_region:
+      events:
+        all: 3817982.0
+        lumimask: 3817982.0
+        njets: 2381826.0
+        oneBjet: 2784130.0
+        passNoiseFilter: 3816589.0
+        trigger: 3499738.0
+      weights:
+        all: 137651411.0447998
+        lumimask: 137651411.0447998
+        njets: 85872679.1027832
+        oneBjet: 100376916.83636475
+        passNoiseFilter: 137601186.5675354
+        trigger: 126177659.8604126
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk1.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk2.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk3.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk4.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk5.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk6.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk7.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk8.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v4', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_TbarWplustoLNu2Q_2022_EE.yml',
+      output_path='output/skimmer', years=['2022_EE'], datasets=['TbarWplustoLNu2Q'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    date: '2025-10-06 15:46:43'
+    diff: "diff --git a/runner.py b/runner.py\nindex 2a09154c..a4917097 100644\n---\
+      \ a/runner.py\n+++ b/runner.py\n@@ -336,7 +336,7 @@ def setup_condor_cluster(config_runner):\n\
+      \     logging.info('Waiting for at least one worker...')\n     client.wait_for_workers(1)\n\
+      \     logging.info('HTCondor cluster setup complete!')\n-    return client\n\
+      +    return client, cluster\n \n \n def setup_local_cluster(config_runner, args):\n\
+      @@ -921,7 +921,7 @@ if __name__ == '__main__':\n     if args.condor:\n     \
+      \    logging.info(\"Configuring HTCondor cluster execution...\")\n         args.run_dask\
+      \ = True\n-        client = setup_condor_cluster(config_runner)\n+        client,\
+      \ cluster = setup_condor_cluster(config_runner)\n     elif args.run_dask:\n\
+      \         logging.info(\"Configuring local Dask cluster execution...\")\n  \
+      \       client = setup_local_cluster(config_runner, args)\n"
+    hash: c48b03a30f0043391f46b7e4f503249f6c06c0fb
+  saved_events: 4180234
+  sumw: 594379468.1132812
+  sumw2: 21431066200.75
+  sumw2_raw: 21431063750.033997
+  sumw_raw: 594379448.46
+  total_events: 16485994

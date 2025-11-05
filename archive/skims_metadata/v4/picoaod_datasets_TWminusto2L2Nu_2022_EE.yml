@@ -1,0 +1,65 @@
+TWminusto2L2Nu_2022_EE:
+  count: 8129084
+  cutflow:
+    e_region:
+      events:
+        all: 1740652.0
+        lumimask: 1740652.0
+        njets: 637279.0
+        oneBjet: 1203425.0
+        passNoiseFilter: 1739728.0
+        trigger: 1510479.0
+      weights:
+        all: 6612121.991744995
+        lumimask: 6612121.991744995
+        njets: 2420739.8580036163
+        oneBjet: 4571310.72293663
+        passNoiseFilter: 6608611.872795105
+        trigger: 5737749.082029343
+    mu_region:
+      events:
+        all: 2231973.0
+        lumimask: 2231973.0
+        njets: 852864.0
+        oneBjet: 1634732.0
+        passNoiseFilter: 2230805.0
+        trigger: 2052629.0
+      weights:
+        all: 8478528.973768234
+        lumimask: 8478528.973768234
+        njets: 3239695.435207367
+        oneBjet: 6209749.914718628
+        passNoiseFilter: 8474107.13561058
+        trigger: 7797254.393426895
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2022_EE/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2022_EE/picoAOD.chunk1.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2022_EE/picoAOD.chunk2.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v4', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_TWminusto2L2Nu_2022_EE.yml',
+      output_path='output/skimmer', years=['2022_EE'], datasets=['TWminusto2L2Nu'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    date: '2025-10-06 13:36:19'
+    diff: "diff --git a/runner.py b/runner.py\nindex 2a09154c..a4917097 100644\n---\
+      \ a/runner.py\n+++ b/runner.py\n@@ -336,7 +336,7 @@ def setup_condor_cluster(config_runner):\n\
+      \     logging.info('Waiting for at least one worker...')\n     client.wait_for_workers(1)\n\
+      \     logging.info('HTCondor cluster setup complete!')\n-    return client\n\
+      +    return client, cluster\n \n \n def setup_local_cluster(config_runner, args):\n\
+      @@ -921,7 +921,7 @@ if __name__ == '__main__':\n     if args.condor:\n     \
+      \    logging.info(\"Configuring HTCondor cluster execution...\")\n         args.run_dask\
+      \ = True\n-        client = setup_condor_cluster(config_runner)\n+        client,\
+      \ cluster = setup_condor_cluster(config_runner)\n     elif args.run_dask:\n\
+      \         logging.info(\"Configuring local Dask cluster execution...\")\n  \
+      \       client = setup_local_cluster(config_runner, args)\n"
+    hash: c48b03a30f0043391f46b7e4f503249f6c06c0fb
+  saved_events: 1490143
+  sumw: 30879841.719726562
+  sumw2: 117311688.54492188
+  sumw2_raw: 117311700.2729751
+  sumw_raw: 30879853.327400003
+  total_events: 8129084

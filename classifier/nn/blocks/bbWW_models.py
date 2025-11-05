@@ -15,23 +15,21 @@ from rich.table import Table
 # transvserse mass of two two-dimensional vectors
 def transverse_mass(v1, v2):
     # Determine indices for the first vector
-    if v1.shape[1] == 6:  # Case for (pt, eta, phi, m, is_e, is_m)
-        pt_idx1 = 0
-        phi_idx1 = 2 # phi is at index 2
-    elif v1.shape[1] == 2: # Case for (pt, phi)
+    if v1.shape[1] == 2: # Case for (pt, phi)
         pt_idx1 = 0
         phi_idx1 = 1
     else:
-        raise ValueError(f"Unsupported feature size for v1: {v1.shape[1]}")
+        pt_idx1 = 0 # case for (pt, eta phi, ...)
+        phi_idx1 = 2 # phi is at index 2 
 
     # Determine indices for the second vector (e.g., MET)
-    if v2.shape[1] == 2: # MET is likely (pt, phi)
+    if v2.shape[1] == 2: 
         pt_idx2 = 0
         phi_idx2 = 1
     else:
-        # Add handling for other v2 formats if necessary
-        raise ValueError(f"Unsupported feature size for v2: {v2.shape[1]}")
-
+        pt_idx2 = 0 # case for (pt, eta phi, ...)
+        phi_idx2 = 2 # phi is at index 2
+        
     pt1  = v1[:, pt_idx1:pt_idx1+1, :]
     phi1 = v1[:, phi_idx1:phi_idx1+1, :]
     pt2  = v2[:, pt_idx2:pt_idx2+1, :]
@@ -208,8 +206,8 @@ def PtEtaPhiM(v):
 
 ## New
 def calcDeltaPhi(v1, v2):  # expects eta, phi representation
-    phi_idx1 = 1 if (v1.shape[-1] == 2) else 2 # works with both 2d and 4d vectors
-    phi_idx2 = 1 if (v2.shape[-1] == 2) else 2 
+    phi_idx1 = 1 if (v1.shape[1] == 2) else 2 # works with both 2d and 4d vectors
+    phi_idx2 = 1 if (v2.shape[1] == 2) else 2 
 
     dPhi12 = (v1[:, phi_idx1:phi_idx1+1] - v2[:, phi_idx2:phi_idx2+1]) % math.tau
     dPhi21 = (v2[:, phi_idx2:phi_idx2+1] - v1[:, phi_idx1:phi_idx1+1]) % math.tau
@@ -380,6 +378,10 @@ def NonLU(x):  # Non-Linear Unit
     # return F.leaky_relu(x, negative_slope=0.1)
     return SiLU(x)
     # return F.elu(x)
+
+class NonLUModule(nn.Module):
+    def forward(self, x):
+        return NonLU(x)
 
 def diObjectMass(v1PxPyPzE, v2PxPyPzE):
     v12PxPyPzE = v1PxPyPzE + v2PxPyPzE
@@ -951,7 +953,8 @@ class MinimalAttention(
         phase_symmetric=True,
         do_qv=True,
         device="cuda",
-        scalar_dim = 0
+        scalar_dim = 0,
+        qv_dim = 6
     ):
         super().__init__()
 
@@ -966,11 +969,11 @@ class MinimalAttention(
         self.inputLayers = inputLayers
         self.scalar_dim = scalar_dim
         # self.iter = iterations
-
         self.q_GBN = GhostBatchNorm1d(self.d, name="attention q GBN")
         self.v_GBN = GhostBatchNorm1d(self.d, name="attention v GBN")
         if self.do_qv:
             self.qv_GBN = GhostBatchNorm1d(self.d, name="attention qv GBN")
+
         # self.origin = nn.Parameter(torch.zeros(1,self.h, self.dh,1,1))
         # self.qv_ref = nn.Parameter(torch. ones(1,self.h, self.dh,1,1))
         self.score_GBN = GhostBatchNorm1d(self.h, name="attention score GBN")
@@ -980,7 +983,7 @@ class MinimalAttention(
             conv=True,
             name="attention out convolution",
         )
-
+        
         self.negativeInfinity = torch.tensor(-1e9, dtype=torch.float).to(device)
 
         if layers:
@@ -1170,8 +1173,7 @@ class InputEmbed(nn.Module):
     def __init__(
         self,
         dijetFeatures,
-        quadjetFeatures,
-        ancillaryFeatures=["HT", "njets", "nsoftjets"],
+        ancillaryFeatures=[],
         layers=None,
         device="cuda",
         phase_symmetric=False,
@@ -1182,7 +1184,6 @@ class InputEmbed(nn.Module):
         self.layers = layers
         self.debug = False
         self.dD = dijetFeatures
-        self.dQ = quadjetFeatures
         self.dA = len(ancillaryFeatures)
         self.ancillaryFeatures = ancillaryFeatures
         self.device = device
@@ -1205,7 +1206,7 @@ class InputEmbed(nn.Module):
         ## to do section
         # embed inputs to dijetResNetBlock in target feature space
         self.bJetEmbed = GhostBatchNorm1d(
-            4,
+            5,
             features_out=self.dD,
             phase_symmetric=phase_symmetric,
             conv=True,
@@ -1219,7 +1220,7 @@ class InputEmbed(nn.Module):
             name="jet convolution"
         )
         self.nonbJetEmbed = GhostBatchNorm1d(
-            5,
+            4,
             features_out=self.dD,
             phase_symmetric=phase_symmetric,
             conv=True,
@@ -1232,7 +1233,7 @@ class InputEmbed(nn.Module):
             name="attention jet convolution",
         )
         self.lepEmbed = GhostBatchNorm1d(
-            6,
+            5,
             features_out=self.dD,
             phase_symmetric=phase_symmetric,
             conv=True,
@@ -1342,7 +1343,7 @@ class InputEmbed(nn.Module):
 
         self.nonbDiJetEmbed = GhostBatchNorm1d(
             4,
-            features_out=self.dQ,
+            features_out=self.dD,
             phase_symmetric=phase_symmetric,
             conv=True,
             name="W dijet embedder",
@@ -1354,7 +1355,7 @@ class InputEmbed(nn.Module):
             name="dijet convolution",
         )
         self.nonbDiJetConv = GhostBatchNorm1d(
-            self.dQ,
+            self.dD,
             phase_symmetric=phase_symmetric,
             conv=True,
             name="W dijet convolution",
@@ -1388,9 +1389,9 @@ class InputEmbed(nn.Module):
         # a = a.clone()
 
         n = b.shape[0]
-        b = b.view(n, 4, 2)
+        b = b.view(n, 5, 2)
         nb = nb.view(n, 4, 2)
-        l = l.view(n, 6, 1)
+        l = l.view(n, 5, 1)
         nu = nu.view(n, 2, 1)
         a = a.view(n, self.dA, 1)
 
@@ -1424,12 +1425,6 @@ class InputEmbed(nn.Module):
         )
 
         mask, bbMdR, qqMdR, bbnMdR, mask_bbMdR, mask_qqMdR, mask_bbn = None, None, None, None, None, None, None
-        j_isbJet = torch.cat(
-            [b, 2 * torch.ones((n, 1, 2), dtype=torch.float).to(device)], 1
-        )  # label bJets with 2 (-1 for mask, 0 for not preselected, 1 for preselected jet)
-        nb = torch.cat(
-            [nb, 1 * torch.ones((n, 1, 2), dtype=torch.float).to(device)], 1
-        ) 
         mask = (nb[:, 2, :] == -1).to(device)
         bPxPyPzE = PxPyPzE(b)
         nbPxPyPzE = PxPyPzE(nb)
@@ -1509,7 +1504,7 @@ class InputEmbed(nn.Module):
         bWlepMdR = torch.cat(
             [
                 bWlepMdR,
-                torch.zeros((n, 1, self.bsl, 1), dtype=torch.float).to(
+                torch.ones((n, 1, self.bsl, 1), dtype=torch.float).to(
                     device
                 ),
             ],
@@ -1576,12 +1571,9 @@ class InputEmbed(nn.Module):
 
         mask_MdRtt =  mask_bWhad.view(n, -1) # mask is same for had and lep tt
         
-        # self. diMdPhi_embed.setMeanStd(ooMdPhi.view(n, 2, self.bsl*self.bsl), mask_oo.view(n, self.bsl*self.bsl))
-        # self.triMdPhi_embed.setMeanStd(doMdPhi.view(n, 2, self.wsl*self.bsl), mask_do.view(n, self.wsl*self.bsl))
-
         self.ancillaryEmbed.updateMeanStd(a)
-        self.bJetEmbed.updateMeanStd(b)
-        self.bbDiJetEmbed.updateMeanStd(bb)
+        self.bJetEmbed.updateMeanStd(b) 
+        self.bbDiJetEmbed.updateMeanStd(bb) 
         self.nonbJetEmbed.updateMeanStd(nb)
         self.nonbDiJetEmbed.updateMeanStd(qq)
         self.MdREmbed.updateMeanStd(MdR, mask_MdR)
@@ -1637,11 +1629,10 @@ class InputEmbed(nn.Module):
 
         a = self.ancillaryEmbed(a)
         # a = self.ancillaryConv(NonLU(a))
-        mask_nb =  torch.cat([mask, mask[:, [1,0]]], 1) # augment mask from 2 to 4, matching pattern for jets
-        nb = self.nonbJetEmbed(nb, mask_nb)
+        nb = self.nonbJetEmbed(nb)
         qq = self.nonbDiJetEmbed(qq)
         nb = nb + a
-        nb = self.nonbJetConv(NonLU(nb), mask_nb)
+        nb = self.nonbJetConv(NonLU(nb))
         # print('o after conv a\n',o[0])
         # o = o+o0
 
@@ -1703,14 +1694,13 @@ class InputEmbed(nn.Module):
         bWhad = self.bWhadConv(NonLU(bWhad))
         bWlep = self.bWlepConv(NonLU(bWlep))
 
-
         return b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bWhadMdR, bWlepMdR, mask_bbMdR, mask_qqMdR, mask_bbn, mask_bWhad, mask_bWlep
-    
+
+
 class HCR(nn.Module):
     def __init__(
         self,
         dijetFeatures,
-        quadjetFeatures,
         ancillaryFeatures,
         device="cuda",
         nClasses=1,
@@ -1720,7 +1710,6 @@ class HCR(nn.Module):
         self.debug = False
         self.dA = len(ancillaryFeatures)
         self.dD = dijetFeatures  # dimension of embeded   dijet feature space
-        self.dQ = quadjetFeatures  # dimension of embeded quadjet feature space
         self.device = device
         dijetBottleneck = None
         self.name = (
@@ -1739,7 +1728,6 @@ class HCR(nn.Module):
         # this module handles input shifting scaling and learns the optimal scale and shift for the appropriate inputs
         self.inputEmbed = InputEmbed(
             self.dD,
-            self.dQ,
             ancillaryFeatures,
             layers=self.layers,
             device=self.device,
@@ -1795,28 +1783,6 @@ class HCR(nn.Module):
             inputLayers=[self.inputEmbed.bWlepConv, self.inputEmbed.bJetConv, self.inputEmbed.lepConv],
         )
 
-        self.attention_WW = MinimalAttention(
-            self.dD,
-            heads=2,
-            phase_symmetric=self.phase_symmetric,
-            scalar_dim = 2,
-            layers=self.layers,
-            inputLayers=[self.lepWResNetBlock.conv[-1], self.nonbDiJetResNetBlock.reinforce[-1]],
-            device=self.device,
-        )
-        self.layers.addLayer(self.attention_WW, self.attention_WW.inputLayers)
-
-        self.attention_hh = MinimalAttention(
-            self.dD,
-            heads=2,
-            phase_symmetric=self.phase_symmetric,
-            scalar_dim = 2,
-            layers=self.layers,
-            inputLayers=[self.inputEmbed.bJetConv, self.attention_WW],
-            device=self.device,
-        )
-        self.layers.addLayer(self.attention_hh, self.attention_hh.inputLayers)
-
         self.attention_tt = MinimalAttention(
             self.dD,
             heads=2,
@@ -1829,10 +1795,16 @@ class HCR(nn.Module):
 
         self.layers.addLayer(self.attention_tt, self.attention_tt.inputLayers)
 
+        self.scalars_embed = GhostBatchNorm1d(
+            1, 
+            features_out=self.dD,
+            conv=True, 
+            name="scalar physics relationships embed"
+        )
         # Embed enhanced WW representation
         self.WW_final_embed = GhostBatchNorm1d(
             self.dD, 
-            features_out=self.dD,  # or some common dimension
+            features_out=self.dD,
             conv=True, 
             name="WW final embed"
         )
@@ -1845,20 +1817,39 @@ class HCR(nn.Module):
             name="HH final embed"
         )
 
-        self.layers.addLayer(self.WW_final_embed, [self.attention_WW])
-        self.layers.addLayer(self.HH_final_embed, [self.attention_hh])
+        self.TT_final_embed = GhostBatchNorm1d(
+            self.dD,
+            features_out=self.dD, 
+            conv=True,
+            name="TT final embed"
+        )
+
+        self.layers.addLayer(self.WW_final_embed, [self.lepWResNetBlock.conv[-1], self.nonbDiJetResNetBlock.reinforce[-1]])
+        self.layers.addLayer(self.HH_final_embed, [self.inputEmbed.bJetConv, self.WW_final_embed])
+        self.layers.addLayer(self.TT_final_embed, [self.attention_tt])
 
         self.final_combine = GhostBatchNorm1d(
             self.dD,  # Input from concatenated WW + HH 
             features_out=self.nC, 
             conv=True, 
-            name="combine WW and HH"
+            name="combine WW and HH and TT"
         )
-        # self.layers.addLayer(self.dijetEmbedInQuadjetSpace, [previousLayer])
         self.layers.addLayer(self.final_combine, [self.WW_final_embed, self.HH_final_embed])
 
-        self.out = GhostBatchNorm1d(
-            self.dD, features_out=self.nC, conv=True, name="out"
+        self.final_linear_layer = linear(in_channels=16, out_channels=3)
+        self.layers.addLayer(self.final_linear_layer)
+        self.out = nn.Sequential(
+            GhostBatchNorm1d(
+                self.dD, 
+                features_out=16, 
+                conv=True, 
+                bias=False,
+                name="final event score"
+            ),
+            NonLUModule(),
+            nn.AdaptiveAvgPool1d(1),
+            nn.Flatten(),
+            self.final_linear_layer
         )
 
         self.select_tt = GhostBatchNorm1d(
@@ -1878,14 +1869,14 @@ class HCR(nn.Module):
         )
 
         self.layers.addLayer(self.select_tt, [self.attention_tt]) 
-        self.layers.addLayer(self.out_tt, [self.select_tt]) 
+        self.layers.addLayer(self.out_tt, [self.select_tt])
         self.forwardCalls = 0
 
     def embedding_layers(self):
         return sorted(set(self.layers.layers).difference(self.output_layers()))
 
     def output_layers(self):
-        return [self.out.index]
+        return [self.final_linear_layer.index]
 
     def updateMeanStd(self,  b, nb, l, nu, a):
         self.inputEmbed.updateMeanStd( b, nb, l, nu, a)
@@ -1898,21 +1889,16 @@ class HCR(nn.Module):
         self.WW_final_embed.setGhostBatches(nGhostBatches)
         self.HH_final_embed.setGhostBatches(nGhostBatches)
         self.final_combine.setGhostBatches(nGhostBatches)
-        self.out.setGhostBatches(nGhostBatches)
         self.nGhostBatches = nGhostBatches
+
 
     def forward(self, b, nb, l, nu, a):
         self.forwardCalls += 1
-        # print('\n-------------------------------\n')
-        (b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, 
-        bWhadMdR, bWlepMdR, mask_bbMdR, mask_qqMdR, mask_bbn, mask_bWhad, mask_bWlep)  = self.inputEmbed(
-            b, nb, l, nu, a
-        )  # format inputs to array of objects and apply scalers and GBNs
-        # print('o after inputEmbed\n',o[0])
+        # format inputs to array of objects and apply scalers and GBNs
+        (b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bWhadMdR, bWlepMdR, 
+        mask_bbMdR, mask_qqMdR, mask_bbn, mask_bWhad, mask_bWlep)  = self.inputEmbed(b, nb, l, nu, a)  
+
         n = b.shape[0]
-        #
-        # Build up dijet pixels with jet pixels and initial dijet pixels
-        #
 
         # Embed the jet 4-vectors and dijet ancillary features into the target feature space
         b0 = b.clone()
@@ -1920,7 +1906,6 @@ class HCR(nn.Module):
         nb0 = nb.clone()
         qq0 = qq.clone()
         l0 = l.clone()
-        nu0 = nu.clone()
         bWhad0 = bWhad.clone()
         bWlep0 = bWlep.clone()
 
@@ -1940,7 +1925,6 @@ class HCR(nn.Module):
 
         # Create unified W candidate with all information available
         lep_W = l + nu  # can add them because inputs have been embedded
-        lep_W0 = lep_W.clone()
         lep_W = NonLU(lep_W)
 
         bWhad, bWhad0 = self.bWhadResNetBlock(qq, bWhad, qq0, bWhad0, debug=self.debug)
@@ -1950,33 +1934,12 @@ class HCR(nn.Module):
         qqMdR = NonLU(qqMdR)
         bbnMdR = NonLU(bbnMdR)
         scalars = torch.cat([lepQQdR, lnu_mT], dim= -1)
-        scalars = scalars.squeeze(1)
-
-        WW, WW0, WW_weights = self.attention_WW(
-            lep_W,        # queries: leptonic W candidate
-            qq,           # values: hadronic W candidate (non-bjet dijets) 
-            None,         # mask: None as we have exactly one lep_W and qq candidate right now
-            lep_W0,       # residual for leptonic W
-            qqMdR[:, :, 0, 1:2].unsqueeze(2), # reshape (n, 8, 2, 2) -> (n, 8, 2, 1) 
-            scalars,       # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))
-            self.debug
-        )
 
         qv = torch.cat([
-                bbMdR[:, :, 0, 1].unsqueeze(-1),  # Shape: (n, features, 1) - b0-b1 relationship
-                bbnMdR[:, :, 0, :],               # Shape: (n, features, 2) - bb-nb[0] and bb-nb[1] 
-                qqMdR[:, :, 0, 1].unsqueeze(-1)   # Shape: (n, features, 1) - q0-q1 relationship
-            ], dim=-1)  # Result shape: (n, features, 4)
-
-        HH, HH0, HH_weights = self.attention_hh(
-            bb,       # queries: HH candidate (bb dijets)
-            WW,       # values: WW system from previous attention
-            None,     # mask: None
-            bb0,      # residual for bb
-            qv,       # physics relationships (delta R and mass between b-jets and nonb-jets)
-            scalars,  # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))
-            debug=self.debug
-        )
+            bWhadMdR[:, :, 0, :],  # Shape: (n, features, 1) - b0-b1 relationship
+            bbnMdR[:, :, 0, :],               # Shape: (n, features, 2) - bb-nb[0] and bb-nb[1] 
+            bWlepMdR[:, :, 0, :]   # Shape: (n, features, 1) - q0-q1 relationship
+        ], dim=-1)  # Result shape: (n, features, 4)
 
         TT, TT0, TT_weights = self.attention_tt(
             bWhad,    # queries: hadronic top candidate
@@ -1984,7 +1947,7 @@ class HCR(nn.Module):
             None,     # mask: None
             bWhad0,   # residual for hadronic top
             qv,       # physics relationships (delta R and mass between b-jets and nonb-jets)
-            scalars,  # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))
+            scalars.squeeze(1),  # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))
             debug=self.debug
         )
 
@@ -1997,26 +1960,40 @@ class HCR(nn.Module):
         TT_logits = self.out_tt(TT_sel)  # Shape: (n, nC)
         TT_logits = TT_logits.squeeze(-1)
 
+        # final HH reconstruction scores
+        scalars = self.scalars_embed(scalars)
+        WW = torch.cat([lep_W, # leptonic W candidate
+                        qq, 
+                        qqMdR[:, :, 0, 1:2], # there are duplicate pairs, so only keep 1
+                        scalars], dim=-1)        
+        WW_final = self.WW_final_embed(WW)
+
+        HH = torch.cat([
+                bb,
+                WW,
+                bbMdR[:, :, 0, 1:2],  # Shape: (n, features, 1, 1) - b0-b1 relationship
+                bbnMdR[:, :, 0, :],   # Shape: (n, features, 2, 1) - bb-nb[0] and bb-nb[1] 
+                qqMdR[:, :, 0, 1:2],   # Shape: (n, features, 1, 1) - q0-q1 relationship
+                scalars
+            ], dim=-1)  # Result shape: (n, features, 4)
+        HH_final = self.HH_final_embed(HH)
+
         if self.store:
             self.storeData["WW"] = WW.detach().to("cpu").numpy()
             self.storeData["HH"] = HH.detach().to("cpu").numpy()
 
-        WW_final = self.WW_final_embed(WW)
-        HH_final = self.HH_final_embed(HH)   
-
-        HH_score = WW_final + HH_final
-        HH_logits = self.final_combine(HH_score)
-        HH_logits = HH_logits.view(n, self.nC)
+        HH_logits = torch.cat([HH_final, WW_final, TT_sel], dim=-1) # combine HH and H-> WW scores
+        HH_logits = self.out(HH_logits)
 
         # Convert to probabilities for output/storage
         if self.store:
             HH_score = F.softmax(HH_logits, dim=1)
             if self.store:
                 
-                self.storeData["HH_score"] = HH_score.detach().to("cpu").numpy()
-                self.storeData["TT_score"] = TT_score.detach().to("cpu").numpy()
-                self.storeData["WW_weights"] = WW_weights.detach().to("cpu").numpy() # see how much H->WW contributes to discrimination
-                self.storeData["HH_weights"] = HH_weights.detach().to("cpu").numpy()
+                self.storeData["HH_logits"] = HH_score.detach().to("cpu").numpy()
+                self.storeData["TT_logits"] = TT_score.detach().to("cpu").numpy()
+                #self.storeData["WW_weights"] = WW_weights.detach().to("cpu").numpy() # see how much H->WW contributes to discrimination
+                #self.storeData["HH_weights"] = HH_weights.detach().to("cpu").numpy()
                 self.storeData["TT_weights"] = TT_weights.detach().to("cpu").numpy()
 
 
@@ -2031,3 +2008,333 @@ class HCR(nn.Module):
         # print(self.storeData)
         print(self.store)
         np.save(self.store, self.storeData)
+
+
+class GCN(nn.Module):
+
+    def __init__(
+        self,
+        dijetFeatures,
+        ancillaryFeatures,
+        device="cuda",
+        nClasses=1,
+        architecture="HCR",
+    ):
+        super(GCN, self).__init__()
+        self.debug = False
+        self.dA = len(ancillaryFeatures)
+        self.dD = dijetFeatures  # dimension of embeded   dijet feature space
+        self.device = device
+        dijetBottleneck = None
+        self.name = (
+            architecture
+            + "_%d" % (dijetFeatures)
+        )
+        self.nC = nClasses
+        self.store = None
+        self.storeData = {}
+        self.onnx = False
+        self.nGhostBatches = 64
+        self.phase_symmetric = True
+
+        self.layers = layerOrganizer()
+
+        # this module handles input shifting scaling and learns the optimal scale and shift for the appropriate inputs
+        self.inputEmbed = InputEmbed(
+            self.dD,
+            ancillaryFeatures,
+            layers=self.layers,
+            device=self.device,
+            phase_symmetric=self.phase_symmetric,
+        )
+
+        self.build_gcn_layers()
+        self.build_pooling_layers()
+    
+    def updateMeanStd(self,  b, nb, l, nu, a):
+        self.inputEmbed.updateMeanStd(b, nb, l, nu, a)
+
+    def initMeanStd(self):
+        self.inputEmbed.initMeanStd()
+
+    def embedding_layers(self):
+        return sorted(set(self.layers.layers).difference(self.output_layers()))
+    
+    def output_layers(self):
+        return [self.final_linear_layer.index]
+
+    def setGhostBatches(self, nGhostBatches, subset=False):
+        for module in self.modules():
+            if hasattr(module, 'setGhostBatches') and module is not self:
+                module.setGhostBatches(nGhostBatches)
+
+    def build_gcn_layers(self):    
+        from torch_geometric.nn import NNConv, CGConv, GATv2Conv
+        
+        # Edge feature dimension (deltaR + invariant_mass + resonance indicator + interaction_weights (2))
+        edge_dim = 5 
+        n_heads = 4
+        
+        # Edge feature processor (transforms edge features for message passing)
+        edge_nn = nn.Sequential(
+            linear(edge_dim, self.dD * self.dD),
+            nn.ReLU()
+        )
+        
+        gcn_layers_list = []
+        gcn_norms_list = []
+        for _ in range(3):
+            #gcn_layer = NNConv(self.dD, self.dD, edge_nn) use this layer to use convolution instead of attention
+            gat_layer = GATv2Conv(
+                    self.dD,             
+                    self.dD,             
+                    heads=n_heads,         
+                    concat=False,
+                    edge_dim= edge_dim
+                )
+            gcn_layers_list.append(gat_layer)
+            self.layers.addLayer(gat_layer)
+
+            norm_layer = nn.LayerNorm(self.dD)
+            self.layers.addLayer(norm_layer)
+            gcn_norms_list.append(norm_layer)
+		
+        self.gcn_layers = nn.ModuleList(gcn_layers_list)
+        self.gcn_norms = nn.ModuleList(gcn_norms_list)
+	    
+    def build_pooling_layers(self):
+        """Define the HH and TT specific pooling layers"""
+    
+        self.final_linear_layer = linear(in_channels= self.dD, out_channels=3)
+        self.layers.addLayer(self.final_linear_layer)
+        # HH pooling: Takes H->bb + W->qq + W->lv features
+        self.HH_pooling_layer = nn.Sequential(
+            linear(self.dD * 4, self.dD * 2),  # 4 objects (H, Whad, Wlep, ancillary) to combine
+            nn.ReLU(),
+            nn.LayerNorm(self.dD * 2),
+            linear(self.dD * 2, self.dD),
+            nn.ReLU(),
+            nn.LayerNorm(self.dD),
+            self.final_linear_layer  # Final event representation
+        )
+        
+        # TT pooling with attention
+        self.attention_tt = MinimalAttention(
+            self.dD,
+            heads=2,
+            phase_symmetric=self.phase_symmetric,
+            layers=self.layers,
+            scalar_dim = 9, # due to embedding, ancillary tensor has dimension 8
+            inputLayers=[self.gcn_layers[-1], self.gcn_layers[-1]],
+            device=self.device,
+        )
+
+        self.out = nn.Sequential(
+            GhostBatchNorm1d(
+                6, 
+                features_out=self.dD, 
+                conv=True, 
+                bias=False,
+                name="final event score"
+            ),
+            NonLUModule(),
+            nn.AdaptiveAvgPool1d(1),
+            nn.Flatten(),
+            self.final_linear_layer
+        )
+
+        self.select_tt = GhostBatchNorm1d(
+            self.dD, 
+            features_out=1,  # Single score per candidate
+            conv=True, 
+            bias=False, 
+            name="TT pairing selector"
+        )
+
+        self.out_tt = GhostBatchNorm1d(
+            features=self.dD,
+            features_out=self.nC, 
+            conv=True,
+            name="TT_final_classifier"
+        )
+
+        self.out_hh = GhostBatchNorm1d(
+            features=self.dD * 2,
+            features_out=self.nC,
+            conv=True,
+            name="HH_final_classifier"
+        )
+
+    def apply_gcn_layers(self, node_features, edge_index, edge_features):
+        """Enhanced GCN with physics-aware edge weighting"""
+        x = node_features
+        num_nodes_per_graph = node_features.shape[1]
+
+        relative_indices = edge_index % num_nodes_per_graph
+        relative_src = relative_indices[0]
+        relative_dst = relative_indices[1]
+        
+        # create physics resonances using source and destinate edges
+        is_bb = ((relative_src == 0) & (relative_dst == 1) |
+                (relative_src == 1) & (relative_dst == 0))
+        is_qq = ((relative_src == 2) & (relative_dst == 3) | 
+                (relative_src == 3) & (relative_dst == 2))
+        is_lnu = ((relative_src == 4) & (relative_dst == 5) |
+                (relative_src == 5) & (relative_dst == 4))
+        
+        resonance_edges = is_bb | is_qq | is_lnu
+        resonance_indicator = resonance_edges.float().unsqueeze(-1)
+        
+        # Add resonance indicator to edge features
+        resonance_indicator = resonance_edges.float().unsqueeze(-1)
+        edge_features = torch.cat([
+            edge_features,
+            resonance_indicator,
+            edge_features * resonance_indicator  # Interaction term
+        ], dim=-1)
+        
+        for gcn_layer, norm in zip(self.gcn_layers, self.gcn_norms):
+            x0 = x
+            x = gcn_layer(x, edge_index, edge_features)
+            x = x + x0
+            x = norm(x)
+            x = F.relu(x)
+        
+        return x
+
+    ## construct fully connected graph
+    def construct_graph(self, b, nb, l, nu):
+        """Build node features and edge index from particles"""
+        batch_size = b.shape[0]
+        
+        # Concatenate all particles as nodes
+        node_features = torch.cat([
+            b,   # 2 b-jets
+            nb,  # 2 non-b jets  
+            l,   # 1 lepton
+            nu   # 1 neutrino
+        ], dim=-1).transpose(1, 2)  # (batch, 6, features)
+        
+        # Create edge index (fully connected)
+        edge_index = torch.tensor(
+            [[i, j] for i in range(6) for j in range(6) if i != j],
+            dtype=torch.long,
+            device=self.device
+        ).t()  # (2, 30)
+        
+        return node_features, edge_index
+        
+    def compute_edge_features(self, b, nb, l, nu):
+        batch_size = b.shape[0]
+        n = b.shape[0]
+
+        b = b.view(n, 5, 2)
+        nb = nb.view(n, 4, 2)
+        l = l.view(n, 5, 1)
+        nu = nu.view(n, 2, 1)
+
+        all_particles = torch.cat([b[:,:4, :], nb[:, :4, :], l[:,:4,:]], dim=-1)
+        
+        # Compute all pairwise features
+        MdR = matrixMdR(all_particles, all_particles) # Shape: (batch, 2, 6, 6)
+        MdR = MdR.permute(0, 2, 3, 1) # Transpose to get (batch, 6, 6, 2)
+        nuMdPhi = torch.stack([transverse_mass(all_particles, nu).squeeze(1), calcDeltaPhi(all_particles, nu).squeeze(1)], dim=-1)
+
+        edge_features = torch.zeros(batch_size, 6, 6, 2, device=self.device) # 6x6 matrix
+        edge_features[:, :5, :5, :] = MdR
+        edge_features[:, 5, :5, :] = nuMdPhi # Last row
+        edge_features[:, :5, 5, :] = nuMdPhi # Last column
+        
+        mask = ~torch.eye(6, dtype=torch.bool, device=self.device) # mask diagonal elements (self loop)
+        edge_features = edge_features[:, mask]  # Extract non-diagonal elements and flatten the selected elements
+        # Shape: (batch, 30, 2)
+        
+        return edge_features
+
+    def hierarchical_pooling(self, node_features, a,lepQQdR, lnu_mT, bbMdR, bbnMdR, qqMdR,bWhadMdR, bWlepMdR, n):
+        """
+        First pool into physics objects, then into event
+        Mimics: particles -> resonances (H, W, top) -> event
+        """
+        b0, b1 =  node_features[:, 0, :], node_features[:, 1, :]
+        q0, q1 =  node_features[:, 2, :], node_features[:, 3, :]
+        lep, nu = node_features[:, 4, :], node_features[:, 5, :]
+        
+        bb = (b0 + b1) / 2  # H->bb candidate
+        qq = (q0 + q1) / 2 # W->qq candidate  
+        lv = (lep + nu) / 2 # W->lv candidate
+        
+        WW = torch.cat([qq, lv], dim=-1)
+        # Combine the Higgs candidate with the two W candidates
+        HH_logits = self.HH_pooling_layer(
+            torch.cat([bb, WW, a.squeeze(-1)], dim=-1) # adding global event features with a (ancillary)
+        )
+        # For TTbar: need to select right pairing
+        # Option 1: t->b0W(qq), tbar->b1W(lv), option 2: t->b1W(qq), tbar->b0W(lv)
+        bWhad1 = (b0 + qq) / 2
+        bWhad2 = (b1 + qq) / 2
+        bWhad = torch.stack([bWhad1, bWhad2], dim=2)
+          
+        bWlep1 = (b1 + lv) / 2
+        bWlep2 = (b0 + lv) / 2
+        bWlep = torch.stack([bWlep1, bWlep2], dim=2)
+
+        scalars = torch.cat([lepQQdR, a.transpose(1, 2)], dim=-1)
+        qv = torch.cat([
+            bbnMdR[:, :, 0, :], # bb-nb relationships
+            bWhadMdR[: ,: , 0,:], # b-qq relationships
+            bWlepMdR[: ,: , 0,:] # b-lep relationships 
+        ], dim=-1)
+
+        bWhad0 = bWhad
+        TT, TT0, TT_weights = self.attention_tt(
+            bWhad,    # queries: hadronic top candidate
+            bWlep,    # values: leptonic top candidate
+            None,     # mask: None
+            bWhad0,   # residual for hadronic top
+            qv,       # physics relationships (delta R and mass between b-jets and nonb-jets)
+            scalars.squeeze(1),  # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))
+            debug=self.debug
+        )
+        
+        # TTbar pairing selection
+        TT_logits = self.select_tt(TT)  # Shape: (n, 2, 1)
+        TT_logits = TT_logits.view(n, 2)  # Shape: (n, 2)
+        TT_score = F.softmax(TT_logits, dim=-1)  # Shape: (n, 2)
+
+        TT_sel = torch.matmul(TT, TT_score.unsqueeze(-1))
+        TT_logits = self.out_tt(TT_sel)  # Shape: (n, nC)
+        TT_logits = TT_logits.squeeze(-1)
+        
+        return HH_logits, TT_logits
+
+    def forward(self, b, nb, l, nu, a):
+        n = b.shape[0]
+        edge_features = self.compute_edge_features(b, nb, l, nu) # compute masses and deltaR between all particles
+        edge_features = edge_features.view(-1, 2)
+
+        (b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bWhadMdR, bWlepMdR, 
+        mask_bbMdR, mask_qqMdR, mask_bbn, mask_bWhad, mask_bWlep)  = self.inputEmbed(b, nb, l, nu, a)  
+
+        node_features, edge_index = self.construct_graph(b, nb, l, nu) # build graph    
+        num_nodes = node_features.shape[1]
+        node_features = node_features.reshape(-1, self.dD)  # Shape: (batch * 6, features)        
+
+        ### these two lines below are needed because we're using pytorch standard dataloader (PyG dataloader does this automatically)
+        offset = torch.arange(0, n * num_nodes, step=num_nodes, device=self.device)
+        edge_index = edge_index.repeat(1, n) + offset.repeat_interleave(edge_index.shape[1])
+
+        node_features = self.apply_gcn_layers(
+            node_features, 
+            edge_index, 
+            edge_features
+        )
+        node_features = node_features.view(n, num_nodes, -1)
+
+        HH_logits, TT_logits = self.hierarchical_pooling(node_features, a, lepQQdR, lnu_mT, bbMdR, 
+                                                         bbnMdR, qqMdR, bWhadMdR, bWlepMdR, n)
+        
+        HH_logits = torch.cat([HH_logits, TT_logits], dim=-1)
+        HH_logits = self.out(HH_logits.unsqueeze(-1))
+        
+        return HH_logits, TT_logits

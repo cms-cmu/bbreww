@@ -7,17 +7,19 @@ runner:
   condor_cores: 1
   condor_transfer_input_files:
     - src/
-    - bbreww/
+    - bbreww/analysis/
+    - bbreww/classifier/
+    - bbreww/metadata/
     
   # rucio_regex_sites: 'T[123]_(US|CH|DE|UK)'
   allowlist_sites:
     - T3_US_CMU
     - T3_US_FNALLPC
     - T2_US_Nebraska
-    - T3_US_NotreDame
+    #- T3_US_NotreDame
     - T3_US_Rutgers
     - T2_US_Caltech
-    - T1_US_FNAL_Disk
+    #- T1_US_FNAL_Disk
     - T2_US_MIT
     - T2_US_Purdue
 

@@ -78,10 +78,40 @@ class _ttbar(_MCDataset):
                 )
         return filelists
 
+class _minorbkg(_MCDataset):
+    WplusJets = ["WtoLNu-2Jets_0J", "WtoLNu-2Jets_1J", "WtoLNu-2Jets_2J"]
+    tW = ["TbarWplustoLNu2Q", "TbarWplusto2L2Nu", "TWminustoLNu2Q", "TWminusto2L2Nu"]
+    singleTop = ["TBbarQ", "TbarBQ", "TBbartoLplusNuBbar", "TbarBtoLminusNuB"]
+    processes = ("WplusJets", "tW", "singleTop",)
 
+    def __new__(cls, self: MC, metadata: str):
+        filelists = []
+        selected = self.mc_processes
+        groups_to_load = selected.intersection(cls.processes)
 
+        for group in groups_to_load:
+            process_list = getattr(cls, group, None)
+
+            if process_list:
+                for year in CollisionData.eras:
+                    filelists.append(
+                        [
+                            f"label:{group},year:{year}",
+                            *(
+                                metadata + f".{process}.{year}.picoAOD.files"
+                                for process in process_list
+                            ),
+                        ]
+                    )
+        return filelists
 
 class _signal(_MCDataset):
+    argparser = _PicoAOD.argparser
+    argparser.add_argument(
+        "--train-bsm",
+        action="store_true",
+        help="Specify whether to train on BSM signal samples (default False)",
+    )
     processes = ("GluGluToHHTo2B2VLNu2J",)
 
     @classmethod
@@ -93,20 +123,27 @@ class _signal(_MCDataset):
         return ",".join(f"{k}:{v:.6g}" for k, v in couplings.items())
 
     def __new__(cls, self: MC, metadata: str):
-        filelists = []
-        
-        # This will be "GluGluToHHTo2B2VLNu2J" based on your command
+        from src.physics.dihiggs.kappa_framework import Coupling
+        filelists = [] 
         process_name = "GluGluToHHTo2B2VLNu2J" 
 
         if process_name in self.mc_processes:
+            if self.opts.train_bsm:
+                kl_values = Coupling(kl=MC_HH_ggF.kl) # train samples with kl values (0, 1, 2.45, 5)
+            else:
+                kl_values = Coupling(kl=[1.0]) # train only on SM signal (kl = 1)
+
             for year in CollisionData.eras:
-                # The label for the data being loaded
-                label = f"label:signal,year:{year}"
-                
-                # The exact path it will look for in the YAML
-                lookup_path = f"{metadata}.{process_name}.{year}.picoAOD.files"
-                
-                filelists.append([label, lookup_path])
+                for item in kl_values:
+                    kl = str(format(item['kl'], '.2f')).split(".") 
+                    kl = f"{kl[0]}p{kl[1]}"
+                    process = f"{process_name}_kl_{kl}"
+                    label = f"label:signal,year:{year},kl:{kl}"
+                    
+                    # The exact path it will look for in the YAML
+                    lookup_path = f"{metadata}.{process}.{year}.picoAOD.files"
+                    
+                    filelists.append([label, lookup_path])
                 
         return filelists
 
@@ -120,7 +157,7 @@ def _data(self: Data, metadata: str):
                 filelists.append(
                     [
                         f"label:data,year:{year},source:detector",
-                        *(metadata + f".data__{process}.{year}.picoAOD.{e}.files" for e in eras),
+                        *(metadata +f".data__{process}.{year}.picoAOD.{e}.files" for e in eras),
                     ]
                 )
     return filelists
@@ -146,7 +183,7 @@ class Data(_PicoAOD):
 
 
 class MC(_PicoAOD):
-    argparser = ArgParser()
+    argparser = _PicoAOD.argparser
     argparser.add_argument(
         "--mc-processes",
         metavar="PROCESS",
@@ -177,8 +214,7 @@ class MC(_PicoAOD):
 
 
 class Background(MC):
-    pico_filelists = (_ttbar,)
-
+    pico_filelists = (_ttbar, _minorbkg)
 
 class Signal(MC):
     pico_filelists = (_signal,)

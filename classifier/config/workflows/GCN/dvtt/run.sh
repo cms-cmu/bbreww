@@ -2,8 +2,8 @@
 export LPCUSER="akhanal"
 export CERNUSER="a/akhanal"
 export BASE="root://cmseos.fnal.gov//store/user/${LPCUSER}/HHbbWW_classifier_v1"
-export MODEL="${BASE}/classifier/bbWWHCR/"
-export FvT="${BASE}/friend/dvtt/"
+export MODEL="${BASE}/classifier/DvTT/"
+export FvT="${BASE}/friend/DvTT/"
 export PLOT="root://eosuser.cern.ch//eos/user/${CERNUSER}/HHbbWW_classifier_v1/"
 #####################
 
@@ -17,14 +17,14 @@ else
 fi
 
 # train with train.yml and common.yml configs
-./pyml.py \
+./src/pyml.py \
     template "model: ${MODEL}" $WFS/train.yml \
     -from $WFS/common.yml \
     -setting Monitor "address: :${port}" \
     -flag debug # use debug flag
 
 # plot the AUC and ROC
-./pyml.py analyze \
+./src/pyml.py analyze \
     --results ${MODEL}/result.json \
     -analysis HCR.LossROC \ 
     -setting IO "output: ${PLOT}" \
@@ -32,7 +32,7 @@ fi
     -setting Monitor "address: :${port}"
 
 # evaluate with evaluate.yml and common.yml configs
-./pyml.py \
+./src/pyml.py \
     template "{model: ${MODEL}, FvT: ${FVT}}" $WFS/evaluate.yml \
     -from $WFS/common.yml \
     -setting Monitor "address: :${port}"

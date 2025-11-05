@@ -128,13 +128,13 @@ class HCRModel(Model):
         self._arch = arch
         self._nn = HCR(
             dijetFeatures=arch.n_features,
-            quadjetFeatures=arch.n_features,
             ancillaryFeatures=InputBranch.feature_ancillary,
             device=device,
             nClasses=MultiClass.n_trainable(),
         )
         self._benchmarks = benchmarks
-
+        self._shap_results = None
+    
     @property
     def ghost_batch(self):
         return self._gbn
@@ -160,23 +160,32 @@ class HCRModel(Model):
     def nn(self):
         return self._nn
 
-    def train(self, batch: BatchType) -> Tensor:
+    def train(self, batch: BatchType, compute_shap: bool = False) -> Tensor:
         hh, tt = self._nn(*_HCRInput(batch, self._device))
         batch[Output.hh_raw] = hh
         batch[Output.tt_raw] = tt
-        return self._loss(batch)
-
+        
+        loss = self._loss(batch)
+        
+        ## shap is still work in progress
+        if compute_shap and self._compute_shap:
+            self._shap_results = self._compute_shap_gradient(batch)
+        
+        return loss
+    
     def validate(self, batches: Iterable[BatchType]) -> dict[str]:
         weight = 0.0
         scalars = defaultdict(float)
         scalar_funcs = self._benchmarks.scalars
         rocs = [r.copy() for r in self._benchmarks.rocs]
+
         for batch in batches:
             hh, tt = self._nn(*_HCRInput(batch, self._device))
             batch |= {
                 Output.hh_raw: hh,
                 Output.tt_raw: tt,
-                Output.hh_prob: F.softmax(torch.stack([hh,tt],dim=1), dim=1),
+                Output.hh_prob: F.softmax(hh, dim=1),
+                Output.tt_prob: F.softmax(tt, dim=1)
             }
             sumw = to_num(batch[Input.weight].sum())
             if scalar_funcs is None:
@@ -192,7 +201,58 @@ class HCRModel(Model):
                 roc.update(batch)
         for k in scalars:
             scalars[k] /= weight
-        return {"scalars": scalars, "roc": [r.to_json() for r in rocs]}
+
+        return {"scalars": scalars, 
+                "roc": [r.to_json() for r in rocs],
+                "shap": self._shap_results
+                }
+
+    ## work in progress feature
+    def _compute_shap_gradient(self, batch):
+        """Compute SHAP using gradients during training"""
+        import shap
+        import numpy as np
+        
+        all_feature_names = (
+            [f"bJet_{f}" for f in InputBranch.feature_bJetCand] +
+            [f"nonbJet_{f}" for f in InputBranch.feature_nonbJetCand] +
+            [f"lep_{f}" for f in InputBranch.feature_leadingLep] +
+            [f"MET_{f}" for f in InputBranch.feature_MET] +
+            list(InputBranch.feature_ancillary)
+        )
+        
+        # Wrapper model for SHAP
+        class ConcatenatedModel(torch.nn.Module):
+            def __init__(self, original_model, n_features=[10, 8, 5, 2, 3]):
+                super().__init__()
+                self.model = original_model
+                self.n_features = n_features
+            
+            def forward(self, X):
+                splits = torch.split(X, self.n_features, dim=1)
+                hh, _ = self.model(*splits)
+                signal_idx = MultiClass.trainable_labels.index("signal")
+                probs = F.softmax(hh, dim=1)[:, signal_idx]
+                return probs.unsqueeze(1)
+        
+        wrapped_model = ConcatenatedModel(self._nn)
+        
+        # Use current batch as test data
+        inputs = _HCRInput(batch, self._device)
+        test_data = torch.cat(inputs, dim=1)[:500]  # Sample subset
+        
+        # Use subset as background
+        background = test_data[:100]
+        explainer = shap.GradientExplainer(wrapped_model, background)
+        shap_values = explainer.shap_values(test_data)
+        
+        # Aggregate importance
+        importance = {}
+        feature_importance = np.abs(shap_values).mean(axis=0)
+        for i, name in enumerate(all_feature_names):
+            importance[name] = float(feature_importance[i])
+        
+        return importance
 
     def step(self, epoch: int = None):
         if self.ghost_batch is not None and self.ghost_batch.step(epoch):
@@ -313,7 +373,6 @@ class HCRModelEval(Model):
         self._arch = HCRArch.load(saved["arch"])
         self._nn = HCR(
             dijetFeatures=self._arch.n_features,
-            quadjetFeatures=self._arch.n_features,
             ancillaryFeatures=InputBranch.feature_ancillary,
             device=device,
             nClasses=len(self._classes),
@@ -328,7 +387,8 @@ class HCRModelEval(Model):
         selection = self._splitter.split(batch)[SplitterKeys.validation]
         selector = Selector(selection)
         HH, TT = self._nn(*_HCRInput(batch, self._device, selection))
-        HH_prob = F.softmax(torch.stack([HH,TT],dim=1), dim=1).cpu()
+        HH_prob = F.softmax(HH, dim=1).cpu()
+        TT_prob = F.softmax(TT, dim=1).cpu()
         #q_prob = F.softmax(q, dim=1).cpu()
         #output = {
         #    "q_1234": q_prob[:, 0],
@@ -337,7 +397,8 @@ class HCRModelEval(Model):
         #}
         output = {}
         for i, label in enumerate(self._classes):
-            output[f"p_{label}"] = HH_prob[:, i]
+            output[f"p_HH_{label}"] = HH_prob[:, i]
+            output[f"p_TT_{label}"] = TT_prob[:, i]
         return selector.pad(map_batch(self._mapping, output))
 
 class HCREvaluation(Evaluation):
@@ -372,3 +433,4 @@ class HCREvaluation(Evaluation):
             dataset=self.dataset,
             dumper_kwargs={"name": self.name},
         )
+

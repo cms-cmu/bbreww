@@ -1,4 +1,4 @@
-GluGluToHHTo2B2VLNu2J_2022_EE:
+GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
   n_events: 993
   sum_genweights: 8.529458999633789
   cutflow:
@@ -22,23 +22,23 @@ GluGluToHHTo2B2VLNu2J_2022_EE:
         chi_sq_nom_3j2b: 17.0
         chi_sq_lowpt_4j2b: 18.0
       weights:
-        lumimask: 0.06877221636174874
-        passNoiseFilter: 0.06877221636174874
-        trigger: 0.06877221636174874
-        jet_veto_mask: 0.06284448916134831
-        oneEorM: 0.06284448916134831
-        oneBjet: 0.05776403241671592
-        twoBjets: 0.030883201709334385
-        tau_veto: 0.030306389697739928
-        njets_ak8: 0.018731077443181986
-        mll_cut: 0.018731077443181986
-        nominal_4j2b: 0.011773045352986428
-        nominal_3j2b: 0.006205327002355594
-        lowpt_4j2b: 0.0033821290239796926
-        lowpt_3j2b: 0.0035759030662158653
-        chi_sq_nom_4j2b: 0.007788308304961002
-        chi_sq_nom_3j2b: 0.0015197125004578062
-        chi_sq_lowpt_4j2b: 0.0018901923616047533
+        lumimask: 0.11288854450699587
+        passNoiseFilter: 0.11288854450699587
+        trigger: 0.11288854450699587
+        jet_veto_mask: 0.1031582706968533
+        oneEorM: 0.1031582706968533
+        oneBjet: 0.09481877842019806
+        twoBjets: 0.050694304674228585
+        tau_veto: 0.0497474765527499
+        njets_ak8: 0.030746778014879537
+        mll_cut: 0.030746778014879537
+        nominal_4j2b: 0.019325274424917178
+        nominal_3j2b: 0.010185949665943137
+        lowpt_4j2b: 0.005551713234148043
+        lowpt_3j2b: 0.005869790355814321
+        chi_sq_nom_4j2b: 0.012784389322092707
+        chi_sq_nom_3j2b: 0.002494584909960387
+        chi_sq_lowpt_4j2b: 0.00310272195274803
     mu_region:
       events:
         lumimask: 540.0
@@ -59,23 +59,23 @@ GluGluToHHTo2B2VLNu2J_2022_EE:
         chi_sq_nom_3j2b: 30.0
         chi_sq_lowpt_4j2b: 34.0
       weights:
-        lumimask: 0.09784572777473141
-        passNoiseFilter: 0.09784572777473141
-        trigger: 0.09784572777473141
-        jet_veto_mask: 0.08744458240079711
-        oneEorM: 0.08744458240079711
-        oneBjet: 0.08227287873907813
-        twoBjets: 0.03914093542967853
-        tau_veto: 0.03914093542967853
-        njets_ak8: 0.030310283820539203
-        mll_cut: 0.030310283820539203
-        nominal_4j2b: 0.0187588914208668
-        nominal_3j2b: 0.009090015848300364
-        lowpt_4j2b: 0.0072954480200326105
-        lowpt_3j2b: 0.004255944379639795
-        chi_sq_nom_4j2b: 0.015294556796670983
-        chi_sq_nom_3j2b: 0.0053838720042418894
-        chi_sq_lowpt_4j2b: 0.006188719247441957
+        lumimask: 0.16061227012049503
+        passNoiseFilter: 0.16061227012049503
+        trigger: 0.16061227012049503
+        jet_veto_mask: 0.14353894860678656
+        oneEorM: 0.14353894860678656
+        oneBjet: 0.13504967590711792
+        twoBjets: 0.06424924866484313
+        tau_veto: 0.06424924866484313
+        njets_ak8: 0.049753868703178036
+        mll_cut: 0.049753868703178036
+        nominal_4j2b: 0.030792434221237067
+        nominal_3j2b: 0.014921122405316308
+        lowpt_4j2b: 0.011975366679793284
+        lowpt_3j2b: 0.006986067802147683
+        chi_sq_nom_4j2b: 0.025105781761740373
+        chi_sq_nom_3j2b: 0.008837543798657893
+        chi_sq_lowpt_4j2b: 0.01015868827560785
     SR:
       events:
         nominal_4j2b: 134.0
@@ -86,13 +86,13 @@ GluGluToHHTo2B2VLNu2J_2022_EE:
         chi_sq_nom_3j2b: 37.0
         chi_sq_lowpt_4j2b: 39.0
       weights:
-        nominal_4j2b: 0.021133711789438347
-        nominal_3j2b: 0.009652884514336919
-        lowpt_4j2b: 0.00725317581668148
-        lowpt_3j2b: 0.0033966057789650817
-        chi_sq_nom_4j2b: 0.01653251724386767
-        chi_sq_nom_3j2b: 0.004894360947524747
-        chi_sq_lowpt_4j2b: 0.005398407503353139
+        nominal_4j2b: 0.03469066564365203
+        nominal_3j2b: 0.01584506275156658
+        lowpt_4j2b: 0.011905977516471641
+        lowpt_3j2b: 0.00557547659281793
+        chi_sq_nom_4j2b: 0.0271378749586973
+        chi_sq_nom_3j2b: 0.008034018877285252
+        chi_sq_lowpt_4j2b: 0.008861403612692487
     CR:
       events:
         nominal_4j2b: 33.0
@@ -103,13 +103,13 @@ GluGluToHHTo2B2VLNu2J_2022_EE:
         chi_sq_nom_3j2b: 7.0
         chi_sq_lowpt_4j2b: 9.0
       weights:
-        nominal_4j2b: 0.005357185255863069
-        nominal_3j2b: 0.0032950815873743614
-        lowpt_4j2b: 0.001788226334517723
-        lowpt_3j2b: 0.0022010556888402842
-        chi_sq_nom_4j2b: 0.004036528841666432
-        chi_sq_nom_3j2b: 0.0014598116100768208
-        chi_sq_lowpt_4j2b: 0.0018781542222352633
+        nominal_4j2b: 0.00879373790812859
+        nominal_3j2b: 0.005408826180419678
+        lowpt_4j2b: 0.002935346260231005
+        lowpt_3j2b: 0.0036129993502975535
+        chi_sq_nom_4j2b: 0.006625900542335806
+        chi_sq_nom_3j2b: 0.002396258497913498
+        chi_sq_lowpt_4j2b: 0.0030829615166483916
 TTToSemiLeptonic_2022_EE:
   n_events: 1000
   sum_genweights: 98754.765625

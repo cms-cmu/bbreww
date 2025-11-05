@@ -14,9 +14,17 @@ main:
 dataset:
   - module: bbWW.svb.Background
     option:
+      - --mc-processes ttbar
       - --metadata bbreww/metadata/classifier/datasets_v4
       - --norm 4 #set TTbar to be 4 times weight of signal
       - --friends "" bbreww/metadata/classifier/output_friend.json@@classifier_input # set input friend tree
+    
+  - module: bbWW.svb.Background
+    option:
+      - --mc-processes WplusJets tW
+      - --metadata bbreww/metadata/classifier/datasets_minor_bkgs_v4
+      - --norm 2
+      - --friends "" bbreww/metadata/classifier/minorbkg_friend.json@@classifier_input # set input friend tree
 
   - module: bbWW.svb.Signal
     option:
@@ -24,7 +32,7 @@ dataset:
       - --friends "" bbreww/metadata/classifier/output_friend.json@@classifier_input # set input friend tree
 
 model:
-  - module: bbWW.base.baseline_svb.Train # use the baseline bbWW HCR model
+  - module: bbWW.GCN.baseline_svb.Train # use the baseline bbWW HCR model
     option:
       - --kfolds 3 # use 3-fold
       - --kfold-seed FvT random # setup base seed to be ("FvT", "random")
@@ -34,6 +42,8 @@ model:
       # FixedStep is defined in config/scheduler
       - epoch: 20 # setup kwargs for FixedStep
         bs_init: 1024 # equivalent to use FixedStep(epoch=20, bs_init=1024)
+        lr_init: 1.0e-3
+
 
 setting:
   - module: IO # setup output directory

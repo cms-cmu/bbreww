@@ -24,6 +24,7 @@ def dump_input_friend(
     padded = akext.pad.selected()
     data = ak.Array(
         {
+
             "bJetCand": padded(
                 ak.zip(
                     {
@@ -31,6 +32,7 @@ def dump_input_friend(
                         "eta": events[bcand].eta,
                         "phi": events[bcand].phi,
                         "mass": events[bcand].mass,
+                        "btagScore": events[bcand].btagScore
                     }
                 ),
                 selection,
@@ -54,7 +56,7 @@ def dump_input_friend(
                         "phi":  events[lepton].phi,
                         "mass": events[lepton].mass,
                         "isE" : events.flavor.e,
-                        "isM" : events.flavor.mu
+                        "isM" : events.flavor.mu,
                     }
                 ),
                 selection,
@@ -87,13 +89,13 @@ def dump_input_friend(
                         "njets",
                         "nsoftjets",
                         "HT",
-                        "HTsoft"
 		    ]	
 		],
                 selection,
             )
 	)
         | {"weight": padded(events[weight], selection)}
+        | {"year" : padded(ak.full_like(events.HT, (events.metadata['year']).split('_', 1)[0]), selection)}
     )
     return dump_friend(
         events=events,

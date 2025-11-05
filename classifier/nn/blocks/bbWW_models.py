@@ -1313,23 +1313,17 @@ class InputEmbed(nn.Module):
 
         self.bsl, self.wsl = 2, 2
 
-        self.mask_bb_same = torch.zeros(
-            (1, self.bsl, self.bsl), dtype=torch.bool
-        ).to(self.device)
+        self.register_buffer('mask_bb_same', torch.zeros((1, self.bsl, self.bsl), dtype=torch.bool))
         for i in range(self.bsl):
             self.mask_bb_same[:, i, i] = (
                 1  # mask diagonal, don't want mass, dR of jet with itself. (we do want duplicates for i,j and j,i because query and value are treated differently in attention block)
             )
 
-        self.mask_qq_same = torch.zeros(
-            (1, self.wsl, self.wsl), dtype=torch.bool
-        ).to(self.device)
+        self.register_buffer('mask_qq_same', torch.zeros((1, self.wsl, self.wsl), dtype=torch.bool))
         for i in range(self.wsl):
             self.mask_qq_same[:, i, i] = 1  # mask diagonal
 
-        self.mask_bW_same = torch.zeros(
-            (1, self.bsl, self.wsl), dtype=torch.bool
-        ).to(self.device)
+        self.register_buffer('mask_bW_same', torch.zeros((1, self.bsl, self.wsl), dtype=torch.bool))
         for i in range(self.wsl):
             self.mask_bW_same[:, i, i] = 1  # mask diagonal
 
@@ -1425,7 +1419,7 @@ class InputEmbed(nn.Module):
         )
 
         mask, bbMdR, qqMdR, bbnMdR, mask_bbMdR, mask_qqMdR, mask_bbn = None, None, None, None, None, None, None
-        mask = (nb[:, 2, :] == -1).to(device)
+        mask = (nb[:, 2, :] == -1)
         bPxPyPzE = PxPyPzE(b)
         nbPxPyPzE = PxPyPzE(nb)
         lPxPyPzE = PxPyPzE(l)
@@ -1436,9 +1430,7 @@ class InputEmbed(nn.Module):
         bbMdR = torch.cat(
             [
                 bbMdR,
-                torch.zeros((n, 2, self.bsl, self.bsl), dtype=torch.float).to(
-                    device
-                ),
+                torch.zeros((n, 2, self.bsl, self.bsl), dtype=torch.float, device = device)
             ],
             1,
         )  # flag with zeros to signify dijet quantities
@@ -1446,16 +1438,15 @@ class InputEmbed(nn.Module):
         mask_bbMdR = mask.view(n, 1, self.bsl) | mask.view(
             n, self.bsl, 1
         )  # mask of 2d matrix of b-jets (i,j) is True if mask[i] | mask[j]
-        mask_bbMdR = mask_bbMdR.masked_fill(self.mask_bb_same.to(device), 1)
+        mask_bbMdR = mask_bbMdR.masked_fill(self.mask_bb_same, 1)
 
         # compute matrix of trijet masses and opening angles between b-dijets and non-bjets
         bbnMdR = matrixMdR(bb, nb, v1PxPyPzE=bbPxPyPzE, v2PxPyPzE=nbPxPyPzE)
         bbnMdR = torch.cat(
             [
                 bbnMdR,
-                torch.ones((n, 2, 1, self.wsl), dtype=torch.float).to(
-                    device
-                ),
+                torch.ones((n, 2, 1, self.wsl), dtype=torch.float, device = device)
+
             ],
             1,
         )  # flag with ones to signify trijet quantities
@@ -1468,9 +1459,7 @@ class InputEmbed(nn.Module):
         qqMdR = torch.cat(
             [
                 qqMdR,
-                torch.zeros((n, 2, self.bsl, self.bsl), dtype=torch.float).to(
-                    device
-                ),
+                torch.zeros((n, 2, self.bsl, self.bsl), dtype=torch.float, device=device)
             ],
             1,
         )  # flag with zeros to signify dijet quantities
@@ -1481,16 +1470,14 @@ class InputEmbed(nn.Module):
         mask_qqMdR = mask.view(n, 1, self.wsl) | mask.view(
             n, self.wsl, 1
         )  # mask of 2d matrix of nonb-jets (i,j) is True if mask[i] | mask[j]
-        mask_qqMdR = mask_qqMdR.masked_fill(self.mask_qq_same.to(device), 1)
+        mask_qqMdR = mask_qqMdR.masked_fill(self.mask_qq_same, 1)
 
         # compute matrix of masses and opening angles between b-jets and W candidates (top)
         bWhadMdR = matrixMdR(b, qq, v1PxPyPzE=bPxPyPzE, v2PxPyPzE=qqPxPyPzE)
         bWhadMdR = torch.cat(
             [
                 bWhadMdR,
-                torch.zeros((n, 1, self.bsl, 1), dtype=torch.float).to(
-                    device
-                ),
+                torch.zeros((n, 1, self.bsl, 1), dtype=torch.float, device=device)
             ],
             1,
         )  # flag with zeros to signify calculated quantities (b+W)
@@ -1498,15 +1485,13 @@ class InputEmbed(nn.Module):
         mask_bWhad = mask.view(n, 1, self.bsl) | mask.view(
             n, self.wsl, 1
         )  # mask of 2d matrix of bW (i,j) is True if mask[i] | mask[j]
-        mask_bWhad = mask_bWhad.masked_fill(self.mask_bW_same.to(device), 1) # to do: create self.mask_bW_same above
+        mask_bWhad = mask_bWhad.masked_fill(self.mask_bW_same, 1) # to do: create self.mask_bW_same above
 
         bWlepMdR = matrixMdR(b, l.unsqueeze(2), v1PxPyPzE=bPxPyPzE, v2PxPyPzE=lPxPyPzE) # l needs an extra dimension for concat later
         bWlepMdR = torch.cat(
             [
                 bWlepMdR,
-                torch.ones((n, 1, self.bsl, 1), dtype=torch.float).to(
-                    device
-                ),
+                torch.ones((n, 1, self.bsl, 1), dtype=torch.float, device=device)
             ],
             1,
         )  # flag with zeros to signify calculated quantities (b+W)
@@ -1515,7 +1500,7 @@ class InputEmbed(nn.Module):
         mask_bWlep = mask.view(n, 1, self.bsl) | mask.view(
             n, self.bsl, 1
         )  # mask of 2d matrix of bW (i,j) is True if mask[i] | mask[j]
-        mask_bWlep = mask_bWlep.masked_fill(self.mask_bW_same.to(device), 1) # to do: create self.mask_bW_same above
+        mask_bWlep = mask_bWlep.masked_fill(self.mask_bW_same, 1)
 
         nb[:, (0, 3), :] = torch.log(1 + nb[:, (0, 3), :])
         nb[isinf(nb)] = -1  # isinf not supported by ONNX
@@ -1801,6 +1786,13 @@ class HCR(nn.Module):
             conv=True, 
             name="scalar physics relationships embed"
         )
+
+        self.qv_embed = GhostBatchNorm1d(
+            self.dD*3,  # Input: full feature dim (24)
+            features_out=8,  # Output: heads * head_dim = 2 * 4
+            conv=True,
+            name="qv physics relationships projector"
+        )
         # Embed enhanced WW representation
         self.WW_final_embed = GhostBatchNorm1d(
             self.dD, 
@@ -1935,11 +1927,17 @@ class HCR(nn.Module):
         bbnMdR = NonLU(bbnMdR)
         scalars = torch.cat([lepQQdR, lnu_mT], dim= -1)
 
-        qv = torch.cat([
-            bWhadMdR[:, :, 0, :],  # Shape: (n, features, 1) - b0-b1 relationship
-            bbnMdR[:, :, 0, :],               # Shape: (n, features, 2) - bb-nb[0] and bb-nb[1] 
-            bWlepMdR[:, :, 0, :]   # Shape: (n, features, 1) - q0-q1 relationship
-        ], dim=-1)  # Result shape: (n, features, 4)
+        qv = torch.stack([
+            # Pair (had0, lep0): b[0]+qq with b[0]+l
+            torch.cat([bWhadMdR[:, :, 0, 0], bWlepMdR[:, :, 0, 0], bbnMdR[:, :, 0, 0]], dim=-1),
+            # Pair (had0, lep1): b[0]+qq with b[1]+l  
+            torch.cat([bWhadMdR[:, :, 0, 0], bWlepMdR[:, :, 1, 0], bbnMdR[:, :, 0, 1]], dim=-1),
+            # Pair (had1, lep0): b[1]+qq with b[0]+l
+            torch.cat([bWhadMdR[:, :, 1, 0], bWlepMdR[:, :, 0, 0], bbnMdR[:, :, 0, 0]], dim=-1),
+            # Pair (had1, lep1): b[1]+qq with b[1]+l
+            torch.cat([bWhadMdR[:, :, 1, 0], bWlepMdR[:, :, 1, 0], bbnMdR[:, :, 0, 1]], dim=-1),
+        ], dim=-1)
+        qv = self.qv_embed(qv)
 
         TT, TT0, TT_weights = self.attention_tt(
             bWhad,    # queries: hadronic top candidate
@@ -1957,8 +1955,8 @@ class HCR(nn.Module):
         TT_score = F.softmax(TT_logits, dim=-1)  # Shape: (n, 2)
 
         TT_sel = torch.matmul(TT, TT_score.unsqueeze(-1))
-        TT_logits = self.out_tt(TT_sel)  # Shape: (n, nC)
-        TT_logits = TT_logits.squeeze(-1)
+        #TT_final = self.out_tt(TT_sel)  # Shape: (n, nC)
+        #TT_final = TT_logits.squeeze(-1)
 
         # final HH reconstruction scores
         scalars = self.scalars_embed(scalars)
@@ -1985,15 +1983,15 @@ class HCR(nn.Module):
         HH_logits = torch.cat([HH_final, WW_final, TT_sel], dim=-1) # combine HH and H-> WW scores
         HH_logits = self.out(HH_logits)
 
-        # Convert to probabilities for output/storage
+        # Convert to probabilities for output/storage (currently not using this functionality)
         if self.store:
             HH_score = F.softmax(HH_logits, dim=1)
             if self.store:
                 
                 self.storeData["HH_logits"] = HH_score.detach().to("cpu").numpy()
                 self.storeData["TT_logits"] = TT_score.detach().to("cpu").numpy()
-                #self.storeData["WW_weights"] = WW_weights.detach().to("cpu").numpy() # see how much H->WW contributes to discrimination
-                #self.storeData["HH_weights"] = HH_weights.detach().to("cpu").numpy()
+                self.storeData["WW_weights"] = WW_final.detach().to("cpu").numpy() # see how much H->WW contributes to discrimination
+                self.storeData["HH_weights"] = HH_final.detach().to("cpu").numpy()
                 self.storeData["TT_weights"] = TT_weights.detach().to("cpu").numpy()
 
 

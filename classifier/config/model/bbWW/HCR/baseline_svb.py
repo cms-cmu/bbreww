@@ -117,5 +117,5 @@ class Eval(HCREval):
     def output_definition(batch: BatchType):
         return {
             "signal_prob": batch["p_HH_signal"], 
-            "background_prob": batch["p_TT_ttbar"], 
+            #"background_prob": batch["p_TT_ttbar"], 
         }

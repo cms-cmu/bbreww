@@ -24,10 +24,10 @@ fi
     -setting Monitor "address: :${port}" \
     -flag debug # use debug flag
 
-# plot the AUC and ROC
+# plot the AUC and ROC (use HCR.LossROC for plotting as bbWW.LossROC is still in progress)
 ./src/pyml.py analyze \
     --results ${MODEL}/result.json \
-    -analysis bbWW.LossROC \
+    -analysis HCR.LossROC \
     -setting IO "output: ${PLOT}" \
     -setting IO "report: FvT" \
     -setting Monitor "address: :${port}"

@@ -5,19 +5,19 @@
 main:
   module: evaluate
   option:
-    - --max-evaluators 10 # use 3 workers to evaluate
+    - --max-evaluators 3 # use 3 workers to evaluate
 
 dataset:
   - module: bbWW.svb.Eval
     option:
       - --metadata bbreww/metadata/classifier/datasets_v4
-      - --max-workers 8 # use 8 workers to fetch metadatas for ROOT files
+      - --max-workers 4 # use 8 workers to fetch metadatas for ROOT files
       - --mc-processes GluGluToHHTo2B2VLNu2J ttbar 
       - --friends "" bbreww/metadata/classifier/output_friend.json@@classifier_input
   - module: bbWW.svb.Eval
     option:
       - --metadata bbreww/metadata/classifier/datasets_minor_bkgs_v4
-      - --max-workers 8 # use 8 workers to fetch metadatas for ROOT files
+      - --max-workers 4 # use 8 workers to fetch metadatas for ROOT files
       - --mc-processes  WplusJets tW
       - --friends "" bbreww/metadata/classifier/minorbkg_friend.json@@classifier_input
 

@@ -19,6 +19,24 @@ GluGluToHHTo2B2VLNu2J_kl_0p00:
       sumw: 19936.747202396393
       sumw2: 1482.8239470720291
       total_events: 305116
+  2023_preBPix:
+    nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-0p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv13-133X_mcRun3_2023_realistic_ForNanov13_v1-v2/NANOAODSIM
+    picoAOD:
+      count:
+      files:
+      saved_events:
+      sumw:
+      sumw2: 
+      total_events:
+  2023_BPix:
+    nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-0p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv13-133X_mcRun3_2023_realistic_postBPix_ForNanov13_v2-v2/NANOAODSIM
+    picoAOD:
+      count:
+      files:
+      saved_events:
+      sumw:
+      sumw2: 
+      total_events: 
   xs: 0.008356
 
 GluGluToHHTo2B2VLNu2J_kl_1p00:
@@ -76,7 +94,6 @@ GluGluToHHTo2B2VLNu2J_kl_2p45:
       sumw: 1266.6577880382538
       sumw2: 21.811901681125164
       total_events: 99103
-
   2022_EE:
     nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-2p45_kt-1p00_c2-0p00_LHEweights_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v1/NANOAODSIM
     picoAOD: 
@@ -87,6 +104,24 @@ GluGluToHHTo2B2VLNu2J_kl_2p45:
       sumw: 4449.171519517899
       sumw2: 76.15095929801464
       total_events: 346104
+  2023_preBPix:
+    nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-2p45_kt-1p00_c2-0p00_LHEweights_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v4/NANOAODSIM
+    picoAOD:
+      count:
+      files:
+      saved_events:
+      sumw:
+      sumw2: 
+      total_events:
+  2023_BPix:
+    nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-2p45_kt-1p00_c2-0p00_LHEweights_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM
+    picoAOD: 
+      count: 
+      files: 
+      saved_events:
+      sumw:
+      sumw2: 
+      total_events: 
   xs: 0.001645
 
 GluGluToHHTo2B2VLNu2J_kl_5p00:
@@ -110,4 +145,22 @@ GluGluToHHTo2B2VLNu2J_kl_5p00:
       sumw: 25032.678651809692
       sumw2: 2170.425330042839
       total_events: 298369
+  2023_preBPix:
+    nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv13-133X_mcRun3_2023_realistic_ForNanov13_v1-v2/NANOAODSIM
+    picoAOD:
+      count:
+      files:
+      saved_events:
+      sumw:
+      sumw2: 
+      total_events:
+  2023_BPix:
+    nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv13-133X_mcRun3_2023_realistic_postBPix_ForNanov13_v2-v2/NANOAODSIM
+    picoAOD:
+      count:
+      files:
+      saved_events:
+      sumw:
+      sumw2: 
+      total_events: 
   xs: 0.01099

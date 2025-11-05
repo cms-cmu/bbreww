@@ -383,6 +383,7 @@ class HCRModelEval(Model):
     def nn(self):
         return self._nn
 
+
     def evaluate(self, batch: BatchType) -> BatchType:
         selection = self._splitter.split(batch)[SplitterKeys.validation]
         selector = Selector(selection)
@@ -398,7 +399,7 @@ class HCRModelEval(Model):
         output = {}
         for i, label in enumerate(self._classes):
             output[f"p_HH_{label}"] = HH_prob[:, i]
-            output[f"p_TT_{label}"] = TT_prob[:, i]
+            #output[f"p_TT_{label}"] = TT_prob[:, i]
         return selector.pad(map_batch(self._mapping, output))
 
 class HCREvaluation(Evaluation):

@@ -1,0 +1,62 @@
+import logging
+import numpy as np
+import awkward as ak
+from classifier_ensemble import RECEnsemble
+
+def compute_SvB(events, mask, doCheck=True, **models: RECEnsemble):
+    masked_events = events[mask]
+
+    for name, model in models.items():
+        if model is None:
+            continue
+
+        if name in events.fields:
+            events[f"old_{name}"] = events[name]
+
+        tmp_hh_score, tmp_tt_score = model(masked_events)
+
+        hh_score = np.zeros((len(events),tmp_hh_score.shape[1]))
+        hh_score[mask] = tmp_hh_score
+        tt_score = np.zeros((len(events),tmp_tt_score.shape[1]))
+        tt_score[mask] = tmp_tt_score
+
+        del tmp_hh_score
+
+        classes = model.classes
+        phh = hh_score[:, classes.index("signal")] # signal probability 
+        ptt = hh_score[:, classes.index("ttbar")] # ttbar probability 
+        poth = hh_score[:, classes.index("other")] # minor backgrounds probability 
+
+        # passMinPs = (phh > 0.01) # might want to eventually make a cut on this score
+
+        events[name] = ak.zip({
+            "ptt": ptt,
+            "phh": phh,
+            "poth": poth,
+            "tt_b1Whad": tt_score[:, 0], # probability for (t-> b1Whad + t-> b2Wlep)
+            "tt_b2Whad": tt_score[:, 1], # probability for (t-> b2Whad + t-> b1Wlep)
+            #"passMinPs": passMinPs,
+            "hh_vs_tt": ( phh / (phh + ptt) ),
+            "hh_vs_oth": ( phh / (phh + poth) ),
+            "tt_vs_oth": ( ptt / (ptt + poth) )
+        })
+
+        if doCheck and f"old_{name}" in events.fields:
+            error = ~np.isclose(events[f"old_{name}"].ps, events[name].ps, atol=1e-5, rtol=1e-3)
+            if np.any(error):
+                delta = np.abs(events[f"old_{name}"].ps - events[name].ps)
+                worst = np.max(delta) == delta
+                worst_events = events[worst][0]
+
+                logging.warning( f"WARNING: Calculated {name} does not agree within tolerance for some events ({np.sum(error)}/{len(error)}) {delta[worst]}" )
+
+                logging.warning("----------")
+
+                for field in events[name].fields:
+                    logging.warning(f"{field} {worst_events[name][field]}")
+
+                logging.warning("----------")
+
+                for field in events[name].fields:
+                    logging.warning(f"{field} {events[name][worst][field]}")
+

@@ -1,6 +1,7 @@
 import awkward as ak
 import numpy as np
 from bbreww.analysis.helpers.common import met_reconstr, distance
+from bbreww.analysis.helpers.classifier.SvB_helpers import compute_SvB
 
 def Hbb_candidate_selection(events):
 
@@ -81,6 +82,10 @@ def ttbar_candidate_selection(events):
     tt_2["hadTop", "dphi"] = events.b_cands[:,0].delta_phi(events.Wqq_cand)
 
     tt_2["mass_distance"] = distance(lepTop_2.mass,  hadTop_2.mass,  172.5, 172.5)
+
+    events['tt_cands'] = ak.zip({"b1Whad": tt_2,
+                                 "b2Whad": tt_1,
+                                 }) # save the two ttbar candidates with same names as classifier output
 
     b_sel_nom =  tt_1.mass_distance < tt_2.mass_distance #pick pair closest to ttbar mass
     tt_best  = ak.where(b_sel_nom,  tt_1 ,  tt_2)
@@ -177,7 +182,7 @@ def ttbar_soft_candidate_selection(events):
     return events
 
 
-def candidate_selection(events, params, year):
+def candidate_selection(events, params, year, classifier_SvB = None):
 
     #
     # Common
@@ -191,8 +196,9 @@ def candidate_selection(events, params, year):
     events = Wqq_candidate_selection(events)
     events = Hww_candidate_selection(events)
     events = ttbar_candidate_selection(events)
-
-
+    
+    if classifier_SvB is not None:
+        events = add_svb_score(events, classifier_SvB)
     #
     # soft jets analysis
     #
@@ -220,3 +226,18 @@ def bjet_flag(events,params,year):
     events['has_1_bjet'] = ak.num(j_bcand_pool, axis=1) >= 1
 
     return events
+
+def add_svb_score(events, classifier_SvB):
+    ### add Signal vs. Background score from classifier
+    tmp_mask = np.full(len(events), True) ## TEMP
+    compute_SvB(events,
+                tmp_mask,
+                SvB=classifier_SvB,
+                doCheck=False)
+
+    events["SvB_tt_sel"] = np.concatenate( [
+        events.SvB.tt_b1Whad[:, np.newaxis],
+        events.SvB.tt_b2Whad[:, np.newaxis],
+        ], axis=1, )
+    return events
+    

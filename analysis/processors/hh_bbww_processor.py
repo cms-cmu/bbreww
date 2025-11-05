@@ -23,12 +23,20 @@ from bbreww.analysis.helpers.object_selection import apply_bbWW_preselection, ap
 from bbreww.analysis.helpers.candidate_selection import candidate_selection, Hbb_candidate_selection
 from bbreww.analysis.helpers.gen_process import gen_process, add_gen_info, gen_studies
 from bbreww.analysis.helpers.fill_histograms import fill_histograms, fill_histograms_nominal
+from ..helpers.classifier.classifier_ensemble import RECModelMetadata
 
 warnings.filterwarnings("ignore", "Missing cross-reference index for")
 warnings.filterwarnings("ignore", "Please ensure")
 warnings.filterwarnings("ignore", "invalid value")
 
 vector.register_awkward()
+
+def _init_classfier(path: str | list[RECModelMetadata]):
+    from ..helpers.classifier.classifier_ensemble import RECEnsemble
+    if path is None:
+        return None
+    return RECEnsemble(path)
+
 
 def add_to_selection(cut_name, cut, selections, mask):
     presel_mask = selections.all(*mask)
@@ -47,12 +55,14 @@ class analysis(processor.ProcessorABC):
         corrections_metadata: str = "src/physics/corrections.yml",
         make_classifier_input:str = None,
         fill_hists: bool = True,
+        SvB: str|list[RECModelMetadata] = None,
     ):
         self.parameters = parameters
         loaded_parameters = OmegaConf.load(self.parameters)
         self.params = OmegaConf.merge(corrections_metadata, loaded_parameters)
         self.make_classifier_input = make_classifier_input
         self.fill_histograms = fill_hists
+        self.classifier_SvB = _init_classfier(SvB)
 
     def process(self, events):
 
@@ -191,7 +201,7 @@ class analysis(processor.ProcessorABC):
 
         selected_events = events[events.preselection]
 
-        selected_events = candidate_selection(selected_events, self.params, self.year) # select HH->bbWW candidates
+        selected_events = candidate_selection(selected_events, self.params, self.year, self.classifier_SvB) # select HH->bbWW candidates
 
         #
         #  Define the SR and CR regions

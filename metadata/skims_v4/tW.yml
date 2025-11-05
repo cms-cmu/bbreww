@@ -28,6 +28,12 @@ TbarWplustoLNu2Q:
         sumw: 594379468.1132812
         sumw2: 21431066200.75
         total_events: 16485994
+    2023_preBPix:
+      nanoAOD: /TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v6/NANOAODSIM
+      picoAOD:
+    2023_BPix:
+      nanoAOD: /TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM
+      picoAOD:
     xs: 19.31
 
 TbarWplusto2L2Nu:
@@ -53,6 +59,12 @@ TbarWplusto2L2Nu:
       sumw: 31144335.41748047
       sumw2: 118537781.09570312
       total_events: 8183339
+  2023_preBPix:
+    nanoAOD: /TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v4/NANOAODSIM
+    picoAOD:
+  2023_BPix:
+    nanoAOD: /TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM
+    picoAOD:
   xs: 4.67
 
 TWminustoLNu2Q:
@@ -85,6 +97,12 @@ TWminustoLNu2Q:
       sumw: 599749862.1347656
       sumw2: 21584284446.75
       total_events: 16666206
+  2023_preBPix:
+    nanoAOD: /TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM
+    picoAOD:
+  2023_BPix:
+    nanoAOD: /TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM
+    picoAOD:
   xs: 19.31
 
 TWminusto2L2Nu:
@@ -109,4 +127,10 @@ TWminusto2L2Nu:
       sumw: 30879841.719726562
       sumw2: 117311688.54492188
       total_events: 8129084
+  2023_preBPix:
+    nanoAOD: /TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM
+    picoAOD:
+  2023_BPix:
+    nanoAOD: /TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM
+    picoAOD:
   xs: 4.67

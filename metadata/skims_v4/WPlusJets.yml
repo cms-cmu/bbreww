@@ -18,6 +18,12 @@ WtoLNu-2Jets_0J:
         sumw: 42284738856048.0
         sumw_raw: 42284735332661.41
         total_events: 678397952
+    2023_preBPix:
+      nanoAOD: /WtoLNu-2Jets_0J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v3/NANOAODSIM
+      picoAOD:
+    2023_BPix: 
+      nanoAOD: /WtoLNu-2Jets_0J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM
+      picoAOD:
     xs: 55570.0
 
 WtoLNu-2Jets_1J:
@@ -45,6 +51,12 @@ WtoLNu-2Jets_1J:
       sumw: 24933248681242.0
       sumw2: 5.0805963362169e+18
       total_events: 522553517
+  2023_preBPix:
+    nanoAOD: /WtoLNu-2Jets_1J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM
+    picoAOD:
+  2023_BPix: 
+    nanoAOD: /WtoLNu-2Jets_1J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v2/NANOAODSIM
+    picoAOD:
   xs: 9420.0
   
 WtoLNu-2Jets_2J:
@@ -93,4 +105,10 @@ WtoLNu-2Jets_2J:
       sumw: 8893305299484.0
       sumw2: 2.4165984409799885e+18
       total_events: 344572777
+  2023_preBPix:
+    nanoAOD: /WtoLNu-2Jets_2J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM
+    picoAOD:
+  2023_BPix: 
+    nanoAOD: /WtoLNu-2Jets_2J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v2/NANOAODSIM
+    picoAOD:
   xs: 3616.0

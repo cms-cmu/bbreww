@@ -2,8 +2,6 @@
 import correctionlib
 import awkward as ak
 import numpy as np
-import json
-from omegaconf import OmegaConf
 
 path = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/"
 

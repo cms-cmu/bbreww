@@ -1971,7 +1971,6 @@ class HCR(nn.Module):
                 WW,
                 bbMdR[:, :, 0, 1:2],  # Shape: (n, features, 1, 1) - b0-b1 relationship
                 bbnMdR[:, :, 0, :],   # Shape: (n, features, 2, 1) - bb-nb[0] and bb-nb[1] 
-                qqMdR[:, :, 0, 1:2],   # Shape: (n, features, 1, 1) - q0-q1 relationship
                 scalars
             ], dim=-1)  # Result shape: (n, features, 4)
         HH_final = self.HH_final_embed(HH)

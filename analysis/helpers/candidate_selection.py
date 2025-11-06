@@ -85,11 +85,16 @@ def ttbar_candidate_selection(events):
 
     events['tt_cands'] = ak.zip({"b1Whad": tt_2,
                                  "b2Whad": tt_1,
-                                 }) # save the two ttbar candidates with same names as classifier output
+                                 }) # save the two ttbar candidates (order correctly matches classifier)
+    
+    #### select candidate based on ML classifier score
+    events["tt_cands", "b1Whad", "cls_score"] = events.SvB.tt_b1Whad  # corresponds to tt_2 in ML classifier
+    events["tt_cands", "b2Whad", "cls_score"] = events.SvB.tt_b2Whad  # corresponds to tt_1 in ML classifier
+    tt_best = ak.where(events.SvB.tt_b1Whad > events.SvB.tt_b2Whad, tt_2, tt_1)
 
-    b_sel_nom =  tt_1.mass_distance < tt_2.mass_distance #pick pair closest to ttbar mass
-    tt_best  = ak.where(b_sel_nom,  tt_1 ,  tt_2)
-
+    # (DEPRECATED) select ttbar candidates based on mass
+    #b_sel_nom =  tt_1.mass_distance < tt_2.mass_distance #pick pair closest to ttbar mass
+    #tt_best  = ak.where(b_sel_nom,  tt_1 ,  tt_2)
 
     tt_sel = ak.zip({"p": tt_best.lepTop + tt_best.hadTop,
                      "lepTop": tt_best.lepTop,
@@ -197,8 +202,13 @@ def candidate_selection(events, params, year, classifier_SvB = None):
     events = Hww_candidate_selection(events)
     events = ttbar_candidate_selection(events)
     
+    # add ML classifier output scores
     if classifier_SvB is not None:
-        events = add_svb_score(events, classifier_SvB)
+        compute_SvB(events,
+            mask = events.nominal_4j2b, # apply nominal analysis mask
+            SvB=classifier_SvB,
+            doCheck=False)
+
     #
     # soft jets analysis
     #
@@ -225,19 +235,5 @@ def bjet_flag(events,params,year):
 
     events['has_1_bjet'] = ak.num(j_bcand_pool, axis=1) >= 1
 
-    return events
-
-def add_svb_score(events, classifier_SvB):
-    ### add Signal vs. Background score from classifier
-    tmp_mask = np.full(len(events), True) ## TEMP
-    compute_SvB(events,
-                tmp_mask,
-                SvB=classifier_SvB,
-                doCheck=False)
-
-    events["SvB_tt_sel"] = np.concatenate( [
-        events.SvB.tt_b1Whad[:, np.newaxis],
-        events.SvB.tt_b2Whad[:, np.newaxis],
-        ], axis=1, )
     return events
     

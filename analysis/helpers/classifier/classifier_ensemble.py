@@ -23,7 +23,6 @@ class _RECKFoldModel:
         with fsspec.open(model, "rb") as f:
             states = torch.load(f, map_location=torch.device("cpu"))
         self.ancillary = states["input"]["feature_ancillary"]
-        self.n_nonbjets = states["input"]["nnonbJetCand"]
 
         self._classes: list[str] = states["label"]
         self._reindex: list[int] = None
@@ -71,9 +70,8 @@ class RECEnsemble:
         ]
         self.classes = self.models[0].classes
         self.ancillary = self.models[0].ancillary
-        self.n_nonbjets = self.models[0].n_nonbjets
         for model in self.models:
-            for k in ("ancillary", "n_nonbjets"):
+            for k in ("ancillary",):
                 if getattr(self, k) != getattr(model, k):
                     raise ValueError(
                         f"HCR evaluation: {k} mismatch, expected {getattr(self, k)} got {getattr(model, k)}"
@@ -92,8 +90,8 @@ class RECEnsemble:
         n = len(events)
         batch: BatchType = {
             Input.bJetCand: torch.zeros(n, 5, 2, dtype=torch.float32),
-            Input.nonbJetCand: torch.zeros(n, 4, self.n_nonbjets, dtype=torch.float32),
-            Input.leadingLep: torch.zeros(n, 4, 1, dtype=torch.float32), #TEMP : increase feature size to 5 after recreating classifier inputs
+            Input.nonbJetCand: torch.zeros(n, 4, 2, dtype=torch.float32),
+            Input.leadingLep: torch.zeros(n, 5, 1, dtype=torch.float32), #TEMP : increase feature size to 6 after recreating classifier inputs
             Input.MET: torch.zeros(n, 2, 1, dtype=torch.float32),
             Input.ancillary: torch.zeros(n, len(self.ancillary), dtype=torch.float32),
         }
@@ -108,12 +106,16 @@ class RECEnsemble:
             nb[:, i, :] = torch.tensor(events.q_cands_nom[k])
 
         l = batch[Input.leadingLep]
-        for i, k in enumerate(("pt", "eta", "phi", "mass", "is_E")): # to do: add is_M here with new classifier inputs
-            l[:, i, :] = torch.tensor(events.leading_lep[k])
+        for i, k in enumerate(("pt", "eta", "phi", "mass", "is_e")): # to do: add is_M here with new classifier inputs
+            if 'is' in k:
+                k = k.split('_')[1]
+                l[:, i, :] = torch.tensor(ak.singletons(events.flavor[k]))
+            else:
+                l[:, i, :] = torch.tensor(ak.singletons(events.leading_lep[k]))
 
         nu = batch[Input.MET]
-        for i, k in enumerate(("pt", "phi",)): # to do: add is_M here with new classifier inputs
-            nu[:, i, :] = torch.tensor(events.MET[k])
+        for i, k in enumerate(("pt", "phi",)):
+            nu[:, i, :] = torch.tensor(ak.singletons(events.MET[k]))
 
         # ancillary features
         a = batch[Input.ancillary]
@@ -131,9 +133,9 @@ class RECEnsemble:
         batch[KFold.offset] = torch.from_numpy(events.event.to_numpy().view("int64"))
 
         hh_logits = torch.zeros(n, len(self.classes), dtype=torch.float32)
-        tt_logits = torch.zeros(n, 3, dtype=torch.float32)
+        tt_logits = torch.zeros(n, 2, dtype=torch.float32)
         for model in self.models:
-            mask = model.splitter.split(batch)[SplitterKeys.validation]
+            mask = model.splitter.split(batch)[SplitterKeys.validation] #splitter knows which model to evaluate on which file
             hh_logits[mask], tt_logits[mask] = model(b[mask], nb[mask], l[mask], nu[mask], a[mask])
 
         return F.softmax(hh_logits, dim=-1).numpy(), F.softmax(tt_logits, dim=-1).numpy()

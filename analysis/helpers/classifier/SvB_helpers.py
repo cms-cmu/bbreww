@@ -3,16 +3,15 @@ import numpy as np
 import awkward as ak
 from .classifier_ensemble import RECEnsemble
 
+# load trained ML model and evaluate on specified datasets
 def compute_SvB(events, mask, doCheck=True, **models: RECEnsemble):
     masked_events = events[mask]
 
     for name, model in models.items():
         if model is None:
             continue
-
         if name in events.fields:
             events[f"old_{name}"] = events[name]
-
         tmp_hh_score, tmp_tt_score = model(masked_events)
 
         hh_score = np.zeros((len(events),tmp_hh_score.shape[1]))

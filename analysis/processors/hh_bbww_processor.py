@@ -13,17 +13,18 @@ from omegaconf import OmegaConf
 from src.physics.event_selection import apply_event_selection
 from src.physics.objects.jet_corrections import apply_jerc_corrections
 from src.physics.event_weights import add_weights
+from src.data_formats.root import Chunk
 
 from bbreww.analysis.helpers.common import update_events, add_lepton_sfs, elliptical_region
 from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
 from bbreww.analysis.helpers.cutflow import cutflow_bbWW
-from bbreww.analysis.helpers.dump_friendtrees import dump_input_friend
 from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec
 from bbreww.analysis.helpers.object_selection import apply_bbWW_preselection, apply_mll_cut
 from bbreww.analysis.helpers.candidate_selection import candidate_selection, Hbb_candidate_selection
 from bbreww.analysis.helpers.gen_process import gen_process, add_gen_info, gen_studies
 from bbreww.analysis.helpers.fill_histograms import fill_histograms, fill_histograms_nominal
-from ..helpers.classifier.classifier_ensemble import RECModelMetadata
+from bbreww.analysis.helpers.classifier.classifier_ensemble import RECModelMetadata
+from bbreww.analysis.helpers.load_friend import FriendTemplate, parse_friends
 
 warnings.filterwarnings("ignore", "Missing cross-reference index for")
 warnings.filterwarnings("ignore", "Please ensure")
@@ -56,6 +57,9 @@ class analysis(processor.ProcessorABC):
         make_classifier_input:str = None,
         fill_hists: bool = True,
         SvB: str|list[RECModelMetadata] = None,
+        make_friend_SvB: str = None,
+        run_SvB: bool = True,
+        friends: dict[str, str|FriendTemplate] = None,
     ):
         self.parameters = parameters
         loaded_parameters = OmegaConf.load(self.parameters)
@@ -63,6 +67,9 @@ class analysis(processor.ProcessorABC):
         self.make_classifier_input = make_classifier_input
         self.fill_histograms = fill_hists
         self.classifier_SvB = _init_classfier(SvB)
+        self.make_friend_SvB = make_friend_SvB
+        self.run_SvB = run_SvB
+        self.friends = parse_friends(friends)
 
     def process(self, events):
 
@@ -79,6 +86,8 @@ class analysis(processor.ProcessorABC):
             self.params[self.year],
             not self.is_mc
         )
+
+        target = Chunk.from_coffea_events(events)
 
         jets = ak.where(
             events.Jet.btagPNetB >= self.params[self.year].btagWP.M,
@@ -117,6 +126,12 @@ class analysis(processor.ProcessorABC):
                     ({"Jet": jets.JER.down, "MET": met.JER.down}, "JERDown"),
                 ])
         '''
+        if self.run_SvB:
+            for k in self.friends:
+                if k.startswith("SvB"):
+                    events[k] = self.friends[k].arrays(target) # load svb score friendtrees
+                else:
+                    self.run_SvB = False
 
         weights = Weights(None, storeIndividual=True)
         list_weight_names = []
@@ -257,20 +272,31 @@ class analysis(processor.ProcessorABC):
             'leptonic_W': selection.all('leptonic_W')[selection.all(*selection_list['preselection'])]
         })
         selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
+        # keep analysis_selections for compatibility with friendtrees code although it's redundant
         analysis_selections = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
 
+        # create classifier inputs root files (creates root files in EOS and json file pointing to all files)
         friends = { 'friends': {} }
         if self.make_classifier_input is not None:
-            selev = selected_events[selected_events.nominal_4j2b]
+            from bbreww.analysis.helpers.dump_friendtrees import dump_input_friend
             friends["friends"] = ( friends["friends"]
                 | dump_input_friend(
-                    selev,
+                    selected_events[selected_events.nominal_4j2b],
                     self.make_classifier_input,
                     "classifier_input",
                     analysis_selections,
                     weight = "weight"
                 )
             )
+        
+        if self.make_friend_SvB is not None:
+            from ..helpers.dump_friendtrees import dump_SvB
+            friends["friends"] = ( friends["friends"]|               
+                dump_SvB(selected_events[selected_events.nominal_4j2b], 
+                        self.make_friend_SvB, 
+                        "SvB", 
+                        analysis_selections)
+                )
 
         if not shift_name:
             output['events_processed'] = {}
@@ -285,29 +311,30 @@ class analysis(processor.ProcessorABC):
             cutflow.add_output(output['events_processed'], self.dataset)
 
 
-
-        hists = fill_histograms(
-            selected_events,
-            processName=self.processName,
-            year=self.year_label,
-            is_mc=self.is_mc,
-            histCuts=['preselection',
-                      'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b',
-                      'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b',
-                      ],
-            channel_list=['hadronic_W', 'leptonic_W'],
-            flavor_list=['e', 'mu']
-        )
-
-        hists_4j2b = fill_histograms_nominal(
-            selected_events[selected_events.nominal_4j2b],
-            processName=self.processName,
-            year=self.year_label,
-            is_mc=self.is_mc,
-            histCuts=['nominal_4j2b',   'chi_sq_nom_4j2b' ],
-            channel_list=['hadronic_W', 'leptonic_W'],
-            flavor_list=['e', 'mu']
+        if self.fill_histograms:
+            hists = fill_histograms(
+                selected_events,
+                processName=self.processName,
+                year=self.year_label,
+                is_mc=self.is_mc,
+                histCuts=['preselection',
+                        'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b',
+                        'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b',
+                        ],
+                channel_list=['hadronic_W', 'leptonic_W'],
+                flavor_list=['e', 'mu']
             )
+
+            hists_4j2b = fill_histograms_nominal(
+                selected_events[selected_events.nominal_4j2b],
+                processName=self.processName,
+                year=self.year_label,
+                is_mc=self.is_mc,
+                histCuts=['nominal_4j2b',   'chi_sq_nom_4j2b' ],
+                channel_list=['hadronic_W', 'leptonic_W'],
+                flavor_list=['e', 'mu'],
+                run_SvB = self.run_SvB
+                )
 
         return hists | output | friends | {"hists_4j2b": hists_4j2b["hists"], "categories_4j2b": hists_4j2b["categories"]}
 

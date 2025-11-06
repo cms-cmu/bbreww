@@ -7,7 +7,7 @@ from src.friendtrees.dump_friend import dump_friend, _build_cutflow
 
 _NAMING = "{path1}/{name}_{uuid}_{start}_{stop}_{path0}"
 
-
+## function to dump classifier inputs into root files
 def dump_input_friend(
     events: ak.Array,
     output: PathLike,
@@ -97,6 +97,27 @@ def dump_input_friend(
         | {"weight": padded(events[weight], selection)}
         | {"year" : padded(ak.full_like(events.HT, (events.metadata['year']).split('_', 1)[0]), selection)}
     )
+    return dump_friend(
+        events=events,
+        output=output,
+        name=name,
+        data=data,
+        dump_naming=dump_naming,
+    )
+
+## function to dump signal vs background evaluated score from classifier into root files
+def dump_SvB(
+    events: ak.Array,
+    output: PathLike,
+    name: str,
+    *selections: ak.Array,
+    dump_naming: str = _NAMING,
+):
+    out_keys = ['ptt', 'phh', 'poth', 'tt_b1Whad', 'tt_b2Whad', 'hh_vs_tt', 'hh_vs_oth', 'tt_vs_oth']
+    data = ak.zip({key: events[name][key] for key in out_keys})
+    selection = _build_cutflow(*selections)
+    padded = akext.pad.selected()
+    data = padded(data, selection)
     return dump_friend(
         events=events,
         output=output,

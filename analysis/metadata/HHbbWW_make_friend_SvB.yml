@@ -2,11 +2,18 @@ runner:
   workers: 4
   condor_memory: 2GB
   friend_metafile: make_friend_SvB
-  friend_base: &friend_base root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/
+  #friend_base: &friend_base root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/
+  friend_base: &friend_base /srv/output/tmp/ 
   chunksize: 10000
+  condor_transfer_input_files:
+  - src/
+  - bbreww/analysis/
+  - bbreww/classifier/
+  - bbreww/metadata/
 
 config:
-  run_SvB: true
-  SvB   : 'coffea4bees/analysis/weights/pytorch_models/2024_HHUL/SvB_HCR_8_np753_seed13_lr0.01_epochs20_offset*_epoch20.pkl'
-  fill_histograms: false
+  #run_SvB: true
+  SvB: 
+  - name: Final
+    path: bbreww/analysis/weights/result.json
   make_friend_SvB: *friend_base

@@ -7,9 +7,7 @@ runner:
   condor_cores: 1
   condor_transfer_input_files:
     - src/
-    - bbreww/analysis/
-    - bbreww/classifier/
-    - bbreww/metadata/
+    - bbreww/
     
   # rucio_regex_sites: 'T[123]_(US|CH|DE|UK)'
   allowlist_sites:
@@ -24,4 +22,8 @@ runner:
     - T2_US_Purdue
 
 
-# config:
+config:
+  run_SvB: true
+  friends:
+    SvB: "/srv/output/SvB_friendtree/make_friend_SvB.json@@SvB"
+

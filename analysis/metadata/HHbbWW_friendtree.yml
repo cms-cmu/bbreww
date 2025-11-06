@@ -1,14 +1,11 @@
 runner:
   max_workers: 400 
   skipbadfiles: False
-  workers: 4
-  friend_merge_step: 50000
-  condor_memory: 4GB
+  workers: 6
+  friend_merge_step: 100000
+  condor_memory: 8GB
   data_tier: picoAOD
   condor_cores: 1
-  condor_transfer_input_files:
-    - src/
-    - bbreww/
   friend_base: &friend_base root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/
   condor_transfer_input_files:
     - src/

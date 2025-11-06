@@ -1,23 +1,7 @@
 from src.hist_tools import Collection, Fill
 from src.hist_tools.object import Elec, Jet, LorentzVector, Muon, Lepton
-from src.hist_tools import H, Template
 
-class Chi2Hists(Template):
-    tot_4j      = H((50, -0.1, 10, ('tot_4j', 'tot chi square 4j2b')))
-    tot_3j      = H((50, -0.1, 10, ('tot_3j', 'tot chi square 3j2b')))
-    Hbb_mass    = H((50, -0.1, 10, ('Hbb_mass',  'chi square for Hbb_mass')))
-    Hww_mass    = H((50, -0.1, 10, ('Hww_mass',  'chi square for Hww_mass')))
-    Wqq_mass    = H((50, -0.1, 10, ('Wqq_mass',  'chi square for Wqq_mass')))
-    Wln_mT      = H((50, -0.1, 10, ('Wln_mT',    'chi square for Wln_mT')))
-    Hbb_dr      = H((50, -0.1, 10, ('Hbb_dr',    'chi square for Hbb_dr')))
-    lepTop_mass = H((50, -0.1, 10, ('lepTop_mass','chi square for lep top mass')))
-    hadTop_mass = H((50, -0.1, 10, ('hadTop_mass','chi square for had top mass')))
-
-class TTbarHists(Template):
-    p      = LorentzVector.plot_pair(("...", R"$t\bar{t}$"), "p",  skip=["n","lead","subl","st"], bins={"mass": (100, 0, 1200)}, )
-    lepTop = LorentzVector.plot_pair(("...", R"lepTop"), "lepTop", skip=["n","lead","subl","st"], bins={"mass": (100, 0, 400)}, )
-    hadTop = LorentzVector.plot_pair(("...", R"hadTop"), "hadTop", skip=["n","lead","subl","st"], bins={"mass": (100, 0, 400)}, )
-
+from bbreww.analysis.helpers.hist_templates import SvBHists, Chi2Hists, TTbarHists
 
 def add_bbWW_common_hists(fill, hist):
 
@@ -79,7 +63,7 @@ def fill_histograms_nominal(
     histCuts: list = ['preselection'],
     channel_list: list = ['hadronic_W','leptonic_W'],
     flavor_list: list = ['e', 'mu'],
-    #region_list: list = ['e_region', 'mu_region']
+    run_SvB: bool = False
 ):
 
     fill = Fill(
@@ -121,13 +105,15 @@ def fill_histograms_nominal(
     #
     fill += TTbarHists( ("tt", R"$t\bar{t}$"), "tt_sel" )
 
+    #
+    # Signal vs Backgrounds classifier scores hists
+    if run_SvB:
+        fill += SvBHists(("SvB", "SvB Classifier"), "SvB")
+
     # fill histograms
     fill(events, hist)
 
     return hist.to_dict(nonempty=True)
-
-
-
 
 def fill_histograms(
     events,

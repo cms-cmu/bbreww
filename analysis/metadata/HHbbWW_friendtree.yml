@@ -25,3 +25,4 @@ runner:
 config:
   make_classifier_input: *friend_base
   fill_hists: false
+  run_SvB: false

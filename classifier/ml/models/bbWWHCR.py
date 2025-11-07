@@ -388,18 +388,15 @@ class HCRModelEval(Model):
         selection = self._splitter.split(batch)[SplitterKeys.validation]
         selector = Selector(selection)
         HH, TT = self._nn(*_HCRInput(batch, self._device, selection))
-        HH_prob = F.softmax(HH, dim=1).cpu()
-        TT_prob = F.softmax(TT, dim=1).cpu()
-        #q_prob = F.softmax(q, dim=1).cpu()
-        #output = {
-        #    "q_1234": q_prob[:, 0],
-        #    "q_1324": q_prob[:, 1],
-        #    "q_1423": q_prob[:, 2],
-        #}
+        HH = F.softmax(HH, dim=1).cpu() # convert to probabilities
+        TT = F.softmax(TT, dim=1).cpu()
+
         output = {}
+        output["tt_b1Whad"] = TT[:, 0] # add two ttbar candidates scores
+        output["tt_b2Whad"] = TT[:, 1]
+
         for i, label in enumerate(self._classes):
-            output[f"p_HH_{label}"] = HH_prob[:, i]
-            #output[f"p_TT_{label}"] = TT_prob[:, i]
+            output[f"p_{label}"] = HH[:, i] # add scores for all the classified labels
         return selector.pad(map_batch(self._mapping, output))
 
 class HCREvaluation(Evaluation):

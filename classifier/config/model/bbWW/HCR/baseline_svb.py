@@ -116,6 +116,12 @@ class Eval(HCREval):
     @staticmethod
     def output_definition(batch: BatchType):
         return {
-            "signal_prob": batch["p_HH_signal"], 
-            #"background_prob": batch["p_TT_ttbar"], 
+            "phh":       batch["p_signal"], 
+            "ptt":       batch["p_ttbar"],
+            "poth":      batch["p_other"],  
+            "tt_b1Whad": batch["tt_b1Whad"],
+            "tt_b2Whad": batch["tt_b2Whad"],
+            "hh_vs_tt":  batch["p_signal"]/(batch["p_signal"] + batch["p_ttbar"]),
+            "hh_vs_oth": batch["p_signal"]/(batch["p_signal"] + batch["p_other"]),
+            "tt_vs_oth": batch["p_ttbar"]/(batch["p_ttbar"] + batch["p_other"]),
         }

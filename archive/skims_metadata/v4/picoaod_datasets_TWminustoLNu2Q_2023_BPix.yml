@@ -1,0 +1,69 @@
+TWminustoLNu2Q_2023_BPix:
+  count: 4952467
+  cutflow:
+    e_region:
+      events:
+        all: 878988.0
+        lumimask: 878988.0
+        njets: 513083.0
+        oneBjet: 600508.0
+        passNoiseFilter: 878609.0
+        trigger: 746276.0
+      weights:
+        all: 31631125.278282166
+        lumimask: 31631125.278282166
+        njets: 18463443.560382843
+        oneBjet: 21609498.060585022
+        passNoiseFilter: 31617558.028461456
+        trigger: 26855309.391792297
+    mu_region:
+      events:
+        all: 1156307.0
+        lumimask: 1156307.0
+        njets: 714811.0
+        oneBjet: 838904.0
+        passNoiseFilter: 1155795.0
+        trigger: 1042027.0
+      weights:
+        all: 41610395.326114655
+        lumimask: 41610395.326114655
+        njets: 25722965.849063873
+        oneBjet: 30188246.460479736
+        passNoiseFilter: 41591969.77728653
+        trigger: 37498043.147037506
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2023_BPix/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2023_BPix/picoAOD.chunk1.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2023_BPix/picoAOD.chunk2.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v4', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_TWminustoLNu2Q_2023_BPix.yml',
+      output_path='output/skimmer', years=['2023_BPix'], datasets=['TWminustoLNu2Q'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    date: '2025-10-31 16:44:31'
+    diff: "diff --git a/src/classifier/algorithm/metrics/roc.py b/src/classifier/algorithm/metrics/roc.py\n\
+      index 956afbd6..3905d9d3 100644\n--- a/src/classifier/algorithm/metrics/roc.py\n\
+      +++ b/src/classifier/algorithm/metrics/roc.py\n@@ -106,12 +106,6 @@ class FixedThresholdROC:\n\
+      \             y_pred.device,\n         )\n \n-        if y_pred_full is not\
+      \ None:\n-            if not hasattr(self, '_y_pred_full'):\n-             \
+      \   self._y_pred_full = []\n-                self._y_true_full = []\n-     \
+      \       self._y_pred_full.append(to_arr(y_pred_full))\n-            self._y_true_full.append(to_arr(y_true_full))\n\
+      \         # prepare data\n         self._check_shape(y_pred=(y_pred, 2), y_true=(y_true,\
+      \ 1))\n         if y_pred.dim() == 2:\n@@ -166,9 +160,5 @@ class FixedThresholdROC:\n\
+      \             \"TP\": npext.to.base64(to_arr(tp)), # true positives\n      \
+      \       \"FP\": npext.to.base64(to_arr(fp)), # false positives\n         }\n\
+      -\n-        if hasattr(self, '_y_pred_full') and self._y_pred_full:\n-     \
+      \       result[\"y_pred_full\"] = npext.to.base64(np.concatenate(self._y_pred_full))\n\
+      -            result[\"y_true_full\"] = npext.to.base64(np.concatenate(self._y_true_full))\n\
+      \         \n         return result\n"
+    hash: 1d584ad15cdafcfc706fd4365fc57441bbbeaf61
+  saved_events: 1227894
+  sumw: 178219854.0546875
+  sumw2: 6413904930.5
+  sumw2_raw: 6413905140.191265
+  sumw_raw: 178219861.20900008
+  total_events: 4952467

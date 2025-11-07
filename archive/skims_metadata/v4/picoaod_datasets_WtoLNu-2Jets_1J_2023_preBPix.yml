@@ -1,0 +1,56 @@
+WtoLNu-2Jets_1J_2023_preBPix:
+  count: 308622412
+  cutflow:
+    e_region:
+      events:
+        all: 36633038.0
+        lumimask: 36633038.0
+        njets: 679334.0
+        oneBjet: 4477027.0
+        passNoiseFilter: 36629368.0
+        trigger: 28897146.0
+      weights:
+        all: 1781626689409.625
+        lumimask: 1781626689409.625
+        njets: 33024844441.6875
+        oneBjet: 219760468214.96875
+        passNoiseFilter: 1781427116115.375
+        trigger: 1410537108537.625
+    mu_region:
+      events:
+        all: 49499504.0
+        lumimask: 49499504.0
+        njets: 919200.0
+        oneBjet: 6655934.0
+        passNoiseFilter: 49492949.0
+        trigger: 43847830.0
+      weights:
+        all: 2402535888288.5
+        lumimask: 2402535888288.5
+        njets: 44740506758.6875
+        oneBjet: 326306871855.4375
+        passNoiseFilter: 2402205073860.5312
+        trigger: 2131224474648.5625
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2023_preBPix/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2023_preBPix/picoAOD.chunk1.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2023_preBPix/picoAOD.chunk2.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2023_preBPix/picoAOD.chunk3.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v4', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_WtoLNu-2Jets_1J_2023_preBPix.yml',
+      output_path='output/skimmer', years=['2023_preBPix'], datasets=['WtoLNu-2Jets_1J'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    date: '2025-11-05 17:33:48'
+    diff: ''
+    hash: 46f338b9de8e1ebc2290ae1520be889b563f99bf
+  saved_events: 1650981
+  sumw: 14726174748176.0
+  sumw2: 3.000622598280184e+18
+  sumw2_raw: 3.000621855877311e+18
+  sumw_raw: 14726174884851.377
+  total_events: 308622412

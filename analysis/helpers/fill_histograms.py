@@ -164,6 +164,4 @@ def fill_histograms(
     # fill histograms
     fill(events, hist)
 
-
-
     return hist.to_dict(nonempty=True)

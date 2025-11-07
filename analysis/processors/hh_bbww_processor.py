@@ -213,10 +213,8 @@ class analysis(processor.ProcessorABC):
                 cumulative_cuts.append(cut_name)
                 cutflow.fill(events, cut_name, cumulative_cuts, weights.weight())
 
-
         selected_events = events[events.preselection]
-
-        selected_events = candidate_selection(selected_events, self.params, self.year, self.classifier_SvB) # select HH->bbWW candidates
+        selected_events = candidate_selection(selected_events, self.params, self.year, self.run_SvB, self.classifier_SvB) # select HH->bbWW candidates
 
         #
         #  Define the SR and CR regions
@@ -310,7 +308,6 @@ class analysis(processor.ProcessorABC):
                 cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True, fill_flavour = True)
             cutflow.add_output(output['events_processed'], self.dataset)
 
-
         if self.fill_histograms:
             hists = fill_histograms(
                 selected_events,
@@ -335,8 +332,9 @@ class analysis(processor.ProcessorABC):
                 flavor_list=['e', 'mu'],
                 run_SvB = self.run_SvB
                 )
-
-        return hists | output | friends | {"hists_4j2b": hists_4j2b["hists"], "categories_4j2b": hists_4j2b["categories"]}
+            return hists | output | friends | {"hists_4j2b": hists_4j2b["hists"], "categories_4j2b": hists_4j2b["categories"]}
+        else:
+            return output | friends
 
     def postprocess(self, accumulator):
         return accumulator

@@ -131,7 +131,7 @@ class analysis(processor.ProcessorABC):
                 if k.startswith("SvB"):
                     events[k] = self.friends[k].arrays(target) # load svb score friendtrees
                 else:
-                    self.run_SvB = False
+                    self.run_SvB = False # set this flag to false if no SvB friendtrees provided
 
         weights = Weights(None, storeIndividual=True)
         list_weight_names = []

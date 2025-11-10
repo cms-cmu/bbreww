@@ -12,7 +12,7 @@ setting:
   #      2022_preEE: [C, D]
   - module: bbWWHCR.InputBranch
     option:
-      - feature_ancillary: ["HT", "njets", "nsoftjets"]
+      - feature_ancillary: ["HT", "njets", "nsoftjets", "year"]
       # remove the "year" from the input when the dataset only contains one year
       # otherwise the variance will be infinite and the output will be NaN
   ##########################################################

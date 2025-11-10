@@ -24,6 +24,6 @@ runner:
 
 config:
   run_SvB: true
-  friends:
-    SvB: "/srv/output/SvB_friendtree/make_friend_SvB.json@@SvB"
+  #friends:
+    #SvB: "/srv/output/SvB_friendtree/make_friend_SvB.json@@SvB"
 

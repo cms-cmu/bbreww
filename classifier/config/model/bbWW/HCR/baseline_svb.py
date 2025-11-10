@@ -43,10 +43,10 @@ class Train(HCRTrain):
         
         # Simple binary classification
         logits = batch[Output.hh_raw]
-        labels = batch[Input.label]  # 0 for background files, 1 for signal files
+        labels = batch[Input.label]
         weight = batch[Input.weight]
         weight[weight < 0] = 0
-        
+
         cross_entropy = F.cross_entropy(logits, labels, reduction="none")
         loss = (cross_entropy * weight).sum() / weight.sum()
         return loss

@@ -1233,7 +1233,7 @@ class InputEmbed(nn.Module):
             name="attention jet convolution",
         )
         self.lepEmbed = GhostBatchNorm1d(
-            5,
+            6,
             features_out=self.dD,
             phase_symmetric=phase_symmetric,
             conv=True,
@@ -1385,7 +1385,7 @@ class InputEmbed(nn.Module):
         n = b.shape[0]
         b = b.view(n, 5, 2)
         nb = nb.view(n, 4, 2)
-        l = l.view(n, 5, 1)
+        l = l.view(n, 6, 1)
         nu = nu.view(n, 2, 1)
         a = a.view(n, self.dA, 1)
 
@@ -1956,6 +1956,8 @@ class HCR(nn.Module):
 
         TT_sel = torch.matmul(TT, TT_score.unsqueeze(-1))
         TT_final = self.out_tt(TT_sel)  # Shape: (n, nC)
+        TT_final = TT_logits.squeeze(-1)
+        self._last_tt_logits = TT_logits.detach() # save TTbar candidates scores
 
         # final HH reconstruction scores
         scalars = self.scalars_embed(scalars)
@@ -1975,26 +1977,10 @@ class HCR(nn.Module):
             ], dim=-1)  # Result shape: (n, features, 4)
         HH_final = self.HH_final_embed(HH)
 
-        if self.store:
-            self.storeData["WW"] = WW.detach().to("cpu").numpy()
-            self.storeData["HH"] = HH.detach().to("cpu").numpy()
-
-        HH_logits = torch.cat([HH_final, WW_final, TT_final], dim=-1) # combine HH and H-> WW scores
+        HH_logits = torch.cat([HH_final, TT_sel], dim=-1) # combine HH and H-> WW scores
         HH_logits = self.out(HH_logits)
 
-        # Convert to probabilities for output/storage (currently not using this functionality)
-        if self.store:
-            HH_score = F.softmax(HH_logits, dim=1)
-            if self.store:
-                
-                self.storeData["HH_logits"] = HH_score.detach().to("cpu").numpy()
-                self.storeData["TT_logits"] = TT_score.detach().to("cpu").numpy()
-                self.storeData["WW_weights"] = WW_final.detach().to("cpu").numpy() # see how much H->WW contributes to discrimination
-                self.storeData["HH_weights"] = HH_final.detach().to("cpu").numpy()
-                self.storeData["TT_weights"] = TT_weights.detach().to("cpu").numpy()
-
-
-        return HH_logits, TT_logits
+        return HH_logits, TT_final
 
     def setStore(self, store):
         self.store = store

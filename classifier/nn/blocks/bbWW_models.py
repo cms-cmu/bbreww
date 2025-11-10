@@ -1854,7 +1854,7 @@ class HCR(nn.Module):
 
         self.out_tt = GhostBatchNorm1d(
             self.dD, 
-            features_out=self.nC,  # final tt bar score
+            features_out=self.dD,  # final ttbar reconstruction score
             conv=True, 
             bias=True,
             name="TT bar score"
@@ -1955,8 +1955,7 @@ class HCR(nn.Module):
         TT_score = F.softmax(TT_logits, dim=-1)  # Shape: (n, 2)
 
         TT_sel = torch.matmul(TT, TT_score.unsqueeze(-1))
-        #TT_final = self.out_tt(TT_sel)  # Shape: (n, nC)
-        #TT_final = TT_logits.squeeze(-1)
+        TT_final = self.out_tt(TT_sel)  # Shape: (n, nC)
 
         # final HH reconstruction scores
         scalars = self.scalars_embed(scalars)
@@ -1971,6 +1970,7 @@ class HCR(nn.Module):
                 WW,
                 bbMdR[:, :, 0, 1:2],  # Shape: (n, features, 1, 1) - b0-b1 relationship
                 bbnMdR[:, :, 0, :],   # Shape: (n, features, 2, 1) - bb-nb[0] and bb-nb[1] 
+                qqMdR[:, :, 0, 1:2],
                 scalars
             ], dim=-1)  # Result shape: (n, features, 4)
         HH_final = self.HH_final_embed(HH)
@@ -1979,7 +1979,7 @@ class HCR(nn.Module):
             self.storeData["WW"] = WW.detach().to("cpu").numpy()
             self.storeData["HH"] = HH.detach().to("cpu").numpy()
 
-        HH_logits = torch.cat([HH_final, WW_final, TT_sel], dim=-1) # combine HH and H-> WW scores
+        HH_logits = torch.cat([HH_final, WW_final, TT_final], dim=-1) # combine HH and H-> WW scores
         HH_logits = self.out(HH_logits)
 
         # Convert to probabilities for output/storage (currently not using this functionality)

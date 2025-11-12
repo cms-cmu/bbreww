@@ -70,8 +70,15 @@ class Eval(HCREval):
 
     @staticmethod
     def output_definition(batch: BatchType):
-            ttbar_idx = MultiClass.indices("ttbar")[0]
-            output = {
-                "p_score": batch[Output.class_prob][:, ttbar_idx]  # ttbar probability
-            }
-            return output
+        ttbar_idx = MultiClass.indices("ttbar")[0]
+        data_idx = MultiClass.indices("data")[0]
+        
+        p_ttbar = batch[Output.class_prob][:, ttbar_idx]  # P(ttbar|x)
+        p_data = batch[Output.class_prob][:, data_idx]  # P(data|x)
+    
+        output = {
+            "p_ttbar":  p_ttbar,
+            "p_data":   p_data,
+            "reweight": p_data / p_ttbar  # reweighting factor
+        }
+        return output

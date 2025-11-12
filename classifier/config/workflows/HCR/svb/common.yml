@@ -6,10 +6,13 @@ setting:
     option:
       - friend_allow_missing: false
   ## remove the whole block below if you want to use all years ##
-  #- module: cms.CollisionData
-  #  option:
-  #    eras:
-  #      2022_preEE: [C, D]
+  - module: cms.CollisionData
+    option:
+      - eras:
+          2022_preEE: [C, D]
+          2022_EE: [E, F, G]
+          2023_preBPix: [B, C] #need to double check these
+          2023_BPix: [D, E, F]
   - module: bbWWHCR.InputBranch
     option:
       - feature_ancillary: ["HT", "njets", "nsoftjets", "year"]

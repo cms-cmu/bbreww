@@ -5,7 +5,7 @@
 main:
   module: evaluate
   option:
-    - --max-evaluators 3 # use 3 workers to evaluate
+    - --max-evaluators 8 # use 8 workers to evaluate
 
 dataset:
   - module: bbWW.svb.Eval
@@ -26,7 +26,7 @@ analysis:
   - module: kfold.Merge # merge different k-folds
     option:
       - --name svb # set the name of friend tree
-      - --step 100000 # set the step to read ROOT files
+      - --step 200000 # set the step to read ROOT files
       - --workers 5
       - --clean # remove the original files
 
@@ -36,4 +36,4 @@ setting:
       - output: "{SvB}"
   - module: ml.DataLoader
     option:
-      - num_workers: 8
+      - num_workers: 6

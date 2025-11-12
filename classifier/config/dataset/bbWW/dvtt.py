@@ -86,6 +86,6 @@ class TrainData(_picoAOD.Data, Train):
 class TrainBaseline(_picoAOD.Background, Train): 
     """Baseline training with background processes"""
     ...
-class Eval(_picoAOD.Data, CommonEval): 
+class Eval(_picoAOD.Background, CommonEval): 
     """Evaluation dataset for HH→bbWW classifier"""
     ...

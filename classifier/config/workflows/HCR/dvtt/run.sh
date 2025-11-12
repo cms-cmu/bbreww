@@ -2,11 +2,12 @@
 export LPCUSER="akhanal"
 export CERNUSER="a/akhanal"
 export BASE="root://cmseos.fnal.gov//store/user/${LPCUSER}/HHbbWW_classifier_v1"
-export MODEL="${BASE}/classifier/HCR/DvTT/"
+export MODEL="${BASE}/classifier/HCR/dvtt/"
 export FvT="${BASE}/friend/DvTT/"
 export PLOT="root://eosuser.cern.ch//eos/user/${CERNUSER}/HHbbWW_classifier_v1/DvTT/"
 #####################
 
+export CLASSIFIER_CONFIG_PATHS="bbreww" 
 export WFS="bbreww/classifier/config/workflows/HCR/dvtt"
 
 # the first argument can be a port
@@ -33,6 +34,6 @@ fi
 
 # evaluate with evaluate.yml and common.yml configs
 ./src/pyml.py \
-    template "{model: ${MODEL}, FvT: ${FVT}}" $WFS/evaluate.yml \
+    template "{model: ${MODEL}, FvT: ${FvT}}" $WFS/train.yml \ 
     -from $WFS/common.yml \
     -setting Monitor "address: :${port}"

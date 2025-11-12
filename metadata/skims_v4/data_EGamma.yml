@@ -31,20 +31,30 @@ data__EGamma:
       E: 
         count: 148654795.0
         files:
-
-
-        saved_events: 1678342
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEE/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEE/picoAOD.chunk1.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEE/picoAOD.chunk2.root
+        saved_events: 1342919
         total_events: 148654795
 
       F: 
         count: 464373259.0
         files:
-
-        saved_events: 4902326
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEF/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEF/picoAOD.chunk1.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEF/picoAOD.chunk2.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEF/picoAOD.chunk3.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEF/picoAOD.chunk4.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEF/picoAOD.chunk5.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEF/picoAOD.chunk6.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEF/picoAOD.chunk7.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEF/picoAOD.chunk8.root
+        saved_events: 4101349
         total_events: 464373259
       G: 
         count: 76807350.0
         files:
-
-        saved_events: 752366
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEG/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEG/picoAOD.chunk1.root
+        saved_events: 638867
         total_events: 76807350

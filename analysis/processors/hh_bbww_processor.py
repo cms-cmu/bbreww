@@ -59,6 +59,7 @@ class analysis(processor.ProcessorABC):
         SvB: str|list[RECModelMetadata] = None,
         make_friend_SvB: str = None,
         run_SvB: bool = True,
+        apply_dvtt: bool = False,
         friends: dict[str, str|FriendTemplate] = None,
     ):
         self.parameters = parameters
@@ -69,6 +70,7 @@ class analysis(processor.ProcessorABC):
         self.classifier_SvB = _init_classfier(SvB)
         self.make_friend_SvB = make_friend_SvB
         self.run_SvB = run_SvB
+        self.apply_dvtt = apply_dvtt
         self.friends = parse_friends(friends)
 
     def process(self, events):
@@ -132,6 +134,13 @@ class analysis(processor.ProcessorABC):
                     events[k] = self.friends[k].arrays(target) # load svb score friendtrees
                 else:
                     self.run_SvB = False # set this flag to false if no SvB friendtrees provided
+
+        if self.apply_dvtt:
+            for k in self.friends:
+                if k.startswith("DvTT"):
+                    events[k] = self.friends[k].arrays(target) # load ttbar (Data vs. TT) reweighting scores
+                else:
+                    self.apply_dvtt = False # set this flag to false if no DvTT friendtrees provided
 
         weights = Weights(None, storeIndividual=True)
         list_weight_names = []

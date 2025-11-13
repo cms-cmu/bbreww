@@ -91,7 +91,7 @@ class RECEnsemble:
         batch: BatchType = {
             Input.bJetCand: torch.zeros(n, 5, 2, dtype=torch.float32),
             Input.nonbJetCand: torch.zeros(n, 4, 2, dtype=torch.float32),
-            Input.leadingLep: torch.zeros(n, 5, 1, dtype=torch.float32), #TEMP : increase feature size to 6 after recreating classifier inputs
+            Input.leadingLep: torch.zeros(n, 6, 1, dtype=torch.float32),
             Input.MET: torch.zeros(n, 2, 1, dtype=torch.float32),
             Input.ancillary: torch.zeros(n, len(self.ancillary), dtype=torch.float32),
         }
@@ -106,7 +106,7 @@ class RECEnsemble:
             nb[:, i, :] = torch.tensor(events.q_cands_nom[k])
 
         l = batch[Input.leadingLep]
-        for i, k in enumerate(("pt", "eta", "phi", "mass", "is_e")): # to do: add is_M here with new classifier inputs
+        for i, k in enumerate(("pt", "eta", "phi", "mass", "is_e", "is_mu" )): # to do: add is_M here with new classifier inputs
             if 'is' in k:
                 k = k.split('_')[1]
                 l[:, i, :] = torch.tensor(ak.singletons(events.flavor[k]))
@@ -136,6 +136,7 @@ class RECEnsemble:
         tt_logits = torch.zeros(n, 2, dtype=torch.float32)
         for model in self.models:
             mask = model.splitter.split(batch)[SplitterKeys.validation] #splitter knows which model to evaluate on which file
-            hh_logits[mask], tt_logits[mask] = model(b[mask], nb[mask], l[mask], nu[mask], a[mask])
+            if mask.sum() > 0:
+                hh_logits[mask], tt_logits[mask] = model(b[mask], nb[mask], l[mask], nu[mask], a[mask])
 
         return F.softmax(hh_logits, dim=-1).numpy(), F.softmax(tt_logits, dim=-1).numpy()

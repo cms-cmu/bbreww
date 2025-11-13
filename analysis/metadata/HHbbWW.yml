@@ -1,8 +1,8 @@
 runner:
   max_workers: 400 
   skipbadfiles: False
-  workers: 4
-  condor_memory: 4GB
+  workers: 6
+  condor_memory: 8GB
   data_tier: picoAOD
   condor_cores: 1
   condor_transfer_input_files:
@@ -23,7 +23,7 @@ runner:
 
 
 config:
-  run_SvB: false 
+  run_SvB: false
   #friends:
-    #SvB: "/srv/output/SvB_friendtree/make_friend_SvB.json@@SvB"
+    #SvB: "bbreww/metadata/friendtrees/make_friend_SvB.json@@SvB"
 

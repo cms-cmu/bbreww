@@ -1828,7 +1828,7 @@ class HCR(nn.Module):
         )
         self.layers.addLayer(self.final_combine, [self.WW_final_embed, self.HH_final_embed])
 
-        self.final_linear_layer = linear(in_channels=16, out_channels=3)
+        self.final_linear_layer = linear(in_channels=16, out_channels=self.nC)
         self.layers.addLayer(self.final_linear_layer)
         self.out = nn.Sequential(
             GhostBatchNorm1d(

@@ -51,6 +51,8 @@ def Hww_candidate_selection(events):
     Hww_cand = events.Wlnu_cand + events.Wqq_cand
     Hww_cand["dr"]   = events.Wlnu_cand.delta_r  (events.Wqq_cand)
     Hww_cand["dphi"] = events.Wlnu_cand.delta_phi(events.Wqq_cand)
+    Hww_cand["lqq_dr"] = events.Wlnu_cand.lep.delta_r(events.Wqq_cand)
+    print('cand values', Hww_cand.lqq_dr)
 
     events['Hww_cand'] = Hww_cand
     return events

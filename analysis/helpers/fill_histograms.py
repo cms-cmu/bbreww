@@ -63,6 +63,7 @@ def fill_histograms_nominal(
     histCuts: list = ['preselection'],
     channel_list: list = ['hadronic_W','leptonic_W'],
     flavor_list: list = ['e', 'mu'],
+    region_list: list = ['SR', 'CR'],
     run_SvB: bool = False
 ):
 
@@ -76,7 +77,7 @@ def fill_histograms_nominal(
         year=[year],
         channel=channel_list,
         flavor = flavor_list,
-        #region = region_list,
+        region = region_list,
         **dict((s, ...) for s in histCuts)
     )
 
@@ -99,6 +100,7 @@ def fill_histograms_nominal(
     #  HWW Candidate
     #
     fill += LorentzVector.plot_pair( ("HWW", R"$H_{WW}$"), "Hww_cand", skip=["n","lead","subl","st"], bins={"mass": (100, 100, 400)}, )
+    fill += hist.add("HWW.lqq_dr", (50, -0.5, 10, ("Hww_cand.lqq_dr", "qq - lepton  delta R")))
 
     #
     #  TTbar Candidate
@@ -123,7 +125,7 @@ def fill_histograms(
     histCuts: list = ['preselection'],
     channel_list: list = ['hadronic_W','leptonic_W'],
     flavor_list: list = ['e', 'mu'],
-    #region_list: list = ['e_region', 'mu_region']
+    region_list: list = ['SR', 'CR']
 ):
 
     fill = Fill(
@@ -136,7 +138,7 @@ def fill_histograms(
         year=[year],
         channel=channel_list,
         flavor = flavor_list,
-        #region = region_list,
+        region = region_list,
         **dict((s, ...) for s in histCuts)
     )
 

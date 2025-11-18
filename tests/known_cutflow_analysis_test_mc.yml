@@ -130,7 +130,7 @@ TTToSemiLeptonic_2022_EE:
         nominal_3j2b: 47.0
         lowpt_4j2b: 27.0
         lowpt_3j2b: 22.0
-        chi_sq_nom_4j2b: 60.0
+        chi_sq_nom_4j2b: 62.0
         chi_sq_nom_3j2b: 9.0
         chi_sq_lowpt_4j2b: 9.0
       weights:
@@ -148,7 +148,7 @@ TTToSemiLeptonic_2022_EE:
         nominal_3j2b: 1.5569562443460168
         lowpt_4j2b: 0.9023001264518771
         lowpt_3j2b: 0.6892382893810497
-        chi_sq_nom_4j2b: 1.9950059303721508
+        chi_sq_nom_4j2b: 2.1063022510498017
         chi_sq_nom_3j2b: 0.30253023187014744
         chi_sq_lowpt_4j2b: 0.30253023187014744
     mu_region:
@@ -167,7 +167,7 @@ TTToSemiLeptonic_2022_EE:
         nominal_3j2b: 49.0
         lowpt_4j2b: 35.0
         lowpt_3j2b: 20.0
-        chi_sq_nom_4j2b: 63.0
+        chi_sq_nom_4j2b: 64.0
         chi_sq_nom_3j2b: 12.0
         chi_sq_lowpt_4j2b: 15.0
       weights:
@@ -185,7 +185,7 @@ TTToSemiLeptonic_2022_EE:
         nominal_3j2b: 1.9110655785792252
         lowpt_4j2b: 1.349342587609508
         lowpt_3j2b: 0.7284814541659884
-        chi_sq_nom_4j2b: 2.360285137258096
+        chi_sq_nom_4j2b: 2.383703955858662
         chi_sq_nom_3j2b: 0.5259473343651008
         chi_sq_lowpt_4j2b: 0.5920861065640574
     SR:
@@ -211,7 +211,7 @@ TTToSemiLeptonic_2022_EE:
         nominal_3j2b: 17.0
         lowpt_4j2b: 9.0
         lowpt_3j2b: 9.0
-        chi_sq_nom_4j2b: 32.0
+        chi_sq_nom_4j2b: 33.0
         chi_sq_nom_3j2b: 5.0
         chi_sq_lowpt_4j2b: 5.0
       weights:
@@ -219,6 +219,6 @@ TTToSemiLeptonic_2022_EE:
         nominal_3j2b: 0.6345652225512503
         lowpt_4j2b: 0.40888277292144826
         lowpt_3j2b: 0.271963222200264
-        chi_sq_nom_4j2b: 1.2428433074782188
+        chi_sq_nom_4j2b: 1.2662621260787845
         chi_sq_nom_3j2b: 0.28270906644484645
         chi_sq_lowpt_4j2b: 0.28270906644484645

@@ -310,7 +310,6 @@ class analysis(processor.ProcessorABC):
                         "SvB", 
                         analysis_selections)
                 )
-        print(selected_events[selected_events.nominal_4j2b].SvB.phh)
 
         if not shift_name:
             output['events_processed'] = {}

@@ -9,7 +9,7 @@ hists:
         HHbbWW:
                 process: GluGluToHHTo2B2VLNu2J_kl_1p00
                 tag: signal
-                label: HH4b (x100)
+                label: HHbbWW (x100)
                 edgecolor: "#e42536"
                 fillcolor: "#e42536"            
                 histtype: step
@@ -17,12 +17,12 @@ hists:
 
 
 stack:
-        TTbar:
-                process: [TTToHadronic, TTToSemiLeptonic, TTTo2L2Nu]
-                tag: ttbar
-                fillcolor: "#85D1FBff"
+        Wjets:
+                process: [ WtoLNu-2Jets_0J, WtoLNu-2Jets_1J, WtoLNu-2Jets_2J]
+                tag: Wjets
+                fillcolor: "#9933FF"
                 edgecolor: k
-                label: $t\bar{t}$
+                label: W+jets
 
         tW:
                 process: [TbarWplustoLNu2Q, TbarWplusto2L2Nu, TWminustoLNu2Q, TWminusto2L2Nu]
@@ -30,13 +30,14 @@ stack:
                 fillcolor: "#FFDF7Fff"
                 edgecolor: k
                 label: tW
-
-        Wjets:
-                process: [ WtoLNu-2Jets_0J, WtoLNu-2Jets_1J, WtoLNu-2Jets_2J]
-                tag: Wjets
-                fillcolor: "#9933FF"
+        
+        TTbar:
+                process: [TTToHadronic, TTToSemiLeptonic, TTTo2L2Nu]
+                tag: ttbar
+                fillcolor: "#85D1FBff"
                 edgecolor: k
-                label: W+jets
+                label: $t\bar{t}$
+
 
 ratios:
         # dataToBkg:

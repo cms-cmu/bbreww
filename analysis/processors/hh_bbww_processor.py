@@ -24,7 +24,7 @@ from bbreww.analysis.helpers.candidate_selection import candidate_selection, Hbb
 from bbreww.analysis.helpers.gen_process import gen_process, add_gen_info, gen_studies
 from bbreww.analysis.helpers.fill_histograms import fill_histograms, fill_histograms_nominal
 from bbreww.analysis.helpers.classifier.classifier_ensemble import RECModelMetadata
-from bbreww.analysis.helpers.load_friend import FriendTemplate, parse_friends
+from bbreww.analysis.helpers.friendtrees.load_friend import FriendTemplate, parse_friends
 
 warnings.filterwarnings("ignore", "Missing cross-reference index for")
 warnings.filterwarnings("ignore", "Please ensure")
@@ -132,8 +132,14 @@ class analysis(processor.ProcessorABC):
             for k in self.friends:
                 if k.startswith("SvB"):
                     events[k] = self.friends[k].arrays(target) # load svb score friendtrees
-                else:
-                    self.run_SvB = False # set this flag to false if no SvB friendtrees provided
+            
+            events['SvB'] = events.SvB_kfold1
+            # Combine each field by adding (convert NaN to None, then to 0)
+            for field in ak.fields(events.SvB_kfold1):
+                comb = ak.concatenate([ak.singletons(events.SvB_kfold1[field]),
+                                ak.singletons(events.SvB_kfold2[field]),
+                                ak.singletons(events.SvB_kfold3[field])], axis=1)
+                events['SvB', field] = ak.max(comb, axis=1)
 
         if self.apply_dvtt:
             for k in self.friends:
@@ -281,11 +287,11 @@ class analysis(processor.ProcessorABC):
         selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
         # keep analysis_selections for compatibility with friendtrees code although it's redundant
         analysis_selections = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
-
+        
         # create classifier inputs root files (creates root files in EOS and json file pointing to all files)
         friends = { 'friends': {} }
         if self.make_classifier_input is not None:
-            from bbreww.analysis.helpers.dump_friendtrees import dump_input_friend
+            from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_input_friend
             friends["friends"] = ( friends["friends"]
                 | dump_input_friend(
                     selected_events[selected_events.nominal_4j2b],
@@ -295,15 +301,16 @@ class analysis(processor.ProcessorABC):
                     weight = "weight"
                 )
             )
-        
+
         if self.make_friend_SvB is not None:
-            from ..helpers.dump_friendtrees import dump_SvB
+            from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_SvB
             friends["friends"] = ( friends["friends"]|               
                 dump_SvB(selected_events[selected_events.nominal_4j2b], 
                         self.make_friend_SvB, 
                         "SvB", 
                         analysis_selections)
                 )
+        print(selected_events[selected_events.nominal_4j2b].SvB.phh)
 
         if not shift_name:
             output['events_processed'] = {}
@@ -328,7 +335,8 @@ class analysis(processor.ProcessorABC):
                         'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b',
                         ],
                 channel_list=['hadronic_W', 'leptonic_W'],
-                flavor_list=['e', 'mu']
+                flavor_list=['e', 'mu'],
+                region_list=['SR', 'CR']
             )
 
             hists_4j2b = fill_histograms_nominal(
@@ -339,6 +347,7 @@ class analysis(processor.ProcessorABC):
                 histCuts=['nominal_4j2b',   'chi_sq_nom_4j2b' ],
                 channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
+                region_list=['SR', 'CR'],
                 run_SvB = self.run_SvB
                 )
             return hists | output | friends | {"hists_4j2b": hists_4j2b["hists"], "categories_4j2b": hists_4j2b["categories"]}

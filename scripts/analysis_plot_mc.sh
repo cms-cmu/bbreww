@@ -27,9 +27,9 @@ run_command python bbreww/plots/makePlots.py $INPUT_DIR/test.coffea --doTest -o 
 # python bbreww/plots/makePlots.py output/full_run/output.coffea -o output/analysis_plot_mc -m bbreww/plots/metadata/plotsAll.yml --modifiers bbreww/plots/metadata/plotModifiers.yml
 
 display_section_header "Checking if pdf files exist"
-ls $OUTPUT_DIR/Run3/preselection/flavor_sum/channel_sum/Hbb_mass.pdf
-ls $OUTPUT_DIR/Run3/preselection/flavor_e/channel_sum/Hbb_mass.pdf
-ls $OUTPUT_DIR/Run3/preselection/flavor_mu/channel_sum/Hbb_mass.pdf
+ls $OUTPUT_DIR/Run3/preselection/flavor_sum/region_sum/Hbb_mass.pdf
+ls $OUTPUT_DIR/Run3/preselection/flavor_e/region_sum/Hbb_mass.pdf
+ls $OUTPUT_DIR/Run3/preselection/flavor_mu/region_sum/Hbb_mass.pdf
 #ls $OUTPUT_DIR/RunII/passPreSel/fourTag/SR/SvB_MA_ps_hh.pdf
 #ls $OUTPUT_DIR/RunII/passPreSel/fourTag/SR_vs_SB/data/SvB_MA_ps.pdf
 #ls $OUTPUT_DIR/RunII/passPreSel/fourTag/SR_vs_SB/HH4b/SvB_MA_ps.pdf
@@ -42,15 +42,15 @@ ls $OUTPUT_DIR/Run3/preselection/flavor_mu/channel_sum/Hbb_mass.pdf
 
 display_section_header "check making the plots from yaml "
 run_command python src/plotting/plot_from_yaml.py --input_yaml \
-        $OUTPUT_DIR/Run3/preselection/flavor_sum/channel_sum/Hbb_mass.yaml \
-        $OUTPUT_DIR/Run3/preselection/flavor_e/channel_sum/Hbb_mass.yaml \
-        $OUTPUT_DIR/Run3/preselection/flavor_mu/channel_sum/Hbb_mass.yaml \
+        $OUTPUT_DIR/Run3/preselection/flavor_sum/region_sum/Hbb_mass.yaml \
+        $OUTPUT_DIR/Run3/preselection/flavor_e/region_sum/Hbb_mass.yaml \
+        $OUTPUT_DIR/Run3/preselection/flavor_mu/region_sum/Hbb_mass.yaml \
         --out $OUTPUT_DIR/test_plots_from_yaml 
     
 display_section_header "Checking if pdf files exist"
-ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_sum/channel_sum/Hbb_mass.pdf
-ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_e/channel_sum/Hbb_mass.pdf
-ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_mu/channel_sum/Hbb_mass.pdf
+ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_sum/region_sum/Hbb_mass.pdf
+ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_e/region_sum/Hbb_mass.pdf
+ls $OUTPUT_DIR/test_plots_from_yaml/Run3/preselection/flavor_mu/region_sum/Hbb_mass.pdf
 # ls $OUTPUT_DIR/test_plots_from_yaml/RunII/passPreSel/fourTag/SR/SvB_MA_ps_zh.pdf
 # ls $OUTPUT_DIR/test_plots_from_yaml/RunII/passPreSel/fourTag/SR/SvB_MA_ps_hh.pdf
 # ls $OUTPUT_DIR/test_plots_from_yaml/RunII/passPreSel/fourTag/SR_vs_SB/data/SvB_MA_ps.pdf

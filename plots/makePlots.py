@@ -65,7 +65,7 @@ def doPlots(varList, debug=False):
                 try:
                     fig = makePlot(cfg, **plot_args)
                 except ValueError:
-                    print(f"ValueError: {v} {flavor} {channel} {cut}")
+                    print(f"ValueError: {v} {flavor} {region} {cut}")
                     pass
 
                 plt.close()
@@ -162,7 +162,7 @@ def doPlots(varList, debug=False):
                 plot_args  = {}
                 plot_args["var"] = v
                 plot_args["cut"] = "preselection"
-                plot_args["axis_opts"] = {"flavor":sum, "channel": ["hadronic_W", "leptonic_W", sum]}
+                plot_args["axis_opts"] = {"flavor":sum, "region" : ["SR", "CR", sum]}#"channel": ["hadronic_W", "leptonic_W", sum]}
                 plot_args["outputFolder"] = args.outputFolder
                 plot_args["process"] = process
                 plot_args["norm"] = True

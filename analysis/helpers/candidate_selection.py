@@ -52,7 +52,6 @@ def Hww_candidate_selection(events):
     Hww_cand["dr"]   = events.Wlnu_cand.delta_r  (events.Wqq_cand)
     Hww_cand["dphi"] = events.Wlnu_cand.delta_phi(events.Wqq_cand)
     Hww_cand["lqq_dr"] = events.Wlnu_cand.lep.delta_r(events.Wqq_cand)
-    print('cand values', Hww_cand.lqq_dr)
 
     events['Hww_cand'] = Hww_cand
     return events
@@ -90,10 +89,14 @@ def ttbar_candidate_selection(events, run_SvB: bool = True):
                                  }) # save the two ttbar candidates (order correctly matches classifier)
     
     if run_SvB:
-        #### select candidate based on ML classifier score
-        events["tt_cands", "b1Whad", "cls_score"] = events.SvB.tt_b1Whad  # corresponds to tt_2 in ML classifier
-        events["tt_cands", "b2Whad", "cls_score"] = events.SvB.tt_b2Whad  # corresponds to tt_1 in ML classifier
-        tt_best = ak.where(events.SvB.tt_b1Whad > events.SvB.tt_b2Whad, tt_2, tt_1)
+        try:
+            #### select candidate based on ML classifier score
+            events["tt_cands", "b1Whad", "cls_score"] = events.SvB.tt_b1Whad  # corresponds to tt_2 in ML classifier
+            events["tt_cands", "b2Whad", "cls_score"] = events.SvB.tt_b2Whad  # corresponds to tt_1 in ML classifier
+            tt_best = ak.where(events.SvB.tt_b1Whad > events.SvB.tt_b2Whad, tt_2, tt_1)
+        except:
+            tt_best = tt_1
+            print(f"classifier scores not available for {events.metadata['dataset']}, selecting a default value")
     else:
         # select ttbar candidates based on mass
         b_sel_nom =  tt_1.mass_distance < tt_2.mass_distance #pick pair closest to ttbar mass

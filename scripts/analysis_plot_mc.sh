@@ -9,7 +9,7 @@ if [ $? -ne 0 ]; then
 fi
 
 
-INPUT_DIR="${OUTPUT_BASE_DIR}/analysis_test_mc"
+INPUT_DIR="${OUTPUT_BASE_DIR}/full_run"
 OUTPUT_DIR="${OUTPUT_BASE_DIR}/analysis_plot_mc"
 echo "############### Checking and creating output directory"
 if [ ! -d $OUTPUT_DIR ]; then
@@ -18,10 +18,10 @@ fi
 
 echo "############### ls input file"
 ls $INPUT_DIR/
-ls $INPUT_DIR/test.coffea
+ls $INPUT_DIR/output.coffea
 
 display_section_header "Running makePlots.py"
-run_command python bbreww/plots/makePlots.py $INPUT_DIR/test.coffea --doTest -o $OUTPUT_DIR -m bbreww/plots/metadata/plotsAll.yml --modifiers bbreww/plots/metadata/plotModifiers.yml
+run_command python bbreww/plots/makePlots.py $INPUT_DIR/output.coffea -o $OUTPUT_DIR -m bbreww/plots/metadata/plotsAll.yml --modifiers bbreww/plots/metadata/plotModifiers.yml
 
 
 display_section_header "Checking if pdf files exist"

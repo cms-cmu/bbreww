@@ -1,14 +1,14 @@
 hists:
-        # data:
-        #         process: data
-        #         tag: fourTag
-        #         label: Four-tag data
-        #         edgecolor: k
-        #         fillcolor: k            
+        #data:
+        #        process: data
+        #        tag: data
+        #        label: data
+        #        edgecolor: k
+        #        fillcolor: k            
 
         HHbbWW:
                 process: GluGluToHHTo2B2VLNu2J_kl_1p00
-                tag: fourTag
+                tag: signal
                 label: HH4b (x100)
                 edgecolor: "#e42536"
                 fillcolor: "#e42536"            
@@ -18,19 +18,25 @@ hists:
 
 stack:
         TTbar:
-                process: [TTToSemiLeptonic]
-                # process: [TTToHadronic, TTToSemiLeptonic, TTTo2L2Nu]
-                tag: fourTag
+                process: [TTToHadronic, TTToSemiLeptonic, TTTo2L2Nu]
+                tag: ttbar
                 fillcolor: "#85D1FBff"
                 edgecolor: k
                 label: $t\bar{t}$
 
-        # Multijet:
-        #         process: data
-        #         tag: threeTag
-        #         fillcolor: "#FFDF7Fff"
-        #         edgecolor: k
-        #         label: QCD multijet
+        tW:
+                process: [TbarWplustoLNu2Q, TbarWplusto2L2Nu, TWminustoLNu2Q, TWminusto2L2Nu]
+                tag: tW
+                fillcolor: "#FFDF7Fff"
+                edgecolor: k
+                label: tW
+
+        Wjets:
+                process: [ WtoLNu-2Jets_0J, WtoLNu-2Jets_1J, WtoLNu-2Jets_2J]
+                tag: Wjets
+                fillcolor: "#9933FF"
+                edgecolor: k
+                label: W+jets
 
 ratios:
         # dataToBkg:
@@ -47,7 +53,7 @@ ratios:
         dataToBkg:
                 numerator:
                         type: hists
-                        key: HHbbWW
+                        key: data
                 denominator:
                         type: stack
                 uncertianty:
@@ -57,5 +63,5 @@ ratios:
 
 
 doRatio:
-    1
+    False
 

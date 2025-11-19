@@ -1,10 +1,10 @@
 hists:
-        #data:
-        #        process: data
-        #        tag: data
-        #        label: data
-        #        edgecolor: k
-        #        fillcolor: k            
+        data:
+                process: [data__EGamma, data__SingleMuon]
+                tag: data
+                label: data
+                edgecolor: k
+                fillcolor: k            
 
         HHbbWW:
                 process: GluGluToHHTo2B2VLNu2J_kl_1p00

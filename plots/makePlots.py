@@ -45,6 +45,7 @@ def doPlots(varList, debug=False):
         vDict["ylabel"] = "Entries"
         vDict["legend"] = True
         vDict["year"] = "Run3"
+        vDict["yscale"] = "log"
         vDict["doRatio"] = cfg.plotConfig.get("doRatio", True)
 
         if args.doTest:

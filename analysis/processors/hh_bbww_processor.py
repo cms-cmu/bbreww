@@ -15,12 +15,12 @@ from src.physics.objects.jet_corrections import apply_jerc_corrections
 from src.physics.event_weights import add_weights
 from src.data_formats.root import Chunk
 
-from bbreww.analysis.helpers.common import update_events, add_lepton_sfs, elliptical_region
+from bbreww.analysis.helpers.common import update_events, add_lepton_sfs
 from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
 from bbreww.analysis.helpers.cutflow import cutflow_bbWW
 from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec
 from bbreww.analysis.helpers.object_selection import apply_bbWW_preselection, apply_mll_cut
-from bbreww.analysis.helpers.candidate_selection import candidate_selection, Hbb_candidate_selection
+from bbreww.analysis.helpers.candidate_selection import candidate_selection
 from bbreww.analysis.helpers.gen_process import gen_process, add_gen_info, gen_studies
 from bbreww.analysis.helpers.fill_histograms import fill_histograms, fill_histograms_nominal
 from bbreww.analysis.helpers.classifier.classifier_ensemble import RECModelMetadata
@@ -50,6 +50,38 @@ def add_to_selection(cut_name, cut, selections, mask):
 
 
 class analysis(processor.ProcessorABC):
+    """
+    Coffea processor for HH→bbWW analysis workflows.
+
+    This class orchestrates the event selection, object reconstruction, chi-square calculation, corrections loading, 
+    creation of ML classifier inputs and loading of outputs, and histogram filling for the HH→bbWW semileptonic 
+    analysis. Currently, b-jet regression, electron and muon scale factors, and jet energy corrrections are all 
+    implemented. 
+
+    Key Features:
+        - Loads and applies ML classifier output from root files (friendtrees)
+        - Applies event selection, object selection, and cutflows for 4 jets, 3 jets and soft jets region (all 2 btags)
+        - Applies MC event weights with scale factors for leptons and jet energy corrections
+        - Fills histograms and optionally dumps friend trees for classifier inputs and weights
+        - Supports top candidate reconstruction
+        - Calculates a chi-square value for the different analysis regions 
+        - systematics (to be implemented)
+    
+    Args:
+        parameters (str): Path to yml file with all the object selection criteria (pt, eta, ID cuts)
+        corrections_metadata (str): Path to yml file pointing to all the central and local corrections files
+        make_classifier_input (str): Path to save ML classifier inputs as root files
+        fill_hists (bool): Whether to fill histograms
+        SvB (str | list[RECModelMetadata], optional): Metadata for SvB classifier to evaluate
+        make_friend_SvB (str): path to save ML classifier output 
+        run_SvB (str): Whether to load SvB classifier output scores
+        apply_dvtt (str): Whether to apply ttbar reweighting (yet to be fully implemented)
+        friends (dict): Dictionary of friend tree paths
+    
+    Returns:
+        dict: Output containing histograms, cutflow, and optionally dumped friend trees.
+
+        """
     def __init__(
         self,
         parameters: str = "bbreww/analysis/metadata/object_preselection_run3.yaml",
@@ -229,27 +261,11 @@ class analysis(processor.ProcessorABC):
                 cutflow.fill(events, cut_name, cumulative_cuts, weights.weight())
 
         selected_events = events[events.preselection]
-        selected_events = candidate_selection(selected_events, self.params, self.year, self.run_SvB, self.classifier_SvB) # select HH->bbWW candidates
-
-        #
-        #  Define the SR and CR regions
-        #   (Maybe move to Hbb_candidate_selection ?)
-        signal_region = elliptical_region(selected_events.Hbb_cand.mass, selected_events.Hbb_cand.dr,
-                                         105, 1.5, 70, 1.51 ) # elliptical signal region
-        control_region = ((~signal_region)
-                          & elliptical_region(selected_events.Hbb_cand.mass, selected_events.Hbb_cand.dr,
-                                              105, 1.5, 110, 2.38)) # sideband TTbar control region
-
-        selected_events['region'] = ak.zip({
-            'SR': ak.fill_none(signal_region, False),
-            'CR': ak.fill_none(control_region, False)
-        })
-
-
         del events
+        
+        selected_events = candidate_selection(selected_events, self.params, self.year, self.run_SvB, self.classifier_SvB) # select HH->bbWW candidates
         selected_events = chi_sq(selected_events) # chi square selection and calculation
         selected_events = chi_sq_cut(selected_events) # add chi square cuts booleans
-
 
         #add regions separated by chi square calculation
         add_to_selection(
@@ -302,6 +318,7 @@ class analysis(processor.ProcessorABC):
                 )
             )
 
+        # dumps classifier evaluation output into friendtrees (only possible when SvB model is provided)
         if self.make_friend_SvB is not None:
             from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_SvB
             friends["friends"] = ( friends["friends"]|               

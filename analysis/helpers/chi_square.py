@@ -83,6 +83,7 @@ def chi_sq(events):
     #
     chi2_tt_bjet_dr = chi_square(events.Hbb_cand.dr,     2.30,     0.81)  #delta R between b-jets
 
+    ### Note: tt_sel here now uses ML classifier output score instead of pair closest to ttbar mass
     chi2_tt = ak.zip( {"lepTop_mass" : chi_square(events.tt_sel.lepTop.mass,    165.55,    35.49), #leptonic top
                        "hadTop_mass" : chi_square(events.tt_sel.hadTop.mass,    171.55,    44.95), #hadronic top
                        "Wqq_mass"    : chi_square(events.Wqq_cand.mass,          73.9,     23.56), #hadronic W

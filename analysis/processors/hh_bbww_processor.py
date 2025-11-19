@@ -18,7 +18,7 @@ from src.data_formats.root import Chunk
 from bbreww.analysis.helpers.common import update_events, add_lepton_sfs
 from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
 from bbreww.analysis.helpers.cutflow import cutflow_bbWW
-from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec
+from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec, add_sf_top_pt
 from bbreww.analysis.helpers.object_selection import apply_bbWW_preselection, apply_mll_cut
 from bbreww.analysis.helpers.candidate_selection import candidate_selection
 from bbreww.analysis.helpers.gen_process import gen_process, add_gen_info, gen_studies
@@ -249,6 +249,7 @@ class analysis(processor.ProcessorABC):
             corrections_metadata=self.params[self.year],
         )
         weights = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, self.year, self.is_mc)
+        weights = add_sf_top_pt(self.processName, events, weights)
         events['weight'] = weights.weight()
 
         #study sequential cutflow (get weights and events after each cut)

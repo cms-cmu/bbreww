@@ -1,6 +1,6 @@
 import awkward as ak
 import numpy as np
-from bbreww.analysis.helpers.common import met_reconstr, distance
+from bbreww.analysis.helpers.common import met_reconstr, distance, elliptical_region
 from bbreww.analysis.helpers.classifier.SvB_helpers import compute_SvB
 
 def Hbb_candidate_selection(events):
@@ -16,6 +16,19 @@ def Hbb_candidate_selection(events):
     Hbb_cand["dphi"] = Hbb_cand["lead"].delta_phi(Hbb_cand["subl"])
 
     events['Hbb_cand'] = Hbb_cand
+
+    #
+    #  Define the SR and CR regions
+    signal_region = elliptical_region(events.Hbb_cand.mass, events.Hbb_cand.dr,
+                                        105, 1.5, 70, 1.51 ) # elliptical signal region
+    control_region = ((~signal_region)
+                        & elliptical_region(events.Hbb_cand.mass, events.Hbb_cand.dr,
+                                            105, 1.5, 110, 2.38)) # sideband TTbar control region
+
+    events['region'] = ak.zip({
+        'SR': ak.fill_none(signal_region, False),
+        'CR': ak.fill_none(control_region, False)
+    })
 
     return events
 

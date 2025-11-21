@@ -233,7 +233,6 @@ class analysis(processor.ProcessorABC):
         events['lowpt_4j2b'] = selection.all(*selection_list['lowpt_4j2b'])
         events['lowpt_3j2b'] =  selection.all(*selection_list['lowpt_3j2b'])
 
-
         events['flavor'] = ak.zip({
             'e':  selection.all('oneE') & selection.all(*selection_list['preselection']),
             'mu': selection.all('oneM') & selection.all(*selection_list['preselection'])
@@ -291,6 +290,8 @@ class analysis(processor.ProcessorABC):
             selection,
             selection_list['preselection']
         )
+        # last three bins of SvB distribution
+        selected_events['SvB_tail'] = (selected_events.nominal_4j2b) & (selected_events.SvB.phh > 0.94)
 
         # add chi square cuts selection in each analysis region
         selected_events['chi_sq_nom_4j2b'] = selected_events.nominal_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
@@ -336,7 +337,7 @@ class analysis(processor.ProcessorABC):
                 'sum_genweights': np.sum(selected_events.genWeight) if self.is_mc else self.n_events,
             }
             # add cuts for different regions
-            cutflow_list = ['nominal_4j2b','nominal_3j2b', 'lowpt_4j2b', 'lowpt_3j2b', 'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b']
+            cutflow_list = ['nominal_4j2b','nominal_3j2b', 'lowpt_4j2b', 'lowpt_3j2b', 'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b', 'SvB_tail']
             for cuts in cutflow_list:
                 cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True, fill_flavour = True)
             cutflow.add_output(output['events_processed'], self.dataset)

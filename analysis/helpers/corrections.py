@@ -140,7 +140,6 @@ def add_sf_top_pt(pname, events, weights):
         top_weight = arg["a"] * np.exp(arg["b"] * part.pt[:,0]) + arg["c"] * part.pt[:,0] + arg["d"]
         antitop_weight = arg["a"] * np.exp(arg["b"] * part.pt[:,1]) + arg["c"] * part.pt[:,1] + arg["d"]
         weight = np.sqrt(ak.prod([top_weight, antitop_weight], axis=0))
-        print('top_reweight', weight)
         # for i in range(10):
             # print("Top pt: {},   Top SF: {},   AntiTop pt :  {},   AntiTop SF: {}".format(part.pt[i,0], top_weight[i], part.pt[i,1], antitop_weight[i]))
     else:

@@ -6,11 +6,14 @@
 # canJet2.eta  : {"xlim":[-3,3]}
 # canJet3.eta  : {"xlim":[-3,3]}
 # canJets.mass : {"xlim":[0,100]}
-# othJets.mass : {"xlim":[0,100]}
+# othJets.mass : {"xlim":[0,100]}s
 # othJets.n    : {"xlim":[0,15]}
-# SvB_MA_ps_zh : {"rebin":5}
-# SvB_MA_ps_zz : {"rebin":4}
-# SvB_MA_ps_hh : {"rebin":10}
+SvB.phh :  {"yscale": 'log'}
+SvB.ptt :  {"yscale": 'log'}
+SvB.poth : {"yscale": 'log'}
+SvB.hh_vs_oth :  {"yscale": 'log'}
+SvB.hh_vs_tt : {"yscale": 'log'}
+SvB.tt_vs_oth :  {"yscale": 'log'}
 
 mbb_vs_bb_dr : {"2d":True}
 # quadJet_selected.lead_vs_subl_m : {"2d":True}

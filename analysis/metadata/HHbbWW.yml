@@ -1,15 +1,13 @@
 runner:
   max_workers: 400 
   skipbadfiles: False
-  workers: 4
-  condor_memory: 4GB
+  workers: 8
+  condor_memory: 10GB
   data_tier: picoAOD
   condor_cores: 1
   condor_transfer_input_files:
     - src/
-    - bbreww/analysis/
-    - bbreww/classifier/
-    - bbreww/metadata/
+    - bbreww/
     
   # rucio_regex_sites: 'T[123]_(US|CH|DE|UK)'
   allowlist_sites:
@@ -24,4 +22,10 @@ runner:
     - T2_US_Purdue
 
 
-# config:
+config:
+  run_SvB: True
+  friends:
+    SvB_kfold1: "bbreww/metadata/classifier/output/SvB_result_kfold0.json@@SvB"
+    SvB_kfold2: "bbreww/metadata/classifier/output/SvB_result_kfold1.json@@SvB"
+    SvB_kfold3: "bbreww/metadata/classifier/output/SvB_result_kfold2.json@@SvB"
+

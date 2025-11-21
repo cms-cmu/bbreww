@@ -5,20 +5,20 @@
 main:
   module: evaluate
   option:
-    - --max-evaluators 10 # use 3 workers to evaluate
+    - --max-evaluators 8 # use 8 workers to evaluate
 
 dataset:
   - module: bbWW.svb.Eval
     option:
       - --metadata bbreww/metadata/classifier/datasets_v4
-      - --max-workers 8 # use 8 workers to fetch metadatas for ROOT files
+      - --max-workers 4 # use 8 workers to fetch metadatas for ROOT files
       - --mc-processes GluGluToHHTo2B2VLNu2J ttbar 
       - --friends "" bbreww/metadata/classifier/output_friend.json@@classifier_input
   - module: bbWW.svb.Eval
     option:
       - --metadata bbreww/metadata/classifier/datasets_minor_bkgs_v4
-      - --max-workers 8 # use 8 workers to fetch metadatas for ROOT files
-      - --mc-processes  WplusJets tW
+      - --max-workers 4 # use 8 workers to fetch metadatas for ROOT files
+      - --mc-processes WplusJets tW
       - --friends "" bbreww/metadata/classifier/minorbkg_friend.json@@classifier_input
 
 model:
@@ -32,8 +32,8 @@ analysis:
   - module: kfold.Merge # merge different k-folds
     option:
       - --name svb # set the name of friend tree
-      - --step 100000 # set the step to read ROOT files
-      - --workers 5
+      - --step 1000000 # set the step to read ROOT files
+      - --workers 8
       - --clean # remove the original files
 
 setting:
@@ -42,4 +42,4 @@ setting:
       - output: "{SvB}"
   - module: ml.DataLoader
     option:
-      - num_workers: 8
+      - num_workers: 6

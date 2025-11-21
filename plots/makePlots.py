@@ -14,6 +14,7 @@ sys.path.insert(0, os.getcwd())
 from bbreww.plots.plots import load_config_bbWW
 from src.plotting.plots import makePlot, make2DPlot, load_hists, read_axes_and_cuts, parse_args
 from src.plotting.iPlot_config import plot_config
+
 cfg = plot_config()
 
 np.seterr(divide='ignore', invalid='ignore')
@@ -21,16 +22,20 @@ np.seterr(divide='ignore', invalid='ignore')
 def doPlots(varList, debug=False):
 
     if args.doTest:
-        varList = ["qq_mass", "Hbb.mass","mbb_vs_bb_dr"]
-
-    cut = "preselection"
-    cfg.set_hist_key("hists")
+        varList = [("Hbb.mass", "hists"), ("mbb_vs_bb_dr", "hists")]
 
     #
     #  Nominal 1D Plots
     #
-    for v in varList:
-        if debug: print(f"plotting 1D ...{v}")
+    for v, hist_key in varList:
+        if debug: print(f"plotting 1D ...{v} from {hist_key}")
+        cfg.set_hist_key(hist_key)
+
+        if hist_key == "hists":
+            cut = "preselection"
+        elif hist_key == "hists_4j2b":
+            cut = "nominal_4j2b"
+        
 
         vDict = cfg.plotModifiers.get(v, {})
         if debug: print(v, vDict, vDict.get("2d", False))
@@ -38,31 +43,30 @@ def doPlots(varList, debug=False):
             continue
 
         vDict["ylabel"] = "Entries"
-
         vDict["legend"] = True
         vDict["year"] = "Run3"
-        vDict["doRatio"] = False
-        #vDict["doRatio"] = cfg.plotConfig.get("doRatio", True)
+        vDict["yscale"] = "log"
+        vDict["doRatio"] = cfg.plotConfig.get("doRatio", True)
 
         if args.doTest:
             vDict["write_yaml"] = True
 
         for flavor in ["e", "mu", sum]:
-
-            for channel in ["hadronic_W", "leptonic_W", sum]:
+            #for channel in ["hadronic_W", "leptonic_W", sum]:
+            for region in ["SR", "CR", sum]:
 
                 if debug: print(f"plotting 1D ...{v}")
                 plot_args  = {}
                 plot_args["var"] = v
                 plot_args["cut"] = cut
                 plot_args["outputFolder"] = args.outputFolder
-                plot_args["axis_opts"] = {"flavor":flavor, "channel":channel}
+                plot_args["axis_opts"] = {"flavor":flavor, "region": region}  #"channel":channel,}
                 plot_args = plot_args | vDict
                 if debug: print(plot_args)
                 try:
                     fig = makePlot(cfg, **plot_args)
                 except ValueError:
-                    print(f"ValueError: {v} {flavor} {channel} {cut}")
+                    print(f"ValueError: {v} {flavor} {region} {cut}")
                     pass
 
                 plt.close()
@@ -87,15 +91,14 @@ def doPlots(varList, debug=False):
             vDict["write_yaml"] = True
 
         for process in ["HHbbWW","TTbar"]:
-
             for flavor in ["e", "mu", sum]:
-
-                for channel in ["hadronic_W", "leptonic_W", sum]:
+                #for channel in ["hadronic_W", "leptonic_W", sum]:
+                for region in ["SR", "CR", sum]:
 
                     plot_args  = {}
                     plot_args["var"] = v
                     plot_args["cut"] = cut
-                    plot_args["axis_opts"] = {"flavor":flavor, "channel":channel}
+                    plot_args["axis_opts"] = {"flavor":flavor, "region" :region} #"channel":channel}
                     plot_args["outputFolder"] = args.outputFolder
                     plot_args = plot_args | vDict
 
@@ -131,7 +134,8 @@ def doPlots(varList, debug=False):
                 #
                 # Comp channels
                 #
-                for channel in ["hadronic_W", "leptonic_W", sum]:
+                #for channel in ["hadronic_W", "leptonic_W", sum]:
+                for region in ["SR", "CR", sum]:
 
                     flavor = sum
 
@@ -139,7 +143,7 @@ def doPlots(varList, debug=False):
                     plot_args["var"] = v
                     plot_args["cut"] = ["preselection", "nominal_4j2b"]
                     plot_args["hist_key_list"] = ["hists", "hists_4j2b"]
-                    plot_args["axis_opts"] = {"flavor":flavor, "channel":channel}
+                    plot_args["axis_opts"] = {"flavor":flavor, "region": region} # "channel":channel}
                     plot_args["outputFolder"] = args.outputFolder
                     plot_args["process"] = process
                     plot_args["norm"] = True
@@ -159,7 +163,7 @@ def doPlots(varList, debug=False):
                 plot_args  = {}
                 plot_args["var"] = v
                 plot_args["cut"] = "preselection"
-                plot_args["axis_opts"] = {"flavor":sum, "channel": ["hadronic_W", "leptonic_W", sum]}
+                plot_args["axis_opts"] = {"flavor":sum, "region" : ["SR", "CR", sum]}#"channel": ["hadronic_W", "leptonic_W", sum]}
                 plot_args["outputFolder"] = args.outputFolder
                 plot_args["process"] = process
                 plot_args["norm"] = True
@@ -193,8 +197,15 @@ if __name__ == '__main__':
     cfg.axisLabelsDict, cfg.cutListDict = read_axes_and_cuts(cfg.hists, cfg.plotConfig, hist_keys=['hists','hists_4j2b'])
 
     if args.list_of_hists:
-        varList = args.list_of_hists
+        varList = [(v, 'hists') for v in args.list_of_hists]  # Default to 'hists'
     else:
-        varList = [h for h in cfg.hists[0]['hists'].keys() if not any(skip in h for skip in args.skip_hists)]
+        varList = []
+        for h in cfg.hists[0]['hists'].keys():
+            if not any(skip in h for skip in args.skip_hists):
+                varList.append((h, 'hists'))
+        
+        for h in cfg.hists[0].get('hists_4j2b', {}).keys():
+            if not any(skip in h for skip in args.skip_hists):
+                varList.append((h, 'hists_4j2b'))
 
     doPlots(varList, debug=args.debug)

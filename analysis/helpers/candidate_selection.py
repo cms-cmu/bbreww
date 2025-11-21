@@ -1,6 +1,7 @@
 import awkward as ak
 import numpy as np
-from bbreww.analysis.helpers.common import met_reconstr, distance
+from bbreww.analysis.helpers.common import met_reconstr, distance, elliptical_region
+from bbreww.analysis.helpers.classifier.SvB_helpers import compute_SvB
 
 def Hbb_candidate_selection(events):
 
@@ -15,6 +16,19 @@ def Hbb_candidate_selection(events):
     Hbb_cand["dphi"] = Hbb_cand["lead"].delta_phi(Hbb_cand["subl"])
 
     events['Hbb_cand'] = Hbb_cand
+
+    #
+    #  Define the SR and CR regions
+    signal_region = elliptical_region(events.Hbb_cand.mass, events.Hbb_cand.dr,
+                                        105, 1.5, 70, 1.51 ) # elliptical signal region
+    control_region = ((~signal_region)
+                        & elliptical_region(events.Hbb_cand.mass, events.Hbb_cand.dr,
+                                            105, 1.5, 110, 2.38)) # sideband TTbar control region
+
+    events['region'] = ak.zip({
+        'SR': ak.fill_none(signal_region, False),
+        'CR': ak.fill_none(control_region, False)
+    })
 
     return events
 
@@ -50,11 +64,12 @@ def Hww_candidate_selection(events):
     Hww_cand = events.Wlnu_cand + events.Wqq_cand
     Hww_cand["dr"]   = events.Wlnu_cand.delta_r  (events.Wqq_cand)
     Hww_cand["dphi"] = events.Wlnu_cand.delta_phi(events.Wqq_cand)
+    Hww_cand["lqq_dr"] = events.Wlnu_cand.lep.delta_r(events.Wqq_cand)
 
     events['Hww_cand'] = Hww_cand
     return events
 
-def ttbar_candidate_selection(events):
+def ttbar_candidate_selection(events, run_SvB: bool = True):
 
     lepTop_1 = (events.b_cands[:,0] + events.Wlnu_cand)
     hadTop_1 = (events.b_cands[:,1] + events.Wqq_cand)
@@ -82,9 +97,23 @@ def ttbar_candidate_selection(events):
 
     tt_2["mass_distance"] = distance(lepTop_2.mass,  hadTop_2.mass,  172.5, 172.5)
 
-    b_sel_nom =  tt_1.mass_distance < tt_2.mass_distance #pick pair closest to ttbar mass
-    tt_best  = ak.where(b_sel_nom,  tt_1 ,  tt_2)
-
+    events['tt_cands'] = ak.zip({"b1Whad": tt_2,
+                                 "b2Whad": tt_1,
+                                 }) # save the two ttbar candidates (order correctly matches classifier)
+    
+    if run_SvB:
+        try:
+            #### select candidate based on ML classifier score
+            events["tt_cands", "b1Whad", "cls_score"] = events.SvB.tt_b1Whad  # corresponds to tt_2 in ML classifier
+            events["tt_cands", "b2Whad", "cls_score"] = events.SvB.tt_b2Whad  # corresponds to tt_1 in ML classifier
+            tt_best = ak.where(events.SvB.tt_b1Whad > events.SvB.tt_b2Whad, tt_2, tt_1)
+        except:
+            tt_best = tt_1
+            print(f"classifier scores not available for {events.metadata['dataset']}, selecting a default value")
+    else:
+        # select ttbar candidates based on mass
+        b_sel_nom =  tt_1.mass_distance < tt_2.mass_distance #pick pair closest to ttbar mass
+        tt_best  = ak.where(b_sel_nom,  tt_1 ,  tt_2)
 
     tt_sel = ak.zip({"p": tt_best.lepTop + tt_best.hadTop,
                      "lepTop": tt_best.lepTop,
@@ -177,7 +206,7 @@ def ttbar_soft_candidate_selection(events):
     return events
 
 
-def candidate_selection(events, params, year):
+def candidate_selection(events, params, year, run_SvB, classifier_SvB = None):
 
     #
     # Common
@@ -185,14 +214,18 @@ def candidate_selection(events, params, year):
     events = Hbb_candidate_selection(events)
     events = Wlnu_candidate_selection(events)
 
+    # add ML classifier output scores
+    if classifier_SvB is not None:
+        compute_SvB(events,
+            mask = events.nominal_4j2b, # apply nominal analysis mask
+            SvB=classifier_SvB,
+            doCheck=False)
     #
     #  Nomninal Candidate selection
     #
     events = Wqq_candidate_selection(events)
     events = Hww_candidate_selection(events)
-    events = ttbar_candidate_selection(events)
-
-
+    events = ttbar_candidate_selection(events, run_SvB)
     #
     # soft jets analysis
     #
@@ -220,3 +253,4 @@ def bjet_flag(events,params,year):
     events['has_1_bjet'] = ak.num(j_bcand_pool, axis=1) >= 1
 
     return events
+    

@@ -1,4 +1,210 @@
 datasets:
+  TbarWplustoLNu2Q:
+    2022_preEE:
+      nanoAOD: /TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
+      picoAOD:
+        files: 
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_preEE/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_preEE/picoAOD.chunk1.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_preEE/picoAOD.chunk2.root
+        saved_events: 1118489
+        sumw: 157427415.81445312
+        sumw2: 5676214700.0
+        total_events: 4366467
+    2022_EE:
+      nanoAOD: /TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
+      picoAOD:
+        count: 16485994
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk1.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk2.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk3.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk4.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk5.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk6.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk7.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk8.root
+        saved_events: 4180234
+        sumw: 594379468.1132812
+        sumw2: 21431066200.75
+        total_events: 16485994
+    2023_preBPix:
+      nanoAOD: /TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v6/NANOAODSIM
+      picoAOD:
+        count: 9550671
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2023_preBPix/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2023_preBPix/picoAOD.chunk1.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2023_preBPix/picoAOD.chunk2.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2023_preBPix/picoAOD.chunk3.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2023_preBPix/picoAOD.chunk4.root
+        saved_events: 2394557
+        sumw: 344335807.21875
+        sumw2: 12415451664.0
+        total_events: 9550671
+    2023_BPix:
+      nanoAOD: /TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM
+      picoAOD:
+        count: 5177861
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2023_BPix/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2023_BPix/picoAOD.chunk1.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2023_BPix/picoAOD.chunk2.root
+        saved_events: 1284353
+        sumw: 186681211.3671875
+        sumw2: 6730991172.5
+        total_events: 5177861
+    xs: 19.31
+
+  TbarWplusto2L2Nu:
+    2022_preEE: 
+      nanoAOD: /TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
+      picoAOD:
+        files: 
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_preEE/picoAOD.root
+        saved_events: 422385
+        sumw: 8858744.15625
+        sumw2: 33717162.73828125
+        total_events: 2327688
+    2022_EE:
+      nanoAOD: /TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
+      picoAOD:
+        count: 8183339
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_EE/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_EE/picoAOD.chunk1.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_EE/picoAOD.chunk2.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_EE/picoAOD.chunk3.root
+        saved_events: 1504005
+        sumw: 31144335.41748047
+        sumw2: 118537781.09570312
+        total_events: 8183339
+    2023_preBPix:
+      nanoAOD: /TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v4/NANOAODSIM
+      picoAOD:
+        count: 4931000
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2023_preBPix/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2023_preBPix/picoAOD.chunk1.root
+        saved_events: 917987
+        sumw: 18766370.234375
+        sumw2: 71426808.359375
+        total_events: 4931000
+    2023_BPix:
+      nanoAOD: /TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM
+      picoAOD:
+        count: 2488000
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2023_BPix/picoAOD.root
+        saved_events: 459273
+        sumw: 9468815.318359375
+        sumw2: 36039322.0546875
+        total_events: 2488000
+    xs: 4.67
+
+  TWminustoLNu2Q:
+    2022_preEE:
+      nanoAOD: /TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
+      picoAOD:
+        files: 
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_preEE/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_preEE/picoAOD.chunk1.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_preEE/picoAOD.chunk2.root
+        saved_events: 1189726
+        sumw: 167105399.58007812
+        sumw2: 6013893487.3125
+        total_events: 4643600
+    2022_EE:
+      nanoAOD: /TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
+      picoAOD: 
+        count: 16666206
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk1.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk2.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk3.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk4.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk5.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk6.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk7.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk8.root
+        saved_events: 4226792
+        sumw: 599749862.1347656
+        sumw2: 21584284446.75
+        total_events: 16666206
+    2023_preBPix:
+      nanoAOD: /TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM
+      picoAOD:
+        count: 9650268
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2023_preBPix/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2023_preBPix/picoAOD.chunk1.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2023_preBPix/picoAOD.chunk2.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2023_preBPix/picoAOD.chunk3.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2023_preBPix/picoAOD.chunk4.root
+        saved_events: 2416835
+        sumw: 347275662.4453125
+        sumw2: 12497993558.25
+        total_events: 9650268
+    2023_BPix:
+      nanoAOD: /TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM
+      picoAOD:
+        count: 4952467
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2023_BPix/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2023_BPix/picoAOD.chunk1.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2023_BPix/picoAOD.chunk2.root
+        saved_events: 1227894
+        sumw: 178219854.0546875
+        sumw2: 6413904930.5
+        total_events: 4952467
+    xs: 19.31
+
+  TWminusto2L2Nu:
+    2022_preEE:
+      nanoAOD: /TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
+      picoAOD:
+        files:   
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2022_preEE/picoAOD.root
+        saved_events: 429326
+        sumw: 9001613.21875
+        sumw2: 34197107.3359375
+        total_events: 2369680
+    2022_EE:
+      nanoAOD: /TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
+      picoAOD:
+        count: 8129084
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2022_EE/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2022_EE/picoAOD.chunk1.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2022_EE/picoAOD.chunk2.root
+        saved_events: 1490143
+        sumw: 30879841.719726562
+        sumw2: 117311688.54492188
+        total_events: 8129084
+    2023_preBPix:
+      nanoAOD: /TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM
+      picoAOD:
+        count: 4985000
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2023_preBPix/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2023_preBPix/picoAOD.chunk1.root
+        saved_events: 923858
+        sumw: 18936446.275390625
+        sumw2: 71939072.15625
+        total_events: 4985000
+    2023_BPix:
+      nanoAOD: /TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM
+      picoAOD:
+        count: 2479000
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2023_BPix/picoAOD.root
+        saved_events: 456223
+        sumw: 9416999.836914062
+        sumw2: 35774716.568359375
+        total_events: 2479000
+    xs: 4.67
   WtoLNu-2Jets_0J:
     2022_preEE:
       nanoAOD: /WtoLNu-2Jets_0J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM
@@ -19,6 +225,26 @@ datasets:
         sumw: 42284738856048.0
         sumw_raw: 42284735332661.41
         total_events: 678397952
+    2023_preBPix:
+      nanoAOD: /WtoLNu-2Jets_0J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v3/NANOAODSIM
+      picoAOD:
+        count: 400648969
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_0J_2023_preBPix/picoAOD.root
+        saved_events: 340779
+        sumw: 24971706658880.0
+        sumw2: 2.45218597501141e+18
+        total_events: 400648969
+    2023_BPix: 
+      nanoAOD: /WtoLNu-2Jets_0J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM
+      picoAOD:
+        count: 199057715
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_0J_2023_BPix/picoAOD.root
+        saved_events: 169380
+        sumw: 12407048405072.0
+        sumw2: 1.2183396846529413e+18
+        total_events: 199057715
     xs: 55570.0
 
   WtoLNu-2Jets_1J:
@@ -46,6 +272,30 @@ datasets:
         sumw: 24933248681242.0
         sumw2: 5.0805963362169e+18
         total_events: 522553517
+    2023_preBPix:
+      nanoAOD: /WtoLNu-2Jets_1J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM
+      picoAOD:
+        count: 308622412
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2023_preBPix/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2023_preBPix/picoAOD.chunk1.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2023_preBPix/picoAOD.chunk2.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2023_preBPix/picoAOD.chunk3.root
+        saved_events: 1650981
+        sumw: 14726174748176.0
+        sumw2: 3.000622598280184e+18
+        total_events: 308622412
+    2023_BPix: 
+      nanoAOD: /WtoLNu-2Jets_1J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v2/NANOAODSIM
+      picoAOD:
+        count: 149340770
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2023_BPix/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_1J_2023_BPix/picoAOD.chunk1.root
+        saved_events: 794780
+        sumw: 7126894972416.0
+        sumw2: 1.4519855716384113e+18
+        total_events: 149340770
     xs: 9420.0
     
   WtoLNu-2Jets_2J:
@@ -94,121 +344,46 @@ datasets:
         sumw: 8893305299484.0
         sumw2: 2.4165984409799885e+18
         total_events: 344572777
+    2023_preBPix:
+      nanoAOD: /WtoLNu-2Jets_2J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM
+      picoAOD:
+        count: 193796359
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_preBPix/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_preBPix/picoAOD.chunk1.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_preBPix/picoAOD.chunk2.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_preBPix/picoAOD.chunk3.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_preBPix/picoAOD.chunk4.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_preBPix/picoAOD.chunk5.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_preBPix/picoAOD.chunk6.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_preBPix/picoAOD.chunk7.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_preBPix/picoAOD.chunk8.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_preBPix/picoAOD.chunk9.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_preBPix/picoAOD.chunk10.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_preBPix/picoAOD.chunk11.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_preBPix/picoAOD.chunk12.root
+        saved_events: 6444578
+        sumw: 4999230396168.0
+        sumw2: 1.3591554834133156e+18
+        total_events: 193796359
+    2023_BPix: 
+      nanoAOD: /WtoLNu-2Jets_2J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v2/NANOAODSIM
+      picoAOD:
+        count: 99486651
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_BPix/picoAOD.chunk0.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_BPix/picoAOD.chunk1.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_BPix/picoAOD.chunk2.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_BPix/picoAOD.chunk3.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_BPix/picoAOD.chunk4.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_BPix/picoAOD.chunk5.root
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/WtoLNu-2Jets_2J_2023_BPix/picoAOD.chunk6.root
+        saved_events: 3288858
+        sumw: 2567156015400.0
+        sumw2: 6.977315167440732e+17
+        total_events: 99486651
     xs: 3616.0
-
-  TbarWplustoLNu2Q:
-    2022_preEE:
-      nanoAOD: /TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
-      picoAOD:
-        files: 
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_preEE/picoAOD.chunk0.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_preEE/picoAOD.chunk1.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_preEE/picoAOD.chunk2.root
-        saved_events: 1118489
-        sumw: 157427415.81445312
-        sumw2: 5676214700.0
-        total_events: 4366467
-    2022_EE:
-      nanoAOD: /TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
-      picoAOD:
-        count: 16485994
-        files:
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk0.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk1.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk2.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk3.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk4.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk5.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk6.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk7.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplustoLNu2Q_2022_EE/picoAOD.chunk8.root
-        saved_events: 4180234
-        sumw: 594379468.1132812
-        sumw2: 21431066200.75
-        total_events: 16485994
-    xs: 19.31
-
-  TbarWplusto2L2Nu:
-    2022_preEE: 
-      nanoAOD: /TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
-      picoAOD:
-        files: 
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_preEE/picoAOD.root
-        saved_events: 422385
-        sumw: 8858744.15625
-        sumw2: 33717162.73828125
-        total_events: 2327688
-    2022_EE:
-      nanoAOD: /TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
-      picoAOD:
-        count: 8183339
-        files:
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_EE/picoAOD.chunk0.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_EE/picoAOD.chunk1.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_EE/picoAOD.chunk2.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarWplusto2L2Nu_2022_EE/picoAOD.chunk3.root
-        saved_events: 1504005
-        sumw: 31144335.41748047
-        sumw2: 118537781.09570312
-        total_events: 8183339
-    xs: 4.67
-
-  TWminustoLNu2Q:
-    2022_preEE:
-      nanoAOD: /TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
-      picoAOD:
-        files: 
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_preEE/picoAOD.chunk0.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_preEE/picoAOD.chunk1.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_preEE/picoAOD.chunk2.root
-        saved_events: 1189726
-        sumw: 167105399.58007812
-        sumw2: 6013893487.3125
-        total_events: 4643600
-    2022_EE:
-      nanoAOD: /TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
-      picoAOD: 
-        count: 16666206
-        files:
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk0.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk1.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk2.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk3.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk4.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk5.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk6.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk7.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminustoLNu2Q_2022_EE/picoAOD.chunk8.root
-        saved_events: 4226792
-        sumw: 599749862.1347656
-        sumw2: 21584284446.75
-        total_events: 16666206
-    xs: 19.31
-
-  TWminusto2L2Nu:
-    2022_preEE:
-      nanoAOD: /TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
-      picoAOD:
-        files:   
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2022_preEE/picoAOD.root
-        saved_events: 429326
-        sumw: 9001613.21875
-        sumw2: 34197107.3359375
-        total_events: 2369680
-    2022_EE:
-      nanoAOD: /TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
-      picoAOD:
-        count: 8129084
-        files:
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2022_EE/picoAOD.chunk0.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2022_EE/picoAOD.chunk1.root
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TWminusto2L2Nu_2022_EE/picoAOD.chunk2.root
-        saved_events: 1490143
-        sumw: 30879841.719726562
-        sumw2: 117311688.54492188
-        total_events: 8129084
-    xs: 4.67
-
+    
   TBbarQ: 
     2022_preEE:
       nanoAOD: /TBbarQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
@@ -219,7 +394,6 @@ datasets:
         sumw: 370365216.828125
         sumw2: 54430711575.0
         total_events: 2973675
-
     2022_EE:
       nanoAOD: /TBbarQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
       picoAOD:
@@ -231,7 +405,7 @@ datasets:
         sumw2: 185850358788.0
         total_events: 10153433
     xs: 145.0
-  
+    
   TbarBQ:
     2022_preEE:
       nanoAOD: /TbarBQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM

@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from src.classifier.ml import BatchType
 
 
-def _roc_data_selection(batch: BatchType):
+class _roc_data_selection:
     
     def __call__(self, batch: BatchType):
         selected = self._select(batch)
@@ -58,7 +58,7 @@ class Train(HCRTrain):
         return[
             ROC(
                 name="ttbar vs data",
-                selection=_roc_data_selection,
+                selection=_roc_data_selection(),
                 bins=ROC_BIN,
                 pos=["ttbar"],
                 neg=["data"]
@@ -70,8 +70,10 @@ class Eval(HCREval):
 
     @staticmethod
     def output_definition(batch: BatchType):
-            ttbar_idx = MultiClass.indices("ttbar")[0]
-            output = {
-                "p_score": batch[Output.class_prob][:, ttbar_idx]  # ttbar probability
-            }
-            return output
+    
+        output = {
+            "p_ttbar":  batch["p_ttbar"],
+            "p_data":   batch["p_data"],
+            "reweight": batch["p_data"] / batch["p_ttbar"]  # reweighting factor
+        }
+        return output

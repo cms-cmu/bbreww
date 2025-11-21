@@ -18,7 +18,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         nominal_3j2b: 2466.0
         lowpt_4j2b: 1724.0
         lowpt_3j2b: 1379.0
-        chi_sq_nom_4j2b: 2473.0
+        chi_sq_nom_4j2b: 2508.0
         chi_sq_nom_3j2b: 1144.0
         chi_sq_lowpt_4j2b: 1310.0
       weights:
@@ -36,7 +36,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         nominal_3j2b: 0.40322688752908487
         lowpt_4j2b: 0.2824563921797719
         lowpt_3j2b: 0.2262291062673464
-        chi_sq_nom_4j2b: 0.3979711746087323
+        chi_sq_nom_4j2b: 0.403514549930581
         chi_sq_nom_3j2b: 0.1838350381481189
         chi_sq_lowpt_4j2b: 0.2110139361761672
     mu_region:
@@ -55,7 +55,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         nominal_3j2b: 3829.0
         lowpt_4j2b: 2674.0
         lowpt_3j2b: 2056.0
-        chi_sq_nom_4j2b: 4042.0
+        chi_sq_nom_4j2b: 4096.0
         chi_sq_nom_3j2b: 1814.0
         chi_sq_lowpt_4j2b: 2065.0
       weights:
@@ -73,7 +73,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         nominal_3j2b: 0.7151459860149907
         lowpt_4j2b: 0.5039601771571235
         lowpt_3j2b: 0.3860714889617898
-        chi_sq_nom_4j2b: 0.7626416737072136
+        chi_sq_nom_4j2b: 0.7728950595039987
         chi_sq_nom_3j2b: 0.3372083919657098
         chi_sq_lowpt_4j2b: 0.39091182342280084
     SR:
@@ -82,7 +82,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         nominal_3j2b: 4301.0
         lowpt_4j2b: 2950.0
         lowpt_3j2b: 2292.0
-        chi_sq_nom_4j2b: 4671.0
+        chi_sq_nom_4j2b: 4731.0
         chi_sq_nom_3j2b: 2159.0
         chi_sq_lowpt_4j2b: 2435.0
       weights:
@@ -90,7 +90,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         nominal_3j2b: 0.7521041702374247
         lowpt_4j2b: 0.5154179910241325
         lowpt_3j2b: 0.4040462525334254
-        chi_sq_nom_4j2b: 0.8255889802681062
+        chi_sq_nom_4j2b: 0.8360517408785129
         chi_sq_nom_3j2b: 0.37501660722358154
         chi_sq_lowpt_4j2b: 0.42621967966774543
     CR:
@@ -99,7 +99,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         nominal_3j2b: 1063.0
         lowpt_4j2b: 754.0
         lowpt_3j2b: 596.0
-        chi_sq_nom_4j2b: 1071.0
+        chi_sq_nom_4j2b: 1088.0
         chi_sq_nom_3j2b: 464.0
         chi_sq_lowpt_4j2b: 551.0
       weights:
@@ -107,6 +107,6 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         nominal_3j2b: 0.19944790440569632
         lowpt_4j2b: 0.14147763741501898
         lowpt_3j2b: 0.11519308950667992
-        chi_sq_nom_4j2b: 0.19449991057298113
+        chi_sq_nom_4j2b: 0.19729450381558578
         chi_sq_nom_3j2b: 0.08351904699709764
         chi_sq_lowpt_4j2b: 0.10181828912830496

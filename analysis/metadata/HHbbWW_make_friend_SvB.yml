@@ -1,0 +1,18 @@
+runner:
+  workers: 4
+  condor_memory: 4GB
+  friend_metafile: make_friend_SvB
+  data_tier: picoAOD
+  friend_base: &friend_base root://cmseos.fnal.gov//store/user/akhanal/HHbbWW_classifier_v1/eval_output/
+  #friend_base: &friend_base /srv/output/tmp/ 
+  chunksize: 10000
+  condor_transfer_input_files:
+  - src/
+  - bbreww/
+
+config:
+  #run_SvB: true
+  SvB: 
+  - name: Final
+    path: bbreww/analysis/weights/result.json
+  make_friend_SvB: *friend_base

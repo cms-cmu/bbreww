@@ -66,7 +66,6 @@ class Train(CommonTrain):
         default=None,
         help="custom normalization factors per label (json format)",
     )
-
     def preprocess_by_group(self):
         from src.classifier.df.tools import add_label_index, add_label_index_from_column, prescale
 
@@ -91,7 +90,7 @@ class Train(CommonTrain):
                     ],
                     name="ttbar selection",
                 ),
-            )
+            ) 
         minor_bkgs =  ["WplusJets", "tW", "singleTop"]
         for bkg in minor_bkgs:
             if bkg in self.mc_processes:

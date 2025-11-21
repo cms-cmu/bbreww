@@ -19,6 +19,26 @@ GluGluToHHTo2B2VLNu2J_kl_0p00:
       sumw: 19936.747202396393
       sumw2: 1482.8239470720291
       total_events: 305116
+  2023_preBPix:
+    nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-0p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv13-133X_mcRun3_2023_realistic_ForNanov13_v1-v2/NANOAODSIM
+    picoAOD:
+      count: 265860
+      files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_kl_0p00_2023_preBPix/picoAOD.root
+      saved_events: 50077
+      sumw: 17368.21018218994
+      sumw2: 1292.6164749860764
+      total_events: 265860
+  2023_BPix:
+    nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-0p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv13-133X_mcRun3_2023_realistic_postBPix_ForNanov13_v2-v2/NANOAODSIM
+    picoAOD:
+      count: 133332
+      files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_kl_0p00_2023_BPix/picoAOD.root
+      saved_events: 24915
+      sumw: 8697.810965061188
+      sumw2: 647.9717762470245
+      total_events: 133332
   xs: 0.008356
 
 GluGluToHHTo2B2VLNu2J_kl_1p00:
@@ -28,7 +48,6 @@ GluGluToHHTo2B2VLNu2J_kl_1p00:
       count: 89899
       files:
       - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_2022_preEE/picoAOD.root
-      
       saved_events: 18216
       sumw: 2668.1345007419586
       sumw2: 98.87135451287031
@@ -76,7 +95,6 @@ GluGluToHHTo2B2VLNu2J_kl_2p45:
       sumw: 1266.6577880382538
       sumw2: 21.811901681125164
       total_events: 99103
-
   2022_EE:
     nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-2p45_kt-1p00_c2-0p00_LHEweights_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v1/NANOAODSIM
     picoAOD: 
@@ -87,6 +105,26 @@ GluGluToHHTo2B2VLNu2J_kl_2p45:
       sumw: 4449.171519517899
       sumw2: 76.15095929801464
       total_events: 346104
+  2023_preBPix:
+    nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-2p45_kt-1p00_c2-0p00_LHEweights_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v4/NANOAODSIM
+    picoAOD:
+      count: 299199
+      files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_kl_2p45_2023_preBPix/picoAOD.root
+      saved_events: 54174
+      sumw: 3838.1684771180153
+      sumw2: 65.83650813344866
+      total_events: 299199
+  2023_BPix:
+    nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-2p45_kt-1p00_c2-0p00_LHEweights_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM
+    picoAOD: 
+      count: 149445
+      files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_kl_2p45_2023_BPix/picoAOD.root
+      saved_events: 26894
+      sumw: 1911.724268734455
+      sumw2: 32.88805356062949
+      total_events: 149445
   xs: 0.001645
 
 GluGluToHHTo2B2VLNu2J_kl_5p00:
@@ -110,4 +148,24 @@ GluGluToHHTo2B2VLNu2J_kl_5p00:
       sumw: 25032.678651809692
       sumw2: 2170.425330042839
       total_events: 298369
+  2023_preBPix:
+    nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv13-133X_mcRun3_2023_realistic_ForNanov13_v1-v2/NANOAODSIM
+    picoAOD:
+      count: 266232
+      files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_kl_5p00_2023_preBPix/picoAOD.root
+      saved_events: 41702
+      sumw: 22340.750871658325
+      sumw2: 1935.6526548862457
+      total_events: 266232
+  2023_BPix:
+    nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv13-133X_mcRun3_2023_realistic_postBPix_ForNanov13_v2-v2/NANOAODSIM
+    picoAOD:
+      count: 132570
+      files:
+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/GluGluToHHTo2B2VLNu2J_kl_5p00_2023_BPix/picoAOD.root
+      saved_events: 20560
+      sumw: 11127.437145233154
+      sumw2: 964.2140638232231
+      total_events: 132570
   xs: 0.01099

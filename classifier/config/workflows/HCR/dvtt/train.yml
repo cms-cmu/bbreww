@@ -23,6 +23,7 @@ dataset:
   - module: bbWW.dvtt.TrainBaseline # this module loads all backgrounds if mc_processes is not specified
     option:
       - --metadata bbreww/metadata/classifier/datasets_v4
+      - --mc-processes ttbar
       - --max-workers 8 # use 8 workers to load ROOT files
       - --friends "" bbreww/metadata/classifier/output_friend.json@@classifier_input # set input friend tree
 

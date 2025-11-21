@@ -13,22 +13,31 @@ from omegaconf import OmegaConf
 from src.physics.event_selection import apply_event_selection
 from src.physics.objects.jet_corrections import apply_jerc_corrections
 from src.physics.event_weights import add_weights
+from src.data_formats.root import Chunk
 
-from bbreww.analysis.helpers.common import update_events, add_lepton_sfs, elliptical_region
+from bbreww.analysis.helpers.common import update_events, add_lepton_sfs
 from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
 from bbreww.analysis.helpers.cutflow import cutflow_bbWW
-from bbreww.analysis.helpers.dump_friendtrees import dump_input_friend
-from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec
+from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec, add_sf_top_pt
 from bbreww.analysis.helpers.object_selection import apply_bbWW_preselection, apply_mll_cut
-from bbreww.analysis.helpers.candidate_selection import candidate_selection, Hbb_candidate_selection
+from bbreww.analysis.helpers.candidate_selection import candidate_selection
 from bbreww.analysis.helpers.gen_process import gen_process, add_gen_info, gen_studies
 from bbreww.analysis.helpers.fill_histograms import fill_histograms, fill_histograms_nominal
+from bbreww.analysis.helpers.classifier.classifier_ensemble import RECModelMetadata
+from bbreww.analysis.helpers.friendtrees.load_friend import FriendTemplate, parse_friends
 
 warnings.filterwarnings("ignore", "Missing cross-reference index for")
 warnings.filterwarnings("ignore", "Please ensure")
 warnings.filterwarnings("ignore", "invalid value")
 
 vector.register_awkward()
+
+def _init_classfier(path: str | list[RECModelMetadata]):
+    from ..helpers.classifier.classifier_ensemble import RECEnsemble
+    if path is None:
+        return None
+    return RECEnsemble(path)
+
 
 def add_to_selection(cut_name, cut, selections, mask):
     presel_mask = selections.all(*mask)
@@ -41,18 +50,60 @@ def add_to_selection(cut_name, cut, selections, mask):
 
 
 class analysis(processor.ProcessorABC):
+    """
+    Coffea processor for HH→bbWW analysis workflows.
+
+    This class orchestrates the event selection, object reconstruction, chi-square calculation, corrections loading, 
+    creation of ML classifier inputs and loading of outputs, and histogram filling for the HH→bbWW semileptonic 
+    analysis. Currently, b-jet regression, electron and muon scale factors, and jet energy corrrections are all 
+    implemented. 
+
+    Key Features:
+        - Loads and applies ML classifier output from root files (friendtrees)
+        - Applies event selection, object selection, and cutflows for 4 jets, 3 jets and soft jets region (all 2 btags)
+        - Applies MC event weights with scale factors for leptons and jet energy corrections
+        - Fills histograms and optionally dumps friend trees for classifier inputs and weights
+        - Supports top candidate reconstruction
+        - Calculates a chi-square value for the different analysis regions 
+        - systematics (to be implemented)
+    
+    Args:
+        parameters (str): Path to yml file with all the object selection criteria (pt, eta, ID cuts)
+        corrections_metadata (str): Path to yml file pointing to all the central and local corrections files
+        make_classifier_input (str): Path to save ML classifier inputs as root files
+        fill_hists (bool): Whether to fill histograms
+        SvB (str | list[RECModelMetadata], optional): Metadata for SvB classifier to evaluate
+        make_friend_SvB (str): path to save ML classifier output 
+        run_SvB (str): Whether to load SvB classifier output scores
+        apply_dvtt (str): Whether to apply ttbar reweighting (yet to be fully implemented)
+        friends (dict): Dictionary of friend tree paths
+    
+    Returns:
+        dict: Output containing histograms, cutflow, and optionally dumped friend trees.
+
+        """
     def __init__(
         self,
         parameters: str = "bbreww/analysis/metadata/object_preselection_run3.yaml",
         corrections_metadata: str = "src/physics/corrections.yml",
         make_classifier_input:str = None,
         fill_hists: bool = True,
+        SvB: str|list[RECModelMetadata] = None,
+        make_friend_SvB: str = None,
+        run_SvB: bool = True,
+        apply_dvtt: bool = False,
+        friends: dict[str, str|FriendTemplate] = None,
     ):
         self.parameters = parameters
         loaded_parameters = OmegaConf.load(self.parameters)
         self.params = OmegaConf.merge(corrections_metadata, loaded_parameters)
         self.make_classifier_input = make_classifier_input
         self.fill_histograms = fill_hists
+        self.classifier_SvB = _init_classfier(SvB)
+        self.make_friend_SvB = make_friend_SvB
+        self.run_SvB = run_SvB
+        self.apply_dvtt = apply_dvtt
+        self.friends = parse_friends(friends)
 
     def process(self, events):
 
@@ -69,6 +120,8 @@ class analysis(processor.ProcessorABC):
             self.params[self.year],
             not self.is_mc
         )
+
+        target = Chunk.from_coffea_events(events)
 
         jets = ak.where(
             events.Jet.btagPNetB >= self.params[self.year].btagWP.M,
@@ -107,6 +160,25 @@ class analysis(processor.ProcessorABC):
                     ({"Jet": jets.JER.down, "MET": met.JER.down}, "JERDown"),
                 ])
         '''
+        if self.run_SvB:
+            for k in self.friends:
+                if k.startswith("SvB"):
+                    events[k] = self.friends[k].arrays(target) # load svb score friendtrees
+            
+            events['SvB'] = events.SvB_kfold1
+            # Combine each field by adding (convert NaN to None, then to 0)
+            for field in ak.fields(events.SvB_kfold1):
+                comb = ak.concatenate([ak.singletons(events.SvB_kfold1[field]),
+                                ak.singletons(events.SvB_kfold2[field]),
+                                ak.singletons(events.SvB_kfold3[field])], axis=1)
+                events['SvB', field] = ak.max(comb, axis=1)
+
+        if self.apply_dvtt:
+            for k in self.friends:
+                if k.startswith("DvTT"):
+                    events[k] = self.friends[k].arrays(target) # load ttbar (Data vs. TT) reweighting scores
+                else:
+                    self.apply_dvtt = False # set this flag to false if no DvTT friendtrees provided
 
         weights = Weights(None, storeIndividual=True)
         list_weight_names = []
@@ -177,6 +249,7 @@ class analysis(processor.ProcessorABC):
             corrections_metadata=self.params[self.year],
         )
         weights = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, self.year, self.is_mc)
+        weights = add_sf_top_pt(self.processName, events, weights)
         events['weight'] = weights.weight()
 
         #study sequential cutflow (get weights and events after each cut)
@@ -188,30 +261,12 @@ class analysis(processor.ProcessorABC):
                 cumulative_cuts.append(cut_name)
                 cutflow.fill(events, cut_name, cumulative_cuts, weights.weight())
 
-
         selected_events = events[events.preselection]
-
-        selected_events = candidate_selection(selected_events, self.params, self.year) # select HH->bbWW candidates
-
-        #
-        #  Define the SR and CR regions
-        #   (Maybe move to Hbb_candidate_selection ?)
-        signal_region = elliptical_region(selected_events.Hbb_cand.mass, selected_events.Hbb_cand.dr,
-                                         105, 1.5, 70, 1.51 ) # elliptical signal region
-        control_region = ((~signal_region)
-                          & elliptical_region(selected_events.Hbb_cand.mass, selected_events.Hbb_cand.dr,
-                                              105, 1.5, 110, 2.38)) # sideband TTbar control region
-
-        selected_events['region'] = ak.zip({
-            'SR': ak.fill_none(signal_region, False),
-            'CR': ak.fill_none(control_region, False)
-        })
-
-
         del events
+        
+        selected_events = candidate_selection(selected_events, self.params, self.year, self.run_SvB, self.classifier_SvB) # select HH->bbWW candidates
         selected_events = chi_sq(selected_events) # chi square selection and calculation
         selected_events = chi_sq_cut(selected_events) # add chi square cuts booleans
-
 
         #add regions separated by chi square calculation
         add_to_selection(
@@ -247,20 +302,32 @@ class analysis(processor.ProcessorABC):
             'leptonic_W': selection.all('leptonic_W')[selection.all(*selection_list['preselection'])]
         })
         selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
+        # keep analysis_selections for compatibility with friendtrees code although it's redundant
         analysis_selections = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
-
+        
+        # create classifier inputs root files (creates root files in EOS and json file pointing to all files)
         friends = { 'friends': {} }
         if self.make_classifier_input is not None:
-            selev = selected_events[selected_events.nominal_4j2b]
+            from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_input_friend
             friends["friends"] = ( friends["friends"]
                 | dump_input_friend(
-                    selev,
+                    selected_events[selected_events.nominal_4j2b],
                     self.make_classifier_input,
                     "classifier_input",
                     analysis_selections,
                     weight = "weight"
                 )
             )
+
+        # dumps classifier evaluation output into friendtrees (only possible when SvB model is provided)
+        if self.make_friend_SvB is not None:
+            from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_SvB
+            friends["friends"] = ( friends["friends"]|               
+                dump_SvB(selected_events[selected_events.nominal_4j2b], 
+                        self.make_friend_SvB, 
+                        "SvB", 
+                        analysis_selections)
+                )
 
         if not shift_name:
             output['events_processed'] = {}
@@ -274,32 +341,35 @@ class analysis(processor.ProcessorABC):
                 cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True, fill_flavour = True)
             cutflow.add_output(output['events_processed'], self.dataset)
 
-
-
-        hists = fill_histograms(
-            selected_events,
-            processName=self.processName,
-            year=self.year_label,
-            is_mc=self.is_mc,
-            histCuts=['preselection',
-                      'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b',
-                      'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b',
-                      ],
-            channel_list=['hadronic_W', 'leptonic_W'],
-            flavor_list=['e', 'mu']
-        )
-
-        hists_4j2b = fill_histograms_nominal(
-            selected_events[selected_events.nominal_4j2b],
-            processName=self.processName,
-            year=self.year_label,
-            is_mc=self.is_mc,
-            histCuts=['nominal_4j2b',   'chi_sq_nom_4j2b' ],
-            channel_list=['hadronic_W', 'leptonic_W'],
-            flavor_list=['e', 'mu']
+        if self.fill_histograms:
+            hists = fill_histograms(
+                selected_events,
+                processName=self.processName,
+                year=self.year_label,
+                is_mc=self.is_mc,
+                histCuts=['preselection',
+                        'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b',
+                        'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b',
+                        ],
+                channel_list=['hadronic_W', 'leptonic_W'],
+                flavor_list=['e', 'mu'],
+                region_list=['SR', 'CR']
             )
 
-        return hists | output | friends | {"hists_4j2b": hists_4j2b["hists"], "categories_4j2b": hists_4j2b["categories"]}
+            hists_4j2b = fill_histograms_nominal(
+                selected_events[selected_events.nominal_4j2b],
+                processName=self.processName,
+                year=self.year_label,
+                is_mc=self.is_mc,
+                histCuts=['nominal_4j2b',   'chi_sq_nom_4j2b' ],
+                channel_list=['hadronic_W', 'leptonic_W'],
+                flavor_list=['e', 'mu'],
+                region_list=['SR', 'CR'],
+                run_SvB = self.run_SvB
+                )
+            return hists | output | friends | {"hists_4j2b": hists_4j2b["hists"], "categories_4j2b": hists_4j2b["categories"]}
+        else:
+            return output | friends
 
     def postprocess(self, accumulator):
         return accumulator

@@ -197,5 +197,9 @@ class TrainBaseline(_picoAOD.Signal, _picoAOD.Background, Train):
     ...
 
 class Eval(_picoAOD.Signal, _picoAOD.Background, CommonEval): 
-    """Evaluation dataset for HH→bbWW classifier"""
+    """MC Evaluation for HH→bbWW classifier"""
+    ...
+
+class DataEval(_picoAOD.Data, CommonEval): 
+    """Data Evaluation for HH→bbWW classifier"""
     ...

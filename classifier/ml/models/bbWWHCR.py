@@ -161,15 +161,12 @@ class HCRModel(Model):
         return self._nn
 
     def train(self, batch: BatchType, compute_shap: bool = False) -> Tensor:
-        hh, tt = self._nn(*_HCRInput(batch, self._device))
+        hh, tt, ww = self._nn(*_HCRInput(batch, self._device))
         batch[Output.hh_raw] = hh
         batch[Output.tt_raw] = tt
-        
+        batch[Output.ww_raw] = ww
+
         loss = self._loss(batch)
-        
-        ## shap is still work in progress
-        #if compute_shap and self._compute_shap:
-        #    self._shap_results = self._compute_shap_gradient(batch)
         
         return loss
     
@@ -178,14 +175,16 @@ class HCRModel(Model):
         scalars = defaultdict(float)
         scalar_funcs = self._benchmarks.scalars
         rocs = [r.copy() for r in self._benchmarks.rocs]
-        
+
         for batch in batches:
-            hh, tt = self._nn(*_HCRInput(batch, self._device))
+            hh, tt, ww = self._nn(*_HCRInput(batch, self._device))
             batch |= {
                 Output.hh_raw: hh,
                 Output.tt_raw: tt,
+                Output.ww_raw: ww,
                 Output.hh_prob: F.softmax(hh, dim=1),
-                Output.tt_prob: F.softmax(tt, dim=1)
+                Output.tt_prob: F.softmax(tt, dim=1),
+                Output.ww_prob: F.softmax(ww, dim=1)
             }
             sumw = to_num(batch[Input.weight].sum())
             if scalar_funcs is None:
@@ -230,7 +229,7 @@ class HCRModel(Model):
             
             def forward(self, X):
                 splits = torch.split(X, self.n_features, dim=1)
-                hh, _ = self.model(*splits)
+                hh, *_ = self.model(*splits)
                 signal_idx = MultiClass.trainable_labels.index("signal")
                 probs = F.softmax(hh, dim=1)[:, signal_idx]
                 return probs.unsqueeze(1)
@@ -388,15 +387,17 @@ class HCRModelEval(Model):
         selection = self._splitter.split(batch)[SplitterKeys.validation]
         selector = Selector(selection)
 
-        HH, _ = self._nn(*_HCRInput(batch, self._device, selection))
+        HH, *_ = self._nn(*_HCRInput(batch, self._device, selection))
         TT_cands = self._nn._last_tt_logits #TTbar candidates scores
-
+        WW_score = self.nn._WW_logits
+        
         HH = F.softmax(HH, dim=1).cpu()
         TT_cands = F.softmax(TT_cands, dim=-1).cpu()
         
         output = {}
         output["tt_b1Whad"] = TT_cands[:, 0]
         output["tt_b2Whad"] = TT_cands[:, 1]
+        output["WW_score"] = WW_score
         for i, label in enumerate(self._classes):   
             output[f"p_{label}"] = HH[:, i]
         return selector.pad(map_batch(self._mapping, output))

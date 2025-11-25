@@ -11,16 +11,34 @@ def add_gen_info(events, is_mc):
         events['GenPart','isZ'] = (abs(gen.pdgId)==23)&gen.hasFlags(['fromHardProcess', 'isLastCopy'])
         events['GenPart','isNu'] = ((abs(gen.pdgId)==12)|(abs(gen.pdgId)==14))#& gen.hasFlags(['isPrompt'])
 
+        #print(ak.local_index(events.GenPart[events.GenPart.isW].pdgId))
+        #print(events.GenPart[events.GenPart.isLepW].pdgId)
+        
+        
         events['isHtoW'] = events.GenPart[(events.GenPart[events.GenPart[events.GenPart.isW].genPartIdxMother].pdgId== 25)]
 
         ## non-bjets gen matched with W jets decaying to quarks
         gen_qFromW = gen_match(events.GenPart, [1,2,3,4], [24])
-        events['gen_bFromH'] = gen_match(events.GenPart, [5], [25] )
+        events['gen_bFromH'] = gen_match(events.GenPart, [5], [25])
 
         try:
             events['Jet', 'isQfromW']= ak.any(gen_qFromW.metric_table(events.Jet)< 0.2,axis=1)
             if 'HH' in events.metadata['dataset']:
                 events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
+
+            ## flag which W is on shell (only for signal)
+            is_lep = ((events.GenPart[events.GenPart.genPartIdxMother].isW) &
+                ((abs(events.GenPart.pdgId) == 11) | (abs(events.GenPart.pdgId) == 13))) # electrons or muons
+            
+            lepWidx = gen[is_lep].genPartIdxMother
+            lepW = gen[lepWidx]
+
+            hadWidx = gen[~is_lep & (abs(gen.pdgId) <= 5)].genPartIdxMother
+            hadW = events.GenPart[hadWidx]
+            hadW = ak.pad_none(hadW[hadW.isW], 1, axis=1)
+
+            events['isLepW'] = lepW.mass > hadW[:,0].mass # (pick 0 index because there are duplicate W's due to 2 quarks) 
+        
         except:
             events['Jet', 'isQfromW'] = ak.zeros_like(events.Jet.pt, dtype=bool)
 

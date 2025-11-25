@@ -1956,7 +1956,7 @@ class HCR(nn.Module):
 
         TT_sel = torch.matmul(TT, TT_score.unsqueeze(-1))
         TT_final = self.out_tt(TT_sel)  # Shape: (n, nC)
-        TT_final = TT_logits.squeeze(-1)
+        #TT_final = TT_logits.squeeze(-1)
         self._last_tt_logits = TT_logits.detach() # save TTbar candidates scores
 
         # final HH reconstruction scores
@@ -1966,7 +1966,8 @@ class HCR(nn.Module):
                         qqMdR[:, :, 0, 1:2], # there are duplicate pairs, so only keep 1
                         scalars], dim=-1)        
         WW_final = self.WW_final_embed(WW)
-
+        self._WW_logits= WW_final.detach() # save WW system score
+        
         HH = torch.cat([
                 bb,
                 WW,
@@ -1980,7 +1981,7 @@ class HCR(nn.Module):
         HH_logits = torch.cat([HH_final, TT_sel], dim=-1) # combine HH and H-> WW scores
         HH_logits = self.out(HH_logits)
 
-        return HH_logits, TT_final
+        return HH_logits, TT_final, WW_final
 
     def setStore(self, store):
         self.store = store

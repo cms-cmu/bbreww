@@ -90,8 +90,9 @@ class analysis(processor.ProcessorABC):
         fill_hists: bool = True,
         SvB: str|list[RECModelMetadata] = None,
         make_friend_SvB: str = None,
-        run_SvB: bool = True,
+        run_SvB: bool = False,
         apply_dvtt: bool = False,
+        top_pt_reweight: bool = True,
         friends: dict[str, str|FriendTemplate] = None,
     ):
         self.parameters = parameters
@@ -103,6 +104,7 @@ class analysis(processor.ProcessorABC):
         self.make_friend_SvB = make_friend_SvB
         self.run_SvB = run_SvB
         self.apply_dvtt = apply_dvtt
+        self.top_pt_reweight = top_pt_reweight
         self.friends = parse_friends(friends)
 
     def process(self, events):
@@ -164,14 +166,6 @@ class analysis(processor.ProcessorABC):
             for k in self.friends:
                 if k.startswith("SvB"):
                     events[k] = self.friends[k].arrays(target) # load svb score friendtrees
-            
-            events['SvB'] = events.SvB_kfold1
-            # Combine each field by adding (convert NaN to None, then to 0)
-            for field in ak.fields(events.SvB_kfold1):
-                comb = ak.concatenate([ak.singletons(events.SvB_kfold1[field]),
-                                ak.singletons(events.SvB_kfold2[field]),
-                                ak.singletons(events.SvB_kfold3[field])], axis=1)
-                events['SvB', field] = ak.max(comb, axis=1)
 
         if self.apply_dvtt:
             for k in self.friends:
@@ -233,7 +227,6 @@ class analysis(processor.ProcessorABC):
         events['lowpt_4j2b'] = selection.all(*selection_list['lowpt_4j2b'])
         events['lowpt_3j2b'] =  selection.all(*selection_list['lowpt_3j2b'])
 
-
         events['flavor'] = ak.zip({
             'e':  selection.all('oneE') & selection.all(*selection_list['preselection']),
             'mu': selection.all('oneM') & selection.all(*selection_list['preselection'])
@@ -249,7 +242,7 @@ class analysis(processor.ProcessorABC):
             corrections_metadata=self.params[self.year],
         )
         weights = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, self.year, self.is_mc)
-        weights = add_sf_top_pt(self.processName, events, weights)
+        weights = add_sf_top_pt(self.processName, self.top_pt_reweight, events, weights)
         events['weight'] = weights.weight()
 
         #study sequential cutflow (get weights and events after each cut)
@@ -291,6 +284,9 @@ class analysis(processor.ProcessorABC):
             selection,
             selection_list['preselection']
         )
+        # last three bins of SvB distribution
+        selected_events['SvB_tail'] = ((selected_events.nominal_4j2b) & (selected_events.SvB.phh > 0.94)
+                                       if self.run_SvB else ak.ones_like(selected_events.MET.pt, dtype= bool))
 
         # add chi square cuts selection in each analysis region
         selected_events['chi_sq_nom_4j2b'] = selected_events.nominal_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
@@ -336,7 +332,7 @@ class analysis(processor.ProcessorABC):
                 'sum_genweights': np.sum(selected_events.genWeight) if self.is_mc else self.n_events,
             }
             # add cuts for different regions
-            cutflow_list = ['nominal_4j2b','nominal_3j2b', 'lowpt_4j2b', 'lowpt_3j2b', 'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b']
+            cutflow_list = ['nominal_4j2b','nominal_3j2b', 'lowpt_4j2b', 'lowpt_3j2b', 'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b', 'SvB_tail']
             for cuts in cutflow_list:
                 cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True, fill_flavour = True)
             cutflow.add_output(output['events_processed'], self.dataset)

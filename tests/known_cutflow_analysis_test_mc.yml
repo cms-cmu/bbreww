@@ -21,6 +21,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         chi_sq_nom_4j2b: 59.0
         chi_sq_nom_3j2b: 17.0
         chi_sq_lowpt_4j2b: 18.0
+        SvB_tail: 138.0
       weights:
         lumimask: 0.11288854450699587
         passNoiseFilter: 0.11288854450699587
@@ -39,6 +40,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         chi_sq_nom_4j2b: 0.012784389322092707
         chi_sq_nom_3j2b: 0.002494584909960387
         chi_sq_lowpt_4j2b: 0.00310272195274803
+        SvB_tail: 0.030746778014879537
     mu_region:
       events:
         lumimask: 540.0
@@ -58,6 +60,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         chi_sq_nom_4j2b: 74.0
         chi_sq_nom_3j2b: 30.0
         chi_sq_lowpt_4j2b: 34.0
+        SvB_tail: 170.0
       weights:
         lumimask: 0.16061227012049503
         passNoiseFilter: 0.16061227012049503
@@ -76,6 +79,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         chi_sq_nom_4j2b: 0.025105781761740373
         chi_sq_nom_3j2b: 0.008837543798657893
         chi_sq_lowpt_4j2b: 0.01015868827560785
+        SvB_tail: 0.049753868703178036
     SR:
       events:
         nominal_4j2b: 134.0
@@ -85,6 +89,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         chi_sq_nom_4j2b: 98.0
         chi_sq_nom_3j2b: 37.0
         chi_sq_lowpt_4j2b: 39.0
+        SvB_tail: 211.0
       weights:
         nominal_4j2b: 0.03469066564365203
         nominal_3j2b: 0.01584506275156658
@@ -93,6 +98,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         chi_sq_nom_4j2b: 0.0271378749586973
         chi_sq_nom_3j2b: 0.008034018877285252
         chi_sq_lowpt_4j2b: 0.008861403612692487
+        SvB_tail: 0.052172119752941594
     CR:
       events:
         nominal_4j2b: 33.0
@@ -102,6 +108,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         chi_sq_nom_4j2b: 23.0
         chi_sq_nom_3j2b: 7.0
         chi_sq_lowpt_4j2b: 9.0
+        SvB_tail: 57.0
       weights:
         nominal_4j2b: 0.00879373790812859
         nominal_3j2b: 0.005408826180419678
@@ -110,6 +117,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         chi_sq_nom_4j2b: 0.006625900542335806
         chi_sq_nom_3j2b: 0.002396258497913498
         chi_sq_lowpt_4j2b: 0.0030829615166483916
+        SvB_tail: 0.015342083518657148
 TTToSemiLeptonic_2022_EE:
   n_events: 1000
   sum_genweights: 98754.765625
@@ -130,9 +138,10 @@ TTToSemiLeptonic_2022_EE:
         nominal_3j2b: 47.0
         lowpt_4j2b: 27.0
         lowpt_3j2b: 22.0
-        chi_sq_nom_4j2b: 62.0
+        chi_sq_nom_4j2b: 60.0
         chi_sq_nom_3j2b: 9.0
         chi_sq_lowpt_4j2b: 9.0
+        SvB_tail: 139.0
       weights:
         lumimask: 13.387060310073707
         passNoiseFilter: 13.387060310073707
@@ -148,9 +157,10 @@ TTToSemiLeptonic_2022_EE:
         nominal_3j2b: 1.5554963595953073
         lowpt_4j2b: 0.9047688327364156
         lowpt_3j2b: 0.6867672941065079
-        chi_sq_nom_4j2b: 2.0853856305382377
+        chi_sq_nom_4j2b: 1.974877088614036
         chi_sq_nom_3j2b: 0.3060970659831002
         chi_sq_lowpt_4j2b: 0.3060970659831002
+        SvB_tail: 4.5365726602987495
     mu_region:
       events:
         lumimask: 593.0
@@ -167,9 +177,10 @@ TTToSemiLeptonic_2022_EE:
         nominal_3j2b: 49.0
         lowpt_4j2b: 35.0
         lowpt_3j2b: 20.0
-        chi_sq_nom_4j2b: 64.0
+        chi_sq_nom_4j2b: 63.0
         chi_sq_nom_3j2b: 12.0
         chi_sq_lowpt_4j2b: 15.0
+        SvB_tail: 154.0
       weights:
         lumimask: 22.908920472743574
         passNoiseFilter: 22.908920472743574
@@ -185,9 +196,10 @@ TTToSemiLeptonic_2022_EE:
         nominal_3j2b: 1.9015936333876908
         lowpt_4j2b: 1.3434492565777938
         lowpt_3j2b: 0.7229176607757855
-        chi_sq_nom_4j2b: 2.3602390472912598
+        chi_sq_nom_4j2b: 2.337583144452929
         chi_sq_nom_3j2b: 0.5283020005188881
         chi_sq_lowpt_4j2b: 0.5930988249917648
+        SvB_tail: 5.937946868698112
     SR:
       events:
         nominal_4j2b: 31.0
@@ -197,6 +209,7 @@ TTToSemiLeptonic_2022_EE:
         chi_sq_nom_4j2b: 24.0
         chi_sq_nom_3j2b: 5.0
         chi_sq_lowpt_4j2b: 6.0
+        SvB_tail: 51.0
       weights:
         nominal_4j2b: 0.9782285533455953
         nominal_3j2b: 0.565066922396295
@@ -205,20 +218,23 @@ TTToSemiLeptonic_2022_EE:
         chi_sq_nom_4j2b: 0.7633228490114994
         chi_sq_nom_3j2b: 0.12704922057966267
         chi_sq_lowpt_4j2b: 0.14914299192500077
+        SvB_tail: 1.5964428817319154
     CR:
       events:
         nominal_4j2b: 45.0
         nominal_3j2b: 17.0
         lowpt_4j2b: 9.0
         lowpt_3j2b: 9.0
-        chi_sq_nom_4j2b: 33.0
+        chi_sq_nom_4j2b: 32.0
         chi_sq_nom_3j2b: 5.0
         chi_sq_lowpt_4j2b: 5.0
+        SvB_tail: 63.0
       weights:
         nominal_4j2b: 1.728669665390312
         nominal_3j2b: 0.6399445243479618
         lowpt_4j2b: 0.41145299255372986
         lowpt_3j2b: 0.2745643321151755
-        chi_sq_nom_4j2b: 1.2664917827331714
+        chi_sq_nom_4j2b: 1.2438358798948403
         chi_sq_nom_3j2b: 0.28588313150544337
         chi_sq_lowpt_4j2b: 0.28588313150544337
+        SvB_tail: 2.4146869900592174

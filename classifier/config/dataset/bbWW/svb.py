@@ -14,12 +14,7 @@ if TYPE_CHECKING:
 
 def _common_selection(df: pd.DataFrame):
     """Common selection for both signal and control regions"""
-
     return df["CR"] | df["SR"]
-
-def _data_selection(df: pd.DataFrame):
-    """Data selection excluding signal region events"""
-    return df[_common_selection(df) & (~df["SR"])]
 
 def _signal_selection(df: pd.DataFrame):
     """Signal selection for HH→bbWW analysis"""
@@ -36,11 +31,6 @@ def _select_cr(df: pd.DataFrame):
 def _remove_sr(df: pd.DataFrame):
     """Remove signal region events"""
     return df[~df["SR"]]
-
-
-def _remove_sr(df: pd.DataFrame):
-    """Remove signal region events"""
-    return df
 
 def _norm(df: pd.DataFrame, norms: dict[int, float]):
     return df / (df.sum() / norms.get(df.name, 1.0))
@@ -196,6 +186,6 @@ class TrainBaseline(_picoAOD.Signal, _picoAOD.Background, Train):
     """Baseline training with signal and background processes"""
     ...
 
-class Eval(_picoAOD.Signal, _picoAOD.Background, CommonEval): 
+class Eval(_picoAOD.Signal, _picoAOD.Background, _picoAOD.Data, CommonEval): 
     """Evaluation dataset for HH→bbWW classifier"""
     ...

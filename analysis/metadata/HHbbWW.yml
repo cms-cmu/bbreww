@@ -2,7 +2,7 @@ runner:
   max_workers: 400 
   skipbadfiles: False
   workers: 8
-  condor_memory: 10GB
+  condor_memory: 16GB
   data_tier: picoAOD
   condor_cores: 1
   condor_transfer_input_files:
@@ -21,11 +21,9 @@ runner:
     - T2_US_MIT
     - T2_US_Purdue
 
-
-config:
-  run_SvB: True
-  friends:
-    SvB_kfold1: "bbreww/metadata/classifier/output/SvB_result_kfold0.json@@SvB"
-    SvB_kfold2: "bbreww/metadata/classifier/output/SvB_result_kfold1.json@@SvB"
-    SvB_kfold3: "bbreww/metadata/classifier/output/SvB_result_kfold2.json@@SvB"
+# uncomment lines below to run with SvB scores
+#config:
+#  run_SvB: True
+#  friends:
+#    SvB: "bbreww/metadata/classifier/output/result.json@@analysis.0.merged"
 

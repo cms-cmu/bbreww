@@ -122,11 +122,11 @@ def get_ttbar_weight(pt):
     return np.exp(0.0615 - 0.0005 * np.clip(pt, 0, 800))
 
 ### taken from https://github.com/PocketCoffea/AnalysisConfigs/blob/main/configs/ttHbb/semileptonic/common/weights/custom_weights.py#L17-L39
-def add_sf_top_pt(pname, events, weights):
-    if 'TT' in pname:
+def add_sf_top_pt(pname, apply_reweight, events, weights):
+    if apply_reweight & ('TT' in pname):
         #print("Computing top pt reweighting for sample: ", metadata["sample"])
         part = events.GenPart
-        part = part[~ak.is_none(part.parent, axis=1)]
+        part = part[~ak.is_none(part.parent, axis=1)]   
         part = part[part.hasFlags("isLastCopy")]
         part = part[abs(part.pdgId) == 6]
         part = part[ak.argsort(part.pdgId, ascending=False)]

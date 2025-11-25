@@ -114,7 +114,7 @@ def doPlots(varList, debug=False):
     #
     varListComp = []
     if args.doTest:
-        varListComp = ["SvB.phh", "SvB.ptt", "Elec.pt", "Muon.pt"]
+        varListComp = ["Hbb.mass", "Elec.pt", "Muon.pt"]
 
         for v in varListComp:
             if debug: print(v)

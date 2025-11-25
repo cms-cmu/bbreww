@@ -46,9 +46,11 @@ class Output(GlobalSetting):
     "Name of the keys in the output batch."
     hh_raw: str = "hh_raw"
     tt_raw: str = "tt_raw"
+    ww_raw: str = "ww_raw" # testing
     hh_prob: str = "hh_prob"
     tt_prob: str = "tt_prob"
-
+    ww_prob: str = "ww_prob" # testing
+    
 # Keep only the regions you're using
 class MassRegion(IntEnum):
     SR = 0b01

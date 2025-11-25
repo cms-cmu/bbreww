@@ -114,7 +114,7 @@ def doPlots(varList, debug=False):
     #
     varListComp = []
     if args.doTest:
-        varListComp = ["Hbb.mass"]
+        varListComp = ["SvB.phh", "SvB.ptt", "Elec.pt", "Muon.pt"]
 
         for v in varListComp:
             if debug: print(v)
@@ -141,8 +141,8 @@ def doPlots(varList, debug=False):
 
                     plot_args  = {}
                     plot_args["var"] = v
-                    plot_args["cut"] = ["preselection", "nominal_4j2b"]
-                    plot_args["hist_key_list"] = ["hists", "hists_4j2b"]
+                    plot_args["cut"] = ["nominal_4j2b"]
+                    plot_args["hist_key_list"] = ["hists_4j2b"]
                     plot_args["axis_opts"] = {"flavor":flavor, "region": region} # "channel":channel}
                     plot_args["outputFolder"] = args.outputFolder
                     plot_args["process"] = process
@@ -162,8 +162,8 @@ def doPlots(varList, debug=False):
                 #
                 plot_args  = {}
                 plot_args["var"] = v
-                plot_args["cut"] = "preselection"
-                plot_args["axis_opts"] = {"flavor":sum, "region" : ["SR", "CR", sum]}#"channel": ["hadronic_W", "leptonic_W", sum]}
+                plot_args["cut"] = "nominal_4j2b"
+                plot_args["axis_opts"] = {"flavor":sum, "region" : ["SR", "CR"]}#"channel": ["hadronic_W", "leptonic_W", sum]}
                 plot_args["outputFolder"] = args.outputFolder
                 plot_args["process"] = process
                 plot_args["norm"] = True

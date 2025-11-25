@@ -21,6 +21,7 @@ data__SingleMuon_2022_preEEC:
         chi_sq_nom_4j2b: 1.0
         chi_sq_nom_3j2b: 1.0
         chi_sq_lowpt_4j2b: 1.0
+        SvB_tail: 3.0
       weights:
         lumimask: 22.0
         passNoiseFilter: 22.0
@@ -39,6 +40,7 @@ data__SingleMuon_2022_preEEC:
         chi_sq_nom_4j2b: 1.0
         chi_sq_nom_3j2b: 1.0
         chi_sq_lowpt_4j2b: 1.0
+        SvB_tail: 3.0
     mu_region:
       events:
         lumimask: 956.0
@@ -55,9 +57,10 @@ data__SingleMuon_2022_preEEC:
         nominal_3j2b: 36.0
         lowpt_4j2b: 21.0
         lowpt_3j2b: 21.0
-        chi_sq_nom_4j2b: 14.0
+        chi_sq_nom_4j2b: 12.0
         chi_sq_nom_3j2b: 8.0
         chi_sq_lowpt_4j2b: 10.0
+        SvB_tail: 70.0
       weights:
         lumimask: 956.0
         passNoiseFilter: 956.0
@@ -73,9 +76,10 @@ data__SingleMuon_2022_preEEC:
         nominal_3j2b: 36.0
         lowpt_4j2b: 21.0
         lowpt_3j2b: 21.0
-        chi_sq_nom_4j2b: 14.0
+        chi_sq_nom_4j2b: 12.0
         chi_sq_nom_3j2b: 8.0
         chi_sq_lowpt_4j2b: 10.0
+        SvB_tail: 70.0
     SR:
       events:
         nominal_4j2b: 5.0
@@ -85,6 +89,7 @@ data__SingleMuon_2022_preEEC:
         chi_sq_nom_4j2b: 3.0
         chi_sq_nom_3j2b: 2.0
         chi_sq_lowpt_4j2b: 3.0
+        SvB_tail: 13.0
       weights:
         nominal_4j2b: 5.0
         nominal_3j2b: 7.0
@@ -93,23 +98,26 @@ data__SingleMuon_2022_preEEC:
         chi_sq_nom_4j2b: 3.0
         chi_sq_nom_3j2b: 2.0
         chi_sq_lowpt_4j2b: 3.0
+        SvB_tail: 13.0
     CR:
       events:
         nominal_4j2b: 6.0
         nominal_3j2b: 10.0
         lowpt_4j2b: 7.0
         lowpt_3j2b: 5.0
-        chi_sq_nom_4j2b: 3.0
+        chi_sq_nom_4j2b: 2.0
         chi_sq_nom_3j2b: 3.0
         chi_sq_lowpt_4j2b: 3.0
+        SvB_tail: 18.0
       weights:
         nominal_4j2b: 6.0
         nominal_3j2b: 10.0
         lowpt_4j2b: 7.0
         lowpt_3j2b: 5.0
-        chi_sq_nom_4j2b: 3.0
+        chi_sq_nom_4j2b: 2.0
         chi_sq_nom_3j2b: 3.0
         chi_sq_lowpt_4j2b: 3.0
+        SvB_tail: 18.0
 data__SingleMuon_2022_preEED:
   n_events: 1001
   sum_genweights: 1001
@@ -130,9 +138,10 @@ data__SingleMuon_2022_preEED:
         nominal_3j2b: 0.0
         lowpt_4j2b: 0.0
         lowpt_3j2b: 0.0
-        chi_sq_nom_4j2b: 1.0
+        chi_sq_nom_4j2b: 0.0
         chi_sq_nom_3j2b: 0.0
         chi_sq_lowpt_4j2b: 0.0
+        SvB_tail: 1.0
       weights:
         lumimask: 12.0
         passNoiseFilter: 12.0
@@ -148,9 +157,10 @@ data__SingleMuon_2022_preEED:
         nominal_3j2b: 0.0
         lowpt_4j2b: 0.0
         lowpt_3j2b: 0.0
-        chi_sq_nom_4j2b: 1.0
+        chi_sq_nom_4j2b: 0.0
         chi_sq_nom_3j2b: 0.0
         chi_sq_lowpt_4j2b: 0.0
+        SvB_tail: 1.0
     mu_region:
       events:
         lumimask: 989.0
@@ -167,9 +177,10 @@ data__SingleMuon_2022_preEED:
         nominal_3j2b: 20.0
         lowpt_4j2b: 13.0
         lowpt_3j2b: 16.0
-        chi_sq_nom_4j2b: 28.0
+        chi_sq_nom_4j2b: 26.0
         chi_sq_nom_3j2b: 6.0
         chi_sq_lowpt_4j2b: 7.0
+        SvB_tail: 70.0
       weights:
         lumimask: 989.0
         passNoiseFilter: 989.0
@@ -185,40 +196,45 @@ data__SingleMuon_2022_preEED:
         nominal_3j2b: 20.0
         lowpt_4j2b: 13.0
         lowpt_3j2b: 16.0
-        chi_sq_nom_4j2b: 28.0
+        chi_sq_nom_4j2b: 26.0
         chi_sq_nom_3j2b: 6.0
         chi_sq_lowpt_4j2b: 7.0
+        SvB_tail: 70.0
     SR:
       events:
         nominal_4j2b: 10.0
         nominal_3j2b: 2.0
         lowpt_4j2b: 2.0
         lowpt_3j2b: 2.0
-        chi_sq_nom_4j2b: 5.0
+        chi_sq_nom_4j2b: 4.0
         chi_sq_nom_3j2b: 0.0
         chi_sq_lowpt_4j2b: 1.0
+        SvB_tail: 14.0
       weights:
         nominal_4j2b: 10.0
         nominal_3j2b: 2.0
         lowpt_4j2b: 2.0
         lowpt_3j2b: 2.0
-        chi_sq_nom_4j2b: 5.0
+        chi_sq_nom_4j2b: 4.0
         chi_sq_nom_3j2b: 0.0
         chi_sq_lowpt_4j2b: 1.0
+        SvB_tail: 14.0
     CR:
       events:
         nominal_4j2b: 12.0
         nominal_3j2b: 2.0
         lowpt_4j2b: 2.0
         lowpt_3j2b: 1.0
-        chi_sq_nom_4j2b: 10.0
+        chi_sq_nom_4j2b: 8.0
         chi_sq_nom_3j2b: 0.0
         chi_sq_lowpt_4j2b: 0.0
+        SvB_tail: 15.0
       weights:
         nominal_4j2b: 12.0
         nominal_3j2b: 2.0
         lowpt_4j2b: 2.0
         lowpt_3j2b: 1.0
-        chi_sq_nom_4j2b: 10.0
+        chi_sq_nom_4j2b: 8.0
         chi_sq_nom_3j2b: 0.0
         chi_sq_lowpt_4j2b: 0.0
+        SvB_tail: 15.0

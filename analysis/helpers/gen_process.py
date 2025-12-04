@@ -41,6 +41,7 @@ def add_gen_info(events, is_mc):
         
         except:
             events['Jet', 'isQfromW'] = ak.zeros_like(events.Jet.pt, dtype=bool)
+            events['isLepW'] = ak.ones_like(events.Jet.pt, dtype = bool)
 
         events['isHtoW'] = events.GenPart[(events.GenPart[events.GenPart[events.GenPart.isW].genPartIdxMother].pdgId== 25)]
 

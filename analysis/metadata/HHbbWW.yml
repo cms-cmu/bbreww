@@ -2,7 +2,7 @@ runner:
   max_workers: 400 
   skipbadfiles: False
   workers: 8
-  condor_memory: 16GB
+  condor_memory: 8GB
   data_tier: picoAOD
   condor_cores: 1
   condor_transfer_input_files:
@@ -22,8 +22,8 @@ runner:
     - T2_US_Purdue
 
 # uncomment lines below to run with SvB scores
-#config:
-#  run_SvB: True
-#  friends:
-#    SvB: "bbreww/metadata/classifier/output/result.json@@analysis.0.merged"
+config:
+  run_SvB: True
+  friends:
+    SvB: "bbreww/metadata/classifier/output/result.json@@analysis.0.merged"
 

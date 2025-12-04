@@ -10,6 +10,8 @@ setting:
     eras: 
       2022_preEE: [C, D] 
       2022_EE: [E, F, G]
+      2023_preBPix: [A, B, C, D] 
+      2023_BPix: [D, E]
 
   - module: bbWWHCR.InputBranch
     option:

@@ -25,6 +25,9 @@ if TYPE_CHECKING:
 class _Derived:
     region_index: str = "region_index"
 
+def _remove_sr(df: pd.DataFrame):
+    """Remove signal region events"""
+    return df[df["CR"] & (~df["SR"])]
 
 def _sort_map(obj: dict[frozenset[str]]):
     obj = {(*sorted(k),): v for k, v in obj.items()}
@@ -218,6 +221,13 @@ class CommonTrain(Common):
 class CommonEval(Common):
     evaluable = True
 
+    argparser = ArgParser()
+    argparser.add_argument(
+        "--no-SR",
+        action="store_true",
+        help="remove SR events from training",
+    )
+
     def __init__(self):
         super().__init__()
 
@@ -243,6 +253,7 @@ class CommonEval(Common):
         return [
             _group.add_year(),
         ]
+
 
     def debug(self):
         import logging

@@ -8,26 +8,9 @@ from bbreww.classifier.config.dataset.bbWW import _picoAOD
 if TYPE_CHECKING:
     import pandas as pd
 
-def _common_selection(df: pd.DataFrame):
-    """Common selection for both signal and control regions"""
-
-    return df["CR"] | df["SR"]
-
 def _data_selection(df: pd.DataFrame):
-    """Data selection excluding signal region events"""
-    return df[_common_selection(df) & (~df["SR"])]
-
-def _select_sr(df: pd.DataFrame):
-    """Select signal region events"""
-    return df[df["SR"]]
-
-def _select_cr(df: pd.DataFrame):
-    """Select control region events"""
-    return df[df["CR"]]
-
-def _remove_sr(df: pd.DataFrame):
-    """Remove signal region events"""
-    return df[~df["SR"]]
+    """Select control region events excluding signal region events"""
+    return df[df["CR"] & (~df["SR"])]
 
 class Train(CommonTrain):
     """Training dataset configuration for HH→bbWW classifier"""
@@ -63,19 +46,20 @@ class Train(CommonTrain):
                 name="ttbar selection",
             ),
         )
-        _group.add_year(),
-
-        # Optional SR removal
-        if self.opts.no_SR:
-            ps.append(
-                _group.fullmatch(
-                    (),
-                    processors=[
-                        lambda: _remove_sr,
-                    ],
-                    name="remove signal region",
+        minor_bkgs =  ["WplusJets", "tW", "singleTop"]
+        for bkg in minor_bkgs:
+            if hasattr(self, 'mc_processes') and bkg in self.mc_processes:
+                ps.append(
+                    _group.fullmatch(
+                        (f"label:{bkg}",),
+                        processors=[
+                            lambda: _data_selection,
+                            lambda: add_label_index("other"),
+                        ],
+                        name="minor background selection",
+                    ),
                 )
-            )
+        ps.append(_group.add_year())
 
         return list(super().preprocess_by_group()) + ps
 

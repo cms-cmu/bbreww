@@ -10,10 +10,10 @@ main:
 dataset:
   - module: bbWW.dvtt.Eval
     option:
-      - --metadata bbreww/metadata/classifier/datasets_v4
+      - --metadata bbreww/metadata/classifier/datasets/datasets_v4
       - --max-workers 8 # use 8 workers to fetch metadatas for ROOT files
       - --mc-processes ttbar
-      - --friends "" bbreww/metadata/classifier/output_friend.json@@classifier_input
+      - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input
 
 model:
   - module: bbWW.HCR.baseline_dvtt.Eval

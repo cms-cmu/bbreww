@@ -250,7 +250,7 @@ def bjet_flag(events,params,year):
     j_bcand_pool = j_candidates[j_candidates.pt > 25.0]  # Only jets > 25 GeV for b-jets
     j_bcand_pool = j_bcand_pool[getattr(j_bcand_pool,bTag_key) > btag_threshold]
 
-    events['has_1_bjet'] = ak.num(j_bcand_pool, axis=1) >= 1
+    events['has_2_bjets'] = ak.num(j_bcand_pool, axis=1) >= 2
 
     return events
     

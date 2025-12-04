@@ -1,6 +1,6 @@
 hists:
         data:
-                process: [data__EGamma, data__SingleMuon]
+                process: [data__EGamma0, data__SingleMuon0, data__EGamma1, data__SingleMuon1]
                 tag: data
                 label: data
                 edgecolor: k

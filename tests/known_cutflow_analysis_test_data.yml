@@ -1,4 +1,4 @@
-data__SingleMuon_2022_preEEC:
+data__SingleMuon0_2022_preEEC:
   n_events: 978
   sum_genweights: 978
   cutflow:
@@ -118,7 +118,7 @@ data__SingleMuon_2022_preEEC:
         chi_sq_nom_3j2b: 3.0
         chi_sq_lowpt_4j2b: 3.0
         SvB_tail: 18.0
-data__SingleMuon_2022_preEED:
+data__SingleMuon0_2022_preEED:
   n_events: 1001
   sum_genweights: 1001
   cutflow:

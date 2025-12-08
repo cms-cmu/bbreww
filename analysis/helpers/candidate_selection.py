@@ -1,7 +1,6 @@
 import awkward as ak
 import numpy as np
 from bbreww.analysis.helpers.common import met_reconstr, distance, elliptical_region
-from bbreww.analysis.helpers.classifier.SvB_helpers import compute_SvB
 
 def Hbb_candidate_selection(events):
 
@@ -216,6 +215,7 @@ def candidate_selection(events, params, year, run_SvB, classifier_SvB = None):
 
     # add ML classifier output scores
     if classifier_SvB is not None:
+        from bbreww.analysis.helpers.classifier.SvB_helpers import compute_SvB
         compute_SvB(events,
             mask = events.nominal_4j2b, # apply nominal analysis mask
             SvB=classifier_SvB,

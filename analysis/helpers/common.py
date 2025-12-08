@@ -49,7 +49,7 @@ def update_events(events, collections):
     return out
 
 def nu_pz(l,v):
-    #ttbar and hadronic W neutrino pz reconstruction
+    """Return calculated MET pz with W mass constraint on (lepton + MET)"""
     m_w = 80.379
     m_l = l.mass
     A = (l.px*v.pt * np.cos(v.phi)+l.py*v.pt * np.sin(v.phi)) + (m_w**2 - m_l**2)/2

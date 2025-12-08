@@ -1,0 +1,267 @@
+TBbarQ_2023_BPix:
+  count: 2954000
+  cutflow:
+    e_region:
+      events:
+        all: 136162.0
+        lumimask: 136162.0
+        njets: 34060.0
+        oneBjet: 81714.0
+        passNoiseFilter: 136111.0
+        trigger: 109519.0
+      weights:
+        all: 16908919.048461914
+        lumimask: 16908919.048461914
+        njets: 4039848.958129883
+        oneBjet: 10009517.2578125
+        passNoiseFilter: 16902830.863494873
+        trigger: 13576246.597503662
+    mu_region:
+      events:
+        all: 223561.0
+        lumimask: 223561.0
+        njets: 59323.0
+        oneBjet: 146337.0
+        passNoiseFilter: 223468.0
+        trigger: 195915.0
+      weights:
+        all: 27764423.43069458
+        lumimask: 27764423.43069458
+        njets: 7061888.682769775
+        oneBjet: 17998704.157562256
+        passNoiseFilter: 27752382.353759766
+        trigger: 24347192.85519409
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TBbarQ_2023_BPix/picoAOD.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v4', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_TBbarQ_2023_BPix.yml',
+      output_path='output/skimmer', years=['2023_BPix'], datasets=['TBbarQ'], era=['A',
+      'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    barista:
+      diff: "diff --git a/src/classifier/ml/training.py b/src/classifier/ml/training.py\n\
+        index eeed5714..d7762b7b 100644\n--- a/src/classifier/ml/training.py\n+++\
+        \ b/src/classifier/ml/training.py\n@@ -111,6 +111,9 @@ class TrainingStage(BenchmarkStage):\n\
+        \             \"name\": self.name,\n             \"parameters\": self.model.n_parameters,\n\
+        \         }\n+\n+        ### self.model.nn = torch.compile(self.model.nn)\
+        \ ## TEST feature, need to check first\n+\n         opt = self.schedule.optimizer(self.model.parameters())\n\
+        \         lr = self.schedule.lr_scheduler(opt)\n         bs = self.schedule.bs_scheduler(\n\
+        diff --git a/src/classifier/nn/dataset/evaluation.py b/src/classifier/nn/dataset/evaluation.py\n\
+        index 68551d14..70e771d7 100644\n--- a/src/classifier/nn/dataset/evaluation.py\n\
+        +++ b/src/classifier/nn/dataset/evaluation.py\n@@ -1,8 +1,11 @@\n from __future__\
+        \ import annotations\n \n+\n import logging\n import sys\n from abc import\
+        \ ABC, abstractmethod\n+from functools import reduce\n+import operator\n from\
+        \ concurrent.futures import ProcessPoolExecutor\n from queue import Queue\n\
+        \ from threading import Thread\n@@ -239,7 +242,7 @@ class ChainLoader(Generic[Unpack[_ChainResultT]]):\n\
+        \ \n     @property\n     def result(self) -> tuple[Unpack[_ChainResultT]]:\n\
+        -        return (*(loader.result for loader in self.__loaders),)\n+      \
+        \  return reduce(operator.add, (loader.result for loader in self.__loaders))\n\
+        \ \n     def __iter__(self) -> Generator[tuple[BatchDumper, BatchType], None,\
+        \ None]:\n         with (\n"
+      hash: 9db3575c72fd5bb364a2c1a6a7ef0448ad50863a
+    bbreww:
+      diff: "diff --git a/classifier/config/dataset/bbWW/_common.py b/classifier/config/dataset/bbWW/_common.py\n\
+        index ef7fb95..7eb56c9 100644\n--- a/classifier/config/dataset/bbWW/_common.py\n\
+        +++ b/classifier/config/dataset/bbWW/_common.py\n@@ -25,6 +25,9 @@ if TYPE_CHECKING:\n\
+        \ class _Derived:\n     region_index: str = \"region_index\"\n \n+def _remove_sr(df:\
+        \ pd.DataFrame):\n+    \"\"\"Remove signal region events\"\"\"\n+    return\
+        \ df[~df[\"SR\"]]\n \n def _sort_map(obj: dict[frozenset[str]]):\n     obj\
+        \ = {(*sorted(k),): v for k, v in obj.items()}\n@@ -240,9 +243,20 @@ class\
+        \ CommonEval(Common):\n         }\n \n     def preprocess_by_group(self):\n\
+        -        return [\n-            _group.add_year(),\n-        ]\n+        ps\
+        \ = []\n+        # Optional SR removal\n+        if self.opts.no_SR:\n+  \
+        \          ps.append(\n+                _group.fullmatch(\n+             \
+        \       (),\n+                    processors=[\n+                        lambda:\
+        \ _remove_sr,\n+                    ],\n+                    name=\"remove\
+        \ signal region\",\n+                )\n+            )\n+        ps.append(_group.add_year())\n\
+        +        return ps\n \n     def debug(self):\n         import logging\ndiff\
+        \ --git a/classifier/config/dataset/bbWW/dvtt.py b/classifier/config/dataset/bbWW/dvtt.py\n\
+        index 3bc95b2..a2aa366 100644\n--- a/classifier/config/dataset/bbWW/dvtt.py\n\
+        +++ b/classifier/config/dataset/bbWW/dvtt.py\n@@ -63,19 +63,31 @@ class Train(CommonTrain):\n\
+        \                 name=\"ttbar selection\",\n             ),\n         )\n\
+        -        _group.add_year(),\n-\n-        # Optional SR removal\n-        if\
+        \ self.opts.no_SR:\n-            ps.append(\n-                _group.fullmatch(\n\
+        -                    (),\n-                    processors=[\n-           \
+        \             lambda: _remove_sr,\n-                    ],\n-            \
+        \        name=\"remove signal region\",\n+        minor_bkgs =  [\"WplusJets\"\
+        , \"tW\", \"singleTop\"]\n+        for bkg in minor_bkgs:\n+            if\
+        \ bkg in self.mc_processes:\n+                ps.append(\n+              \
+        \      _group.fullmatch(\n+                        (f\"label:{bkg}\",),\n\
+        +                        processors=[\n+                            lambda:\
+        \ _data_selection,\n+                            lambda: add_label_index(\"\
+        ttbar\"),\n+                        ],\n+                        name=\"minor\
+        \ background selection\",\n+                    ),\n                 )\n+\
+        \        ps.append(_group.add_year())\n+\n+        # remove signal region\
+        \ \n+        ps.append(\n+            _group.fullmatch(\n+               \
+        \ (),\n+                processors=[\n+                    lambda: _remove_sr,\n\
+        +                ],\n+                name=\"remove signal region\",\n   \
+        \          )\n+        )\n \n         return list(super().preprocess_by_group())\
+        \ + ps\n \ndiff --git a/classifier/config/workflows/HCR/dvtt/evaluate.yml\
+        \ b/classifier/config/workflows/HCR/dvtt/evaluate.yml\nindex e09abf4..30a6b85\
+        \ 100644\n--- a/classifier/config/workflows/HCR/dvtt/evaluate.yml\n+++ b/classifier/config/workflows/HCR/dvtt/evaluate.yml\n\
+        @@ -11,6 +11,7 @@ dataset:\n   - module: bbWW.dvtt.Eval\n     option:\n  \
+        \     - --metadata bbreww/metadata/classifier/datasets_v4\n+      - --no-SR\n\
+        \       - --max-workers 8 # use 8 workers to fetch metadatas for ROOT files\n\
+        \       - --mc-processes ttbar\n       - --friends \"\" bbreww/metadata/classifier/output_friend.json@@classifier_input\n\
+        diff --git a/classifier/config/workflows/HCR/svb/run.sh b/classifier/config/workflows/HCR/svb/run.sh\n\
+        index 90d2ab5..4833267 100755\n--- a/classifier/config/workflows/HCR/svb/run.sh\n\
+        +++ b/classifier/config/workflows/HCR/svb/run.sh\n@@ -17,7 +17,7 @@ else\n\
+        \     port=$1\n fi\n \n-# train with train.yml and common.yml configs\n+#train\
+        \ with train.yml and common.yml configs\n ./src/pyml.py \\\n     template\
+        \ \"{model: ${MODEL}, FvT: ${FvT}}\" $WFS/train.yml \\\n     -from $WFS/common.yml\
+        \ \\\n@@ -32,8 +32,8 @@ fi\n     -setting IO \"report: FvT\" \\\n     -setting\
+        \ Monitor \"address: :${port}\"\n \n-# evaluate with evaluate.yml and common.yml\
+        \ configs\n-./src/pyml.py \\\n-    template \"{model: ${MODEL}, SvB: ${SvB}}\"\
+        \ $WFS/evaluate.yml \\\n-    -from $WFS/common.yml \\\n-    -setting Monitor\
+        \ \"address: :${port}\"\n+#evaluate with evaluate.yml and common.yml configs\n\
+        +#./src/pyml.py \\\n+#    template \"{model: ${MODEL}, SvB: ${SvB}}\" $WFS/evaluate.yml\
+        \ \\\n+#    -from $WFS/common.yml \\\n+#    -setting Monitor \"address: :${port}\"\
+        \ndiff --git a/metadata/skims_v4/SingleTop.yml b/metadata/skims_v4/SingleTop.yml\n\
+        index 93d951e..8c85886 100644\n--- a/metadata/skims_v4/SingleTop.yml\n+++\
+        \ b/metadata/skims_v4/SingleTop.yml\n@@ -19,6 +19,19 @@ TBbarQ:\n        \
+        \ sumw: 1264425644.40625\n         sumw2: 185850358788.0\n         total_events:\
+        \ 10153433\n+\n+    2023_preBPix:\n+      nanoAOD: /TBbarQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM\n\
+        +      picoAOD:\n+        count:\n+        files:\n+\n+    2023_BPix:\n+ \
+        \     nanoAOD: /TBbarQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM\n\
+        +      picoAOD:\n+        count:\n+        files:\n+    \n     xs: 145.0\n\
+        \   \n TbarBQ:\n@@ -41,6 +54,19 @@ TbarBQ:\n       sumw: 394682417.515625\n\
+        \       sumw2: 34988823722.0\n       total_events: 5206568\n+\n+  2023_preBPix:\n\
+        +    nanoAOD: /TbarBQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n+\n+  2023_BPix:\n+    nanoAOD:\
+        \ /TbarBQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n+\n   xs: 87.2\n \n TBbartoLplusNuBbar:\n\
+        @@ -63,6 +89,17 @@ TBbartoLplusNuBbar:\n       sumw: 9937724.769897461\n \
+        \      sumw2: 59736462.55859375\n       total_events: 4363850\n+  2023_preBPix:\n\
+        +    nanoAOD: /TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n+  2023_BPix:\n+    nanoAOD:\
+        \ /TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n+\n   xs: 2.405\n   \n TbarBtoLminusNuB:\n\
+        @@ -85,4 +122,14 @@ TbarBtoLminusNuB:\n       sumw: 3945013.146118164\n  \
+        \     sumw2: 14864199.937988281\n       total_events: 2762668\n+  2023_preBPix:\n\
+        +    nanoAOD: /TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n+  2023_BPix:\n+    nanoAOD:\
+        \ /TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n   xs: 1.505\ndiff --git a/metadata/skims_v4/data_EGamma.yml\
+        \ b/metadata/skims_v4/data_EGamma.yml\nindex ccf1ea3..fe6e4cc 100644\n---\
+        \ a/metadata/skims_v4/data_EGamma.yml\n+++ b/metadata/skims_v4/data_EGamma.yml\n\
+        @@ -1,4 +1,4 @@\n-data__EGamma:\n+data__EGamma0:\n   2022_preEE:\n     lumi:\
+        \ 7.98\n     nanoAOD: \n@@ -57,4 +57,30 @@ data__EGamma:\n         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEG/picoAOD.chunk0.root\n\
+        \         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEG/picoAOD.chunk1.root\n\
+        \         saved_events: 638867\n-        total_events: 76807350\n\\ No newline\
+        \ at end of file\n+        total_events: 76807350\n+  2023_preBPix:\n+   \
+        \ lumi:\n+    nanoAOD:\n+      v1: /EGamma0/Run2023C-22Sep2023_v1-v1/NANOAOD\n\
+        +      v2: /EGamma0/Run2023C-22Sep2023_v2-v1/NANOAOD\n+      v3: /EGamma0/Run2023C-22Sep2023_v3-v1/NANOAOD\n\
+        +      v4: /EGamma0/Run2023C-22Sep2023_v4-v1/NANOAOD\n+  2023_BPix:\n+   \
+        \ lumi:\n+    nanoAOD:\n+      v1: /EGamma0/Run2023D-22Sep2023_v1-v1/NANOAOD\n\
+        +      v2: /EGamma0/Run2023D-22Sep2023_v2-v1/NANOAOD\n+\n+data__EGamma1:\n\
+        +  2023_preBPix:\n+    lumi:\n+    nanoAOD:\n+      v1: /EGamma1/Run2023C-22Sep2023_v1-v1/NANOAOD\n\
+        +      v2: /EGamma1/Run2023C-22Sep2023_v2-v1/NANOAOD\n+      v3: /EGamma1/Run2023C-22Sep2023_v3-v1/NANOAOD\n\
+        +      v4: /EGamma1/Run2023C-22Sep2023_v4-v1/NANOAOD\n+  2023_BPix:\n+   \
+        \ lumi:\n+    nanoAOD:\n+      v1: /EGamma1/Run2023D-22Sep2023_v1-v1/NANOAOD\n\
+        +      v2: /EGamma1/Run2023D-22Sep2023_v2-v1/NANOAOD\n\\ No newline at end\
+        \ of file\ndiff --git a/metadata/skims_v4/data_SingleMuon.yml b/metadata/skims_v4/data_SingleMuon.yml\n\
+        index af057e4..88191af 100644\n--- a/metadata/skims_v4/data_SingleMuon.yml\n\
+        +++ b/metadata/skims_v4/data_SingleMuon.yml\n@@ -1,62 +1,92 @@\n- data__SingleMuon:\n\
+        -    2022_preEE:\n-      lumi: 7.98\n-      nanoAOD:\n-        C: /Muon/Run2022C-22Sep2023-v1/NANOAOD\n\
+        -        D: /Muon/Run2022D-22Sep2023-v1/NANOAOD\n-      picoAOD:\n-      \
+        \  C: \n-          count: 138427345.0\n-          files:\n-          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEEC/picoAOD.chunk0.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEEC/picoAOD.chunk1.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEEC/picoAOD.chunk2.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEEC/picoAOD.chunk3.root\n\
+        -          saved_events: 1519542\n-          total_events: 138427345\n-  \
+        \      D: \n-          count: 75468381.0\n-          files:\n-          -\
+        \ root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEED/picoAOD.chunk0.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEED/picoAOD.chunk1.root\n\
+        -          saved_events: 980202\n-          total_events: 75468381\n-    2022_EE:\
+        \  \n-      lumi: \n-      nanoAOD:\n-          E: /Muon/Run2022E-22Sep2023-v1/NANOAOD\n\
+        -          F: /Muon/Run2022F-22Sep2023-v2/NANOAOD\n-          G: /Muon/Run2022G-22Sep2023-v1/NANOAOD\n\
+        -      picoAOD:\n-        E: \n-          count: 141460608.0\n-          files:\
+        \ \n-          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEE/picoAOD.chunk0.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEE/picoAOD.chunk1.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEE/picoAOD.chunk2.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEE/picoAOD.chunk3.root\n\
+        -          saved_events: 1812008\n-          total_events: 141460608\n-  \
+        \      F: \n-          count: 449887248.0\n-          files:\n-          -\
+        \ root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk0.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk1.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk2.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk3.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk4.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk5.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk6.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk7.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk8.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk9.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk10.root\n\
+        -          saved_events: 5498578\n-          total_events: 449887248\n-  \
+        \      G: \n-          files:\n-          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEG/picoAOD.chunk0.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEG/picoAOD.chunk1.root\n\
+        -          saved_events: 883150\n-          total_events: 76689396\n+data__SingleMuon0:\n\
+        +  2022_preEE:\n+    lumi: 7.98\n+    nanoAOD:\n+      C: /Muon/Run2022C-22Sep2023-v1/NANOAOD\n\
+        +      D: /Muon/Run2022D-22Sep2023-v1/NANOAOD\n+    picoAOD:\n+      C: \n\
+        +        count: 138427345.0\n+        files:\n+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEEC/picoAOD.chunk0.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEEC/picoAOD.chunk1.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEEC/picoAOD.chunk2.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEEC/picoAOD.chunk3.root\n\
+        +        saved_events: 1519542\n+        total_events: 138427345\n+      D:\
+        \ \n+        count: 75468381.0\n+        files:\n+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEED/picoAOD.chunk0.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEED/picoAOD.chunk1.root\n\
+        +        saved_events: 980202\n+        total_events: 75468381\n+  2022_EE:\
+        \  \n+    lumi: 26.67\n+    nanoAOD:\n+        E: /Muon/Run2022E-22Sep2023-v1/NANOAOD\n\
+        +        F: /Muon/Run2022F-22Sep2023-v2/NANOAOD\n+        G: /Muon/Run2022G-22Sep2023-v1/NANOAOD\n\
+        +    picoAOD:\n+      E: \n+        count: 141460608.0\n+        files: \n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEE/picoAOD.chunk0.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEE/picoAOD.chunk1.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEE/picoAOD.chunk2.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEE/picoAOD.chunk3.root\n\
+        +        saved_events: 1812008\n+        total_events: 141460608\n+      F:\
+        \ \n+        count: 449887248.0\n+        files:\n+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk0.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk1.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk2.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk3.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk4.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk5.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk6.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk7.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk8.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk9.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk10.root\n\
+        +        saved_events: 5498578\n+        total_events: 449887248\n+      G:\
+        \ \n+        files:\n+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEG/picoAOD.chunk0.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEG/picoAOD.chunk1.root\n\
+        +        saved_events: 883150\n+        total_events: 76689396\n+  2023_preBPix:\n\
+        +    lumi: \n+    nanoAOD:\n+      v1: /Muon0/Run2023C-22Sep2023_v1-v1/NANOAOD\n\
+        +      v2: /Muon0/Run2023C-22Sep2023_v2-v1/NANOAOD\n+      v3: /Muon0/Run2023C-22Sep2023_v3-v1/NANOAOD\n\
+        +      v4: /Muon0/Run2023C-22Sep2023_v4-v1/NANOAOD\n+    picoAOD:\n+     \
+        \ files:\n+      saved events:\n+  2023_BPix:\n+    lumi:\n+    nanoAOD: \n\
+        +      v1: /Muon0/Run2023D-22Sep2023_v1-v1/NANOAOD\n+      v2: /Muon0/Run2023D-22Sep2023_v2-v1/NANOAOD\n\
+        +\n+data__SingleMuon1:\n+  2023_preBPix:\n+    lumi: \n+    nanoAOD:\n+  \
+        \    v1: /Muon1/Run2023C-22Sep2023_v1-v1/NANOAOD\n+      v2: /Muon1/Run2023C-22Sep2023_v2-v1/NANOAOD\n\
+        +      v3: /Muon1/Run2023C-22Sep2023_v3-v1/NANOAOD\n+      v4: /Muon1/Run2023C-22Sep2023_v4-v2/NANOAOD\n\
+        +  2023_BPix:\n+    lumi:\n+    nanoAOD:\n+      v1: /Muon1/Run2023D-22Sep2023_v1-v1/NANOAOD\n\
+        +      v2: /Muon1/Run2023D-22Sep2023_v2-v1/NANOAOD\n+  \n \ndiff --git a/scripts/analysis_run3.sh\
+        \ b/scripts/analysis_run3.sh\nindex 563c08f..3aa1207 100644\n--- a/scripts/analysis_run3.sh\n\
+        +++ b/scripts/analysis_run3.sh\n@@ -17,7 +17,7 @@ bash bbreww/scripts/run_processor.sh\
+        \ \\\n     --metadata \"bbreww/metadata/skims_v4\" \\\n     --config \"bbreww/analysis/metadata/HHbbWW.yml\"\
+        \ \\\n     --datasets \"data__EGamma data__SingleMuon GluGluToHHTo2B2VLNu2J_kl_1p00\
+        \ TTToSemiLeptonic TTToHadronic TTTo2L2Nu WtoLNu-2Jets_0J WtoLNu-2Jets_1J\
+        \ WtoLNu-2Jets_2J TbarWplustoLNu2Q TbarWplusto2L2Nu TWminustoLNu2Q TWminusto2L2Nu\"\
+        \ \\\n-    --year \"2022_preEE 2022_EE\" \\\n+    --year \"2022_preEE\" \\\
+        \n     --output-filename \"output.coffea\" \\\n     --output-subdir \"full_run\"\
+        \ \\\n     --no-test \\\ndiff --git a/skimmer/metadata/HHbbWW.yml b/skimmer/metadata/HHbbWW.yml\n\
+        index 052e5ad..7f0f186 100644\n--- a/skimmer/metadata/HHbbWW.yml\n+++ b/skimmer/metadata/HHbbWW.yml\n\
+        @@ -21,7 +21,8 @@ runner:\n     - T1_US_FNAL_Disk\n     - T2_US_MIT\n    \
+        \ - T2_US_Purdue\n-    - T2_US_Vanderbilt\n+    - T2_US_Wisconsin\n+    #-\
+        \ T2_US_Vanderbilt\n   # blocklist_sites:\n   #   - T2_US_MIT\n   #   - T2_US_Purdue\n"
+      hash: 7e5144885f7bde29d44858a758b2574412b36132
+    date: '2025-11-25 16:22:00'
+  saved_events: 93383
+  sumw: 367889224.75
+  sumw2: 54070577088.0
+  sumw2_raw: 54070594537.94598
+  sumw_raw: 367889266.77199996
+  total_events: 2954000

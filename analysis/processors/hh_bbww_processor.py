@@ -76,6 +76,7 @@ class analysis(processor.ProcessorABC):
         make_friend_SvB (str): path to save ML classifier output 
         run_SvB (str): Whether to load SvB classifier output scores
         apply_dvtt (str): Whether to apply ttbar reweighting (yet to be fully implemented)
+        top_pt_reweight (bool): Whether to apply top pT reweighting for TTbar samples
         friends (dict): Dictionary of friend tree paths
     
     Returns:

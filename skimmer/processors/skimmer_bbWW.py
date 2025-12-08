@@ -12,7 +12,6 @@ from bbreww.analysis.helpers.candidate_selection import bjet_flag
 from bbreww.analysis.helpers.cutflow import cutflow_bbWW
 from coffea.analysis_tools import PackedSelection, Weights
 
-
 class Skimmer(PicoAOD):
     def __init__(
             self, 

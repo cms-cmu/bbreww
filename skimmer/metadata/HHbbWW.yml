@@ -8,10 +8,15 @@ runner:
   class_name: Skimmer
   data_tier: nanoAOD
   condor_cores: 1
-  condor_memory: 8GB
-  condor_transfer_input_files:
-    - src
+  condor_memory: 10GB
+  analysis_base_path: 
     - bbreww
+  condor_transfer_input_files:
+    - src/
+    - bbreww/analysis/
+    - bbreww/metadata/
+    - bbreww/skimmer/
+
   # rucio_regex_sites: 'T[123]_(US|CH|DE|UK)'
   allowlist_sites:
     - T3_US_FNALLPC
@@ -22,7 +27,7 @@ runner:
     - T2_US_MIT
     - T2_US_Purdue
     - T2_US_Wisconsin
-    #- T2_US_Vanderbilt
+    - T2_US_Vanderbilt
   # blocklist_sites:
   #   - T2_US_MIT
   #   - T2_US_Purdue

@@ -76,6 +76,7 @@ class analysis(processor.ProcessorABC):
         make_friend_SvB (str): path to save ML classifier output 
         run_SvB (str): Whether to load SvB classifier output scores
         apply_dvtt (str): Whether to apply ttbar reweighting (yet to be fully implemented)
+        top_pt_reweight (bool): Whether to apply top pT reweighting for TTbar samples
         friends (dict): Dictionary of friend tree paths
     
     Returns:
@@ -264,15 +265,17 @@ class analysis(processor.ProcessorABC):
         #add regions separated by chi square calculation
         add_to_selection(
             'leptonic_W',
-            (ak.firsts(selected_events.sr_boolean) == 0),
+            (ak.firsts(selected_events.sr_boolean) == 0), # using chi square
+            #ak.firsts(selected_events.isLepW), # ML classifier
             selection,
             selection_list['preselection']
         )
-
+        
         # hadronic_W = ak.zeros_like(presel_mask,dtype=bool)
         add_to_selection(
             'hadronic_W',
-            ak.firsts(selected_events.sr_boolean) == 1,
+            ak.firsts(selected_events.sr_boolean) == 1, # using chi square
+            #ak.firsts(~selected_events.isLepW), # ML classifier
             selection,
             selection_list['preselection']
         )
@@ -286,7 +289,7 @@ class analysis(processor.ProcessorABC):
         )
         # last three bins of SvB distribution
         selected_events['SvB_tail'] = ((selected_events.nominal_4j2b) & (selected_events.SvB.phh > 0.94)
-                                       if self.run_SvB else ak.ones_like(selected_events.MET.pt, dtype= bool))
+                                       if (self.run_SvB) else ak.ones_like(selected_events.MET.pt, dtype= bool))
 
         # add chi square cuts selection in each analysis region
         selected_events['chi_sq_nom_4j2b'] = selected_events.nominal_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
@@ -297,6 +300,7 @@ class analysis(processor.ProcessorABC):
             'hadronic_W': selection.all('hadronic_W')[selection.all(*selection_list['preselection'])],
             'leptonic_W': selection.all('leptonic_W')[selection.all(*selection_list['preselection'])]
         })
+
         selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
         # keep analysis_selections for compatibility with friendtrees code although it's redundant
         analysis_selections = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
@@ -315,6 +319,7 @@ class analysis(processor.ProcessorABC):
                 )
             )
 
+        
         # dumps classifier evaluation output into friendtrees (only possible when SvB model is provided)
         if self.make_friend_SvB is not None:
             from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_SvB

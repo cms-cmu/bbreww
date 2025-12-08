@@ -24,4 +24,5 @@ class SvBHists(Template):
     hh_vs_tt = H((50, 0, 1, ('hh_vs_tt', "P(hh) | TTbar")))
     hh_vs_oth = H((50, 0, 1, ('hh_vs_oth', "P(hh) | Minor Backgrounds")))
     tt_vs_oth = H((50, 0, 1, ('tt_vs_oth', "P(tt) | Minor Backgrounds")))
+    WW = H((100, 0, 20, ('WW', "WW classifier score")))
 

@@ -21,7 +21,7 @@ ls $INPUT_DIR/
 ls $INPUT_DIR/output.coffea
 
 display_section_header "Running makePlots.py"
-run_command python bbreww/plots/makePlots.py output/full_run/output.coffea -o output/analysis_plot_mc -m bbreww/plots/metadata/plotsAll.yml --modifiers bbreww/plots/metadata/plotModifiers.yml
+run_command python bbreww/plots/makePlots.py output/full_run/output2023preBPix.coffea -o output/analysis_plot_mc -m bbreww/plots/metadata/plotsAll.yml --modifiers bbreww/plots/metadata/plotModifiers.yml
 
 display_section_header "Checking if pdf files exist"
 ls $OUTPUT_DIR/Run3/preselection/flavor_sum/channel_sum/Hbb_mass.pdf

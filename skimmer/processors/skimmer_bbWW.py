@@ -12,7 +12,6 @@ from bbreww.analysis.helpers.candidate_selection import bjet_flag
 from bbreww.analysis.helpers.cutflow import cutflow_bbWW
 from coffea.analysis_tools import PackedSelection, Weights
 
-
 class Skimmer(PicoAOD):
     def __init__(
             self, 
@@ -56,14 +55,14 @@ class Skimmer(PicoAOD):
         selections.add('oneE', oneE )
         selections.add('oneM', oneM )
         selections.add('isoneEorM', oneE|oneM )
-        selections.add('oneBjet', event.has_1_bjet)
+        selections.add('twoBjets', event.has_2_bjets)
         selections.add('njets', ak.num(event.j_init, axis=1) > 2)
         final_selection = selections.require(
             lumimask=True,
             passNoiseFilter=True,
             trigger=True,
             njets=True,
-            oneBjet=True,
+            twoBjets=True,
             isoneEorM=True
         )
 

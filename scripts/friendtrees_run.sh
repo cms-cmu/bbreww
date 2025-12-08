@@ -25,7 +25,7 @@ display_section_header "Running processor"
 bash bbreww/scripts/run_processor.sh \
     --output-base "$OUTPUT_BASE_DIR" \
     --processor "bbreww/analysis/processors/hh_bbww_processor.py" \
-    --metadata "bbreww/metadata/skims_v4" \
+    --metadata "bbreww/metadata/skims_v5" \
     --config "$JOB_CONFIG" \
     --datasets "GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic TTto4Q TTTo2L2Nu" \
     --year "2022_EE 2022_preEE 2023_preBPix 2023_BPix" \

@@ -41,6 +41,7 @@ def add_gen_info(events, is_mc):
         
         except:
             events['Jet', 'isQfromW'] = ak.zeros_like(events.Jet.pt, dtype=bool)
+            events['isLepW'] = ak.ones_like(events.Jet.pt, dtype = bool)
 
         events['isHtoW'] = events.GenPart[(events.GenPart[events.GenPart[events.GenPart.isW].genPartIdxMother].pdgId== 25)]
 
@@ -154,20 +155,9 @@ def gen_studies(events, is_mc):
         events['dijets_post_sublead'] = ak.mask(matched_jets_post,true_dijet_mask)[:,1]'''
 
         ## met and W mass resolution
-        events['W_mass_res'] = ak.firsts(gen_W.mass[gen_W.mass < 55.0]) - events.qq_sel_mass
-        events['genW_mass'] = gen_W.mass[gen_W.mass > 55.0]
+        #events['W_mass_res'] = ak.firsts(gen_W.mass[gen_W.mass < 55.0]) - events.qq_sel_mass
+        #events['genW_mass'] = gen_W.mass[gen_W.mass > 55.0]
         #####################
-
-        ### ### study input parameters to chi square
-        ### events['bjets_genjets_mass'] = ak.fill_none((events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen).mass,np.nan)
-        ### events['bjets_genjets_dr'] = ak.fill_none(events.b_cands[:,0].matched_gen.delta_r(events.b_cands[:,1].matched_gen),np.nan)
-        ### #events['bcand_genjets_mass'] = (events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen)
-        ### events['gen_bb'] = ak.fill_none(gen_b[:,0] + gen_b[:,1], np.nan)
-        ### if 'HH' in events.metadata['dataset']:
-        ###     genjet_from_b =  ak.pad_none(events.b_cands[events.b_cands.isbFromH].matched_gen,2,axis=1)
-        ###     events['genjet_from_b'] = ak.fill_none(genjet_from_b[:,0] + genjet_from_b[:,1], np.nan)
-        ###     recojet_from_b = ak.pad_none(events.b_cands[events.b_cands.isbFromH], 2, axis=1)
-        ###     events['mass_reco_b_gen_match'] = ak.fill_none(recojet_from_b [:,0] + recojet_from_b[:,1], np.nan)
 
         ### study input parameters to chi square
         events['bjets_genjets_mass'] = ak.fill_none((events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen).mass,np.nan)

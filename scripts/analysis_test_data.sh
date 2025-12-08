@@ -16,9 +16,9 @@ fi
 bash bbreww/scripts/run_processor.sh \
     --output-base "$OUTPUT_BASE_DIR" \
     --processor "bbreww/analysis/processors/hh_bbww_processor.py" \
-    --metadata "bbreww/metadata/skims_v4" \
+    --metadata "bbreww/metadata/skims_v5" \
     --config "bbreww/analysis/metadata/HHbbWW.yml" \
-    --datasets "data__SingleMuon" \
+    --datasets "data__SingleMuon0" \
     --year "2022_preEE" \
     --output-filename "test.coffea" \
     --output-subdir "${JOB_NAME}" 

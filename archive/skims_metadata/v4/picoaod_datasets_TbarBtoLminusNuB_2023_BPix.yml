@@ -1,0 +1,133 @@
+TbarBtoLminusNuB_2023_BPix:
+  count: 788000
+  cutflow:
+    e_region:
+      events:
+        all: 109874.0
+        lumimask: 109874.0
+        njets: 31650.0
+        oneBjet: 71360.0
+        passNoiseFilter: 109857.0
+        trigger: 88395.0
+      weights:
+        all: 158147.8939716816
+        lumimask: 158147.8939716816
+        njets: 48307.246134757996
+        oneBjet: 104672.65858578682
+        passNoiseFilter: 158131.65702056885
+        trigger: 127717.52992343903
+    mu_region:
+      events:
+        all: 151585.0
+        lumimask: 151585.0
+        njets: 47481.0
+        oneBjet: 108862.0
+        passNoiseFilter: 151553.0
+        trigger: 133745.0
+      weights:
+        all: 218138.78547215462
+        lumimask: 218138.78547215462
+        njets: 72238.19099092484
+        oneBjet: 159089.63705849648
+        passNoiseFilter: 218101.67244434357
+        trigger: 192535.43470835686
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/TbarBtoLminusNuB_2023_BPix/picoAOD.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v4', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_TbarBtoLminusNuB_2023_BPix.yml',
+      output_path='output/skimmer', years=['2023_BPix'], datasets=['TbarBtoLminusNuB'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    barista:
+      diff: "diff --git a/src/classifier/ml/training.py b/src/classifier/ml/training.py\n\
+        index eeed5714..d7762b7b 100644\n--- a/src/classifier/ml/training.py\n+++\
+        \ b/src/classifier/ml/training.py\n@@ -111,6 +111,9 @@ class TrainingStage(BenchmarkStage):\n\
+        \             \"name\": self.name,\n             \"parameters\": self.model.n_parameters,\n\
+        \         }\n+\n+        ### self.model.nn = torch.compile(self.model.nn)\
+        \ ## TEST feature, need to check first\n+\n         opt = self.schedule.optimizer(self.model.parameters())\n\
+        \         lr = self.schedule.lr_scheduler(opt)\n         bs = self.schedule.bs_scheduler(\n\
+        diff --git a/src/classifier/nn/dataset/evaluation.py b/src/classifier/nn/dataset/evaluation.py\n\
+        index 68551d14..70e771d7 100644\n--- a/src/classifier/nn/dataset/evaluation.py\n\
+        +++ b/src/classifier/nn/dataset/evaluation.py\n@@ -1,8 +1,11 @@\n from __future__\
+        \ import annotations\n \n+\n import logging\n import sys\n from abc import\
+        \ ABC, abstractmethod\n+from functools import reduce\n+import operator\n from\
+        \ concurrent.futures import ProcessPoolExecutor\n from queue import Queue\n\
+        \ from threading import Thread\n@@ -239,7 +242,7 @@ class ChainLoader(Generic[Unpack[_ChainResultT]]):\n\
+        \ \n     @property\n     def result(self) -> tuple[Unpack[_ChainResultT]]:\n\
+        -        return (*(loader.result for loader in self.__loaders),)\n+      \
+        \  return reduce(operator.add, (loader.result for loader in self.__loaders))\n\
+        \ \n     def __iter__(self) -> Generator[tuple[BatchDumper, BatchType], None,\
+        \ None]:\n         with (\n"
+      hash: 9db3575c72fd5bb364a2c1a6a7ef0448ad50863a
+    bbreww:
+      diff: "diff --git a/classifier/config/workflows/HCR/dvtt/evaluate.yml b/classifier/config/workflows/HCR/dvtt/evaluate.yml\n\
+        index e09abf4..30a6b85 100644\n--- a/classifier/config/workflows/HCR/dvtt/evaluate.yml\n\
+        +++ b/classifier/config/workflows/HCR/dvtt/evaluate.yml\n@@ -11,6 +11,7 @@\
+        \ dataset:\n   - module: bbWW.dvtt.Eval\n     option:\n       - --metadata\
+        \ bbreww/metadata/classifier/datasets_v4\n+      - --no-SR\n       - --max-workers\
+        \ 8 # use 8 workers to fetch metadatas for ROOT files\n       - --mc-processes\
+        \ ttbar\n       - --friends \"\" bbreww/metadata/classifier/output_friend.json@@classifier_input\n\
+        diff --git a/classifier/config/workflows/HCR/svb/run.sh b/classifier/config/workflows/HCR/svb/run.sh\n\
+        index 90d2ab5..4833267 100755\n--- a/classifier/config/workflows/HCR/svb/run.sh\n\
+        +++ b/classifier/config/workflows/HCR/svb/run.sh\n@@ -17,7 +17,7 @@ else\n\
+        \     port=$1\n fi\n \n-# train with train.yml and common.yml configs\n+#train\
+        \ with train.yml and common.yml configs\n ./src/pyml.py \\\n     template\
+        \ \"{model: ${MODEL}, FvT: ${FvT}}\" $WFS/train.yml \\\n     -from $WFS/common.yml\
+        \ \\\n@@ -32,8 +32,8 @@ fi\n     -setting IO \"report: FvT\" \\\n     -setting\
+        \ Monitor \"address: :${port}\"\n \n-# evaluate with evaluate.yml and common.yml\
+        \ configs\n-./src/pyml.py \\\n-    template \"{model: ${MODEL}, SvB: ${SvB}}\"\
+        \ $WFS/evaluate.yml \\\n-    -from $WFS/common.yml \\\n-    -setting Monitor\
+        \ \"address: :${port}\"\n+#evaluate with evaluate.yml and common.yml configs\n\
+        +#./src/pyml.py \\\n+#    template \"{model: ${MODEL}, SvB: ${SvB}}\" $WFS/evaluate.yml\
+        \ \\\n+#    -from $WFS/common.yml \\\n+#    -setting Monitor \"address: :${port}\"\
+        \ndiff --git a/metadata/skims_v4/SingleTop.yml b/metadata/skims_v4/SingleTop.yml\n\
+        index 93d951e..8c85886 100644\n--- a/metadata/skims_v4/SingleTop.yml\n+++\
+        \ b/metadata/skims_v4/SingleTop.yml\n@@ -19,6 +19,19 @@ TBbarQ:\n        \
+        \ sumw: 1264425644.40625\n         sumw2: 185850358788.0\n         total_events:\
+        \ 10153433\n+\n+    2023_preBPix:\n+      nanoAOD: /TBbarQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM\n\
+        +      picoAOD:\n+        count:\n+        files:\n+\n+    2023_BPix:\n+ \
+        \     nanoAOD: /TBbarQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM\n\
+        +      picoAOD:\n+        count:\n+        files:\n+    \n     xs: 145.0\n\
+        \   \n TbarBQ:\n@@ -41,6 +54,19 @@ TbarBQ:\n       sumw: 394682417.515625\n\
+        \       sumw2: 34988823722.0\n       total_events: 5206568\n+\n+  2023_preBPix:\n\
+        +    nanoAOD: /TbarBQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n+\n+  2023_BPix:\n+    nanoAOD:\
+        \ /TbarBQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n+\n   xs: 87.2\n \n TBbartoLplusNuBbar:\n\
+        @@ -63,6 +89,17 @@ TBbartoLplusNuBbar:\n       sumw: 9937724.769897461\n \
+        \      sumw2: 59736462.55859375\n       total_events: 4363850\n+  2023_preBPix:\n\
+        +    nanoAOD: /TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n+  2023_BPix:\n+    nanoAOD:\
+        \ /TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n+\n   xs: 2.405\n   \n TbarBtoLminusNuB:\n\
+        @@ -85,4 +122,14 @@ TbarBtoLminusNuB:\n       sumw: 3945013.146118164\n  \
+        \     sumw2: 14864199.937988281\n       total_events: 2762668\n+  2023_preBPix:\n\
+        +    nanoAOD: /TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n+  2023_BPix:\n+    nanoAOD:\
+        \ /TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n   xs: 1.505\ndiff --git a/scripts/analysis_run3.sh\
+        \ b/scripts/analysis_run3.sh\nindex 563c08f..3aa1207 100644\n--- a/scripts/analysis_run3.sh\n\
+        +++ b/scripts/analysis_run3.sh\n@@ -17,7 +17,7 @@ bash bbreww/scripts/run_processor.sh\
+        \ \\\n     --metadata \"bbreww/metadata/skims_v4\" \\\n     --config \"bbreww/analysis/metadata/HHbbWW.yml\"\
+        \ \\\n     --datasets \"data__EGamma data__SingleMuon GluGluToHHTo2B2VLNu2J_kl_1p00\
+        \ TTToSemiLeptonic TTToHadronic TTTo2L2Nu WtoLNu-2Jets_0J WtoLNu-2Jets_1J\
+        \ WtoLNu-2Jets_2J TbarWplustoLNu2Q TbarWplusto2L2Nu TWminustoLNu2Q TWminusto2L2Nu\"\
+        \ \\\n-    --year \"2022_preEE 2022_EE\" \\\n+    --year \"2022_preEE\" \\\
+        \n     --output-filename \"output.coffea\" \\\n     --output-subdir \"full_run\"\
+        \ \\\n     --no-test \\\ndiff --git a/skimmer/metadata/HHbbWW.yml b/skimmer/metadata/HHbbWW.yml\n\
+        index 052e5ad..7f0f186 100644\n--- a/skimmer/metadata/HHbbWW.yml\n+++ b/skimmer/metadata/HHbbWW.yml\n\
+        @@ -21,7 +21,8 @@ runner:\n     - T1_US_FNAL_Disk\n     - T2_US_MIT\n    \
+        \ - T2_US_Purdue\n-    - T2_US_Vanderbilt\n+    - T2_US_Wisconsin\n+    #-\
+        \ T2_US_Vanderbilt\n   # blocklist_sites:\n   #   - T2_US_MIT\n   #   - T2_US_Purdue\n"
+      hash: 7e5144885f7bde29d44858a758b2574412b36132
+    date: '2025-11-25 13:47:59'
+  saved_events: 79131
+  sumw: 1128138.7177734375
+  sumw2: 4239738.46875
+  sumw2_raw: 4239738.3169447025
+  sumw_raw: 1128138.6572842002
+  total_events: 788000

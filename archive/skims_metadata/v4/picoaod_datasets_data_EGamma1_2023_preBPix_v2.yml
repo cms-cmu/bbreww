@@ -1,0 +1,1716 @@
+data__EGamma1_2023_preBPixv2:
+  count: 17230822.0
+  cutflow:
+    e_region:
+      events:
+        all: 1463338.0
+        lumimask: 1449797.0
+        njets: 52552.0
+        oneBjet: 185342.0
+        passNoiseFilter: 1447563.0
+        trigger: 1402407.0
+      weights:
+        all: 1463338.0
+        lumimask: 1449797.0
+        njets: 52552.0
+        oneBjet: 185342.0
+        passNoiseFilter: 1447563.0
+        trigger: 1402407.0
+    mu_region:
+      events:
+        all: 2847.0
+        lumimask: 2825.0
+        njets: 836.0
+        oneBjet: 1308.0
+        passNoiseFilter: 2813.0
+        trigger: 2248.0
+      weights:
+        all: 2847.0
+        lumimask: 2825.0
+        njets: 836.0
+        oneBjet: 1308.0
+        passNoiseFilter: 2813.0
+        trigger: 2248.0
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma1_2023_preBPixv2/picoAOD.root
+  lumis_processed:
+    367516:
+    - 41
+    - 42
+    - 395
+    - 556
+    - 557
+    - 238
+    - 783
+    - 239
+    - 240
+    - 241
+    - 147
+    - 595
+    - 150
+    - 151
+    - 152
+    - 566
+    - 27
+    - 892
+    - 899
+    - 903
+    - 905
+    - 621
+    - 910
+    - 566
+    - 893
+    - 894
+    - 895
+    - 1
+    - 2
+    - 6
+    - 8
+    - 9
+    - 74
+    - 492
+    - 76
+    - 78
+    - 80
+    - 50
+    - 51
+    - 52
+    - 53
+    - 91
+    - 92
+    - 93
+    - 352
+    - 350
+    - 99
+    - 101
+    - 102
+    - 103
+    - 349
+    - 93
+    - 94
+    - 351
+    - 128
+    - 129
+    - 130
+    - 160
+    - 68
+    - 69
+    - 70
+    - 132
+    - 73
+    - 173
+    - 174
+    - 175
+    - 153
+    - 156
+    - 157
+    - 546
+    - 503
+    - 550
+    - 488
+    - 426
+    - 524
+    - 175
+    - 176
+    - 177
+    - 179
+    - 180
+    - 181
+    - 436
+    - 534
+    - 539
+    - 444
+    - 577
+    - 420
+    - 774
+    - 400
+    - 401
+    - 404
+    - 406
+    - 567
+    - 568
+    - 572
+    - 513
+    - 450
+    - 451
+    - 452
+    - 454
+    - 360
+    - 648
+    - 330
+    - 649
+    - 367
+    - 16
+    - 17
+    - 18
+    - 658
+    - 21
+    - 342
+    - 663
+    - 667
+    - 867
+    - 650
+    - 848
+    - 849
+    - 851
+    - 858
+    - 667
+    - 860
+    - 900
+    - 901
+    - 924
+    - 926
+    - 928
+    - 930
+    - 933
+    - 935
+    - 943
+    - 947
+    - 952
+    - 956
+    - 957
+    - 958
+    - 1088
+    - 960
+    - 962
+    - 963
+    - 1092
+    - 969
+    - 975
+    - 1110
+    - 984
+    - 1005
+    - 1010
+    - 234
+    - 75
+    - 235
+    - 77
+    - 236
+    - 79
+    - 237
+    - 81
+    - 432
+    - 276
+    - 277
+    - 278
+    - 87
+    - 88
+    - 89
+    - 90
+    - 383
+    - 385
+    - 284
+    - 543
+    - 293
+    - 294
+    - 422
+    - 296
+    - 425
+    - 432
+    - 696
+    - 318
+    - 841
+    - 332
+    - 333
+    - 334
+    - 335
+    - 336
+    - 337
+    - 338
+    - 339
+    - 473
+    - 526
+    - 527
+    - 664
+    - 945
+    - 946
+    - 571
+    - 575
+    - 576
+    - 579
+    - 581
+    - 971
+    - 991
+    - 614
+    - 616
+    - 617
+    - 619
+    - 625
+    - 626
+    - 627
+    - 631
+    - 638
+    - 1000
+    - 1002
+    - 972
+    - 973
+    - 974
+    - 1037
+    - 1006
+    - 1042
+    - 1045
+    - 1018
+    - 1020
+    - 1021
+    - 991
+    - 384
+    - 514
+    - 386
+    - 387
+    - 388
+    - 390
+    - 391
+    - 364
+    - 365
+    - 366
+    - 397
+    - 368
+    - 405
+    - 345
+    - 346
+    - 347
+    - 348
+    - 392
+    - 393
+    - 396
+    - 398
+    - 399
+    - 402
+    - 403
+    - 405
+    - 408
+    - 409
+    - 410
+    - 411
+    - 414
+    - 415
+    - 416
+    - 417
+    - 982
+    - 599
+    - 1007
+    - 496
+    - 519
+    - 523
+    - 538
+    - 542
+    - 544
+    - 545
+    - 555
+    - 563
+    - 564
+    - 565
+    - 569
+    - 573
+    - 574
+    - 1242
+    - 1243
+    - 496
+    - 497
+    - 498
+    - 630
+    - 510
+    - 511
+    - 944
+    - 565
+    - 949
+    - 585
+    - 587
+    - 589
+    - 591
+    - 592
+    - 593
+    - 594
+    - 598
+    - 604
+    - 606
+    - 607
+    - 608
+    - 609
+    - 620
+    - 623
+    - 629
+    - 636
+    - 637
+    - 640
+    - 645
+    - 906
+    - 652
+    - 653
+    - 654
+    - 657
+    - 662
+    - 669
+    - 679
+    - 948
+    - 950
+    - 695
+    - 990
+    - 609
+    - 876
+    - 1013
+    - 632
+    - 633
+    - 634
+    - 635
+    - 639
+    - 900
+    - 654
+    - 655
+    - 659
+    - 660
+    - 661
+    - 666
+    - 668
+    - 1180
+    - 671
+    - 673
+    - 682
+    - 689
+    - 820
+    - 824
+    - 827
+    - 830
+    - 833
+    - 1219
+    - 1220
+    - 995
+    - 1123
+    - 998
+    - 1055
+    - 1056
+    - 1057
+    - 1058
+    - 1059
+    - 1060
+    - 1062
+    - 1063
+    - 1064
+    - 1065
+    - 1067
+    - 1069
+    - 1070
+    - 1071
+    - 1201
+    - 1076
+    - 1077
+    - 1078
+    - 1079
+    - 1080
+    - 1081
+    - 1084
+    - 1086
+    - 1091
+    - 1104
+    - 1111
+    - 1171
+    - 1184
+    - 1191
+    - 1197
+    - 1224
+    - 1225
+    - 1226
+    - 1230
+    - 1104
+    - 1105
+    - 1232
+    - 1106
+    - 1109
+    - 1112
+    - 1113
+    - 1114
+    - 1115
+    - 1117
+    - 1119
+    - 1120
+    - 1128
+    - 1130
+    - 1133
+    - 1134
+    - 1139
+    - 1150
+    - 1121
+    - 1122
+    - 1119
+    - 288
+    - 3
+    - 4
+    - 5
+    - 265
+    - 266
+    - 267
+    - 269
+    - 274
+    - 275
+    - 439
+    - 280
+    - 279
+    - 285
+    - 286
+    - 287
+    - 835
+    - 847
+    - 1103
+    - 850
+    - 1051
+    - 449
+    - 468
+    - 453
+    - 104
+    - 105
+    - 106
+    - 107
+    - 108
+    - 109
+    - 110
+    - 111
+    - 112
+    - 82
+    - 83
+    - 115
+    - 85
+    - 86
+    - 116
+    - 61
+    - 1127
+    - 1003
+    - 1008
+    - 1011
+    - 1012
+    - 1082
+    - 1054
+    367553:
+    - 629
+    - 630
+    - 631
+    - 632
+    - 633
+    - 38
+    - 41
+    - 42
+    - 16
+    - 17
+    - 18
+    - 28
+    - 29
+    - 31
+    - 68
+    - 72
+    - 204
+    - 205
+    - 206
+    - 207
+    - 59
+    - 60
+    - 61
+    - 62
+    - 63
+    - 512
+    - 421
+    - 422
+    - 423
+    - 424
+    - 425
+    - 207
+    - 208
+    - 336
+    - 338
+    - 339
+    - 340
+    - 341
+    - 470
+    - 471
+    - 474
+    - 476
+    - 477
+    - 510
+    - 511
+    - 512
+    - 513
+    - 514
+    - 515
+    - 516
+    - 517
+    - 518
+    - 519
+    - 608
+    - 609
+    - 566
+    - 567
+    - 568
+    - 570
+    - 571
+    - 605
+    - 606
+    - 607
+    - 193
+    - 194
+    - 195
+    - 642
+    - 395
+    - 396
+    - 397
+    - 398
+    - 399
+    - 320
+    - 321
+    - 322
+    - 195
+    - 196
+    - 197
+    - 323
+    - 616
+    - 234
+    - 235
+    - 236
+    - 237
+    - 238
+    - 616
+    - 617
+    - 618
+    - 619
+    - 620
+    - 35
+    - 36
+    - 109
+    - 464
+    - 113
+    - 114
+    - 115
+    - 20
+    - 85
+    - 21
+    - 22
+    - 116
+    - 122
+    - 116
+    - 99
+    - 100
+    - 101
+    - 103
+    - 106
+    - 108
+    - 239
+    - 240
+    - 626
+    - 469
+    - 91
+    - 93
+    - 94
+    - 95
+    - 282
+    - 283
+    - 284
+    - 285
+    - 286
+    - 309
+    - 310
+    - 311
+    - 312
+    - 313
+    - 240
+    - 241
+    - 242
+    - 243
+    - 244
+    - 245
+    - 246
+    - 247
+    - 248
+    - 389
+    - 390
+    - 391
+    - 377
+    - 393
+    - 394
+    - 460
+    - 461
+    - 373
+    - 374
+    - 375
+    - 376
+    - 313
+    - 379
+    - 380
+    - 381
+    - 382
+    - 383
+    - 558
+    - 461
+    - 463
+    - 466
+    - 468
+    - 490
+    - 491
+    - 492
+    - 493
+    - 494
+    - 495
+    - 496
+    - 497
+    - 498
+    - 621
+    - 625
+    - 622
+    - 627
+    - 628
+    - 628
+    - 128
+    - 129
+    - 143
+    - 120
+    - 121
+    - 123
+    - 125
+    - 126
+    - 127
+    - 129
+    - 130
+    - 131
+    - 132
+    - 133
+    - 134
+    - 135
+    - 136
+    - 137
+    - 138
+    - 139
+    - 140
+    - 141
+    - 142
+    - 144
+    - 145
+    - 146
+    - 147
+    - 224
+    - 225
+    - 226
+    - 227
+    - 228
+    - 265
+    - 266
+    - 267
+    - 268
+    - 270
+    - 271
+    - 272
+    - 273
+    - 147
+    - 148
+    - 149
+    - 150
+    - 151
+    - 273
+    - 274
+    - 275
+    - 304
+    - 305
+    - 306
+    - 307
+    - 308
+    - 314
+    - 315
+    - 316
+    - 317
+    - 318
+    - 342
+    - 344
+    - 345
+    - 346
+    - 347
+    - 358
+    - 439
+    - 358
+    - 359
+    - 360
+    - 361
+    - 362
+    - 437
+    - 405
+    - 406
+    - 407
+    - 408
+    - 409
+    - 410
+    - 411
+    - 412
+    - 413
+    - 414
+    - 438
+    - 543
+    - 544
+    - 545
+    - 546
+    - 547
+    - 439
+    - 440
+    - 441
+    - 595
+    - 478
+    - 479
+    - 480
+    - 481
+    - 482
+    - 484
+    - 485
+    - 486
+    - 487
+    - 488
+    - 595
+    - 596
+    - 597
+    - 598
+    - 599
+    - 634
+    - 635
+    - 636
+    - 637
+    - 638
+    - 65
+    - 66
+    - 37
+    - 9
+    - 10
+    - 11
+    - 12
+    - 24
+    - 610
+    - 611
+    - 612
+    - 613
+    - 614
+    - 644
+    - 645
+    - 532
+    - 534
+    - 535
+    - 536
+    - 32
+    - 39
+    - 40
+    - 43
+    - 48
+    - 51
+    - 52
+    - 54
+    - 55
+    - 56
+    - 57
+    - 58
+    - 67
+    - 70
+    - 71
+    - 74
+    - 75
+    - 84
+    - 97
+    - 483
+    - 615
+    367554:
+    - 28
+    - 38
+    - 28
+    - 29
+    - 30
+    - 32
+    - 76
+    - 78
+    - 79
+    - 80
+    - 81
+    - 82
+    - 83
+    - 84
+    - 85
+    - 90
+    - 91
+    - 92
+    - 93
+    - 94
+    - 95
+    - 114
+    - 122
+    - 126
+    - 275
+    - 286
+    - 287
+    - 305
+    - 308
+    - 95
+    - 96
+    - 97
+    - 100
+    - 101
+    - 103
+    - 105
+    - 106
+    - 107
+    - 109
+    - 110
+    - 111
+    - 113
+    - 117
+    - 288
+    - 290
+    - 291
+    - 292
+    - 293
+    - 294
+    - 295
+    - 297
+    - 300
+    - 277
+    - 282
+    - 284
+    - 142
+    - 115
+    - 118
+    - 279
+    - 120
+    - 2
+    - 3
+    - 4
+    - 5
+    - 162
+    - 44
+    - 45
+    - 46
+    - 47
+    - 48
+    - 18
+    - 19
+    - 20
+    - 181
+    - 21
+    - 22
+    - 148
+    - 124
+    - 162
+    - 131
+    - 132
+    - 140
+    - 175
+    - 146
+    - 147
+    - 191
+    - 260
+    - 270
+    - 273
+    - 274
+    - 247
+    - 280
+    - 50
+    - 51
+    - 52
+    - 53
+    - 54
+    - 299
+    - 54
+    - 64
+    - 65
+    - 66
+    - 67
+    - 70
+    - 71
+    - 72
+    - 73
+    - 74
+    - 199
+    - 202
+    - 205
+    - 207
+    - 212
+    - 86
+    - 87
+    - 89
+    - 108
+    - 203
+    - 205
+    367615:
+    - 132
+    - 133
+    - 135
+    - 136
+    - 147
+    - 148
+    - 149
+    - 159
+    - 170
+    - 222
+    - 223
+    - 224
+    - 225
+    - 226
+    - 227
+    - 228
+    - 229
+    - 230
+    - 231
+    - 373
+    - 248
+    - 195
+    - 196
+    - 197
+    - 455
+    - 301
+    - 198
+    - 199
+    - 300
+    - 436
+    - 437
+    - 438
+    - 439
+    - 440
+    - 441
+    - 442
+    - 443
+    - 444
+    - 445
+    - 451
+    - 452
+    - 199
+    - 200
+    - 201
+    - 202
+    - 203
+    - 204
+    - 205
+    - 206
+    - 452
+    - 453
+    - 454
+    - 456
+    - 499
+    - 501
+    - 502
+    - 503
+    - 504
+    - 129
+    - 130
+    - 177
+    - 132
+    - 360
+    - 397
+    - 398
+    - 399
+    - 496
+    - 400
+    - 134
+    - 137
+    - 138
+    - 139
+    - 144
+    - 152
+    - 184
+    - 75
+    - 76
+    - 79
+    - 80
+    - 81
+    - 82
+    - 83
+    - 84
+    - 85
+    - 86
+    - 91
+    - 92
+    - 93
+    - 94
+    - 95
+    - 105
+    - 106
+    - 122
+    - 131
+    - 150
+    - 151
+    - 153
+    - 154
+    - 155
+    - 158
+    - 461
+    - 462
+    - 463
+    - 464
+    - 465
+    - 95
+    - 96
+    - 371
+    - 372
+    - 374
+    - 375
+    - 376
+    - 192
+    - 193
+    - 194
+    - 366
+    - 307
+    - 243
+    - 244
+    - 245
+    - 246
+    - 247
+    - 190
+    - 392
+    - 393
+    - 394
+    - 395
+    - 396
+    - 366
+    - 367
+    - 368
+    - 369
+    - 370
+    - 406
+    - 407
+    - 408
+    - 409
+    - 410
+    - 257
+    - 259
+    - 260
+    - 261
+    - 262
+    - 263
+    - 264
+    - 265
+    - 266
+    - 267
+    - 298
+    - 299
+    - 302
+    - 303
+    - 304
+    - 356
+    - 357
+    - 358
+    - 359
+    - 360
+    - 288
+    - 289
+    - 290
+    - 291
+    - 292
+    - 387
+    - 388
+    - 389
+    - 390
+    - 391
+    367618:
+    - 315
+    - 270
+    - 283
+    - 288
+    - 315
+    - 318
+    - 32
+    - 33
+    - 34
+    - 36
+    - 37
+    - 38
+    - 39
+    - 45
+    - 56
+    - 28
+    - 31
+    - 158
+    - 174
+    - 56
+    - 59
+    - 60
+    - 61
+    - 62
+    - 204
+    - 80
+    - 81
+    - 82
+    - 209
+    - 211
+    - 85
+    - 86
+    - 87
+    - 89
+    - 92
+    - 93
+    - 95
+    - 97
+    - 275
+    - 158
+    - 159
+    - 160
+    - 161
+    - 162
+    - 182
+    - 184
+    - 185
+    - 186
+    - 187
+    - 188
+    - 189
+    - 190
+    - 196
+    - 197
+    - 199
+    - 202
+    - 203
+    - 213
+    - 234
+    - 256
+    - 226
+    - 228
+    - 232
+    - 234
+    - 238
+    - 245
+    - 246
+    - 251
+    - 254
+    - 35
+    - 29
+    - 30
+    - 23
+    - 257
+    - 262
+    - 279
+    - 280
+    - 35
+    - 40
+    - 193
+    - 195
+    - 198
+    - 200
+    - 205
+    - 206
+    - 218
+    - 222
+    - 223
+    - 224
+    - 227
+    - 235
+    - 237
+    - 250
+    - 255
+    - 264
+    - 262
+    - 49
+    - 51
+    - 53
+    - 54
+    - 130
+    - 131
+    - 132
+    - 133
+    - 134
+    - 135
+    - 54
+    - 55
+    - 219
+    - 98
+    - 101
+    - 102
+    - 104
+    - 111
+    - 112
+    - 113
+    - 116
+    - 117
+    - 126
+    - 136
+    - 140
+    - 142
+    - 135
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 263
+    - 266
+    - 15
+    - 17
+    - 18
+    - 24
+    - 25
+    - 26
+    - 284
+    - 312
+    - 313
+    - 329
+    - 335
+    - 208
+    - 340
+    367619:
+    - 159
+    - 160
+    - 547
+    - 548
+    - 163
+    - 164
+    - 307
+    - 308
+    - 184
+    - 578
+    - 333
+    - 334
+    - 335
+    - 338
+    - 89
+    - 350
+    - 95
+    - 96
+    - 97
+    - 98
+    - 362
+    - 369
+    - 114
+    - 115
+    - 116
+    - 243
+    - 124
+    - 514
+    - 3
+    - 517
+    - 38
+    - 39
+    - 522
+    - 43
+    - 75
+    - 524
+    - 19
+    - 564
+    - 565
+    - 566
+    - 567
+    - 128
+    - 37
+    - 264
+    - 41
+    - 42
+    - 72
+    - 73
+    - 76
+    - 74
+    - 77
+    - 48
+    - 91
+    - 88
+    - 86
+    - 87
+    - 118
+    - 155
+    - 92
+    - 392
+    - 138
+    - 141
+    - 158
+    - 544
+    - 40
+    - 45
+    - 51
+    - 180
+    - 53
+    - 55
+    - 56
+    - 185
+    - 58
+    - 64
+    - 82
+    - 84
+    - 230
+    - 107
+    - 108
+    - 109
+    - 110
+    - 111
+    - 117
+    - 254
+    - 387
+    - 266
+    - 290
+    - 291
+    - 292
+    - 294
+    - 422
+    - 301
+    - 306
+    - 571
+    - 199
+    - 201
+    - 207
+    - 336
+    - 337
+    - 339
+    - 212
+    - 340
+    - 341
+    - 346
+    - 225
+    - 226
+    - 358
+    - 231
+    - 234
+    - 241
+    - 247
+    - 513
+    - 515
+    - 398
+    - 402
+    - 404
+    - 406
+    - 407
+    - 446
+    - 468
+    - 469
+    - 341
+    - 342
+    - 343
+    - 344
+    - 470
+    - 475
+    - 476
+    - 349
+    - 471
+    - 351
+    - 352
+    - 474
+    - 479
+    - 480
+    - 477
+    - 482
+    - 486
+    - 481
+    - 146
+    - 147
+    - 151
+    - 165
+    - 309
+    - 450
+    - 453
+    - 454
+    - 455
+    - 458
+    - 331
+    - 466
+    - 495
+    - 502
+    - 503
+    - 504
+    - 505
+    - 506
+    - 508
+    - 511
+    - 137
+    - 523
+    - 140
+    - 142
+    - 144
+    - 401
+    - 405
+    - 156
+    - 296
+    - 298
+    - 427
+    - 429
+    - 302
+    - 303
+    - 305
+    - 178
+    - 315
+    - 88
+    - 355
+    - 361
+    - 363
+    - 364
+    - 365
+    - 366
+    - 367
+    - 368
+    - 370
+    - 373
+    - 253
+    - 250
+    - 252
+    - 261
+    - 388
+    - 269
+    - 270
+    - 408
+    - 281
+    - 409
+    - 411
+    - 410
+    - 283
+    - 414
+    - 415
+    - 293
+    - 425
+    - 299
+    - 300
+    - 313
+    - 445
+    - 448
+    - 456
+    - 457
+    - 462
+    - 478
+    - 489
+    - 253
+    - 255
+    - 227
+    - 122
+    - 359
+    - 520
+    - 297
+    - 237
+    - 381
+    - 438
+    - 119
+    - 568
+    - 441
+    - 314
+    - 219
+    - 220
+    - 413
+    - 222
+    - 36
+    - 46
+    - 52
+    - 123
+    - 30
+    - 31
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v4', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_data_EGamma1_2023_preBPix_v2.yml',
+      output_path='output/skimmer', years=['2023_preBPix'], datasets=['data__EGamma1'],
+      era=['v2'], skimming=True, test=False, systematics=None, run_dask=True, condor=True,
+      debug=False, check_input_files=False, githash='', gitdiff='')
+    barista:
+      diff: "diff --git a/src/classifier/ml/training.py b/src/classifier/ml/training.py\n\
+        index eeed5714..d7762b7b 100644\n--- a/src/classifier/ml/training.py\n+++\
+        \ b/src/classifier/ml/training.py\n@@ -111,6 +111,9 @@ class TrainingStage(BenchmarkStage):\n\
+        \             \"name\": self.name,\n             \"parameters\": self.model.n_parameters,\n\
+        \         }\n+\n+        ### self.model.nn = torch.compile(self.model.nn)\
+        \ ## TEST feature, need to check first\n+\n         opt = self.schedule.optimizer(self.model.parameters())\n\
+        \         lr = self.schedule.lr_scheduler(opt)\n         bs = self.schedule.bs_scheduler(\n\
+        diff --git a/src/classifier/nn/dataset/evaluation.py b/src/classifier/nn/dataset/evaluation.py\n\
+        index 68551d14..70e771d7 100644\n--- a/src/classifier/nn/dataset/evaluation.py\n\
+        +++ b/src/classifier/nn/dataset/evaluation.py\n@@ -1,8 +1,11 @@\n from __future__\
+        \ import annotations\n \n+\n import logging\n import sys\n from abc import\
+        \ ABC, abstractmethod\n+from functools import reduce\n+import operator\n from\
+        \ concurrent.futures import ProcessPoolExecutor\n from queue import Queue\n\
+        \ from threading import Thread\n@@ -239,7 +242,7 @@ class ChainLoader(Generic[Unpack[_ChainResultT]]):\n\
+        \ \n     @property\n     def result(self) -> tuple[Unpack[_ChainResultT]]:\n\
+        -        return (*(loader.result for loader in self.__loaders),)\n+      \
+        \  return reduce(operator.add, (loader.result for loader in self.__loaders))\n\
+        \ \n     def __iter__(self) -> Generator[tuple[BatchDumper, BatchType], None,\
+        \ None]:\n         with (\n"
+      hash: 9db3575c72fd5bb364a2c1a6a7ef0448ad50863a
+    bbreww:
+      diff: "diff --git a/classifier/config/dataset/bbWW/_common.py b/classifier/config/dataset/bbWW/_common.py\n\
+        index ef7fb95..7eb56c9 100644\n--- a/classifier/config/dataset/bbWW/_common.py\n\
+        +++ b/classifier/config/dataset/bbWW/_common.py\n@@ -25,6 +25,9 @@ if TYPE_CHECKING:\n\
+        \ class _Derived:\n     region_index: str = \"region_index\"\n \n+def _remove_sr(df:\
+        \ pd.DataFrame):\n+    \"\"\"Remove signal region events\"\"\"\n+    return\
+        \ df[~df[\"SR\"]]\n \n def _sort_map(obj: dict[frozenset[str]]):\n     obj\
+        \ = {(*sorted(k),): v for k, v in obj.items()}\n@@ -240,9 +243,20 @@ class\
+        \ CommonEval(Common):\n         }\n \n     def preprocess_by_group(self):\n\
+        -        return [\n-            _group.add_year(),\n-        ]\n+        ps\
+        \ = []\n+        # Optional SR removal\n+        if self.opts.no_SR:\n+  \
+        \          ps.append(\n+                _group.fullmatch(\n+             \
+        \       (),\n+                    processors=[\n+                        lambda:\
+        \ _remove_sr,\n+                    ],\n+                    name=\"remove\
+        \ signal region\",\n+                )\n+            )\n+        ps.append(_group.add_year())\n\
+        +        return ps\n \n     def debug(self):\n         import logging\ndiff\
+        \ --git a/classifier/config/dataset/bbWW/dvtt.py b/classifier/config/dataset/bbWW/dvtt.py\n\
+        index 3bc95b2..a2aa366 100644\n--- a/classifier/config/dataset/bbWW/dvtt.py\n\
+        +++ b/classifier/config/dataset/bbWW/dvtt.py\n@@ -63,19 +63,31 @@ class Train(CommonTrain):\n\
+        \                 name=\"ttbar selection\",\n             ),\n         )\n\
+        -        _group.add_year(),\n-\n-        # Optional SR removal\n-        if\
+        \ self.opts.no_SR:\n-            ps.append(\n-                _group.fullmatch(\n\
+        -                    (),\n-                    processors=[\n-           \
+        \             lambda: _remove_sr,\n-                    ],\n-            \
+        \        name=\"remove signal region\",\n+        minor_bkgs =  [\"WplusJets\"\
+        , \"tW\", \"singleTop\"]\n+        for bkg in minor_bkgs:\n+            if\
+        \ bkg in self.mc_processes:\n+                ps.append(\n+              \
+        \      _group.fullmatch(\n+                        (f\"label:{bkg}\",),\n\
+        +                        processors=[\n+                            lambda:\
+        \ _data_selection,\n+                            lambda: add_label_index(\"\
+        ttbar\"),\n+                        ],\n+                        name=\"minor\
+        \ background selection\",\n+                    ),\n                 )\n+\
+        \        ps.append(_group.add_year())\n+\n+        # remove signal region\
+        \ \n+        ps.append(\n+            _group.fullmatch(\n+               \
+        \ (),\n+                processors=[\n+                    lambda: _remove_sr,\n\
+        +                ],\n+                name=\"remove signal region\",\n   \
+        \          )\n+        )\n \n         return list(super().preprocess_by_group())\
+        \ + ps\n \ndiff --git a/classifier/config/workflows/HCR/dvtt/evaluate.yml\
+        \ b/classifier/config/workflows/HCR/dvtt/evaluate.yml\nindex e09abf4..30a6b85\
+        \ 100644\n--- a/classifier/config/workflows/HCR/dvtt/evaluate.yml\n+++ b/classifier/config/workflows/HCR/dvtt/evaluate.yml\n\
+        @@ -11,6 +11,7 @@ dataset:\n   - module: bbWW.dvtt.Eval\n     option:\n  \
+        \     - --metadata bbreww/metadata/classifier/datasets_v4\n+      - --no-SR\n\
+        \       - --max-workers 8 # use 8 workers to fetch metadatas for ROOT files\n\
+        \       - --mc-processes ttbar\n       - --friends \"\" bbreww/metadata/classifier/output_friend.json@@classifier_input\n\
+        diff --git a/classifier/config/workflows/HCR/svb/run.sh b/classifier/config/workflows/HCR/svb/run.sh\n\
+        index 90d2ab5..4833267 100755\n--- a/classifier/config/workflows/HCR/svb/run.sh\n\
+        +++ b/classifier/config/workflows/HCR/svb/run.sh\n@@ -17,7 +17,7 @@ else\n\
+        \     port=$1\n fi\n \n-# train with train.yml and common.yml configs\n+#train\
+        \ with train.yml and common.yml configs\n ./src/pyml.py \\\n     template\
+        \ \"{model: ${MODEL}, FvT: ${FvT}}\" $WFS/train.yml \\\n     -from $WFS/common.yml\
+        \ \\\n@@ -32,8 +32,8 @@ fi\n     -setting IO \"report: FvT\" \\\n     -setting\
+        \ Monitor \"address: :${port}\"\n \n-# evaluate with evaluate.yml and common.yml\
+        \ configs\n-./src/pyml.py \\\n-    template \"{model: ${MODEL}, SvB: ${SvB}}\"\
+        \ $WFS/evaluate.yml \\\n-    -from $WFS/common.yml \\\n-    -setting Monitor\
+        \ \"address: :${port}\"\n+#evaluate with evaluate.yml and common.yml configs\n\
+        +#./src/pyml.py \\\n+#    template \"{model: ${MODEL}, SvB: ${SvB}}\" $WFS/evaluate.yml\
+        \ \\\n+#    -from $WFS/common.yml \\\n+#    -setting Monitor \"address: :${port}\"\
+        \ndiff --git a/metadata/skims_v4/SingleTop.yml b/metadata/skims_v4/SingleTop.yml\n\
+        index 93d951e..8c85886 100644\n--- a/metadata/skims_v4/SingleTop.yml\n+++\
+        \ b/metadata/skims_v4/SingleTop.yml\n@@ -19,6 +19,19 @@ TBbarQ:\n        \
+        \ sumw: 1264425644.40625\n         sumw2: 185850358788.0\n         total_events:\
+        \ 10153433\n+\n+    2023_preBPix:\n+      nanoAOD: /TBbarQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM\n\
+        +      picoAOD:\n+        count:\n+        files:\n+\n+    2023_BPix:\n+ \
+        \     nanoAOD: /TBbarQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM\n\
+        +      picoAOD:\n+        count:\n+        files:\n+    \n     xs: 145.0\n\
+        \   \n TbarBQ:\n@@ -41,6 +54,19 @@ TbarBQ:\n       sumw: 394682417.515625\n\
+        \       sumw2: 34988823722.0\n       total_events: 5206568\n+\n+  2023_preBPix:\n\
+        +    nanoAOD: /TbarBQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n+\n+  2023_BPix:\n+    nanoAOD:\
+        \ /TbarBQ_t-channel_4FS_TuneCP5_13p6TeV_powheg-madspin-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n+\n   xs: 87.2\n \n TBbartoLplusNuBbar:\n\
+        @@ -63,6 +89,17 @@ TBbartoLplusNuBbar:\n       sumw: 9937724.769897461\n \
+        \      sumw2: 59736462.55859375\n       total_events: 4363850\n+  2023_preBPix:\n\
+        +    nanoAOD: /TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n+  2023_BPix:\n+    nanoAOD:\
+        \ /TBbartoLplusNuBbar-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n+\n   xs: 2.405\n   \n TbarBtoLminusNuB:\n\
+        @@ -85,4 +122,14 @@ TbarBtoLminusNuB:\n       sumw: 3945013.146118164\n  \
+        \     sumw2: 14864199.937988281\n       total_events: 2762668\n+  2023_preBPix:\n\
+        +    nanoAOD: /TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n+  2023_BPix:\n+    nanoAOD:\
+        \ /TbarBtoLminusNuB-s-channel-4FS_TuneCP5_13p6TeV_amcatnlo-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count:\n+      files:\n   xs: 1.505\ndiff --git a/metadata/skims_v4/data_EGamma.yml\
+        \ b/metadata/skims_v4/data_EGamma.yml\nindex ccf1ea3..fe6e4cc 100644\n---\
+        \ a/metadata/skims_v4/data_EGamma.yml\n+++ b/metadata/skims_v4/data_EGamma.yml\n\
+        @@ -1,4 +1,4 @@\n-data__EGamma:\n+data__EGamma0:\n   2022_preEE:\n     lumi:\
+        \ 7.98\n     nanoAOD: \n@@ -57,4 +57,30 @@ data__EGamma:\n         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEG/picoAOD.chunk0.root\n\
+        \         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__EGamma_2022_EEG/picoAOD.chunk1.root\n\
+        \         saved_events: 638867\n-        total_events: 76807350\n\\ No newline\
+        \ at end of file\n+        total_events: 76807350\n+  2023_preBPix:\n+   \
+        \ lumi:\n+    nanoAOD:\n+      v1: /EGamma0/Run2023C-22Sep2023_v1-v1/NANOAOD\n\
+        +      v2: /EGamma0/Run2023C-22Sep2023_v2-v1/NANOAOD\n+      v3: /EGamma0/Run2023C-22Sep2023_v3-v1/NANOAOD\n\
+        +      v4: /EGamma0/Run2023C-22Sep2023_v4-v1/NANOAOD\n+  2023_BPix:\n+   \
+        \ lumi:\n+    nanoAOD:\n+      v1: /EGamma0/Run2023D-22Sep2023_v1-v1/NANOAOD\n\
+        +      v2: /EGamma0/Run2023D-22Sep2023_v2-v1/NANOAOD\n+\n+data__EGamma1:\n\
+        +  2023_preBPix:\n+    lumi:\n+    nanoAOD:\n+      v1: /EGamma1/Run2023C-22Sep2023_v1-v1/NANOAOD\n\
+        +      v2: /EGamma1/Run2023C-22Sep2023_v2-v1/NANOAOD\n+      v3: /EGamma1/Run2023C-22Sep2023_v3-v1/NANOAOD\n\
+        +      v4: /EGamma1/Run2023C-22Sep2023_v4-v1/NANOAOD\n+  2023_BPix:\n+   \
+        \ lumi:\n+    nanoAOD:\n+      v1: /EGamma1/Run2023D-22Sep2023_v1-v1/NANOAOD\n\
+        +      v2: /EGamma1/Run2023D-22Sep2023_v2-v1/NANOAOD\n\\ No newline at end\
+        \ of file\ndiff --git a/metadata/skims_v4/data_SingleMuon.yml b/metadata/skims_v4/data_SingleMuon.yml\n\
+        index af057e4..88191af 100644\n--- a/metadata/skims_v4/data_SingleMuon.yml\n\
+        +++ b/metadata/skims_v4/data_SingleMuon.yml\n@@ -1,62 +1,92 @@\n- data__SingleMuon:\n\
+        -    2022_preEE:\n-      lumi: 7.98\n-      nanoAOD:\n-        C: /Muon/Run2022C-22Sep2023-v1/NANOAOD\n\
+        -        D: /Muon/Run2022D-22Sep2023-v1/NANOAOD\n-      picoAOD:\n-      \
+        \  C: \n-          count: 138427345.0\n-          files:\n-          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEEC/picoAOD.chunk0.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEEC/picoAOD.chunk1.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEEC/picoAOD.chunk2.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEEC/picoAOD.chunk3.root\n\
+        -          saved_events: 1519542\n-          total_events: 138427345\n-  \
+        \      D: \n-          count: 75468381.0\n-          files:\n-          -\
+        \ root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEED/picoAOD.chunk0.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEED/picoAOD.chunk1.root\n\
+        -          saved_events: 980202\n-          total_events: 75468381\n-    2022_EE:\
+        \  \n-      lumi: \n-      nanoAOD:\n-          E: /Muon/Run2022E-22Sep2023-v1/NANOAOD\n\
+        -          F: /Muon/Run2022F-22Sep2023-v2/NANOAOD\n-          G: /Muon/Run2022G-22Sep2023-v1/NANOAOD\n\
+        -      picoAOD:\n-        E: \n-          count: 141460608.0\n-          files:\
+        \ \n-          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEE/picoAOD.chunk0.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEE/picoAOD.chunk1.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEE/picoAOD.chunk2.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEE/picoAOD.chunk3.root\n\
+        -          saved_events: 1812008\n-          total_events: 141460608\n-  \
+        \      F: \n-          count: 449887248.0\n-          files:\n-          -\
+        \ root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk0.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk1.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk2.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk3.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk4.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk5.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk6.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk7.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk8.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk9.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk10.root\n\
+        -          saved_events: 5498578\n-          total_events: 449887248\n-  \
+        \      G: \n-          files:\n-          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEG/picoAOD.chunk0.root\n\
+        -          - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEG/picoAOD.chunk1.root\n\
+        -          saved_events: 883150\n-          total_events: 76689396\n+data__SingleMuon0:\n\
+        +  2022_preEE:\n+    lumi: 7.98\n+    nanoAOD:\n+      C: /Muon/Run2022C-22Sep2023-v1/NANOAOD\n\
+        +      D: /Muon/Run2022D-22Sep2023-v1/NANOAOD\n+    picoAOD:\n+      C: \n\
+        +        count: 138427345.0\n+        files:\n+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEEC/picoAOD.chunk0.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEEC/picoAOD.chunk1.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEEC/picoAOD.chunk2.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEEC/picoAOD.chunk3.root\n\
+        +        saved_events: 1519542\n+        total_events: 138427345\n+      D:\
+        \ \n+        count: 75468381.0\n+        files:\n+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEED/picoAOD.chunk0.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_preEED/picoAOD.chunk1.root\n\
+        +        saved_events: 980202\n+        total_events: 75468381\n+  2022_EE:\
+        \  \n+    lumi: 26.67\n+    nanoAOD:\n+        E: /Muon/Run2022E-22Sep2023-v1/NANOAOD\n\
+        +        F: /Muon/Run2022F-22Sep2023-v2/NANOAOD\n+        G: /Muon/Run2022G-22Sep2023-v1/NANOAOD\n\
+        +    picoAOD:\n+      E: \n+        count: 141460608.0\n+        files: \n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEE/picoAOD.chunk0.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEE/picoAOD.chunk1.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEE/picoAOD.chunk2.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEE/picoAOD.chunk3.root\n\
+        +        saved_events: 1812008\n+        total_events: 141460608\n+      F:\
+        \ \n+        count: 449887248.0\n+        files:\n+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk0.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk1.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk2.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk3.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk4.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk5.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk6.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk7.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk8.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk9.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEF/picoAOD.chunk10.root\n\
+        +        saved_events: 5498578\n+        total_events: 449887248\n+      G:\
+        \ \n+        files:\n+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEG/picoAOD.chunk0.root\n\
+        +        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/data__SingleMuon_2022_EEG/picoAOD.chunk1.root\n\
+        +        saved_events: 883150\n+        total_events: 76689396\n+  2023_preBPix:\n\
+        +    lumi: \n+    nanoAOD:\n+      v1: /Muon0/Run2023C-22Sep2023_v1-v1/NANOAOD\n\
+        +      v2: /Muon0/Run2023C-22Sep2023_v2-v1/NANOAOD\n+      v3: /Muon0/Run2023C-22Sep2023_v3-v1/NANOAOD\n\
+        +      v4: /Muon0/Run2023C-22Sep2023_v4-v1/NANOAOD\n+    picoAOD:\n+     \
+        \ files:\n+      saved events:\n+  2023_BPix:\n+    lumi:\n+    nanoAOD: \n\
+        +      v1: /Muon0/Run2023D-22Sep2023_v1-v1/NANOAOD\n+      v2: /Muon0/Run2023D-22Sep2023_v2-v1/NANOAOD\n\
+        +\n+data__SingleMuon1:\n+  2023_preBPix:\n+    lumi: \n+    nanoAOD:\n+  \
+        \    v1: /Muon1/Run2023C-22Sep2023_v1-v1/NANOAOD\n+      v2: /Muon1/Run2023C-22Sep2023_v2-v1/NANOAOD\n\
+        +      v3: /Muon1/Run2023C-22Sep2023_v3-v1/NANOAOD\n+      v4: /Muon1/Run2023C-22Sep2023_v4-v2/NANOAOD\n\
+        +  2023_BPix:\n+    lumi:\n+    nanoAOD:\n+      v1: /Muon1/Run2023D-22Sep2023_v1-v1/NANOAOD\n\
+        +      v2: /Muon1/Run2023D-22Sep2023_v2-v1/NANOAOD\n+  \n \ndiff --git a/scripts/analysis_run3.sh\
+        \ b/scripts/analysis_run3.sh\nindex 563c08f..3aa1207 100644\n--- a/scripts/analysis_run3.sh\n\
+        +++ b/scripts/analysis_run3.sh\n@@ -17,7 +17,7 @@ bash bbreww/scripts/run_processor.sh\
+        \ \\\n     --metadata \"bbreww/metadata/skims_v4\" \\\n     --config \"bbreww/analysis/metadata/HHbbWW.yml\"\
+        \ \\\n     --datasets \"data__EGamma data__SingleMuon GluGluToHHTo2B2VLNu2J_kl_1p00\
+        \ TTToSemiLeptonic TTToHadronic TTTo2L2Nu WtoLNu-2Jets_0J WtoLNu-2Jets_1J\
+        \ WtoLNu-2Jets_2J TbarWplustoLNu2Q TbarWplusto2L2Nu TWminustoLNu2Q TWminusto2L2Nu\"\
+        \ \\\n-    --year \"2022_preEE 2022_EE\" \\\n+    --year \"2022_preEE\" \\\
+        \n     --output-filename \"output.coffea\" \\\n     --output-subdir \"full_run\"\
+        \ \\\n     --no-test \\\ndiff --git a/skimmer/metadata/HHbbWW.yml b/skimmer/metadata/HHbbWW.yml\n\
+        index 052e5ad..7f0f186 100644\n--- a/skimmer/metadata/HHbbWW.yml\n+++ b/skimmer/metadata/HHbbWW.yml\n\
+        @@ -21,7 +21,8 @@ runner:\n     - T1_US_FNAL_Disk\n     - T2_US_MIT\n    \
+        \ - T2_US_Purdue\n-    - T2_US_Vanderbilt\n+    - T2_US_Wisconsin\n+    #-\
+        \ T2_US_Vanderbilt\n   # blocklist_sites:\n   #   - T2_US_MIT\n   #   - T2_US_Purdue\n"
+      hash: 7e5144885f7bde29d44858a758b2574412b36132
+    date: '2025-11-25 16:11:59'
+  saved_events: 137150
+  sumw: 17230822
+  sumw2: 17230822
+  total_events: 17230822

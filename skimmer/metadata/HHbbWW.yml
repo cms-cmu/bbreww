@@ -9,18 +9,24 @@ runner:
   data_tier: nanoAOD
   condor_cores: 1
   condor_memory: 10GB
-  condor_transfer_input_files:
-    - src
+  analysis_base_path: 
     - bbreww
+  condor_transfer_input_files:
+    - src/
+    - bbreww/analysis/
+    - bbreww/metadata/
+    - bbreww/skimmer/
+
   # rucio_regex_sites: 'T[123]_(US|CH|DE|UK)'
   allowlist_sites:
     - T3_US_FNALLPC
     - T2_US_Nebraska
-    - T3_US_NotreDame
+  #  - T3_US_NotreDame
     - T2_US_Caltech
     - T1_US_FNAL_Disk
     - T2_US_MIT
     - T2_US_Purdue
+    - T2_US_Wisconsin
     - T2_US_Vanderbilt
   # blocklist_sites:
   #   - T2_US_MIT
@@ -28,7 +34,7 @@ runner:
 
 
 config:
-  base_path: root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/   ### for example in EOS
+  base_path: root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/   ### for example in EOS
   #base_path: /srv/output/skimmer/test/   ### local
   step: 100000
   skip_collections:

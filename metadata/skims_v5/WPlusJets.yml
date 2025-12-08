@@ -1,0 +1,125 @@
+WtoLNu-2Jets_0J:
+    2022_preEE:
+      nanoAOD: /WtoLNu-2Jets_0J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM
+      picoAOD:
+        files: 
+
+        saved_events: 120048
+        sumw: 12029080234356.0
+        sumw2: 1.1811751142180782e+18
+        total_events: 192985602
+    2022_EE:
+      nanoAOD: /WtoLNu-2Jets_0J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v3/NANOAODSIM
+      picoAOD:
+        count: 678397952
+        files:
+
+        saved_events: 420249
+        sumw: 42284738856048.0
+        sumw_raw: 42284735332661.41
+        total_events: 678397952
+    2023_preBPix:
+      nanoAOD: /WtoLNu-2Jets_0J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v3/NANOAODSIM
+      picoAOD:
+        count: 400648969
+        files:
+
+        saved_events: 340779
+        sumw: 24971706658880.0
+        sumw2: 2.45218597501141e+18
+        total_events: 400648969
+    2023_BPix: 
+      nanoAOD: /WtoLNu-2Jets_0J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM
+      picoAOD:
+        count: 199057715
+        files:
+
+        saved_events: 169380
+        sumw: 12407048405072.0
+        sumw2: 1.2183396846529413e+18
+        total_events: 199057715
+    xs: 55570.0
+
+WtoLNu-2Jets_1J:
+  2022_preEE:
+    nanoAOD: /WtoLNu-2Jets_1J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
+    picoAOD:
+      files: 
+
+      saved_events: 622816
+      sumw: 6745765114436.0
+      sumw2: 1.374846379159978e+18
+      total_events: 141406789
+  2022_EE:
+    nanoAOD: /WtoLNu-2Jets_1J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
+    picoAOD:
+      count: 522553517
+      files:
+
+      saved_events: 2308667
+      sumw: 24933248681242.0
+      sumw2: 5.0805963362169e+18
+      total_events: 522553517
+  2023_preBPix:
+    nanoAOD: /WtoLNu-2Jets_1J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM
+    picoAOD:
+      count: 308622412
+      files:
+
+      saved_events: 1650981
+      sumw: 14726174748176.0
+      sumw2: 3.000622598280184e+18
+      total_events: 308622412
+  2023_BPix: 
+    nanoAOD: /WtoLNu-2Jets_1J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v2/NANOAODSIM
+    picoAOD:
+      count: 149340770
+      files:
+
+      saved_events: 794780
+      sumw: 7126894972416.0
+      sumw2: 1.4519855716384113e+18
+      total_events: 149340770
+  xs: 9420.0
+  
+WtoLNu-2Jets_2J:
+  2022_preEE:
+    nanoAOD: /WtoLNu-2Jets_2J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM
+    picoAOD:
+      files:   
+
+      saved_events: 3231173
+      sumw: 2652487296811.0
+      sumw2: 7.209113670170706e+17
+      total_events: 102791770
+  2022_EE:
+    nanoAOD: /WtoLNu-2Jets_2J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM
+    picoAOD: 
+      count: 344572777
+      files:
+
+      saved_events: 10440417
+      sumw: 8893305299484.0
+      sumw2: 2.4165984409799885e+18
+      total_events: 344572777
+  2023_preBPix:
+    nanoAOD: /WtoLNu-2Jets_2J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM
+    picoAOD:
+      count: 193796359
+      files:
+
+      saved_events: 6444578
+      sumw: 4999230396168.0
+      sumw2: 1.3591554834133156e+18
+      total_events: 193796359
+  2023_BPix: 
+    nanoAOD: /WtoLNu-2Jets_2J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v2/NANOAODSIM
+    picoAOD:
+      count: 99486651
+      files:
+
+      saved_events: 3288858
+      sumw: 2567156015400.0
+      sumw2: 6.977315167440732e+17
+      total_events: 99486651
+  xs: 3616.0

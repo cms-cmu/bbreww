@@ -7,7 +7,9 @@ runner:
   condor_cores: 1
   condor_transfer_input_files:
     - src/
-    - bbreww/
+    - bbreww/analysis/
+    - bbreww/metadata/
+
     
   # rucio_regex_sites: 'T[123]_(US|CH|DE|UK)'
   allowlist_sites:

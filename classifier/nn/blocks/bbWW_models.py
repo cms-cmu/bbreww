@@ -1924,6 +1924,7 @@ class HCR(nn.Module):
 
         bbMdR = NonLU(bbMdR)
         qqMdR = NonLU(qqMdR)
+        self._WW_logits = qqMdr.detach()
         bbnMdR = NonLU(bbnMdR)
         scalars = torch.cat([lepQQdR, lnu_mT], dim= -1)
 
@@ -1966,7 +1967,7 @@ class HCR(nn.Module):
                         qqMdR[:, :, 0, 1:2], # there are duplicate pairs, so only keep 1
                         scalars], dim=-1)        
         WW_final = self.WW_final_embed(WW)
-        self._WW_logits= WW_final.detach() # save WW system score
+        #self._WW_logits= WW_final.detach() # save WW system score
         
         HH = torch.cat([
                 bb,

@@ -52,7 +52,7 @@ def doPlots(varList, debug=False):
             vDict["write_yaml"] = True
 
         for flavor in ["e", "mu", sum]:
-            #for channel in ["hadronic_W", "leptonic_W", sum]:
+        #for channel in ["hadronic_W", "leptonic_W", sum]:
             for region in ["SR", "CR", sum]:
 
                 if debug: print(f"plotting 1D ...{v}")

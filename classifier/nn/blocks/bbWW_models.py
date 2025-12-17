@@ -1924,7 +1924,7 @@ class HCR(nn.Module):
 
         bbMdR = NonLU(bbMdR)
         qqMdR = NonLU(qqMdR)
-        self._WW_logits = qqMdr.detach()
+        self._WW_logits = qqMdR.detach()
         bbnMdR = NonLU(bbnMdR)
         scalars = torch.cat([lepQQdR, lnu_mT], dim= -1)
 

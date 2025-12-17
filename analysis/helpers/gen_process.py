@@ -23,6 +23,8 @@ def add_gen_info(events, is_mc):
 
         try:
             events['Jet', 'isQfromW']= ak.any(gen_qFromW.metric_table(events.Jet)< 0.2,axis=1)
+            events['Jet', 'isGenFromW'] = ak.sum(events.Jet.isQfromW, axis=1) == 2
+
             if 'HH' in events.metadata['dataset']:
                 events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
 
@@ -35,10 +37,11 @@ def add_gen_info(events, is_mc):
 
             hadWidx = gen[~is_lep & (abs(gen.pdgId) <= 5)].genPartIdxMother
             hadW = events.GenPart[hadWidx]
-            hadW = ak.pad_none(hadW[hadW.isW], 1, axis=1)
+            hadW = hadW[hadW.isW]
+            events['gen_hadW'] = hadW[:,0] # (pick 0 index because there are duplicate W's due to 2 quarks) 
+            print(events.gen_hadW.pt)
+            events['isLepW'] = lepW.mass > events.gen_hadW.mass 
 
-            events['isLepW'] = lepW.mass > hadW[:,0].mass # (pick 0 index because there are duplicate W's due to 2 quarks) 
-        
         except:
             events['Jet', 'isQfromW'] = ak.zeros_like(events.Jet.pt, dtype=bool)
             events['isLepW'] = ak.ones_like(events.Jet.pt, dtype = bool)
@@ -128,31 +131,30 @@ def gen_studies(events, is_mc):
 
         try:
             ## non-bjets gen matched with W jets decaying to quarks
-            matched_jets_pre = ak.mask(events.j_init,events.j_init.isQfromW)
+            matched_jets_pre = events.Jet[events.Jet.isQfromW]
             matched_jets_pre = matched_jets_pre[ak.argsort(matched_jets_pre.pt, axis=1, ascending=False)]
-            events['true_ak4_1'] = matched_jets_pre[:,0]
-            events['true_ak4_2'] = matched_jets_pre[:,1]
+            matched_jets_pre = ak.mask(matched_jets_pre.pt, (ak.sum(matched_jets_pre.isQfromW,axis=1) == 2))
+
+            ### store only pT although not explicitly labeled
+            events['true_ak4_1'] = ak.fill_none(matched_jets_pre[:,0],np.nan)
+            events['true_ak4_2'] = ak.fill_none(matched_jets_pre[:,1],np.nan)
+            
+            sel_jets_soft = events.q_cands_soft[events.q_cands_soft.isQfromW]
+            sel_jets_nom = events.q_cands_nom[events.q_cands_nom.isQfromW]
+            events['q_soft_true_sublead'] =  ak.fill_none(ak.mask(sel_jets_soft.pt, 
+                                                          (ak.sum(sel_jets_soft.isQfromW,axis=1) == 2))[:,1], 
+                                                          np.nan)
+            events['q_soft_true_lead'] =  ak.fill_none(ak.mask(sel_jets_soft.pt, 
+                                                       (ak.sum(sel_jets_soft.isQfromW,axis=1) == 2))[:,0], 
+                                                       np.nan)
+            events['q_nom_true_sublead'] =  ak.fill_none(ak.mask(sel_jets_nom.pt, 
+                                                         (ak.sum(sel_jets_nom.isQfromW,axis=1) == 2))[:,1], 
+                                                         np.nan)
+            events['q_nom_true_lead'] =  ak.fill_none(ak.mask(sel_jets_nom.pt, 
+                                                      (ak.sum(sel_jets_nom.isQfromW,axis=1) == 2))[:,0], 
+                                                      np.nan)
         except:
             pass #above sequence will fail for datasets that don't have jets in every event
-
-        '''events['Wjets_pre_lead'] = ak.pad_none(matched_jets_pre,2,axis=1)[:,0]
-        events['Wjets_pre_sublead'] = ak.pad_none(matched_jets_pre,2,axis=1)[:,1]
-
-        ## check if both jets are gen matched within an event
-        true_dijet_mask = (ak.count(matched_jets_pre.pt,axis=1) == 2)
-        events['dijets_pre_lead'] = ak.mask(matched_jets_pre,true_dijet_mask)[:,0]
-        events['dijets_pre_sublead'] = ak.mask(matched_jets_pre,true_dijet_mask)[:,1]
-
-        # repeat procedure to check how many jets we lose to quark vs. gluon score selection
-        matched_jets_post = ak.mask(events.j_nonbcand,events.j_nonbcand.isQfromW)
-        matched_jets_post = matched_jets_post[ak.argsort(matched_jets_post.pt, axis=1, ascending=False)]
-        events['Wjets_post_lead'] = ak.pad_none(matched_jets_post,2,axis=1)[:,0]
-        events['Wjets_post_sublead'] = ak.pad_none(matched_jets_post,2,axis=1)[:,1]
-
-        ## check if both jets are gen matched after quark vs. gluon selection
-        true_dijet_mask = (ak.count(matched_jets_post.pt,axis=1) == 2)
-        events['dijets_post_lead'] = ak.mask(matched_jets_post,true_dijet_mask)[:,0]
-        events['dijets_post_sublead'] = ak.mask(matched_jets_post,true_dijet_mask)[:,1]'''
 
         ## met and W mass resolution
         #events['W_mass_res'] = ak.firsts(gen_W.mass[gen_W.mass < 55.0]) - events.qq_sel_mass

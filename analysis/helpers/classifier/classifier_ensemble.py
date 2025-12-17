@@ -7,11 +7,10 @@ import torch.nn.functional as F
 import awkward as ak
 import numpy.typing as npt
 from src.classifier.config.model._kfold import _find_models
-from bbreww.classifier.config.setting.bbWWHCR import Input
 from src.classifier.config.setting.ml import KFold, SplitterKeys
 from src.classifier.ml import BatchType
 from src.classifier.ml.skimmer import Splitter
-from bbreww.classifier.nn.blocks.bbWW_models import HCR
+
 
 class RECModelMetadata(TypedDict):
     path: str
@@ -19,6 +18,8 @@ class RECModelMetadata(TypedDict):
 
 class _RECKFoldModel:
     def __init__(self, model: str, splitter: Splitter, **_):
+        from bbreww.classifier.nn.blocks.bbWW_models import HCR
+
         self.splitter = splitter
         with fsspec.open(model, "rb") as f:
             states = torch.load(f, map_location=torch.device("cpu"))
@@ -64,6 +65,7 @@ class RECEnsemble:
     _year_pattern = re.compile(r"\w*(?P<year>\d{2}).*")
 
     def __init__(self, paths: list[RECModelMetadata]):
+        from bbreww.classifier.config.setting.bbWWHCR import Input
         self.models = [
             _RECKFoldModel(**metadata)
             for metadata in _find_models((path["name"], path["path"]) for path in paths)

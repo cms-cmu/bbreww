@@ -93,7 +93,7 @@ class analysis(processor.ProcessorABC):
         make_friend_SvB: str = None,
         run_SvB: bool = False,
         apply_dvtt: bool = False,
-        top_pt_reweight: bool = False,
+        top_pt_reweight: bool = True,
         friends: dict[str, str|FriendTemplate] = None,
     ):
         self.parameters = parameters
@@ -266,7 +266,7 @@ class analysis(processor.ProcessorABC):
         add_to_selection(
             'leptonic_W',
             #(ak.firsts(selected_events.sr_boolean) == 0), # using chi square
-            ak.firsts(selected_events.isLepW), # gen info
+            selected_events.isLepW, # gen info
             selection,
             selection_list['preselection']
         )
@@ -275,7 +275,7 @@ class analysis(processor.ProcessorABC):
         add_to_selection(
             'hadronic_W',
             #ak.firsts(selected_events.sr_boolean) == 1, # using chi square
-            ak.firsts(~selected_events.isLepW), # gen info
+            ~selected_events.isLepW, # gen info
             selection,
             selection_list['preselection']
         )
@@ -304,8 +304,12 @@ class analysis(processor.ProcessorABC):
         
         
         selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
-        # keep analysis_selections for compatibility with friendtrees code although it's redundant
-        analysis_selections = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
+
+        # different selections to use for creating friendtrees
+        nominal_selection = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
+        full_selection = (selection.all(*selection_list['lowpt_4j2b'])
+                          & selection.all(*selection_list['nominal_4j2b'])
+                          & selection.all(*selection_list['preselection'])) # lowpt + nominal selection
 
         # create classifier inputs root files (creates root files in EOS and json file pointing to all files)
         friends = { 'friends': {} }
@@ -313,11 +317,12 @@ class analysis(processor.ProcessorABC):
             from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_input_friend
             friends["friends"] = ( friends["friends"]
                 | dump_input_friend(
-                    selected_events[selected_events.nominal_4j2b],
+                    selected_events[selected_events.nominal_4j2b | selected_events.lowpt_4j2b], # selected_events[selected_events.nominal_4j2b]
                     self.make_classifier_input,
-                    "classifier_input",
-                    analysis_selections,
-                    weight = "weight"
+                    "classifier_input_lowpt",
+                    full_selection, # nominal_selections
+                    nonbcand = "q_cands_soft",
+                    weight = "weight",
                 )
             )
         
@@ -328,7 +333,7 @@ class analysis(processor.ProcessorABC):
                 dump_SvB(selected_events[selected_events.nominal_4j2b], 
                         self.make_friend_SvB, 
                         "SvB", 
-                        analysis_selections)
+                        nominal_selection)
                 )
 
         if not shift_name:

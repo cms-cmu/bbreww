@@ -1459,7 +1459,7 @@ class InputEmbed(nn.Module):
         qqMdR = torch.cat(
             [
                 qqMdR,
-                torch.zeros((n, 2, self.bsl, self.bsl), dtype=torch.float, device=device)
+                torch.zeros((n, 2, self.wsl, self.wsl), dtype=torch.float, device=device)
             ],
             1,
         )  # flag with zeros to signify dijet quantities
@@ -1485,7 +1485,7 @@ class InputEmbed(nn.Module):
         mask_bWhad = mask.view(n, 1, self.bsl) | mask.view(
             n, self.wsl, 1
         )  # mask of 2d matrix of bW (i,j) is True if mask[i] | mask[j]
-        mask_bWhad = mask_bWhad.masked_fill(self.mask_bW_same, 1) # to do: create self.mask_bW_same above
+        mask_bWhad = mask_bWhad.masked_fill(self.mask_bW_same, 1)
 
         bWlepMdR = matrixMdR(b, l.unsqueeze(2), v1PxPyPzE=bPxPyPzE, v2PxPyPzE=lPxPyPzE) # l needs an extra dimension for concat later
         bWlepMdR = torch.cat(

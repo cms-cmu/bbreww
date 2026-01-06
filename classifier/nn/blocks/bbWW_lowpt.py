@@ -150,14 +150,6 @@ class InputEmbed(nn.Module):
                 1  # mask diagonal, don't want mass, dR of jet with itself. (we do want duplicates for i,j and j,i because query and value are treated differently in attention block)
             )
 
-        self.register_buffer('mask_qq_same', torch.zeros((1, self.wsl, self.wsl), dtype=torch.bool))
-        for i in range(self.wsl):
-            self.mask_qq_same[:, i, i] = 1  # mask diagonal
-
-        self.register_buffer('mask_bW_same', torch.zeros((1, self.bsl, self.wsl), dtype=torch.bool))
-        for i in range(self.wsl):
-            self.mask_bW_same[:, i, i] = 1  # mask diagonal
-
         self.bbDiJetEmbed = GhostBatchNorm1d(
             4,
             features_out=self.dD,
@@ -217,7 +209,7 @@ class InputEmbed(nn.Module):
         # a = a.clone()
 
         n = b.shape[0]
-        b = b.view(n, 4, 2)
+        b = b.view(n, 5, 2)
         nb = nb.view(n, 4, -1)
         l = l.view(n, 6, 1)
         nu = nu.view(n, 2, 1)
@@ -256,7 +248,13 @@ class InputEmbed(nn.Module):
         nb = torch.cat(
             [nb, torch.ones((n, 1, 3), dtype=torch.float, device=device)], 1
         ) 
-        mask = (nb[:, 2, :] == -1)
+        mask = (nb[:, 3, :] == -1)
+        mask_qq = torch.stack([
+            mask[:, 0] | mask[:, 1],  # qq[0] = nb[0] + nb[1]
+            mask[:, 0] | mask[:, 2],  # qq[1] = nb[0] + nb[2]
+            mask[:, 1] | mask[:, 2],  # qq[2] = nb[1] + nb[2]
+        ], dim=1) # mask for di-jet candidates involving padded entries
+
         bPxPyPzE = PxPyPzE(b)
         nbPxPyPzE = PxPyPzE(nb)
         lPxPyPzE = PxPyPzE(l)
@@ -271,11 +269,7 @@ class InputEmbed(nn.Module):
             ],
             1,
         )  # flag with zeros to signify dijet quantities
-
-        mask_bbMdR = mask.view(n, 1, self.bsl) | mask.view(
-            n, self.bsl, 1
-        )  # mask of 2d matrix of b-jets (i,j) is True if mask[i] | mask[j]
-        mask_bbMdR = mask_bbMdR.masked_fill(self.mask_bb_same, 1)
+        mask_bbMdR = self.mask_bb_same.expand(n, self.bsl, self.bsl)
 
         # compute matrix of trijet masses and opening angles between b-dijets and non-bjets
         bbnMdR = matrixMdR(bb, nb, v1PxPyPzE=bbPxPyPzE, v2PxPyPzE=nbPxPyPzE)
@@ -287,7 +281,7 @@ class InputEmbed(nn.Module):
             1,
         )  # flag with ones to signify trijet quantities
         lepQQdR = calcDeltaR(l, qq)
-        mask_bbn = mask.view(n, 1, self.bsl)
+        mask_bbn = mask.view(n, 1, self.wsl)
 
         # For nonb-jets: compute matrix of dijet masses and opening angles between other jets
         n = qq.shape[0]
@@ -306,7 +300,6 @@ class InputEmbed(nn.Module):
         mask_qqMdR = mask.view(n, 1, self.wsl) | mask.view(
             n, self.wsl, 1
         )  # mask of 2d matrix of nonb-jets (i,j) is True if mask[i] | mask[j]
-        mask_qqMdR = mask_qqMdR.masked_fill(self.mask_qq_same, 1)
 
         # compute matrix of masses and opening angles between b-jets and W candidates (top)
         bWhadMdR = matrixMdR(b, qq, v1PxPyPzE=bPxPyPzE, v2PxPyPzE=qqPxPyPzE)
@@ -318,10 +311,7 @@ class InputEmbed(nn.Module):
             1,
         )  # flag with zeros to signify calculated quantities (b+W)
 
-        mask_bWhad = mask.view(n, 1, self.bsl) | mask.view(
-            n, self.wsl, 1
-        )  # mask of 2d matrix of bW (i,j) is True if mask[i] | mask[j]
-        mask_bWhad = mask_bWhad.masked_fill(self.mask_bW_same, 1)
+        mask_bWhad = mask_qq.view(n, 1, self.wsl) # mask of 2d matrix of bW (i,j) is True if mask[i] | mask[j]
 
         bWlepMdR = matrixMdR(b, l.unsqueeze(2), v1PxPyPzE=bPxPyPzE, v2PxPyPzE=lPxPyPzE) # l needs an extra dimension for concat later
         bWlepMdR = torch.cat(
@@ -331,12 +321,6 @@ class InputEmbed(nn.Module):
             ],
             1,
         )  # flag with zeros to signify calculated quantities (b+W)
-
-
-        mask_bWlep = mask.view(n, 1, self.bsl) | mask.view(
-            n, self.bsl, 1
-        )  # mask of 2d matrix of bW (i,j) is True if mask[i] | mask[j]
-        mask_bWlep = mask_bWlep.masked_fill(self.mask_bW_same, 1) # to do: create self.mask_bW_same above
 
         nb[:, (0, 3), :] = torch.log(1 + nb[:, (0, 3), :])
         nb[isinf(nb)] = -1  # isinf not supported by ONNX
@@ -618,17 +602,6 @@ class HCR_lowpt(nn.Module):
         )
         self.layers.addLayer(self.attention_WW, self.attention_WW.inputLayers)
 
-        self.attention_hh = MinimalAttention(
-            self.dD,
-            heads=2,
-            phase_symmetric=self.phase_symmetric,
-            scalar_dim = 2,
-            layers=self.layers,
-            inputLayers=[self.inputEmbed.bJetConv, self.attention_WW],
-            device=self.device,
-        )
-        self.layers.addLayer(self.attention_hh, self.attention_hh.inputLayers)
-
         self.attention_tt = MinimalAttention(
             self.dD,
             heads=2,
@@ -638,6 +611,7 @@ class HCR_lowpt(nn.Module):
             inputLayers=[self.bWhadResNetBlock.conv[-1], self.bWlepResNetBlock.conv[-1]],
             device=self.device,
         )
+        self.layers.addLayer(self.attention_tt, self.attention_tt.inputLayers)
 
         self.scalars_embed = GhostBatchNorm1d(
             1, 
@@ -653,62 +627,43 @@ class HCR_lowpt(nn.Module):
             name="qv physics relationships projector"
         )
 
-        self.layers.addLayer(self.attention_tt, self.attention_tt.inputLayers)
+        self.select_tt = GhostBatchNorm1d(
+            self.dD,
+            features_out=1,  # Single score per candidate
+            conv=True,
+            bias=False,  # No bias because softmax is translation invariant
+            name="TT pairing selector"
+        )
+        self.layers.addLayer(self.select_tt, [self.attention_tt])
 
-        # Embed enhanced HH representation  
+        self.select_WW = GhostBatchNorm1d(
+            self.dD,
+            features_out=1,  # Single score per candidate
+            conv=True,
+            bias=False,  # No bias because softmax is translation invariant
+            name="non-bjet pairing selector"
+        )
+        self.layers.addLayer(self.select_WW, [self.attention_WW])
+
+        self.out_tt = GhostBatchNorm1d(
+            self.dD,
+            features_out=self.nC,  # final tt bar score
+            conv=True,
+            bias=True,
+            name="TT bar score"
+        )
+        self.layers.addLayer(self.out_tt, [self.select_tt]) 
+
+        self.final_linear_layer = linear(in_channels=16, out_channels=self.nC)
+        self.layers.addLayer(self.final_linear_layer)
+
         self.HH_final_embed = GhostBatchNorm1d(
             self.dD,
             features_out=self.dD, 
             conv=True,
             name="HH final embed"
         )
-
-        self.TT_final_embed = GhostBatchNorm1d(
-            self.dD,
-            features_out=self.dD, 
-            conv=True,
-            name="TT final embed"
-        )
-
-        self.layers.addLayer(self.WW_final_embed, [self.attention_WW])
-        self.layers.addLayer(self.HH_final_embed, [self.attention_hh])
-        self.layers.addLayer(self.TT_final_embed, [self.attention_tt])
-
-        self.final_combine = GhostBatchNorm1d(
-            self.dD *2,  # Input from concatenated WW + HH 
-            features_out=self.nC, 
-            conv=True, 
-            name="combine WW and HH and TT"
-        )
-        # self.layers.addLayer(self.dijetEmbedInQuadjetSpace, [previousLayer])
-        self.layers.addLayer(self.final_combine, [self.WW_final_embed, self.HH_final_embed])
-
-        self.select_tt = GhostBatchNorm1d(
-            self.dD, 
-            features_out=1,  # Single score per candidate
-            conv=True, 
-            bias=False,  # No bias because softmax is translation invariant
-            name="TT pairing selector"
-        )
-
-        self.select_WW = GhostBatchNorm1d(
-            self.dD, 
-            features_out=1,  # Single score per candidate
-            conv=True, 
-            bias=False,  # No bias because softmax is translation invariant
-            name="TT pairing selector"
-        )
-
-        self.out_tt = GhostBatchNorm1d(
-            self.dD, 
-            features_out=self.nC,  # final tt bar score
-            conv=True, 
-            bias=True,
-            name="TT bar score"
-        )
-
-        self.final_linear_layer = linear(in_channels=16, out_channels=self.nC)
-        self.layers.addLayer(self.final_linear_layer)
+        self.layers.addLayer(self.HH_final_embed, [self.inputEmbed.bJetConv, self.select_WW])
 
         self.out = nn.Sequential(
             GhostBatchNorm1d(
@@ -722,18 +677,14 @@ class HCR_lowpt(nn.Module):
             nn.AdaptiveAvgPool1d(1),
             nn.Flatten(),
             self.final_linear_layer
-        )
-
-        self.layers.addLayer(self.select_tt, [self.attention_tt])
-        self.layers.addLayer(self.select_WW, [self.attention_WW])
-        self.layers.addLayer(self.out_tt, [self.select_tt])  
+        ) 
         self.forwardCalls = 0
 
     def embedding_layers(self):
         return sorted(set(self.layers.layers).difference(self.output_layers()))
 
     def output_layers(self):
-        return [self.out.index]
+        return [self.final_linear_layer.index]
 
     def updateMeanStd(self,  b, nb, l, nu, a):
         self.inputEmbed.updateMeanStd( b, nb, l, nu, a)
@@ -743,11 +694,22 @@ class HCR_lowpt(nn.Module):
 
     def setGhostBatches(self, nGhostBatches, subset=False):
         self.inputEmbed.setGhostBatches(nGhostBatches)
-        self.WW_final_embed.setGhostBatches(nGhostBatches)
+        self.bbDiJetResNetBlock.setGhostBatches(nGhostBatches)
+        self.nonbDiJetResNetBlock.setGhostBatches(nGhostBatches)
+        self.lepWResNetBlock.setGhostBatches(nGhostBatches)
+        self.bWhadResNetBlock.setGhostBatches(nGhostBatches)
+        self.bWlepResNetBlock.setGhostBatches(nGhostBatches)
+        self.attention_WW.setGhostBatches(nGhostBatches)
+        self.attention_tt.setGhostBatches(nGhostBatches)
+        self.scalars_embed.setGhostBatches(nGhostBatches)
+        self.qv_embed.setGhostBatches(nGhostBatches)
+        self.select_tt.setGhostBatches(nGhostBatches)
+        self.select_WW.setGhostBatches(nGhostBatches)
+        self.out_tt.setGhostBatches(nGhostBatches)
         self.HH_final_embed.setGhostBatches(nGhostBatches)
-        self.final_combine.setGhostBatches(nGhostBatches)
-        self.out.setGhostBatches(nGhostBatches)
+        self.out[0].setGhostBatches(nGhostBatches)
         self.nGhostBatches = nGhostBatches
+
 
     def forward(self, b, nb, l, nu, a):
         self.forwardCalls += 1
@@ -768,7 +730,6 @@ class HCR_lowpt(nn.Module):
         nb0 = nb.clone()
         qq0 = qq.clone()
         l0 = l.clone()
-        nu0 = nu.clone()
         bWhad0 = bWhad.clone()
         bWlep0 = bWlep.clone()
 

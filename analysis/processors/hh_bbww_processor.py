@@ -307,8 +307,7 @@ class analysis(processor.ProcessorABC):
 
         # different selections to use for creating friendtrees
         nominal_selection = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
-        full_selection = (selection.all(*selection_list['lowpt_4j2b'])
-                          & selection.all(*selection_list['nominal_4j2b'])
+        full_selection = ((selection.all(*selection_list['lowpt_4j2b']) | selection.all(*selection_list['nominal_4j2b']))
                           & selection.all(*selection_list['preselection'])) # lowpt + nominal selection
 
         # create classifier inputs root files (creates root files in EOS and json file pointing to all files)

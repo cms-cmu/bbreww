@@ -1820,14 +1820,6 @@ class HCR(nn.Module):
         self.layers.addLayer(self.HH_final_embed, [self.inputEmbed.bJetConv, self.WW_final_embed])
         self.layers.addLayer(self.TT_final_embed, [self.attention_tt])
 
-        self.final_combine = GhostBatchNorm1d(
-            self.dD,  # Input from concatenated WW + HH 
-            features_out=self.nC, 
-            conv=True, 
-            name="combine WW and HH and TT"
-        )
-        self.layers.addLayer(self.final_combine, [self.WW_final_embed, self.HH_final_embed])
-
         self.final_linear_layer = linear(in_channels=16, out_channels=self.nC)
         self.layers.addLayer(self.final_linear_layer)
         self.out = nn.Sequential(
@@ -1878,9 +1870,20 @@ class HCR(nn.Module):
 
     def setGhostBatches(self, nGhostBatches, subset=False):
         self.inputEmbed.setGhostBatches(nGhostBatches)
+        self.bbDiJetResNetBlock.setGhostBatches(nGhostBatches)
+        self.nonbDiJetResNetBlock.setGhostBatches(nGhostBatches)
+        self.lepWResNetBlock.setGhostBatches(nGhostBatches)
+        self.bWhadResNetBlock.setGhostBatches(nGhostBatches)
+        self.bWlepResNetBlock.setGhostBatches(nGhostBatches)
+        self.attention_tt.setGhostBatches(nGhostBatches)
+        self.scalars_embed.setGhostBatches(nGhostBatches)
+        self.qv_embed.setGhostBatches(nGhostBatches)
         self.WW_final_embed.setGhostBatches(nGhostBatches)
         self.HH_final_embed.setGhostBatches(nGhostBatches)
-        self.final_combine.setGhostBatches(nGhostBatches)
+        self.TT_final_embed.setGhostBatches(nGhostBatches)
+        self.select_tt.setGhostBatches(nGhostBatches)
+        self.out_tt.setGhostBatches(nGhostBatches)
+        self.out[0].setGhostBatches(nGhostBatches)
         self.nGhostBatches = nGhostBatches
 
 
@@ -2215,7 +2218,7 @@ class GCN(nn.Module):
 
         b = b.view(n, 5, 2)
         nb = nb.view(n, 4, 2)
-        l = l.view(n, 5, 1)
+        l = l.view(n, 6, 1)
         nu = nu.view(n, 2, 1)
 
         all_particles = torch.cat([b[:,:4, :], nb[:, :4, :], l[:,:4,:]], dim=-1)

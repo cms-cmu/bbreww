@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from src.classifier.config.state.label import MultiClass
 from src.classifier.task import ArgParser
-from bbreww.classifier.config.setting.bbWWHCR import Input, Output
+from bbreww.classifier.config.setting.bbWW import Input, Output
 from bbreww.classifier.config.model.bbWW.HCR._HCR import ROC_BIN, HCREval, HCRTrain
 
 if TYPE_CHECKING:

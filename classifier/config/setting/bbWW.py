@@ -9,7 +9,7 @@ class InputBranch(GlobalSetting):
     feature_MET: list[str] = ["pt", "phi"]
     feature_ancillary: list[str] = ["HT", "njets", "nsoftjets", "year"]
     nbJetCand: int = 2
-    nnonbJetCand: int = 2
+    nnonbJetCand: int = 3 # nominal: 2, lowpt: 3
 
     @classmethod
     def get__feature_bJetCand(cls, var: list[str]):
@@ -46,10 +46,10 @@ class Output(GlobalSetting):
     "Name of the keys in the output batch."
     hh_raw: str = "hh_raw"
     tt_raw: str = "tt_raw"
-    ww_raw: str = "ww_raw"
+    ww_raw: str = "ww_raw" # testing
     hh_prob: str = "hh_prob"
     tt_prob: str = "tt_prob"
-    ww_prob: str = "ww_prob"
+    ww_prob: str = "ww_prob" # testing
     
 # Keep only the regions you're using
 class MassRegion(IntEnum):

@@ -15,7 +15,7 @@ from src.classifier.config.state.label import MultiClass
 from torch import Tensor
 
 from bbreww.classifier.nn.blocks.bbWW_lowpt import HCR_lowpt
-from bbreww.classifier.config.setting.bbWW_lowpt import Input, InputBranch, Output
+from bbreww.classifier.config.setting.bbWW import Input, InputBranch, Output
 from src.classifier.algorithm.utils import Selector, map_batch, to_num
 from src.classifier.nn.schedule import MilestoneStep, Schedule
 from src.classifier.utils import MemoryViewIO

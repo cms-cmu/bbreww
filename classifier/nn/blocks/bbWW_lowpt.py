@@ -228,18 +228,19 @@ class InputEmbed(nn.Module):
             nb[:, :, (0, 0, 1)], nb[:, :, (1, 2, 2)]
         )
 
-        bb = bb.unsqueeze(2) # add a dimension to calculating MdR matrix symmetrically later
-        bbPxPyPzE = bbPxPyPzE.unsqueeze(2)
-        qq = qq.unsqueeze(2)
-        qqPxPyPzE = qqPxPyPzE.unsqueeze(2)
-
         ## top reconstruction
         bWhad, bWhadPxPyPzE = addFourVectors(
-            b[:, :, (0, 1)], qq # hadronic top candidate
+            b[:, :, (0, 1)].unsqueeze(3),  # [batch, 4, 2, 1]
+            qq.unsqueeze(2)                # [batch, 4, 1, 3]
         )
         bWlep, bWlepPxPyPzE = addFourVectors(
             b[:, :, (0, 1)], l[:, :, (0, 0)] # leptonic top candidate (only add b + l because MET is not a four vector)
         )
+
+        bb = bb.unsqueeze(2) # add a dimension to calculating MdR matrix symmetrically later
+        bbPxPyPzE = bbPxPyPzE.unsqueeze(2)
+        qq = qq.unsqueeze(2)
+        qqPxPyPzE = qqPxPyPzE.unsqueeze(2)
 
         mask, bbMdR, qqMdR, bbnMdR, mask_bbMdR, mask_qqMdR, mask_bbn = None, None, None, None, None, None, None
         b = torch.cat(

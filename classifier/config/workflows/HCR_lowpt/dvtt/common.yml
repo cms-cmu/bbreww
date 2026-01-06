@@ -13,7 +13,7 @@ setting:
       2023_preBPix: [A, B, C, D] 
       2023_BPix: [D, E]
 
-  - module: bbWWHCR.InputBranch
+  - module: bbWW_lowpt.InputBranch
     option:
       - feature_ancillary: ["HT", "njets", "nsoftjets", "year"]
       # remove the "year" from the input when the dataset only contains one year

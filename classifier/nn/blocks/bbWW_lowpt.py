@@ -116,7 +116,7 @@ class InputEmbed(nn.Module):
             name="leptonic top convolution",
         )
         self.MdRttEmbed = GhostBatchNorm1d(
-            3,
+            4,
             features_out = self.dD,
             phase_symmetric=phase_symmetric,
             conv=True,
@@ -164,7 +164,7 @@ class InputEmbed(nn.Module):
             phase_symmetric=phase_symmetric,
             conv=True,
             name="W dijet embedder",
-        )  # phi is removed
+        )
         self.bbDiJetConv = GhostBatchNorm1d(
             self.dD,
             phase_symmetric=phase_symmetric,
@@ -239,8 +239,6 @@ class InputEmbed(nn.Module):
 
         bb = bb.unsqueeze(2) # add a dimension to calculating MdR matrix symmetrically later
         bbPxPyPzE = bbPxPyPzE.unsqueeze(2)
-        qq = qq.unsqueeze(2)
-        qqPxPyPzE = qqPxPyPzE.unsqueeze(2)
 
         mask, bbMdR, qqMdR, bbnMdR, mask_bbMdR, mask_qqMdR, mask_bbn = None, None, None, None, None, None, None
         b = torch.cat(
@@ -307,18 +305,19 @@ class InputEmbed(nn.Module):
         bWhadMdR = torch.cat(
             [
                 bWhadMdR,
-                torch.zeros((n, self.bsl, self.wsl, 1), dtype=torch.float, device=device)
+                torch.zeros((n, 2, self.bsl, self.wsl), dtype=torch.float, device=device)
             ],
             1,
         )  # flag with zeros to signify calculated quantities (b+W)
 
-        mask_bWhad = mask_qq.view(n, 1, self.wsl) # mask of 2d matrix of bW (i,j) is True if mask[i] | mask[j]
+        mask_bWhad = mask_qq.repeat_interleave(self.bsl, dim=1)  # shape: (n, 6)
+        mask_bWlep = torch.zeros(n, self.bsl, dtype=torch.bool, device=device) # nothing to mask 
 
         bWlepMdR = matrixMdR(b, l.unsqueeze(2), v1PxPyPzE=bPxPyPzE, v2PxPyPzE=lPxPyPzE) # l needs an extra dimension for concat later
         bWlepMdR = torch.cat(
             [
                 bWlepMdR,
-                torch.ones((n, 1, self.bsl, 1), dtype=torch.float, device=device)
+                torch.ones((n, 2, self.bsl, 1), dtype=torch.float, device=device)
             ],
             1,
         )  # flag with zeros to signify calculated quantities (b+W)
@@ -335,9 +334,6 @@ class InputEmbed(nn.Module):
 
         # only keep relative angular information so that learned features are invariant under global phi rotations and eta/phi flips
         b[:, 2:3, :] = calcDeltaPhi(bb, b[:, :, :]) # replace jet phi with deltaPhi between dijet and jet
-        bb[:, 2:3, :] = calcDeltaPhi(qq, bb[:, :, :])
-        nb[:, 2:3, :] = calcDeltaPhi(qq, nb[:, :, :]) # replace jet phi with deltaPhi between dijet and jet
-        qq[:, 2:3, :] = calcDeltaPhi(bb, qq[:, :, :])
 
         return b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bWhadMdR, bWlepMdR, mask, mask_bbMdR, mask_qqMdR, mask_bbn, mask_bWhad, mask_bWlep
 
@@ -348,7 +344,7 @@ class InputEmbed(nn.Module):
                                                                          # , device='cpu')
 
 
-        n, self.bsl, self.wsl = b.shape[0], 2, 2 #hard code these values if only using 2 b and 2 nonbjets
+        n, self.bsl, self.wsl = b.shape[0], b.shape[2] // 2, nb.shape[2] // 2
         MdR = torch.cat(
             (
                 bbMdR.view(n, 4, -1),
@@ -368,17 +364,24 @@ class InputEmbed(nn.Module):
         
         MdRtt = torch.cat(
             (
-                bWhadMdR.view(n, 3, -1),
-                bWlepMdR.view(n, 3,- 1),
+                bWhadMdR.view(n, 4, -1),
+                bWlepMdR.view(n, 4,- 1),
             ),
             dim=2,
         )
 
-        mask_MdRtt =  mask_bWhad.view(n, -1) # mask is same for had and lep tt
-        
-        # self. diMdPhi_embed.setMeanStd(ooMdPhi.view(n, 2, self.bsl*self.bsl), mask_oo.view(n, self.bsl*self.bsl))
-        # self.triMdPhi_embed.setMeanStd(doMdPhi.view(n, 2, self.wsl*self.bsl), mask_do.view(n, self.wsl*self.bsl))
+        mask_MdRtt = torch.cat(
+            (
+                mask_bWhad,  # (n, 6)
+                mask_bWlep.view(n, -1)  # (n, 2)
+            ),
+            dim=1
+        )  # Result: (n, 8)
 
+
+        bWhad = bWhad.view(n, 4, -1)  # (n, 4, 2, 3) -> (n, 4, 6)
+        bWlep = bWlep.view(n, 4, -1)  # (n, 4, 2, 1) -> (n, 4, 2)
+        
         self.ancillaryEmbed.updateMeanStd(a)
         self.bJetEmbed.updateMeanStd(b)
         self.bbDiJetEmbed.updateMeanStd(bb)
@@ -472,17 +475,24 @@ class InputEmbed(nn.Module):
             n, self.dD, 1, self.wsl
         )
 
-        bWhadMdR = bWhadMdR.view(n, self.bsl*self.wsl + 1, -1)
-        bWlepMdR = bWlepMdR.view(n, self.bsl + 1, -1)
+        bWhadMdR = bWhadMdR.view(n, 4, -1)
+        bWlepMdR = bWlepMdR.view(n, 4, -1)
         MdRtt = torch.cat((bWhadMdR, bWlepMdR), dim=2)
-        mask_MdRtt =  mask_bWhad.view(n, -1) # mask is same for had and lep tt
-        MdRtt = self.MdRttEmbed(MdRtt) # nothing to mask for nominal case (2b, 2 nonbjets)
-        MdRtt = self.MdRttConv(NonLU(MdRtt))
+        mask_MdRtt = torch.cat(
+            (
+                mask_bWhad,
+                mask_bWlep.view(n, -1)
+            ),
+            dim=1
+        )
+
+        MdRtt = self.MdRttEmbed(MdRtt, mask_MdRtt)
+        MdRtt = self.MdRttConv(NonLU(MdRtt), mask_MdRtt)
 
         bWhadMdR = MdRtt[:, :, :self.bsl* self.wsl].view(
             n, self.dD, self.bsl, self.wsl
         )
-        bWlepMdR = MdRtt[:, :, self.bsl:].view(
+        bWlepMdR = MdRtt[:, :, self.bsl*self.wsl:].view(
             n, self.dD, self.bsl, 1
         )
 
@@ -498,11 +508,10 @@ class InputEmbed(nn.Module):
         nu = self.nuConv(NonLU(nu))
 
         # top reconstruction
-        bWhad = self.bWhadEmbed(bWhad)
-        bWlep = self.bWlepEmbed(bWlep)
-        bWhad = self.bWhadConv(NonLU(bWhad))
+        bWhad = self.bWhadEmbed(bWhad.view(n, 4, -1), mask_bWhad)
+        bWlep = self.bWlepEmbed(bWlep.view(n, 4, -1))
+        bWhad = self.bWhadConv(NonLU(bWhad), mask_bWhad)
         bWlep = self.bWlepConv(NonLU(bWlep))
-
 
         return b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bWhadMdR, bWlepMdR, mask_bbMdR, mask_qqMdR, mask_bbn, mask_bWhad, mask_bWlep
     
@@ -596,7 +605,7 @@ class HCR_lowpt(nn.Module):
             self.dD,
             heads=2,
             phase_symmetric=self.phase_symmetric,
-            scalar_dim = 2,
+            scalar_dim = 4,
             layers=self.layers,
             inputLayers=[self.lepWResNetBlock.conv[-1], self.nonbDiJetResNetBlock.reinforce[-1]],
             device=self.device,
@@ -608,14 +617,14 @@ class HCR_lowpt(nn.Module):
             heads=2,
             phase_symmetric=self.phase_symmetric,
             layers=self.layers,
-            scalar_dim = 2,
+            scalar_dim = 4,
             inputLayers=[self.bWhadResNetBlock.conv[-1], self.bWlepResNetBlock.conv[-1]],
             device=self.device,
         )
         self.layers.addLayer(self.attention_tt, self.attention_tt.inputLayers)
 
         self.scalars_embed = GhostBatchNorm1d(
-            1, 
+            4, 
             features_out=self.dD,
             conv=True, 
             name="scalar physics relationships embed"
@@ -753,58 +762,62 @@ class HCR_lowpt(nn.Module):
         lep_W0 = lep_W.clone()
         lep_W = NonLU(lep_W)
 
-        bWhad, bWhad0 = self.bWhadResNetBlock(qq, bWhad, qq0, bWhad0, debug=self.debug)
+        bWhad, bWhad0 = self.bWhadResNetBlock(
+            qq.repeat_interleave(2, dim=2), 
+            bWhad, 
+            qq0.repeat_interleave(2, dim=2), 
+            bWhad0, 
+            debug=self.debug)
         bWlep, bWlep0 = self.bWlepResNetBlock(l, bWlep, l0, bWlep0, debug=self.debug)
 
         bbMdR = NonLU(bbMdR)
         qqMdR = NonLU(qqMdR)
         bbnMdR = NonLU(bbnMdR)
-        scalars = torch.cat([lepQQdR, lnu_mT], dim= -1)
+        scalars = torch.cat([lepQQdR, lnu_mT], dim= -1).squeeze(1) # remove middle dimension for attention mechanism broadcasting
 
-        qv_tt = torch.stack([
-            # Pair (had0, lep0): b[0]+qq with b[0]+l
-            torch.cat([bWhadMdR[:, :, 0, 0], bWlepMdR[:, :, 0, 0], bbnMdR[:, :, 0, 0]], dim=-1),
-            # Pair (had0, lep1): b[0]+qq with b[1]+l  
-            torch.cat([bWhadMdR[:, :, 0, 0], bWlepMdR[:, :, 1, 0], bbnMdR[:, :, 0, 1]], dim=-1),
-            # Pair (had1, lep0): b[1]+qq with b[0]+l
-            torch.cat([bWhadMdR[:, :, 1, 0], bWlepMdR[:, :, 0, 0], bbnMdR[:, :, 0, 0]], dim=-1),
-            # Pair (had1, lep1): b[1]+qq with b[1]+l
-            torch.cat([bWhadMdR[:, :, 1, 0], bWlepMdR[:, :, 1, 0], bbnMdR[:, :, 0, 1]], dim=-1),
-        ], dim=-1)
+        bWhad_exp = bWhadMdR.reshape(n, -1, 6)  # [b0W0, b0W1, b0W2, b1W0, b1W1, b1W2]
+        bWhad_exp = bWhad_exp.repeat_interleave(2, dim=2)  # (n, d, 12)
+        bWlep_exp = bWlepMdR.squeeze(-1)  # (n, d, 2)
+        bWlep_exp = bWlep_exp.repeat(1, 1, 6)  # (n, d, 12)
+        
+        # there are two non-bjets for each bb-dijet, so take average of two
+        bbn_flat = bbnMdR.squeeze(2)  # (n, d, 3)
+        bbn_w0 = (bbn_flat[:, :, 0] + bbn_flat[:, :, 1]) / 2  # average for W[0]
+        bbn_w1 = (bbn_flat[:, :, 0] + bbn_flat[:, :, 2]) / 2  # average for W[1]
+        bbn_w2 = (bbn_flat[:, :, 1] + bbn_flat[:, :, 2]) / 2  # average for W[2]
+        bbn_flat = torch.stack([bbn_w0, bbn_w1, bbn_w2], dim=2)  # (n, d, 3)
+        bbn_exp = bbn_flat.repeat(1, 1, 4)  # (n, d, 12)
+
+        # Concatenate all relationship features
+        qv_tt = torch.cat([bWhad_exp, bWlep_exp, bbn_exp], dim=1)  # (n, 3*d, 12)
         qv_tt = self.qv_embed(qv_tt)
 
         TT, TT0, TT_weights = self.attention_tt(
             bWhad,    # queries: hadronic top candidate
             bWlep,    # values: leptonic top candidate
-            None,     # mask: None
+            None, #query mask
             bWhad0,   # residual for hadronic top
             qv_tt,       # physics relationships (delta R and mass between b-jets and nonb-jets)
-            scalars.squeeze(1),  # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))
+            scalars,  # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))
             debug=self.debug
         )
 
         # TTbar pairing selection
-        TT_logits = self.select_tt(TT)  # Shape: (n, 2, 1)
-        TT_logits = TT_logits.view(n, 2)  # Shape: (n, 2)
-        TT_score = F.softmax(TT_logits, dim=-1)  # Shape: (n, 2)
+        TT_logits = self.select_tt(TT)  # Shape: (n, 6, 1)
+        TT_logits = TT_logits.view(n, 6)  # Shape: (n, 6)
+        TT_score = F.softmax(TT_logits, dim=-1)  # Shape: (n, 6)
 
         TT_sel = torch.matmul(TT, TT_score.unsqueeze(-1))
         TT_final = self.out_tt(TT_sel)  # Shape: (n, nC)
         #TT_final = TT_logits.squeeze(-1)
         self._last_tt_logits = TT_logits.detach() # save TTbar candidates scores
 
-        scalars = self.scalars_embed(scalars)
-        qv = torch.cat([
-                bbnMdR,
-                qqMdR
-            ], dim=-1)
-        
         WW, WW0, WW_weights = self.attention_WW(
-            lep_W,        # queries: leptonic W candidate
+            lep_W.expand(-1, -1, 3),    # queries: leptonic W candidate
             qq,           # values: hadronic W candidate (non-bjet dijets) 
-            mask_qqMdR,         # mask: None as we have exactly one lep_W and qq candidate right now
-            lep_W0,       # residual for leptonic W
-            qv,
+            mask_qqMdR,         # TO DO: add mask here
+            lep_W0.expand(-1, -1, 3), # residual for leptonic W
+            qqMdR,
             scalars,       # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))
             self.debug
         )
@@ -814,12 +827,13 @@ class HCR_lowpt(nn.Module):
         self._WW_logits = WW_logits.detach()
         WW = torch.matmul(WW, WW_logits.unsqueeze(-1))
 
+        scalars = self.scalars_embed(scalars.unsqueeze(-1)) # match second dimensions before concatenating
         HH = torch.cat([
-            bb,                                  # (n, dD, 1)
-            WW,                                  # (n, dD, 1)
-            bbMdR[:, :, 0, 1:2].squeeze(2),      # (n, dD, 1) - squeeze out dimension 2
-            bbnMdR.squeeze(2),                   # (n, dD, wsl) - squeeze out dimension 2
-            qqMdR.view(n, self.dD, -1),          # (n, dD, wsl*wsl) - flatten last two dims
+            bb,                           # (n, dD, 1)
+            WW,                           # (n, dD, 1)
+            bbMdR[:, :, 0, 1:2],          # (n, dD, 1) 
+            bbnMdR.squeeze(2),            # (n, dD, wsl) - squeeze out dimension 2
+            qqMdR.view(n, self.dD, -1),   # (n, dD, wsl*wsl) - flatten last two dims
             scalars
         ], dim=-1) # Result shape: (n, features, 4)
         HH_final = self.HH_final_embed(HH)

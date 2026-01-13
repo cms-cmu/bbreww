@@ -65,7 +65,7 @@ class RECEnsemble:
     _year_pattern = re.compile(r"\w*(?P<year>\d{2}).*")
 
     def __init__(self, paths: list[RECModelMetadata]):
-        from bbreww.classifier.config.setting.bbWWHCR import Input
+        from bbreww.classifier.config.setting.bbWW import Input
         self.models = [
             _RECKFoldModel(**metadata)
             for metadata in _find_models((path["name"], path["path"]) for path in paths)
@@ -92,7 +92,7 @@ class RECEnsemble:
         n = len(events)
         batch: BatchType = {
             Input.bJetCand: torch.zeros(n, 5, 2, dtype=torch.float32),
-            Input.nonbJetCand: torch.zeros(n, 4, 2, dtype=torch.float32),
+            Input.nonbJetCand: torch.zeros(n, 4, 3, dtype=torch.float32),
             Input.leadingLep: torch.zeros(n, 6, 1, dtype=torch.float32),
             Input.MET: torch.zeros(n, 2, 1, dtype=torch.float32),
             Input.ancillary: torch.zeros(n, len(self.ancillary), dtype=torch.float32),

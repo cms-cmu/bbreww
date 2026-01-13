@@ -8,9 +8,8 @@
 main:
   module: train # run training task
   option:
-    - --max-loaders 2 # use 2 workers to load dataset
-    - --max-trainers 3 # use 3 workers to train
-    - --device cpu
+    - --max-loaders 2
+    - --max-trainers 3
 
 dataset:
   - module: bbWW.svb.Background
@@ -18,6 +17,7 @@ dataset:
       - --mc-processes ttbar
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
       - --norm 4 #set TTbar to be 4 times weight of signal
+      # - --ttbar-prescale 10 # this option is to only train on a fraction of events
       - --friends "" bbreww/metadata/classifier/input/output_friend_lowpt.json@@classifier_input_lowpt # set input friend tree
     
   - module: bbWW.svb.Background
@@ -43,7 +43,7 @@ model:
       - --training FixedStep # setup training schedule
       # FixedStep is defined in config/scheduler
       - epoch: 20 # setup kwargs for FixedStep
-        bs_init: 2048 # equivalent to use FixedStep(epoch=20, bs_init=1024)
+        bs_init: 512
 
 setting:
   - module: IO # setup output directory

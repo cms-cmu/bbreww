@@ -815,7 +815,7 @@ class HCR_lowpt(nn.Module):
         WW, WW0, WW_weights = self.attention_WW(
             lep_W.expand(-1, -1, 3),    # queries: leptonic W candidate
             qq,           # values: hadronic W candidate (non-bjet dijets) 
-            mask_qqMdR,         # TO DO: add mask here
+            mask_qqMdR.view(n, 3, 3),         # TO DO: add mask here
             lep_W0.expand(-1, -1, 3), # residual for leptonic W
             qqMdR,
             scalars,       # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))

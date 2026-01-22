@@ -301,12 +301,16 @@ class analysis(processor.ProcessorABC):
         # last three bins of SvB distribution
         selected_events['SvB_tail'] = ((selected_events.nominal_4j2b) & (selected_events.SvB.phh > 0.94)
                                        if (self.run_SvB) else ak.ones_like(selected_events.MET.pt, dtype= bool))
+
+        selected_events['SvB_tail_lowpt'] = ((selected_events.lowpt_4j2b) & (selected_events.SvB.phh > 0.94)
+                                       if (self.run_SvB) else ak.ones_like(selected_events.MET.pt, dtype= bool))
         
         
         selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
 
         # different selections to use for creating friendtrees
         nominal_selection = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
+        lowpt_selection = selection.all(*selection_list['lowpt_4j2b']) & selection.all(*selection_list['preselection']) # lowpt selection
         full_selection = ((selection.all(*selection_list['lowpt_4j2b']) | selection.all(*selection_list['nominal_4j2b']))
                           & selection.all(*selection_list['preselection'])) # lowpt + nominal selection
 
@@ -316,10 +320,10 @@ class analysis(processor.ProcessorABC):
             from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_input_friend
             friends["friends"] = ( friends["friends"]
                 | dump_input_friend(
-                    selected_events[selected_events.nominal_4j2b | selected_events.lowpt_4j2b], # selected_events[selected_events.nominal_4j2b]
+                    selected_events[selected_events.lowpt_4j2b], # selected_events[selected_events.nominal_4j2b]
                     self.make_classifier_input,
-                    "classifier_input_lowpt",
-                    full_selection, # nominal_selections
+                    "classifier_input_lowpt_only",
+                    lowpt_selection, # nominal_selections
                     nonbcand = "q_cands_soft",
                     weight = "weight",
                 )
@@ -342,7 +346,7 @@ class analysis(processor.ProcessorABC):
                 'sum_genweights': np.sum(selected_events.genWeight) if self.is_mc else self.n_events,
             }
             # add cuts for different regions
-            cutflow_list = ['nominal_4j2b','nominal_3j2b', 'lowpt_4j2b', 'lowpt_3j2b', 'SvB_tail'] # 'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b'
+            cutflow_list = ['nominal_4j2b','nominal_3j2b', 'lowpt_4j2b', 'lowpt_3j2b', 'SvB_tail', 'SvB_tail_lowpt'] # 'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b'
             for cuts in cutflow_list:
                 cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True, fill_flavour = True)
             cutflow.add_output(output['events_processed'], self.dataset)
@@ -357,8 +361,8 @@ class analysis(processor.ProcessorABC):
                         'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b'
                         ],
                 channel_list=['hadronic_W', 'leptonic_W'],
-                flavor_list=['e', 'mu'],
-                #region_list=['SR', 'CR']
+                #flavor_list=['e', 'mu'],
+                region_list=['SR', 'CR']
             )
 
             hists_4j2b = fill_histograms_nominal(
@@ -366,10 +370,10 @@ class analysis(processor.ProcessorABC):
                 processName=self.processName,
                 year=self.year_label,
                 is_mc=self.is_mc,
-                histCuts=['nominal_4j2b' ],
+                histCuts=['nominal_4j2b', 'SvB_tail'],
                 channel_list=['hadronic_W', 'leptonic_W'],
-                flavor_list=['e', 'mu'],
-                #region_list=['SR', 'CR'],
+                #flavor_list=['e', 'mu'],
+                region_list=['SR', 'CR'],
                 run_SvB = self.run_SvB
                 )
             return hists | output | friends | {"hists_4j2b": hists_4j2b["hists"], "categories_4j2b": hists_4j2b["categories"]}

@@ -66,8 +66,8 @@ def fill_histograms_nominal(
     is_mc: bool = False,
     histCuts: list = ['preselection'],
     channel_list: list = ['hadronic_W','leptonic_W'],
-    flavor_list: list = ['e', 'mu'],
-    #region_list: list = ['SR', 'CR'],
+    #flavor_list: list = ['e', 'mu'],
+    region_list: list = ['SR', 'CR'],
     run_SvB: bool = False
 ):
 
@@ -80,8 +80,8 @@ def fill_histograms_nominal(
         process=[processName],
         year=[year],
         channel=channel_list,
-        flavor = flavor_list,
-        #region = region_list,
+        #flavor = flavor_list,
+        region = region_list,
         **dict((s, ...) for s in histCuts)
     )
 
@@ -122,7 +122,7 @@ def fill_histograms_nominal(
     # fill histograms
     fill(events, hist)
 
-    return hist.to_dict(nonempty=True)
+    return hist.to_dict(nonempty=False)
 
 def fill_histograms(
     events,
@@ -131,8 +131,8 @@ def fill_histograms(
     is_mc: bool = False,
     histCuts: list = ['preselection'],
     channel_list: list = ['hadronic_W','leptonic_W'],
-    flavor_list: list = ['e', 'mu'],
-    #region_list: list = ['SR', 'CR']
+    #flavor_list: list = ['e', 'mu'],
+    region_list: list = ['SR', 'CR']
 ):
 
     fill = Fill(
@@ -144,8 +144,8 @@ def fill_histograms(
         process=[processName],
         year=[year],
         channel=channel_list,
-        flavor = flavor_list,
-        #region = region_list,
+        #flavor = flavor_list,
+        region = region_list,
         **dict((s, ...) for s in histCuts)
     )
 
@@ -173,4 +173,4 @@ def fill_histograms(
     # fill histograms
     fill(events, hist)
 
-    return hist.to_dict(nonempty=True)
+    return hist.to_dict(nonempty=False)

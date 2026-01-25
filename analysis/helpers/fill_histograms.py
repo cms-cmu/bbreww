@@ -132,7 +132,8 @@ def fill_histograms(
     histCuts: list = ['preselection'],
     channel_list: list = ['hadronic_W','leptonic_W'],
     #flavor_list: list = ['e', 'mu'],
-    region_list: list = ['SR', 'CR']
+    region_list: list = ['SR', 'CR'],
+    run_SvB: bool = False,
 ):
 
     fill = Fill(
@@ -169,6 +170,10 @@ def fill_histograms(
     fill += LorentzVector.plot_pair( ("HWW_soft", R"$H_{WW}$ (soft)"), "Hww_cand_soft", skip=["n","lead","subl","st"], bins={"mass": (100, 100, 400)}, )
 
     fill += TTbarHists( ("tt_soft", R"$t\bar{t}$"), "tt_soft_minChi2" )
+
+    # Signal vs Backgrounds classifier scores hists
+    if run_SvB:
+        fill += SvBHists(("SvB", "SvB Classifier"), "SvB")
 
     # fill histograms
     fill(events, hist)

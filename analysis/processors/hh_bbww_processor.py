@@ -320,10 +320,10 @@ class analysis(processor.ProcessorABC):
             from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_input_friend
             friends["friends"] = ( friends["friends"]
                 | dump_input_friend(
-                    selected_events[selected_events.lowpt_4j2b], # selected_events[selected_events.nominal_4j2b]
+                    selected_events[selected_events.lowpt_4j2b | selected_events.nominal_4j2b], # selected_events[selected_events.nominal_4j2b]
                     self.make_classifier_input,
-                    "classifier_input_lowpt_only",
-                    lowpt_selection, # nominal_selections
+                    "classifier_input_lowpt",
+                    full_selection, # nominal_selections
                     nonbcand = "q_cands_soft",
                     weight = "weight",
                 )
@@ -361,8 +361,9 @@ class analysis(processor.ProcessorABC):
                         'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b'
                         ],
                 channel_list=['hadronic_W', 'leptonic_W'],
-                #flavor_list=['e', 'mu'],
-                region_list=['SR', 'CR']
+                flavor_list=['e', 'mu'],
+                #region_list=['SR', 'CR'],
+                run_SvB = self.run_SvB
             )
 
             hists_4j2b = fill_histograms_nominal(
@@ -372,8 +373,8 @@ class analysis(processor.ProcessorABC):
                 is_mc=self.is_mc,
                 histCuts=['nominal_4j2b', 'SvB_tail'],
                 channel_list=['hadronic_W', 'leptonic_W'],
-                #flavor_list=['e', 'mu'],
-                region_list=['SR', 'CR'],
+                flavor_list=['e', 'mu'],
+                #region_list=['SR', 'CR'],
                 run_SvB = self.run_SvB
                 )
             return hists | output | friends | {"hists_4j2b": hists_4j2b["hists"], "categories_4j2b": hists_4j2b["categories"]}

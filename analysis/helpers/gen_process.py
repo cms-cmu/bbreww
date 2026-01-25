@@ -132,7 +132,9 @@ def gen_studies(events, is_mc):
 
         try:
             ## non-bjets gen matched with W jets decaying to quarks
-            matched_jets_pre = events.Jet[events.Jet.isQfromW]
+            j_sel = events.Jet[events.Jet.isclean]
+            j_sel = j_sel[j_sel.preselected]
+            matched_jets_pre = j_sel[j_sel.isQfromW]
             matched_jets_pre = matched_jets_pre[ak.argsort(matched_jets_pre.pt, axis=1, ascending=False)]
             matched_jets_pre = ak.mask(matched_jets_pre.pt, (ak.sum(matched_jets_pre.isQfromW,axis=1) == 2))
 

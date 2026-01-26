@@ -48,14 +48,6 @@ def add_bbWW_common_hists(fill, hist):
                 (50, 0, 250, ('gen_hadW.mass', 'W->qq gen mass [GeV]')),
                 (50, 0, 250, ('true_ak4_2', r'W->qq subleading jet $p_T$')))
 
-    # jet selection efficiencies
-    fill += hist.add("true_jets_sublead.pt", (50, -0.5, 250, ("true_ak4_2", "pT [GeV]")))
-    fill += hist.add("true_jets_lead.pt", (50, -0.5, 250, ("true_ak4_1", "pT [GeV]")))
-    fill += hist.add("true_soft_jets_sel_sublead.pt", (50, -0.5, 250, ("q_soft_true_sublead", "pT[GeV]"))) # softjet 1
-    fill += hist.add("true_soft_jets_sel_lead.pt", (50, -0.5, 250, ("q_soft_true_lead", "pT[GeV]"))) # softjet 2
-    fill += hist.add("true_nom_jets_sel_sublead.pt", (50, -0.5, 250, ("q_nom_true_sublead", "pT[GeV]"))) # nominal jet 1
-    fill += hist.add("true_nom_jets_sel_lead.pt", (50, -0.5, 250, ("q_nom_true_lead", "pT[GeV]"))) # nominal jet 2
-
     return fill, hist
 
 
@@ -66,8 +58,8 @@ def fill_histograms_nominal(
     is_mc: bool = False,
     histCuts: list = ['preselection'],
     channel_list: list = ['hadronic_W','leptonic_W'],
-    #flavor_list: list = ['e', 'mu'],
-    region_list: list = ['SR', 'CR'],
+    flavor_list: list = ['e', 'mu'],
+    #region_list: list = ['SR', 'CR'],
     run_SvB: bool = False
 ):
 
@@ -80,8 +72,8 @@ def fill_histograms_nominal(
         process=[processName],
         year=[year],
         channel=channel_list,
-        #flavor = flavor_list,
-        region = region_list,
+        flavor = flavor_list,
+        #region = region_list,
         **dict((s, ...) for s in histCuts)
     )
 
@@ -91,6 +83,14 @@ def fill_histograms_nominal(
     #
     fill, hist = add_bbWW_common_hists(fill, hist)
 
+    # jet selection efficiencies
+    fill += hist.add("true_jets_sublead.pt", (50, -0.5, 250, ("true_ak4_2", "pT [GeV]")))
+    fill += hist.add("true_jets_lead.pt", (50, -0.5, 250, ("true_ak4_1", "pT [GeV]")))
+    fill += hist.add("true_soft_jets_sel_sublead.pt", (50, -0.5, 250, ("q_soft_true_sublead", "pT[GeV]"))) # softjet 1
+    fill += hist.add("true_soft_jets_sel_lead.pt", (50, -0.5, 250, ("q_soft_true_lead", "pT[GeV]"))) # softjet 2
+    fill += hist.add("true_nom_jets_sel_sublead.pt", (50, -0.5, 250, ("q_nom_true_sublead", "pT[GeV]"))) # nominal jet 1
+    fill += hist.add("true_nom_jets_sel_lead.pt", (50, -0.5, 250, ("q_nom_true_lead", "pT[GeV]"))) # nominal jet 2    
+    
     fill += Chi2Hists(("chi2_hadWs",      "chi2 hadWs"),         "chi2_hadWs")
     fill += Chi2Hists(("chi2_hadW",       "chi2 hadW"),          "chi2_hadW")
     fill += Chi2Hists(("chi2_tt",         "chi2 tt"),            "chi2_tt")
@@ -131,8 +131,8 @@ def fill_histograms(
     is_mc: bool = False,
     histCuts: list = ['preselection'],
     channel_list: list = ['hadronic_W','leptonic_W'],
-    #flavor_list: list = ['e', 'mu'],
-    region_list: list = ['SR', 'CR'],
+    flavor_list: list = ['e', 'mu'],
+    #region_list: list = ['SR', 'CR'],
     run_SvB: bool = False,
 ):
 
@@ -145,13 +145,21 @@ def fill_histograms(
         process=[processName],
         year=[year],
         channel=channel_list,
-        #flavor = flavor_list,
-        region = region_list,
+        flavor = flavor_list,
+        #region = region_list,
         **dict((s, ...) for s in histCuts)
     )
 
     fill, hist = add_bbWW_common_hists(fill, hist)
 
+    # jet selection efficiencies
+    fill += hist.add("true_jets_sublead.pt", (10, 14.5, 30, ("true_ak4_2", "pT [GeV]")))
+    fill += hist.add("true_jets_lead.pt", (10, 14.5, 30, ("true_ak4_1", "pT [GeV]")))
+    fill += hist.add("true_soft_jets_sel_sublead.pt", (10, 14.5, 30, ("q_soft_true_sublead", "pT[GeV]"))) # softjet 1
+    fill += hist.add("true_soft_jets_sel_lead.pt", (10, 14.5, 30, ("q_soft_true_lead", "pT[GeV]"))) # softjet 2
+    fill += hist.add("true_nom_jets_sel_sublead.pt", (10, 14.5, 30, ("q_nom_true_sublead", "pT[GeV]"))) # nominal jet 1
+    fill += hist.add("true_nom_jets_sel_lead.pt", (10, 14.5, 30, ("q_nom_true_lead", "pT[GeV]"))) # nominal jet 2
+    
     fill += Chi2Hists(("chi2_hadWs", "chi2 hadWs"), "chi2_hadWs",
                       skip=["tot_4j", "Hww_mass", "Wqq_mass",]
                       )

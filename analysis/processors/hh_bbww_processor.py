@@ -299,10 +299,10 @@ class analysis(processor.ProcessorABC):
         })
 
         # last three bins of SvB distribution
-        selected_events['SvB_tail'] = ((selected_events.nominal_4j2b) & (selected_events.SvB.phh > 0.94)
+        selected_events['SvB_tail'] = ((selected_events.nominal_4j2b) & (selected_events.SvB.phh > 0.60)
                                        if (self.run_SvB) else ak.ones_like(selected_events.MET.pt, dtype= bool))
 
-        selected_events['SvB_tail_lowpt'] = ((selected_events.lowpt_4j2b) & (selected_events.SvB.phh > 0.94)
+        selected_events['SvB_tail_lowpt'] = ((selected_events.lowpt_4j2b) & (selected_events.SvB.phh > 0.60)
                                        if (self.run_SvB) else ak.ones_like(selected_events.MET.pt, dtype= bool))
         
         

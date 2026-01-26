@@ -4,7 +4,7 @@ class InputEmbed(nn.Module):
     def __init__(
         self,
         dijetFeatures,
-        ancillaryFeatures=["HT", "njets", "nsoftjets"],
+        ancillaryFeatures=["njets", "nsoftjets", "HT", "year"],
         layers=None,
         device="cuda",
         phase_symmetric=False,
@@ -87,7 +87,7 @@ class InputEmbed(nn.Module):
             self.dD,
             phase_symmetric=phase_symmetric,
             conv=True,
-            name="lepton convolution",
+            name="MET convolution",
         )
         self.bWhadEmbed = GhostBatchNorm1d(
             4,
@@ -215,9 +215,7 @@ class InputEmbed(nn.Module):
         nu = nu.view(n, 2, 1)
         a = a.view(n, self.dA, 1)
 
-        a[:, 1, :] = torch.log(
-            a[:, 1, :] - 3
-        )  # TODO: find index based on the feature name, check if relevant
+        a[:, 2, :] = torch.log(a[:, 2, :])  # log transform event HT
 
         ## bb: H->bb dijet candidates, qq: W->qq dijet candidates"
         bb, bbPxPyPzE = addFourVectors(
@@ -500,7 +498,7 @@ class InputEmbed(nn.Module):
         bb = self.bbDiJetEmbed(bb)
         b = b + a
         b = self.bJetConv(NonLU(b))
-        bb = self.bJetConv(NonLU(bb))
+        bb = self.bbDiJetConv(NonLU(bb))
 
         l = self.lepEmbed(l)
         nu = self.nuEmbed(nu)
@@ -529,7 +527,6 @@ class HCR_lowpt(nn.Module):
         self.dA = len(ancillaryFeatures)
         self.dD = dijetFeatures  # dimension of embeded   dijet feature space
         self.device = device
-        dijetBottleneck = None
         self.name = (
             architecture
             + "_%d" % (dijetFeatures)
@@ -580,11 +577,11 @@ class HCR_lowpt(nn.Module):
             phase_symmetric=self.phase_symmetric,
             device=self.device,
             layers=self.layers,
-            inputLayers=[self.inputEmbed.lepConv, self.inputEmbed.nuEmbed],
+            inputLayers=[self.inputEmbed.lepConv, self.inputEmbed.nuConv],
         )
         self.bWhadResNetBlock = ResNetBlock(
             self.dD,
-            prefix="leptonic W",
+            prefix="hadronic top",
             nLayers=2,
             phase_symmetric=self.phase_symmetric,
             device=self.device,
@@ -593,7 +590,7 @@ class HCR_lowpt(nn.Module):
         )
         self.bWlepResNetBlock = ResNetBlock(
             self.dD,
-            prefix="leptonic W",
+            prefix="leptonic top",
             nLayers=2,
             phase_symmetric=self.phase_symmetric,
             device=self.device,

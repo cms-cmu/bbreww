@@ -17,7 +17,7 @@ setting:
           2023_BPix: [D, E]
   - module: bbWW.InputBranch
     option:
-      - feature_ancillary: ["HT", "njets", "nsoftjets", "year"]
+      - feature_ancillary: ["njets", "nsoftjets", "HT", "year"]
       # remove the "year" from the input when the dataset only contains one year
       # otherwise the variance will be infinite and the output will be NaN
   ##########################################################

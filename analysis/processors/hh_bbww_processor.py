@@ -362,7 +362,7 @@ class analysis(processor.ProcessorABC):
                         ],
                 channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
-                #region_list=['SR', 'CR'],
+                region_list=['SR', 'CR'],
                 run_SvB = self.run_SvB
             )
 
@@ -374,7 +374,7 @@ class analysis(processor.ProcessorABC):
                 histCuts=['nominal_4j2b', 'SvB_tail'],
                 channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
-                #region_list=['SR', 'CR'],
+                region_list=['SR', 'CR'],
                 run_SvB = self.run_SvB
                 )
             return hists | output | friends | {"hists_4j2b": hists_4j2b["hists"], "categories_4j2b": hists_4j2b["categories"]}

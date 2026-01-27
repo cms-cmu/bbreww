@@ -172,7 +172,6 @@ def ttbar_soft_candidate_selection(events):
 
     tt_soft_1["mass_distance"] = distance(lepTop_soft_1.mass,  hadTop_soft_1.mass,  172.5, 172.5)
 
-
     lepTop_soft_2 = (events.Wlnu_cand + events.b_cands[:,0])
     hadTop_soft_2 = (events.b_cands[:,1] + events.qq_soft) #hadronic candidate 2
 
@@ -186,7 +185,6 @@ def ttbar_soft_candidate_selection(events):
     tt_soft_2["hadTop", "dphi"] = events.b_cands[:,1].delta_phi(events.qq_soft)
 
     tt_soft_2["mass_distance"] = distance(lepTop_soft_2.mass,  hadTop_soft_2.mass,  172.5, 172.5)
-
 
     b_sel_soft =  tt_soft_1.mass_distance < tt_soft_2.mass_distance
 
@@ -202,6 +200,7 @@ def ttbar_soft_candidate_selection(events):
     tt_soft["p","dphi"] = tt_best_soft.lepTop.delta_r(tt_best_soft.hadTop)
 
     events['tt_soft'] = tt_soft
+
     return events
 
 

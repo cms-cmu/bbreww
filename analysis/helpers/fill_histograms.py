@@ -22,10 +22,9 @@ def add_bbWW_common_hists(fill, hist):
                     (50, 0,   5, ('Hbb_cand.dr', r'$\Delta R$ between b-candidates')))
 
     #
-    # Wlnu Candidate
+    # Wlnu Candidate and leptonic top
     #
     fill += Lepton.plot_leptonMeT( ("Wlnu", R"$W_{lnu}$"), "Wlnu_cand", skip=["n"], bins={"mass": (120, 0, 200)}, )
-
 
     #
     # Leptons
@@ -59,7 +58,7 @@ def fill_histograms_nominal(
     histCuts: list = ['preselection'],
     channel_list: list = ['hadronic_W','leptonic_W'],
     flavor_list: list = ['e', 'mu'],
-    #region_list: list = ['SR', 'CR'],
+    region_list: list = ['SR', 'CR'],
     run_SvB: bool = False
 ):
 
@@ -73,7 +72,7 @@ def fill_histograms_nominal(
         year=[year],
         channel=channel_list,
         flavor = flavor_list,
-        #region = region_list,
+        region = region_list,
         **dict((s, ...) for s in histCuts)
     )
 
@@ -132,7 +131,7 @@ def fill_histograms(
     histCuts: list = ['preselection'],
     channel_list: list = ['hadronic_W','leptonic_W'],
     flavor_list: list = ['e', 'mu'],
-    #region_list: list = ['SR', 'CR'],
+    region_list: list = ['SR', 'CR'],
     run_SvB: bool = False,
 ):
 
@@ -146,7 +145,7 @@ def fill_histograms(
         year=[year],
         channel=channel_list,
         flavor = flavor_list,
-        #region = region_list,
+        region = region_list,
         **dict((s, ...) for s in histCuts)
     )
 

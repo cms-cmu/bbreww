@@ -497,7 +497,7 @@ class InputEmbed(nn.Module):
             n, self.dD, self.bsl, self.wsl
         )
         bWlepMdR = MdRtt[:, :, self.bsl*self.wsl:].view(
-            n, self.dD, self.bsl, 1
+            n, self.dD, self.bsl * 2, 1
         )
 
         b = self.bJetEmbed(b)
@@ -634,7 +634,7 @@ class HCR_lowpt(nn.Module):
         )
 
         self.qv_embed = GhostBatchNorm1d(
-            self.dD*3,  # Input: full feature dim (24)
+            self.dD*4,  # Input: full feature dim (24)
             features_out=8,  # Output: heads * head_dim = 2 * 4
             conv=True,
             name="qv physics relationships projector"
@@ -778,39 +778,33 @@ class HCR_lowpt(nn.Module):
         bbnMdR = NonLU(bbnMdR)
         scalars = torch.cat([lepQQdR, lnu_mT], dim= -1).squeeze(1) # remove middle dimension for attention mechanism broadcasting
 
-        bWhad_exp = bWhadMdR.reshape(n, -1, 6)  # [b0W0, b0W1, b0W2, b1W0, b1W1, b1W2]
-        bWhad_exp = bWhad_exp.repeat_interleave(2, dim=2)  # (n, d, 12)
-        bWlep_exp = bWlepMdR.squeeze(-1)  # (n, d, 4)
-        bWlep_exp = torch.cat([
-            bWlep_exp[:, :, :2].repeat(1, 1, 3),  # b1 MdR, repeated 3x
-            bWlep_exp[:, :, 2:].repeat(1, 1, 3)   # b0 MdR, repeated 3x
-        ], dim=2)  # (n, d, 12)
-        
+        # create 6x4 features for attention mechanism
+        bWhad_exp = bWhadMdR.reshape(n, -1, 6).repeat_interleave(4, dim=2)  # (n, d, 24)
+        bWlep_exp = bWlepMdR.squeeze(-1).repeat(1, 1, 6)  # (n, d, 24)
+
         # there are two non-bjets for each bb-dijet, so take average of two
         bbn_flat = bbnMdR.squeeze(2)  # (n, d, 3)
-        bbn_w0 = (bbn_flat[:, :, 0] + bbn_flat[:, :, 1]) / 2  # average for W[0]
-        bbn_w1 = (bbn_flat[:, :, 0] + bbn_flat[:, :, 2]) / 2  # average for W[1]
-        bbn_w2 = (bbn_flat[:, :, 1] + bbn_flat[:, :, 2]) / 2  # average for W[2]
-        bbn_flat = torch.stack([bbn_w0, bbn_w1, bbn_w2], dim=2)  # (n, d, 3)
-        bbn_exp = bbn_flat.repeat(1, 1, 4)  # (n, d, 12)
-
-        # duplicate certain features so attention block can score all 12 ttbar candidates
-        bWhad = bWhad.repeat_interleave(2, dim=2)  # (n, dD, 12)
-        bWlep = torch.cat([
-            bWlep[:, :, :2].repeat(1, 1, 3),  # b1 options, repeated 3x
-            bWlep[:, :, 2:].repeat(1, 1, 3)   # b0 options, repeated 3x
-        ], dim=2)
+        bbn_w0 = torch.cat([bbn_flat[:, :, 0:1], bbn_flat[:, :, 1:2]], dim=1)  # (n, 2d, 1) - W0 uses nb0+nb1
+        bbn_w1 = torch.cat([bbn_flat[:, :, 0:1], bbn_flat[:, :, 2:3]], dim=1)  # (n, 2d, 1) - W1 uses nb0+nb2
+        bbn_w2 = torch.cat([bbn_flat[:, :, 1:2], bbn_flat[:, :, 2:3]], dim=1)  # (n, 2d, 1) - W2 uses nb1+nb2
+        bbn_stacked = torch.cat([bbn_w0, bbn_w1, bbn_w2], dim=2)  # (n, 2d, 3)
+        bbn_exp = bbn_stacked.repeat_interleave(4, dim=2).repeat(1, 1, 2)  # (n, 2d, 24)
 
         # Concatenate all relationship features
         qv_tt = torch.cat([bWhad_exp, bWlep_exp, bbn_exp], dim=1)  # (n, 3*d, 12)
         qv_tt = self.qv_embed(qv_tt)
 
+        # block invalid pairings (same b-jet in both tops) with a mask
+        mask_tt = torch.zeros(n, 6, 4, dtype=torch.bool, device=self.device)
+        mask_tt[:, 0:3, 2:4] = True  # b0 hadronic × b0 leptonic (invalid)
+        mask_tt[:, 3:6, 0:2] = True  # b1 hadronic × b1 leptonic (invalid)
+
         TT, TT0, TT_weights = self.attention_tt(
             bWhad,    # queries: hadronic top candidate
             bWlep,    # values: leptonic top candidate
-            None, #query mask
+            mask_tt,  # masks out invalid pairings with the same b-jet
             bWhad0,   # residual for hadronic top
-            qv_tt,       # physics relationships (delta R and mass between b-jets and nonb-jets)
+            qv_tt,    # physics relationships (delta R and mass between b-jets and nonb-jets)
             scalars,  # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))
             debug=self.debug
         )

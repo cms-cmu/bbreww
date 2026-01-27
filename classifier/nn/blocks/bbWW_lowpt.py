@@ -217,6 +217,10 @@ class InputEmbed(nn.Module):
 
         a[:, 2, :] = torch.log(a[:, 2, :])  # log transform event HT
 
+        #reconstruct leptonic W by solving MET pz with W mass constraint
+        W_lep1, W_lep2, off_shell_score = get_lepW(l[:, :4], nu)
+        W_lep = torch.cat([W_lep1, W_lep2], dim=2)
+
         ## bb: H->bb dijet candidates, qq: W->qq dijet candidates"
         bb, bbPxPyPzE = addFourVectors(
             b[:, :, (0)], b[:, :, (1)]
@@ -232,7 +236,8 @@ class InputEmbed(nn.Module):
             qq.unsqueeze(2)                # [batch, 4, 1, 3]
         )
         bWlep, bWlepPxPyPzE = addFourVectors(
-            b[:, :, (0, 1)], l[:, :, (0, 0)] # leptonic top candidate (only add b + l because MET is not a four vector)
+            b[:, :, (1, 1, 0, 0)],
+            W_lep[:, :, (0, 1, 0, 1)] 
         )
 
         bb = bb.unsqueeze(2) # add a dimension to calculating MdR matrix symmetrically later
@@ -309,7 +314,7 @@ class InputEmbed(nn.Module):
         )  # flag with zeros to signify calculated quantities (b+W)
 
         mask_bWhad = mask_qq.repeat_interleave(self.bsl, dim=1)  # shape: (n, 6)
-        mask_bWlep = torch.zeros(n, self.bsl, dtype=torch.bool, device=device) # nothing to mask 
+        mask_bWlep = torch.zeros(n, self.bsl * 2, dtype=torch.bool, device=device) # nothing to mask 
 
         bWlepMdR = matrixMdR(b, l.unsqueeze(2), v1PxPyPzE=bPxPyPzE, v2PxPyPzE=lPxPyPzE) # l needs an extra dimension for concat later
         bWlepMdR = torch.cat(
@@ -319,6 +324,7 @@ class InputEmbed(nn.Module):
             ],
             1,
         )  # flag with zeros to signify calculated quantities (b+W)
+        bWlepMdR = bWlepMdR[:, :, (1, 1, 0, 0), :]  # Expand from 2 to 4 candidates
 
         nb[:, (0, 3), :] = torch.log(1 + nb[:, (0, 3), :])
         nb[isinf(nb)] = -1  # isinf not supported by ONNX
@@ -774,8 +780,11 @@ class HCR_lowpt(nn.Module):
 
         bWhad_exp = bWhadMdR.reshape(n, -1, 6)  # [b0W0, b0W1, b0W2, b1W0, b1W1, b1W2]
         bWhad_exp = bWhad_exp.repeat_interleave(2, dim=2)  # (n, d, 12)
-        bWlep_exp = bWlepMdR.squeeze(-1)  # (n, d, 2)
-        bWlep_exp = bWlep_exp.repeat(1, 1, 6)  # (n, d, 12)
+        bWlep_exp = bWlepMdR.squeeze(-1)  # (n, d, 4)
+        bWlep_exp = torch.cat([
+            bWlep_exp[:, :, :2].repeat(1, 1, 3),  # b1 MdR, repeated 3x
+            bWlep_exp[:, :, 2:].repeat(1, 1, 3)   # b0 MdR, repeated 3x
+        ], dim=2)  # (n, d, 12)
         
         # there are two non-bjets for each bb-dijet, so take average of two
         bbn_flat = bbnMdR.squeeze(2)  # (n, d, 3)
@@ -784,6 +793,13 @@ class HCR_lowpt(nn.Module):
         bbn_w2 = (bbn_flat[:, :, 1] + bbn_flat[:, :, 2]) / 2  # average for W[2]
         bbn_flat = torch.stack([bbn_w0, bbn_w1, bbn_w2], dim=2)  # (n, d, 3)
         bbn_exp = bbn_flat.repeat(1, 1, 4)  # (n, d, 12)
+
+        # duplicate certain features so attention block can score all 12 ttbar candidates
+        bWhad = bWhad.repeat_interleave(2, dim=2)  # (n, dD, 12)
+        bWlep = torch.cat([
+            bWlep[:, :, :2].repeat(1, 1, 3),  # b1 options, repeated 3x
+            bWlep[:, :, 2:].repeat(1, 1, 3)   # b0 options, repeated 3x
+        ], dim=2)
 
         # Concatenate all relationship features
         qv_tt = torch.cat([bWhad_exp, bWlep_exp, bbn_exp], dim=1)  # (n, 3*d, 12)

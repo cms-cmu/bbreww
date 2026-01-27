@@ -12,6 +12,80 @@ from rich.table import Table
 
 
 ### newly added features (needs to move to base class):
+
+def get_lepW(l, nu, mW=80.379):
+    """
+    Reconstruct neutrino pz using W mass constraint and return two W candidates
+    
+    Inputs:
+        l: Lepton [N, 4, 1] with (pt, eta, phi, M)
+        nu: MET [N, 2, 1] with (pt, phi)
+        mW: W boson mass (default 80.379 GeV)
+    
+    Returns:
+        W_cand1: First leptonic W four-vector [N, 4, 1] (pt, eta, phi, M)
+        W_cand2: Second leptonic W four-vector [N, 4, 1] (pt, eta, phi, M)  
+        off_shell_score: Magnitude of imaginary part if discriminant < 0
+    """
+    # Extract lepton (pt, eta, phi, M)
+    l_pt, l_eta, l_phi, l_mass = l[:, 0:1], l[:, 1:2], l[:, 2:3], l[:, 3:4]
+    
+    # Convert lepton to Cartesian (E, px, py, pz)
+    l_px = l_pt * torch.cos(l_phi)
+    l_py = l_pt * torch.sin(l_phi)
+    l_pz = l_pt * torch.sinh(l_eta)
+    l_energy = torch.sqrt(l_pt**2 * torch.cosh(l_eta)**2 + l_mass**2)
+    
+    # Extract MET (pt, phi)
+    met_pt, met_phi = nu[:, 0:1], nu[:, 1:2]
+    
+    # Convert MET to Cartesian
+    nu_px = met_pt * torch.cos(met_phi)
+    nu_py = met_pt * torch.sin(met_phi)
+    
+    # Quadratic coefficients for pz_nu
+    A = (l_px * nu_px + l_py * nu_py) + (mW**2 - l_mass**2) / 2
+    B = l_energy**2 * met_pt**2
+    C = l_energy**2 - l_pz**2
+    discriminant = (2 * A * l_pz)**2 - 4 * (B - A**2) * C
+    
+    # Real part: -b / 2a
+    real_part = (2 * A * l_pz) / (2 * C + 1e-8)  # Small epsilon for numerical stability
+    
+    # Handle complex vs real discriminant
+    is_complex = discriminant < 0
+    delta = torch.sqrt(torch.abs(discriminant)) / (2 * C + 1e-8)
+    
+    # If real: pz = real ± delta. If complex: pz = real (take real part only)
+    pz1 = torch.where(is_complex, real_part, real_part + delta)
+    pz2 = torch.where(is_complex, real_part, real_part - delta)
+    
+    # Off-shell score: 0 if real solutions, |delta| if complex
+    off_shell_score = torch.where(is_complex, torch.abs(delta), torch.zeros_like(delta))
+    
+    def make_w(nu_pz):
+        """Construct W 4-vector from lepton + neutrino, return as (pt, eta, phi, M)"""
+        # Neutrino energy (massless)
+        nu_energy = torch.sqrt(met_pt**2 + nu_pz**2)
+        
+        # W = lepton + neutrino in Cartesian
+        w_energy = l_energy + nu_energy
+        w_px = l_px + nu_px
+        w_py = l_py + nu_py
+        w_pz = l_pz + nu_pz
+        
+        # Convert back to (pt, eta, phi, M)
+        w_pt = torch.sqrt(w_px**2 + w_py**2)
+        w_phi = torch.atan2(w_py, w_px)
+        w_eta = torch.asinh(w_pz / (w_pt + 1e-8))
+        w_mass_sq = w_energy**2 - w_px**2 - w_py**2 - w_pz**2
+        w_mass = torch.sqrt(torch.clamp(w_mass_sq, min=0))
+        
+        return torch.cat([w_pt, w_eta, w_phi, w_mass], dim=1)
+    
+    return make_w(pz1), make_w(pz2), off_shell_score
+
+
 # transvserse mass of two two-dimensional vectors
 def transverse_mass(v1, v2):
     # Determine indices for the first vector

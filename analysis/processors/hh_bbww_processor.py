@@ -350,7 +350,7 @@ class analysis(processor.ProcessorABC):
             for cuts in cutflow_list:
                 cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True, fill_flavour = True)
             cutflow.add_output(output['events_processed'], self.dataset)
-
+            
         if self.fill_histograms:
             hists = fill_histograms(
                 selected_events,
@@ -360,19 +360,19 @@ class analysis(processor.ProcessorABC):
                 histCuts=['preselection',
                         'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b'
                         ],
-                channel_list=['hadronic_W', 'leptonic_W'],
+                #channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
                 region_list=['SR', 'CR'],
                 run_SvB = self.run_SvB
             )
-
+            
             hists_4j2b = fill_histograms_nominal(
                 selected_events[selected_events.nominal_4j2b],
                 processName=self.processName,
                 year=self.year_label,
                 is_mc=self.is_mc,
                 histCuts=['nominal_4j2b', 'SvB_tail'],
-                channel_list=['hadronic_W', 'leptonic_W'],
+                #channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
                 region_list=['SR', 'CR'],
                 run_SvB = self.run_SvB

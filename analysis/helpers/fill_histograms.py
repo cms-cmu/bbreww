@@ -12,7 +12,8 @@ def add_bbWW_common_hists(fill, hist):
     fill += hist.add("nPVsGood", (101, -0.5, 100.5, ("PV.npvsGood", "Number of Good Primary Vertices")))
     fill += hist.add("MET", (50, -0.5, 250, ("MET.pt", "MET pT [GeV]")))
     fill += hist.add("njets", (10, -0.5, 9.5, ("njets", "jet multiplicity")))
-
+    fill += hist.add("qvgScore", (50, 0, 1.0, ("q_cands_soft.btagPNetQvG", "ak4 jets quark vs. gluon score")))
+    
     #
     # Hbb Candidate
     #
@@ -35,17 +36,17 @@ def add_bbWW_common_hists(fill, hist):
     #
     #  From before
     #
-    fill += hist.add("bjets_genjets_dr",   (30, -0.5, 5, ("bjets_genjets_dr", r'$\Delta$ R between b-candidates (genjets)')))
-    fill += hist.add("bjets_genjets_mass", (50, -0.5, 250, ("bjets_genjets_mass", "H-> bb candidate (genjets) mass[GeV]")))
+    #fill += hist.add("bjets_genjets_dr",   (30, -0.5, 5, ("bjets_genjets_dr", r'$\Delta$ R between b-candidates (genjets)')))
+    #fill += hist.add("bjets_genjets_mass", (50, -0.5, 250, ("bjets_genjets_mass", "H-> bb candidate (genjets) mass[GeV]")))
 
 
-    fill += hist.add("genjets_mbb_vs_bb_dr",
-                    (50, 0, 250, ('bjets_genjets_mass', 'H->bb Candidate (genjets) Mass [GeV]')),
-                    (50, 0, 5, ('bjets_genjets_dr', r'$\Delta R$ between b-candidates (genjets)')))
+    #fill += hist.add("genjets_mbb_vs_bb_dr",
+    #                (50, 0, 250, ('bjets_genjets_mass', 'H->bb Candidate (genjets) Mass [GeV]')),
+    #                (50, 0, 5, ('bjets_genjets_dr', r'$\Delta R$ between b-candidates (genjets)')))
 
-    fill += hist.add("genW_mass_vs_subl_jet_pt",
-                (50, 0, 250, ('gen_hadW.mass', 'W->qq gen mass [GeV]')),
-                (50, 0, 250, ('true_ak4_2', r'W->qq subleading jet $p_T$')))
+    #fill += hist.add("genW_mass_vs_subl_jet_pt",
+    #            (50, 0, 250, ('gen_hadW.mass', 'W->qq gen mass [GeV]')),
+    #            (50, 0, 250, ('true_ak4_2', r'W->qq subleading jet $p_T$')))
 
     return fill, hist
 
@@ -56,7 +57,7 @@ def fill_histograms_nominal(
     year: str = 'UL18',
     is_mc: bool = False,
     histCuts: list = ['preselection'],
-    channel_list: list = ['hadronic_W','leptonic_W'],
+    #channel_list: list = ['hadronic_W','leptonic_W'],
     flavor_list: list = ['e', 'mu'],
     region_list: list = ['SR', 'CR'],
     run_SvB: bool = False
@@ -70,7 +71,7 @@ def fill_histograms_nominal(
     hist = Collection(
         process=[processName],
         year=[year],
-        channel=channel_list,
+        #channel=channel_list,
         flavor = flavor_list,
         region = region_list,
         **dict((s, ...) for s in histCuts)
@@ -129,7 +130,7 @@ def fill_histograms(
     year: str = 'UL18',
     is_mc: bool = False,
     histCuts: list = ['preselection'],
-    channel_list: list = ['hadronic_W','leptonic_W'],
+    #channel_list: list = ['hadronic_W','leptonic_W'],
     flavor_list: list = ['e', 'mu'],
     region_list: list = ['SR', 'CR'],
     run_SvB: bool = False,
@@ -143,7 +144,7 @@ def fill_histograms(
     hist = Collection(
         process=[processName],
         year=[year],
-        channel=channel_list,
+        #channel=channel_list,
         flavor = flavor_list,
         region = region_list,
         **dict((s, ...) for s in histCuts)

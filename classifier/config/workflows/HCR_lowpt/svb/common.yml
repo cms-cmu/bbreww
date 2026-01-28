@@ -1,7 +1,7 @@
 setting:
   - module: ml.DataLoader
     option:
-      - batch_skim: 524288 # 2^19
+      - batch_skim: 2097152 # 2^21
       - batch_eval: 524288 # 2^19
       - optimize_sliceable_dataset: true
   - module: ROOT

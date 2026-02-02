@@ -24,7 +24,7 @@ class InputEmbed(nn.Module):
 
         if self.dA:
             self.ancillaryEmbed = GhostBatchNorm1d(
-                self.dA,
+                self.dA, # + 1 test feature: uncomment in next iteration
                 features_out=self.dD,
                 phase_symmetric=phase_symmetric,
                 conv=True,
@@ -116,7 +116,7 @@ class InputEmbed(nn.Module):
             name="leptonic top convolution",
         )
         self.MdRttEmbed = GhostBatchNorm1d(
-            4,
+            2,
             features_out = self.dD,
             phase_symmetric=phase_symmetric,
             conv=True,
@@ -129,7 +129,7 @@ class InputEmbed(nn.Module):
             name="ttbar relationship convolution",
         )
         self.MdREmbed = GhostBatchNorm1d(
-            4,
+            2,
             features_out=self.dD,
             phase_symmetric=phase_symmetric,
             conv=True,
@@ -220,6 +220,8 @@ class InputEmbed(nn.Module):
         #reconstruct leptonic W by solving MET pz with W mass constraint
         W_lep1, W_lep2, off_shell_score = get_lepW(l[:, :4], nu)
         W_lep = torch.cat([W_lep1, W_lep2], dim=2)
+        
+        #a = torch.cat([a, off_shell_score.view(n, 1, 1)], dim=1) # test feature: run in next iteration
 
         ## bb: H->bb dijet candidates, qq: W->qq dijet candidates"
         bb, bbPxPyPzE = addFourVectors(
@@ -264,34 +266,13 @@ class InputEmbed(nn.Module):
         # For b-jets: compute matrix of dijet masses and opening angles between other jets
         n = bb.shape[0]
         bbMdR = matrixMdR(b, b, v1PxPyPzE=bPxPyPzE, v2PxPyPzE=bPxPyPzE)
-        bbMdR = torch.cat(
-            [
-                bbMdR,
-                torch.zeros((n, 2, self.bsl, self.bsl), dtype=torch.float, device=device)
-            ],
-            1,
-        )  # flag with zeros to signify dijet quantities
         mask_bbMdR = self.mask_bb_same.expand(n, self.bsl, self.bsl)
 
         # compute matrix of trijet masses and opening angles between b-dijets and non-bjets
         bbnMdR = matrixMdR(bb, nb, v1PxPyPzE=bbPxPyPzE, v2PxPyPzE=nbPxPyPzE)
-        bbnMdR = torch.cat(
-            [
-                bbnMdR,
-                torch.ones((n, 2, 1, self.wsl), dtype=torch.float, device=device)
-            ],
-            1,
-        )  # flag with ones to signify trijet quantities
-        
+     
         # compute matrix of quadjet masses and opening angles between b-dijets and qq-dijets
         bbqqMdR = matrixMdR(bb, qq, v1PxPyPzE=bbPxPyPzE, v2PxPyPzE=qqPxPyPzE)
-        bbqqMdR = torch.cat(
-            [
-                bbqqMdR,
-                torch.ones((n, 2, 1, self.wsl), dtype=torch.float, device=device)
-            ],
-            1,
-        )  # flag with ones to signify trijet quantities
 
         lepQQdR = calcDeltaR(l, qq)
         mask_bbn = mask.view(n, 1, self.wsl)
@@ -299,13 +280,6 @@ class InputEmbed(nn.Module):
         # For nonb-jets: compute matrix of dijet masses and opening angles between other jets
         n = qq.shape[0]
         qqMdR = matrixMdR(nb, nb, v1PxPyPzE=nbPxPyPzE, v2PxPyPzE=nbPxPyPzE)
-        qqMdR = torch.cat(
-            [
-                qqMdR,
-                torch.zeros((n, 2, self.wsl, self.wsl), dtype=torch.float, device=device)
-            ],
-            1,
-        )  # flag with zeros to signify dijet quantities
 
         # For lepton and MET, compute transverse mass
         lnu_mT = transverse_mass(l, nu)
@@ -316,26 +290,11 @@ class InputEmbed(nn.Module):
 
         # compute matrix of masses and opening angles between b-jets and W candidates (top)
         bWhadMdR = matrixMdR(b, qq, v1PxPyPzE=bPxPyPzE, v2PxPyPzE=qqPxPyPzE)
-        bWhadMdR = torch.cat(
-            [
-                bWhadMdR,
-                torch.zeros((n, 2, self.bsl, self.wsl), dtype=torch.float, device=device)
-            ],
-            1,
-        )  # flag with zeros to signify calculated quantities (b+W)
-
         mask_bWhad = mask_qq.repeat_interleave(self.bsl, dim=1)  # shape: (n, 6)
-        mask_bWlep = torch.zeros(n, self.bsl * 2, dtype=torch.bool, device=device) # nothing to mask 
 
         bWlepMdR = matrixMdR(b, l.unsqueeze(2), v1PxPyPzE=bPxPyPzE, v2PxPyPzE=lPxPyPzE) # l needs an extra dimension for concat later
-        bWlepMdR = torch.cat(
-            [
-                bWlepMdR,
-                torch.ones((n, 2, self.bsl, 1), dtype=torch.float, device=device)
-            ],
-            1,
-        )  # flag with zeros to signify calculated quantities (b+W)
         bWlepMdR = bWlepMdR[:, :, (1, 1, 0, 0), :]  # Expand from 2 to 4 candidates
+        mask_bWlep = torch.zeros(n, self.bsl * 2, dtype=torch.bool, device=device) # nothing to mask 
 
         nb[:, (0, 3), :] = torch.log(1 + nb[:, (0, 3), :])
         nb[isinf(nb)] = -1  # isinf not supported by ONNX
@@ -360,10 +319,10 @@ class InputEmbed(nn.Module):
         n, self.bsl, self.wsl = b.shape[0], b.shape[2] // 2, nb.shape[2] // 2 # need to half the third dimension because we repeated all the jets
         MdR = torch.cat(
             (
-                bbMdR.view(n, 4, -1),
-                qqMdR.view(n, 4, -1),
-                bbnMdR.view(n, 4, -1),
-                bbqqMdR.view(n, 4, -1)
+                bbMdR.view(n, 2, -1),
+                qqMdR.view(n, 2, -1),
+                bbnMdR.view(n, 2, -1),
+                bbqqMdR.view(n, 2, -1)
             ),
             dim=2,
         )
@@ -379,8 +338,8 @@ class InputEmbed(nn.Module):
         
         MdRtt = torch.cat(
             (
-                bWhadMdR.view(n, 4, -1),
-                bWlepMdR.view(n, 4, -1),
+                bWhadMdR.view(n, 2, -1),
+                bWlepMdR.view(n, 2, -1),
             ),
             dim=2,
         )
@@ -467,10 +426,10 @@ class InputEmbed(nn.Module):
 
         # bbMdR is (n, 3, bsl, wsl)
         # flatten the matrices for passing through convolution
-        bbMdR = bbMdR.view(n, 4, self.bsl*self.bsl)
-        qqMdR = qqMdR.view(n, 4, self.wsl*self.wsl)
-        bbnMdR = bbnMdR.view(n, 4, self.wsl)
-        bbqqMdR = bbqqMdR.view(n, 4, self.wsl)        
+        bbMdR = bbMdR.view(n, 2, self.bsl*self.bsl)
+        qqMdR = qqMdR.view(n, 2, self.wsl*self.wsl)
+        bbnMdR = bbnMdR.view(n, 2, self.wsl)
+        bbqqMdR = bbqqMdR.view(n, 2, self.wsl)        
         mask_bbMdR = mask_bbMdR.view(n, -1)
         mask_qqMdR = mask_qqMdR.view(n, -1)
         mask_bbn = mask_bbn.view(n, -1)
@@ -495,8 +454,8 @@ class InputEmbed(nn.Module):
         )
 
         
-        bWhadMdR = bWhadMdR.view(n, 4, -1)
-        bWlepMdR = bWlepMdR.view(n, 4, -1)
+        bWhadMdR = bWhadMdR.view(n, 2, -1)
+        bWlepMdR = bWlepMdR.view(n, 2, -1)
         MdRtt = torch.cat((bWhadMdR, bWlepMdR), dim=2)
         mask_MdRtt = torch.cat(
             (

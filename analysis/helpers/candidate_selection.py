@@ -34,16 +34,18 @@ def Hbb_candidate_selection(events):
 
 def Wlnu_candidate_selection(events):
 
-    # calculate MET pz requiring (lepton + nu).mass == W_mass
-    nu = met_reconstr(events, events.leading_lep)
+    # calculate MET pz requiring (lepton + nu).mass == W_mass and take the smaller solution
+    nu, pz_1, pz_2 = met_reconstr(events, events.leading_lep)
 
     Wlnu_cand = events.leading_lep + nu
     Wlnu_cand["lep"] = events.leading_lep
+    Wlnu_cand["pz_1"] = pz_1
+    Wlnu_cand["pz_2"] = pz_2
     Wlnu_cand["nu"]  = nu
     Wlnu_cand["dr"]   = Wlnu_cand["lep"].delta_r  (Wlnu_cand["nu"])
     Wlnu_cand["dphi"] = Wlnu_cand["lep"].delta_phi(Wlnu_cand["nu"])
     Wlnu_cand["mT"]   = np.sqrt(2 * Wlnu_cand.lep.pt * Wlnu_cand.nu.pt * (1 - np.cos(Wlnu_cand.dphi)))
-
+    
     events['Wlnu_cand'] = Wlnu_cand
     return events
 
@@ -120,7 +122,7 @@ def ttbar_candidate_selection(events, run_SvB: bool = True):
                      })
 
     tt_sel["p","dr"]   = tt_best.lepTop.delta_r(tt_best.hadTop)
-    tt_sel["p","dphi"] = tt_best.lepTop.delta_r(tt_best.hadTop)
+    tt_sel["p","dphi"] = tt_best.lepTop.delta_phi(tt_best.hadTop)
 
     events['tt_sel'] = tt_sel
     return events
@@ -212,7 +214,7 @@ def candidate_selection(events, params, year, run_SvB, classifier_SvB = None):
     events = Hbb_candidate_selection(events)
     events = Wlnu_candidate_selection(events)
 
-    # add ML classifier output scores
+    # compute ML classifier output from within the processor (currently directly evaluating in the classifier framework)
     if classifier_SvB is not None:
         from bbreww.analysis.helpers.classifier.SvB_helpers import compute_SvB
         compute_SvB(events,

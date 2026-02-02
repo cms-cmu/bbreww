@@ -12,8 +12,10 @@ def add_bbWW_common_hists(fill, hist):
     fill += hist.add("nPVsGood", (101, -0.5, 100.5, ("PV.npvsGood", "Number of Good Primary Vertices")))
     fill += hist.add("MET", (50, -0.5, 250, ("MET.pt", "MET pT [GeV]")))
     fill += hist.add("njets", (10, -0.5, 9.5, ("njets", "jet multiplicity")))
+
+    ## W-qq quark vs. gluon selection candidates
     fill += hist.add("qvgScore", (50, 0, 1.0, ("q_cands_soft.btagPNetQvG", "ak4 jets quark vs. gluon score")))
-    
+    fill += Jet.plot_pair( ("Wqq_soft", R"$W_{qq}$"), "q_cands_soft", bins={"mass": (120, 0, 200)}, )
     #
     # Hbb Candidate
     #
@@ -23,10 +25,12 @@ def add_bbWW_common_hists(fill, hist):
                     (50, 0,   5, ('Hbb_cand.dr', r'$\Delta R$ between b-candidates')))
 
     #
-    # Wlnu Candidate and leptonic top
+    # Wlnu Candidate and reconstructed neutrino pz
     #
-    fill += Lepton.plot_leptonMeT( ("Wlnu", R"$W_{lnu}$"), "Wlnu_cand", skip=["n"], bins={"mass": (120, 0, 200)}, )
-
+    fill += Lepton.plot_leptonMeT( ("Wlnu", R"$W_{lnu}$"), "Wlnu_cand", skip=["n"], bins={"mass": (120, 0, 200)})
+    fill += hist.add("nu_pz1",   (40, 0, 200, ("Wlnu_cand.pz_1", r'recontructed MET pz 1 (GeV)')))
+    fill += hist.add("nu_pz2",   (40, 0, 200, ("Wlnu_cand.pz_2", r'recontructed MET pz 2 (GeV)')))
+    
     #
     # Leptons
     #

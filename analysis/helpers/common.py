@@ -64,7 +64,8 @@ def nu_pz(l,v):
 
     pz_1 = ak.fill_none((2*A*l.pz + sqrt_discriminant)/(2*C), np.nan)
     pz_2 = ak.fill_none((2*A*l.pz - sqrt_discriminant)/(2*C), np.nan)
-    return ak.where(abs(pz_1) <= abs(pz_2), pz_1, pz_2)
+    #return ak.where(abs(pz_1) <= abs(pz_2), pz_1, pz_2)
+    return pz_1, pz_2
 
 def chi_square(data, mean, std, power=1):
     chi2 = ((data - mean)/std)**power
@@ -72,7 +73,8 @@ def chi_square(data, mean, std, power=1):
 
 def met_reconstr(events, lep):
     met = events.MET
-    pz = nu_pz(lep, met)
+    pz_1, pz_2 = nu_pz(lep, met)
+    pz =  ak.where(abs(pz_1) <= abs(pz_2), pz_1, pz_2)
     nu = ak.zip({
             "x": met.pt * np.cos(met.phi),
             "y": met.pt * np.sin(met.phi),
@@ -83,7 +85,7 @@ def met_reconstr(events, lep):
         behavior=vector.behavior,
     )
 
-    return nu
+    return nu, pz_1, pz_2
 
 def get_ele_sfs(params, electron, year):
     reco_sf =  ak.where(

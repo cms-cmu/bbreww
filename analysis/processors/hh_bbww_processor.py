@@ -95,6 +95,7 @@ class analysis(processor.ProcessorABC):
         apply_dvtt: bool = False,
         top_pt_reweight: bool = True,
         friends: dict[str, str|FriendTemplate] = None,
+        dump_signal_phh: bool =False,
     ):
         self.parameters = parameters
         loaded_parameters = OmegaConf.load(self.parameters)
@@ -107,6 +108,7 @@ class analysis(processor.ProcessorABC):
         self.apply_dvtt = apply_dvtt
         self.top_pt_reweight = top_pt_reweight
         self.friends = parse_friends(friends)
+        self.dump_signal_phh = dump_signal_phh
 
     def process(self, events):
 
@@ -338,6 +340,22 @@ class analysis(processor.ProcessorABC):
                         "SvB", 
                         nominal_selection)
                 )
+        # In process_shift, after line 341 (after friend tree dumps), inside the `if not shift_name:` block:
+
+        # Dump signal SvB.phh for quantile rebinning
+        if 'GluGlu' in self.dataset and self.dump_signal_phh and self.run_SvB:
+            output['phh_data'] = {
+                    'dataset': self.dataset,
+                    'nominal_4j2b': {
+                        'phh': ak.to_numpy(selected_events.SvB.phh[selected_events.nominal_4j2b]),
+                        'weight': ak.to_numpy(selected_events.weight[selected_events.nominal_4j2b]),
+                    },
+                    'lowpt_4j2b': {
+                        'phh': ak.to_numpy(selected_events.SvB.phh[selected_events.lowpt_4j2b]),
+                        'weight': ak.to_numpy(selected_events.weight[selected_events.lowpt_4j2b]),
+                    },
+                }
+
 
         if not shift_name:
             output['events_processed'] = {}

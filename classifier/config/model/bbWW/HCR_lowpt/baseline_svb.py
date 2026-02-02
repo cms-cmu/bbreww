@@ -89,6 +89,7 @@ class Eval(HCREval):
             "poth":      batch["p_other"],  
             "tt_b1Whad": batch["tt_b1Whad"],
             "tt_b2Whad": batch["tt_b2Whad"],
+            "WW_score":  batch["WW_score"],
             "hh_vs_tt":  batch["p_signal"]/(batch["p_signal"] + batch["p_ttbar"]),
             "hh_vs_oth": batch["p_signal"]/(batch["p_signal"] + batch["p_other"]),
             "tt_vs_oth": batch["p_ttbar"]/(batch["p_ttbar"] + batch["p_other"]),

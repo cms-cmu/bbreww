@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 def _roc_data_selection(batch: BatchType):
-    
+
     def __call__(self, batch: BatchType):
         selected = self._select(batch)
         return {

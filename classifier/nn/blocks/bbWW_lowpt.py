@@ -24,7 +24,7 @@ class InputEmbed(nn.Module):
 
         if self.dA:
             self.ancillaryEmbed = GhostBatchNorm1d(
-                self.dA, # + 1 test feature: uncomment in next iteration
+                self.dA + 1,
                 features_out=self.dD,
                 phase_symmetric=phase_symmetric,
                 conv=True,
@@ -221,7 +221,7 @@ class InputEmbed(nn.Module):
         W_lep1, W_lep2, off_shell_score = get_lepW(l[:, :4], nu)
         W_lep = torch.cat([W_lep1, W_lep2], dim=2)
         
-        #a = torch.cat([a, off_shell_score.view(n, 1, 1)], dim=1) # test feature: run in next iteration
+        a = torch.cat([a, off_shell_score.view(n, 1, 1)], dim=1)
 
         ## bb: H->bb dijet candidates, qq: W->qq dijet candidates"
         bb, bbPxPyPzE = addFourVectors(
@@ -802,7 +802,7 @@ class HCR_lowpt(nn.Module):
         WW, WW0, WW_weights = self.attention_WW(
             lep_W.expand(-1, -1, 3),    # queries: leptonic W candidate
             qq,           # values: hadronic W candidate (non-bjet dijets) 
-            mask_qqMdR.view(n, 3, 3),         # TO DO: add mask here
+            mask_qq.unsqueeze(1).expand(-1, 3, -1),  # mask invalid dijets for all queries
             lep_W0.expand(-1, -1, 3), # residual for leptonic W
             qqMdR,
             scalars,       # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))

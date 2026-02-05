@@ -15,7 +15,7 @@ OUTPUT_DIR="$OUTPUT_BASE_DIR/${JOB_NAME}"
 create_output_directory "$OUTPUT_DIR"
 
 display_section_header "Printing input yml file"
-cat $INPUT_DIR/picoaod_datasets.yml
+cat $INPUT_DIR/datasets.yml
 
 display_section_header "Modifying dataset file with skimmer ci output"
 run_command python src/tools/merge_yaml_datasets.py \

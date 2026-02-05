@@ -20,7 +20,7 @@ cat $INPUT_DIR/picoaod_datasets.yml
 display_section_header "Modifying dataset file with skimmer ci output"
 run_command python src/tools/merge_yaml_datasets.py \
     -m $INPUT_DIR/datasets.yml \
-    -f $INPUT_DIR/picoaod_datasets.yml \
+    -f $INPUT_DIR/datasets.yml \
     -o $OUTPUT_DIR/datasets.yml
 cat $OUTPUT_DIR/datasets.yml
 

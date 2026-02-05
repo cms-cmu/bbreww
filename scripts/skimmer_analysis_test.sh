@@ -11,7 +11,7 @@ OUTPUT_BASE_DIR=$(parse_output_base_arg "output/" "$@") || exit 1
 
 [[ $(hostname) = *runner* ]] && OUTPUT_BASE_DIR="/builds/$CI_PROJECT_PATH/output"
 
-INPUT_DIR="$OUTPUT_BASE_DIR/skimmer_test"
+INPUT_DIR="bbreww/metadata"
 OUTPUT_DIR="$OUTPUT_BASE_DIR/${JOB_NAME}"
 create_output_directory "$OUTPUT_DIR"
 

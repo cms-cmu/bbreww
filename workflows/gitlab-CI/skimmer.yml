@@ -7,5 +7,5 @@ skimmer_test_bbreww:
     - source bbreww/scripts/skimmer_test.sh --output-base /builds/$CI_PROJECT_PATH/output/
   artifacts:
     paths:
-      - output/skimmer_test/
+      - output/skimmer_test/test.coffea
     expire_in: 1 day

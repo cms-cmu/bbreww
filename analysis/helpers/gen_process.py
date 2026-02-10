@@ -9,13 +9,12 @@ def add_gen_info(events, is_mc):
         events['GenPart','isTop'] = (abs(gen.pdgId)==6)&gen.hasFlags(['fromHardProcess', 'isLastCopy'])
         events['GenPart','isW'] = (abs(gen.pdgId)==24)&gen.hasFlags(['fromHardProcess', 'isLastCopy'])
         events['GenPart','isZ'] = (abs(gen.pdgId)==23)&gen.hasFlags(['fromHardProcess', 'isLastCopy'])
-        events['GenPart','isNu'] = ((abs(gen.pdgId)==12)|(abs(gen.pdgId)==14))#& gen.hasFlags(['isPrompt'])
 
-        #print(ak.local_index(events.GenPart[events.GenPart.isW].pdgId))
-        #print(events.GenPart[events.GenPart.isLepW].pdgId)
-        
-        
         events['isHtoW'] = events.GenPart[(events.GenPart[events.GenPart[events.GenPart.isW].genPartIdxMother].pdgId== 25)]
+        genNu = ak.pad_none(gen_match(events.GenPart, [12, 14], [24]), 1, axis=1)[:, 0]  # e, mu neutrinos coming from W decay
+        events['genNu_pt'] = ak.fill_none(genNu.pt, -1)
+        events['genNu_eta'] = ak.fill_none(genNu.eta, -1)
+        events['genNu_phi'] = ak.fill_none(genNu.phi, -1)
 
         ## non-bjets gen matched with W jets decaying to quarks
         gen_qFromW = gen_match(events.GenPart, [1,2,3,4], [24])
@@ -33,24 +32,25 @@ def add_gen_info(events, is_mc):
                 ((abs(events.GenPart.pdgId) == 11) | (abs(events.GenPart.pdgId) == 13))) # electrons or muons
             
             lepWidx = gen[is_lep].genPartIdxMother
-            lepW = gen[lepWidx]
+            gen_lepW = gen[lepWidx]
+            events['gen_lepW_mass'] = ak.fill_none(ak.firsts(gen_lepW.mass, 0))
 
             hadWidx = gen[~is_lep & (abs(gen.pdgId) <= 5)].genPartIdxMother
             hadW = events.GenPart[hadWidx]
             hadW = hadW[hadW.isW]
             events['gen_hadW'] = hadW[:,0] # (pick 0 index because there are duplicate W's due to 2 quarks) 
-            events['isLepW'] = ak.firsts(lepW.mass > events.gen_hadW.mass)
-
+            events['isLepW'] = ak.fill_none(ak.firsts(events.gen_lepW_mass > events.gen_hadW.mass), -1, axis=0)
         except:
             events['Jet', 'isQfromW'] = ak.zeros_like(events.Jet.pt, dtype=bool)
-            events['isLepW'] = ak.ones_like(events.event, dtype = bool)
+            events['isLepW'] = ak.full_like(events.event, -1)
+            events['gen_lepW_mass'] = ak.full_like(events.event, -1)
 
         events['isHtoW'] = events.GenPart[(events.GenPart[events.GenPart[events.GenPart.isW].genPartIdxMother].pdgId== 25)]
 
         if 'HH' in events.metadata['dataset']:
             events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
     else:
-        events['isLepW'] = ak.ones_like(events.event, dtype = bool)
+        events['isLepW'] = ak.full_like(events.event, -1)
 
     return events
 
@@ -126,7 +126,6 @@ def gen_studies(events, is_mc):
     if is_mc:
         ## gen level studies
         events = add_gen_info(events, is_mc)
-        gen_nu= ak.firsts(events.GenPart[events.GenPart.isNu])
         gen_W= events.GenPart[events.GenPart.isW]
         gen_b = ak.pad_none(events.gen_bFromH, 2,axis=1)
 
@@ -144,6 +143,7 @@ def gen_studies(events, is_mc):
             
             sel_jets_soft = events.q_cands_soft[events.q_cands_soft.isQfromW]
             sel_jets_nom = events.q_cands_nom[events.q_cands_nom.isQfromW]
+            
             events['q_soft_true_sublead'] =  ak.fill_none(ak.mask(sel_jets_soft.pt, 
                                                           (ak.sum(sel_jets_soft.isQfromW,axis=1) == 2))[:,1], 
                                                           np.nan)
@@ -156,6 +156,24 @@ def gen_studies(events, is_mc):
             events['q_nom_true_lead'] =  ak.fill_none(ak.mask(sel_jets_nom.pt, 
                                                       (ak.sum(sel_jets_nom.isQfromW,axis=1) == 2))[:,0], 
                                                       np.nan)
+            # check how well ML classifier is selecting jets (test)
+            ml_qq_scores = ak.concatenate(
+                [ak.singletons(events.SvB.WW_score1),
+                 ak.singletons(events.SvB.WW_score2),
+                 ak.singletons(events.SvB.WW_score3)], axis=1)
+            ml_qq_scores = ak.mask(ml_qq_scores, ~np.isnan(events.SvB.phh))
+            ml_qq_index = ak.argmax(ml_qq_scores, axis=1, keepdims=True)
+
+            valid_mask = ~np.isnan(events.SvB.phh) & (ak.num(events.q_cands_soft) >= 2) & ~(ak.firsts(ml_qq_index == 2) & ak.num(events.q_cands_soft) == 2)
+            qq_jet_map = ak.mask(ak.argcombinations(events.q_cands_soft, 2, fields = ["l", "sl"]), valid_mask)
+
+            sel_qq_l = events.q_cands_soft[qq_jet_map[ml_qq_index].l]
+            sel_qq_sl = events.q_cands_soft[qq_jet_map[ml_qq_index].sl]
+            sel_qq_l = sel_qq_l[sel_qq_l.isQfromW]
+            sel_qq_sl = sel_qq_sl[sel_qq_sl.isQfromW]
+
+            events['q_ml_true_lead'] = ak.fill_none(ak.mask(sel_qq_l.pt, ak.num(sel_qq_sl.pt) == 1), np.nan)
+            events['q_ml_true_sublead'] = ak.fill_none(ak.mask(sel_qq_sl.pt, ak.num(sel_qq_l.pt) == 1), np.nan)
         except:
             pass #above sequence will fail for datasets that don't have jets in every event
 
@@ -163,12 +181,13 @@ def gen_studies(events, is_mc):
         #events['W_mass_res'] = ak.firsts(gen_W.mass[gen_W.mass < 55.0]) - events.qq_sel_mass
         #events['genW_mass'] = gen_W.mass[gen_W.mass > 55.0]
         #####################
-
+        
         ### study input parameters to chi square
         events['bjets_genjets_mass'] = ak.fill_none((events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen).mass,np.nan)
         events['bjets_genjets_dr'] = ak.fill_none(events.b_cands[:,0].matched_gen.delta_r(events.b_cands[:,1].matched_gen),np.nan)
         #events['bcand_genjets_mass'] = (events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen)
         events['gen_bb'] = ak.fill_none(gen_b[:,0] + gen_b[:,1], np.nan)
+        
         if 'HH' in events.metadata['dataset']:
             genjet_from_b =  ak.pad_none(events.b_cands[events.b_cands.isbFromH].matched_gen,2,axis=1)
             events['genjet_from_b'] = ak.fill_none(genjet_from_b[:,0] + genjet_from_b[:,1], np.nan)

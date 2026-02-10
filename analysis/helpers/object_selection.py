@@ -6,7 +6,6 @@ from bbreww.analysis.helpers.corrections import get_met_xy_correction
 
 ## this file contains object preselection for MET, electrons, muons, taus, photons, and jets
 
-
 def muon_selection(events,params):
     events['Muon','isloose'] = lepton_preselection(events, "Muon", params, "loose")
     events['Muon','istight'] = lepton_preselection(events, "Muon", params, "tight")
@@ -81,6 +80,7 @@ def jet_selection(events, params, year):
     b_cands = j_btagged[:,:2]
     b_cands = b_cands[ak.argsort(b_cands.pt, axis=1, ascending=False)] #particleNetAK4_B btagPNetB
     events['b_cands'] = b_cands
+    
 
     events['has_2_bjets'] = ak.num(j_btagged, axis=1) >= 2
     events['has_1_bjet']  = ak.num(j_btagged, axis=1) >= 1 #add for cutflow plot

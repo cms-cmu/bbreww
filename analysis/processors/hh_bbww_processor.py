@@ -12,10 +12,10 @@ from omegaconf import OmegaConf
 
 from src.physics.event_selection import apply_event_selection
 from src.physics.objects.jet_corrections import apply_jerc_corrections
-from src.physics.event_weights import add_weights
+from src.physics.event_weights import add_weights, add_btagweights
 from src.data_formats.root import Chunk
 
-from bbreww.analysis.helpers.common import update_events, add_lepton_sfs
+from bbreww.analysis.helpers.common import update_events, add_lepton_sfs, dump_phh_to_pickle
 from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
 from bbreww.analysis.helpers.cutflow import cutflow_bbWW
 from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec, add_sf_top_pt
@@ -244,8 +244,13 @@ class analysis(processor.ProcessorABC):
             apply_trigWeight=False,
             corrections_metadata=self.params[self.year],
         )
-        weights = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, self.year, self.is_mc)
-        weights = add_sf_top_pt(self.processName, self.top_pt_reweight, events, weights)
+        
+        # add electrons and muons SFs (includes reco, id, isolation, and trigger), top pT reweighting factors, b-taggins SFs
+        weights, list_weight_names = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, list_weight_names, self.year, self.is_mc)
+        weights, list_weight_names = add_sf_top_pt(self.processName, self.top_pt_reweight, events, weights, list_weight_names)
+        weights, list_weight_names = add_btagweights(events, weights, list_weight_names, shift_name, 
+                                    corrections_metadata = self.params[self.year], jet_field='b_cands')
+
         events['weight'] = weights.weight()
 
         #study sequential cutflow (get weights and events after each cut)
@@ -300,13 +305,12 @@ class analysis(processor.ProcessorABC):
         'leptonic_W': selection.all('leptonic_W')[selection.all(*selection_list['preselection'])]
         })
 
-        # last three bins of SvB distribution
-        selected_events['SvB_tail'] = ((selected_events.nominal_4j2b) & (selected_events.SvB.phh > 0.60)
+        # tail of SvB distribution
+        selected_events['SvB_tail'] = ((selected_events.nominal_4j2b) & (selected_events.SvB.phh > 0.6)
                                        if (self.run_SvB) else ak.ones_like(selected_events.MET.pt, dtype= bool))
 
-        selected_events['SvB_tail_lowpt'] = ((selected_events.lowpt_4j2b) & (selected_events.SvB.phh > 0.60)
+        selected_events['SvB_tail_lowpt'] = ((selected_events.lowpt_4j2b) & (selected_events.SvB.phh > 0.6)
                                        if (self.run_SvB) else ak.ones_like(selected_events.MET.pt, dtype= bool))
-        
         
         selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
 
@@ -322,15 +326,15 @@ class analysis(processor.ProcessorABC):
             from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_input_friend
             friends["friends"] = ( friends["friends"]
                 | dump_input_friend(
-                    selected_events[selected_events.lowpt_4j2b | selected_events.nominal_4j2b], # selected_events[selected_events.nominal_4j2b]
+                    selected_events[selected_events.nominal_4j2b | selected_events.lowpt_4j2b], # selected_events[selected_events.nominal_4j2b]
                     self.make_classifier_input,
-                    "classifier_input_lowpt",
-                    full_selection, # nominal_selections
+                    "classifier_input_regressor",
+                    full_selection, # nominal_selection
                     nonbcand = "q_cands_soft",
                     weight = "weight",
                 )
             )
-        
+                 
         # dumps classifier evaluation output into friendtrees (only possible when SvB model is provided)
         if self.make_friend_SvB is not None:
             from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_SvB
@@ -340,24 +344,13 @@ class analysis(processor.ProcessorABC):
                         "SvB", 
                         nominal_selection)
                 )
-        # In process_shift, after line 341 (after friend tree dumps), inside the `if not shift_name:` block:
-
-        # Dump signal SvB.phh for quantile rebinning
-        if 'GluGlu' in self.dataset and self.dump_signal_phh and self.run_SvB:
-            output['phh_data'] = {
-                    'dataset': self.dataset,
-                    'nominal_4j2b': {
-                        'phh': ak.to_numpy(selected_events.SvB.phh[selected_events.nominal_4j2b]),
-                        'weight': ak.to_numpy(selected_events.weight[selected_events.nominal_4j2b]),
-                    },
-                    'lowpt_4j2b': {
-                        'phh': ak.to_numpy(selected_events.SvB.phh[selected_events.lowpt_4j2b]),
-                        'weight': ak.to_numpy(selected_events.weight[selected_events.lowpt_4j2b]),
-                    },
-                }
-
 
         if not shift_name:
+             # Dump signal SvB.phh for quantile rebinning
+            if 'GluGlu' in self.dataset and self.dump_signal_phh and self.run_SvB:
+                output_path = f"root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/quantiles/phh_hist_{self.dataset}.pkl"
+                dump_phh_to_pickle(selected_events, self.dataset, output_path)
+      
             output['events_processed'] = {}
             output['events_processed'][self.dataset] = {
                 'n_events' : self.n_events,
@@ -376,7 +369,7 @@ class analysis(processor.ProcessorABC):
                 year=self.year_label,
                 is_mc=self.is_mc,
                 histCuts=['preselection',
-                        'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b'
+                        'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b', 'SvB_tail_lowpt'
                         ],
                 #channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],

@@ -7,7 +7,7 @@ from src.friendtrees.dump_friend import dump_friend, _build_cutflow
 
 _NAMING = "{path1}/{name}_{uuid}_{start}_{stop}_{path0}"
 
-## function to dump classifier inputs into root files
+## function to dump classifier (and regressor) inputs into root files
 def dump_input_friend(
     events: ak.Array,
     output: PathLike,
@@ -17,6 +17,7 @@ def dump_input_friend(
     nonbcand: str = "q_cands_nom",
     lepton: str = "leading_lep",
     met: str = "MET",
+    genNu: str = "genNu",
     weight: str = "weight",
     dump_naming: str = _NAMING,
 ):
@@ -24,7 +25,6 @@ def dump_input_friend(
     padded = akext.pad.selected()
     data = ak.Array(
         {
-
             "bJetCand": padded(
                 ak.zip(
                     {
@@ -70,6 +70,25 @@ def dump_input_friend(
                 ),
                 selection,
             ),
+            "genNu": padded(
+                ak.zip(
+                    {
+                        "pt": events[f'{genNu}_pt'],
+                        "eta": events[f'{genNu}_eta'],
+                        "phi": events[f'{genNu}_phi'],
+                    }
+                ),
+                selection,
+            ),
+            "genLepW": padded(
+                ak.zip(
+                    {
+                        "onShell": events["isLepW"],
+                        "genLepWmass": events["gen_lepW_mass"]
+                    }
+                ),
+                selection,
+            )
         }
         | akext.to_numpy(
             padded(

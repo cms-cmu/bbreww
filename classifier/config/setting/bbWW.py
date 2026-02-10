@@ -8,6 +8,8 @@ class InputBranch(GlobalSetting):
     feature_leadingLep: list[str] = ["pt", "eta", "phi", "mass", "isE", "isM"]
     feature_MET: list[str] = ["pt", "phi"]
     feature_ancillary: list[str] = ["HT", "njets", "nsoftjets", "year"]
+    feature_genNu: list[str] = ["pt", "eta", "phi"]
+    feature_genLepW: list[str] = ["onShell", "genLepWmass"]
     nbJetCand: int = 2
     nnonbJetCand: int = 3 # nominal: 2, lowpt: 3
 
@@ -31,6 +33,14 @@ class InputBranch(GlobalSetting):
     def get__feature_ancillary(cls, var: list[str]):
         return var.copy()
 
+    @classmethod
+    def get__feature_genNu(cls, var: list[str]):
+        return [f"genNu_{f}" for f in var]
+
+    @classmethod
+    def get__feature_genLepW(cls, var: list[str]):
+        return [f"genLepW_{f}" for f in var]
+
 
 class Input(GlobalSetting):
     "Name of the keys in the input batch."
@@ -41,17 +51,20 @@ class Input(GlobalSetting):
     leadingLep: str = "leadingLep"
     MET: str = "MET"
     ancillary: str = "ancillary"
+    genNu: str = "genNu"
+    genLepW: str = "genLepW"
 
 class Output(GlobalSetting):
     "Name of the keys in the output batch."
     hh_raw: str = "hh_raw"
     tt_raw: str = "tt_raw"
-    ww_raw: str = "ww_raw" # testing
+    ww_raw: str = "ww_raw"
     hh_prob: str = "hh_prob"
     tt_prob: str = "tt_prob"
-    ww_prob: str = "ww_prob" # testing
+    ww_prob: str = "ww_prob"
     
-# Keep only the regions you're using
+# create indeces map to different regions
 class MassRegion(IntEnum):
+    ALL = 0b00 # neither signal nor CR
     SR = 0b01
     CR = 0b10

@@ -24,7 +24,7 @@ class InputEmbed(nn.Module):
 
         if self.dA:
             self.ancillaryEmbed = GhostBatchNorm1d(
-                self.dA + 1,
+                self.dA,
                 features_out=self.dD,
                 phase_symmetric=phase_symmetric,
                 conv=True,
@@ -221,7 +221,7 @@ class InputEmbed(nn.Module):
         W_lep1, W_lep2, off_shell_score = get_lepW(l[:, :4], nu)
         W_lep = torch.cat([W_lep1, W_lep2], dim=2)
         
-        a = torch.cat([a, off_shell_score.view(n, 1, 1)], dim=1)
+        #a = torch.cat([a, off_shell_score.view(n, 1, 1)], dim=1)
 
         ## bb: H->bb dijet candidates, qq: W->qq dijet candidates"
         bb, bbPxPyPzE = addFourVectors(
@@ -633,6 +633,14 @@ class HCR_lowpt(nn.Module):
         )
         self.layers.addLayer(self.select_WW, [self.attention_WW])
 
+        self.none_WW_score = GhostBatchNorm1d(
+            self.dD,
+            features_out=1,
+            conv=True,
+            name="WW rejection scorer"
+        )
+        self.layers.addLayer(self.none_WW_score, [self.attention_WW])
+
         self.out_tt = GhostBatchNorm1d(
             self.dD,
             features_out=self.nC,  # final tt bar score
@@ -693,6 +701,7 @@ class HCR_lowpt(nn.Module):
         self.qv_embed.setGhostBatches(nGhostBatches)
         self.select_tt.setGhostBatches(nGhostBatches)
         self.select_WW.setGhostBatches(nGhostBatches)
+        self.none_WW_score.setGhostBatches(nGhostBatches)
         self.out_tt.setGhostBatches(nGhostBatches)
         self.HH_final_embed.setGhostBatches(nGhostBatches)
         self.out[0].setGhostBatches(nGhostBatches)
@@ -808,7 +817,6 @@ class HCR_lowpt(nn.Module):
             scalars,       # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))
             self.debug
         )
-
         WW_logits = self.select_WW(WW)  # Shape: (n, 3, 1)
         WW_logits = F.softmax(WW_logits.view(n, 3), dim=-1)
         self._WW_logits = WW_logits.detach()

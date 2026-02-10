@@ -127,7 +127,6 @@ def ttbar_candidate_selection(events, run_SvB: bool = True):
     events['tt_sel'] = tt_sel
     return events
 
-
 def Wqq_soft_candidate_selection(events, year):
     QvG_key = 'btagPNetQvG' if '202' in year else 'particleNetAK4_QvsG' # use particleNET for quark vs. gluon tagging
 
@@ -137,7 +136,7 @@ def Wqq_soft_candidate_selection(events, year):
     events['q_cands_soft'] = q_cands_soft
     
     jj_i = ak.argcombinations(q_cands_soft, 2, replacement = False, fields=["j1","j2"]) #take dijet combinations
-    jj_i = jj_i[(q_cands_soft[jj_i.j1] - q_cands_soft[jj_i.j2]).eta<2.0]
+    #jj_i = jj_i[(q_cands_soft[jj_i.j1] - q_cands_soft[jj_i.j2]).eta<2.0]
     #jj_i = jj_i[(q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2]).mass<120.0] #dijet cuts
     events['dijet_combs_new'] = jj_i
 

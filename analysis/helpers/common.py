@@ -1,9 +1,11 @@
 import numpy as np
 import awkward as ak
-import logging
-import correctionlib
+import pickle
+import tempfile
+import awkward as ak
 from coffea.nanoevents.methods import vector
 from bbreww.analysis.helpers.corrections import get_ele_sf, get_mu_id_sf, get_mu_iso_sf, get_mu_trig_sf, get_ele_trig_sf
+from src.storage.eos import EOS
 
 def distance(x1,y1,x2,y2):
     return abs(ak.fill_none(np.sqrt((x2-x1)**2+(y2-y1)**2),np.nan))
@@ -39,6 +41,38 @@ def elliptical_region(x, y, center_x, center_y, width, height):
     result = ((x - center_x) / a) ** 2 + ((y - center_y) / b) ** 2
 
     return result <= 1
+
+def dump_phh_to_pickle(selected_events, dataset, output_path):
+    """Dump signal SvB.phh data to a pickle file for quantile rebinning.
+
+    Supports writing to EOS by first writing to a local temp file,
+    then copying to the remote destination.
+    """
+    phh_data = {
+        'dataset': dataset,
+        'nominal_4j2b': {
+            'phh': ak.to_numpy(selected_events.SvB.phh[selected_events.nominal_4j2b]),
+            'weight': ak.to_numpy(selected_events.weight[selected_events.nominal_4j2b]),
+        },
+        'lowpt_4j2b': {
+            'phh': ak.to_numpy(selected_events.SvB.phh[selected_events.lowpt_4j2b]),
+            'weight': ak.to_numpy(selected_events.weight[selected_events.lowpt_4j2b]),
+        },
+    }
+
+    eos_path = EOS(output_path)
+    if eos_path.is_local:
+        with open(output_path, 'wb') as f:
+            pickle.dump(phh_data, f)
+    else:
+        with tempfile.NamedTemporaryFile(suffix='.pkl', delete=False) as f:
+            temp_path = f.name
+            pickle.dump(phh_data, f)
+        try:
+            EOS(temp_path).copy_to(eos_path, parents=True, overwrite=True)
+        finally:
+            import os
+            os.remove(temp_path)
 
 
 def update_events(events, collections):
@@ -129,7 +163,7 @@ def get_mu_sfs(params, muon, year):
 
 #combined electron and muon scale factors
 # 0: electron, 1: muon
-def add_lepton_sfs(params, events, electron, muon, weights, year, is_mc):
+def add_lepton_sfs(params, events, electron, muon, weights, list_weight_names, year, is_mc):
     if is_mc:
         ele_reco_sf, ele_id_sf, ele_trig_sf = get_ele_sfs(params, electron, year)
         mu_reco_sf = ak.ones_like(events.Muon.pt, dtype = float)
@@ -153,4 +187,12 @@ def add_lepton_sfs(params, events, electron, muon, weights, year, is_mc):
         weights.add('id_sf', id_sf)
         weights.add('iso_sf', iso_sf)
         weights.add('trig_sf', trig_sf)
-    return weights
+
+        list_weight_names.append(f"Ele_reco_SF")
+        list_weight_names.append(f"Muon_iso_SF")
+        list_weight_names.append(f"Ele_id_SF")
+        list_weight_names.append(f"Muon_id_SF")
+        list_weight_names.append(f"Ele_trig_SF")
+        list_weight_names.append(f"Muon_trig_SF")
+
+    return weights, list_weight_names

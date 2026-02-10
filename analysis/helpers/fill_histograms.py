@@ -94,6 +94,8 @@ def fill_histograms_nominal(
     fill += hist.add("true_soft_jets_sel_lead.pt", (50, -0.5, 250, ("q_soft_true_lead", "pT[GeV]"))) # softjet 2
     fill += hist.add("true_nom_jets_sel_sublead.pt", (50, -0.5, 250, ("q_nom_true_sublead", "pT[GeV]"))) # nominal jet 1
     fill += hist.add("true_nom_jets_sel_lead.pt", (50, -0.5, 250, ("q_nom_true_lead", "pT[GeV]"))) # nominal jet 2    
+    fill += hist.add("true_ml_jets_sel_lead.pt", (50, -0.5, 250, ("q_ml_true_lead", "pT[GeV]"))) # ml classifier jet 1
+    fill += hist.add("true_ml_jets_sel_sublead.pt", (50, -0.5, 250, ("q_ml_true_sublead", "pT[GeV]"))) # ml classifier jet 2        
     
     fill += Chi2Hists(("chi2_hadWs",      "chi2 hadWs"),         "chi2_hadWs")
     fill += Chi2Hists(("chi2_hadW",       "chi2 hadW"),          "chi2_hadW")
@@ -113,7 +115,7 @@ def fill_histograms_nominal(
     fill += hist.add("mbb_vs_lep_qq_dr",
             (50, 0, 250, ('Hbb_cand.mass', 'H->bb Candidate Mass [GeV]')),
             (50, 0, 5, ('Hww_cand.lqq_dr', r'$\Delta R$ between leading lepton and selected qq')))
-    #
+    
     #  TTbar Candidate
     #
     fill += TTbarHists( ("tt", R"$t\bar{t}$"), "tt_sel" )
@@ -163,6 +165,8 @@ def fill_histograms(
     fill += hist.add("true_soft_jets_sel_lead.pt", (10, 14.5, 30, ("q_soft_true_lead", "pT[GeV]"))) # softjet 2
     fill += hist.add("true_nom_jets_sel_sublead.pt", (10, 14.5, 30, ("q_nom_true_sublead", "pT[GeV]"))) # nominal jet 1
     fill += hist.add("true_nom_jets_sel_lead.pt", (10, 14.5, 30, ("q_nom_true_lead", "pT[GeV]"))) # nominal jet 2
+    fill += hist.add("true_ml_jets_sel_lead.pt", (10, 14.5, 30, ("q_ml_true_lead", "pT[GeV]"))) # ml classifier jet 1
+    fill += hist.add("true_ml_jets_sel_sublead.pt", (10, 14.5, 30, ("q_ml_true_sublead", "pT[GeV]"))) # ml classifier jet 2        
     
     fill += Chi2Hists(("chi2_hadWs", "chi2 hadWs"), "chi2_hadWs",
                       skip=["tot_4j", "Hww_mass", "Wqq_mass",]

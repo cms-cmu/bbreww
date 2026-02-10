@@ -83,7 +83,7 @@ def get_lepW(l, nu, mW=80.379):
         
         return torch.cat([w_pt, w_eta, w_phi, w_mass], dim=1)
     
-    return make_w(pz1), make_w(pz2), off_shell_score
+    return make_w(pz1), make_w(pz2), off_shell_score, pz1, pz2
 
 
 # transvserse mass of two two-dimensional vectors
@@ -569,8 +569,8 @@ class GhostBatchNorm1d(
 
     @torch.no_grad()
     def initMeanStd(self):
-        self.m = self._mean_var.mean.to(self.device)
-        self.s = self._mean_var.variance_unbiased.sqrt().to(self.device)
+        self.m.copy_(self._mean_var.mean)
+        self.s.copy_(self._mean_var.variance_unbiased.sqrt())
         self.initialized = True
         self.runningStats = False
         self.print()
@@ -706,11 +706,11 @@ class GhostBatchNorm1d(
             if self.runningStats:
                 # Simplest possible method
                 if self.initialized:
-                    self.m = self.eta * self.m + (self.one - self.eta) * bm
-                    self.s = self.eta * self.s + (self.one - self.eta) * bs
+                    self.m.copy_(self.eta * self.m + (self.one - self.eta) * bm)
+                    self.s.copy_(self.eta * self.s + (self.one - self.eta) * bs)
                 else:
-                    self.m = self.zero * self.m + bm
-                    self.s = self.zero * self.s + bs
+                    self.m.copy_(bm)
+                    self.s.copy_(bs)
                     self.initialized = True
 
             if self.nGhostBatches > 0:
@@ -1161,7 +1161,7 @@ class MinimalAttention(
             # check if all items are going to be masked. mask is (bs, qsl, vsl)
             q_mask = mask.all(2).view(bs, 1, qsl)
             v_mask = mask.all(1).view(bs, 1, vsl)
-            mask = mask.view(bs, qsl * vsl)
+            mask = mask.reshape(bs, qsl * vsl)
 
         # print('q before GBN\n',q[0])
         # print('v before GBN\n',v[0])
@@ -1496,7 +1496,7 @@ class InputEmbed(nn.Module):
             b[:, :, (1, 1, 0, 0)], W_lep[:, :, (0, 1, 0, 1)] # leptonic top candidate: 2 b-jets × 2 W_lep solutions = 4 candidates
         )
 
-        mask, bbMdR, qqMdR, bbnMdR, bbqqMdR, mask_bbMdR, mask_qqMdR, mask_bbn = None, None, None, None, None, None, None
+        mask, bbMdR, qqMdR, bbnMdR, bbqqMdR, mask_bbMdR, mask_qqMdR, mask_bbn = None, None, None, None, None, None, None, None
         mask = (nb[:, 2, :] == -1)
         bPxPyPzE = PxPyPzE(b)
         nbPxPyPzE = PxPyPzE(nb)
@@ -1534,11 +1534,8 @@ class InputEmbed(nn.Module):
         # compute matrix of masses and opening angles between b-jets and W candidates (top)
         bWhadMdR = matrixMdR(b, qq, v1PxPyPzE=bPxPyPzE, v2PxPyPzE=qqPxPyPzE)
 
-        mask_bWhad = mask.view(n, 1, self.bsl) | mask.view(
-            n, self.wsl, 1
-        )  # mask of 2d matrix of bW (i,j) is True if mask[i] | mask[j]
-        mask_bWhad = mask_bWhad.masked_fill(self.mask_bW_same, 1)
-
+        mask_bWhad = torch.zeros(n, self.bsl, dtype=torch.bool, device=device)  # nothing to mask for hadronic top candidates
+      
         bWlepMdR = matrixMdR(b, l.unsqueeze(2), v1PxPyPzE=bPxPyPzE, v2PxPyPzE=lPxPyPzE) # l needs an extra dimension for concat later
         bWlepMdR = bWlepMdR[:, :, (1, 1, 0, 0), :]  # Expand from 2 to 4 candidates to match bWlep
 
@@ -1585,7 +1582,7 @@ class InputEmbed(nn.Module):
                 mask_bbMdR.view(n, -1),
                 mask_qqMdR.view(n, -1),
                 mask_bbn.view(n, -1),
-                mask_qqMdR.view(n, -1),
+                torch.zeros(n, 1, dtype=mask_qqMdR.dtype, device=mask_qqMdR.device), #nothing to mask here
             ),
             dim=1,
         )

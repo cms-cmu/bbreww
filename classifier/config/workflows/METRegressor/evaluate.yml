@@ -1,0 +1,54 @@
+# template:
+# - model: path to model
+# - FvT: path to friend tree
+
+main:
+  module: evaluate
+  option:
+    - --max-evaluators 3 # use 3 workers to evaluate
+
+dataset:
+  - module: bbWW.regressor.Eval
+    option:
+      - --metadata bbreww/metadata/classifier/datasets/datasets_v5
+      - --max-workers 4
+      - --mc-processes GluGluToHHTo2B2VLNu2J ttbar
+      - --friends "" bbreww/metadata/classifier/input/output_friend_regressor.json@@classifier_input_regressor
+  - module: bbWW.regressor.Eval
+    option:
+      - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
+      - --max-workers 4
+      - --mc-processes WplusJets tW
+      - --friends "" bbreww/metadata/classifier/input/minorbkg_friend_regressor.json@@classifier_input_regressor
+  - module: bbWW.regressor.DataEval
+    option:
+      - --no-SR # remove SR
+      - --data-source detector # loads data
+      - --metadata bbreww/metadata/classifier/datasets/datasets_data_v5 # choose dataset
+      - --max-workers 4
+      - --friends "" bbreww/metadata/classifier/input/data_friend_regressor.json@@classifier_input_regressor # set input friend tree
+
+
+model:
+  - module: bbWW.METRegressor.baseline.Eval
+    option:
+      - --models
+      - Final # choose name of the model to evaluate, for now only Final is available
+      - "{model}/result.json" # setup the path to the training result
+
+analysis:
+  - module: kfold.Merge # merge different k-folds
+    option:
+      - --name met_regressor # set the name of friend tree
+      - --step 100000 # set the step to read ROOT files
+      - --workers 5
+      - --clean # remove the original files
+
+setting:
+  - module: IO
+    option:
+      - output: "{SvB}"
+  - module: ml.DataLoader
+    option:
+      - num_workers: 0
+      - batch_eval: 268435456 # 2^28 --> significantly increases GPU memory usage!

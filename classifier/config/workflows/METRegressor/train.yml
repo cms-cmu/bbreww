@@ -1,0 +1,42 @@
+# template:
+# - model: path to model
+
+# when run with
+#   template/-template "model: path/to/model" path/to/this/file.yml
+# the {model} will be replaced by path/to/model
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
+main:
+  module: train # run training task
+  option:
+    - --max-loaders 2
+    - --max-trainers 3
+
+dataset:
+  - module: bbWW.regressor.Background
+    option:
+      - --mc-processes ttbar
+      - --metadata bbreww/metadata/classifier/datasets/datasets_v5
+      - --norm 1 #set TTbar to be the same weight as signal
+      # - --ttbar-prescale 10 # this option is to only train on a fraction of events
+      - --friends "" bbreww/metadata/classifier/input/output_friend_regressor.json@@classifier_input_regressor # set input friend tree
+
+  - module: bbWW.regressor.Signal
+    option:
+      - --metadata bbreww/metadata/classifier/datasets/datasets_v5
+      - --friends "" bbreww/metadata/classifier/input/output_friend_regressor.json@@classifier_input_regressor # set input friend tree
+
+model:
+  - module: bbWW.METRegressor.baseline.Train
+    option:
+      - --kfolds 3 # use 3-fold
+      - --kfold-seed FvT random # setup base seed to be ("FvT", "random")
+      - --kfold-seed-offsets 0 # use seed ("FvT", "random", 0)
+      - --training FixedStep # setup training schedule
+      - epoch: 20
+        bs_init: 2048
+
+setting:
+  - module: IO # setup output directory
+    option:
+      - output: "{model}" # will be replaced by the template

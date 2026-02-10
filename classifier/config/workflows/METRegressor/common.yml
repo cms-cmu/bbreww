@@ -1,6 +1,7 @@
 setting:
   - module: ml.DataLoader
     option:
+      - num_workers: 4
       - batch_skim: 524288 # 2^19
       - batch_eval: 524288 # 2^19
       - optimize_sliceable_dataset: true

@@ -4,7 +4,6 @@
 # when run with
 #   template/-template "model: path/to/model" path/to/this/file.yml
 # the {model} will be replaced by path/to/model
-export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 main:
   module: train # run training task
@@ -34,7 +33,7 @@ model:
       - --kfold-seed-offsets 0 # use seed ("FvT", "random", 0)
       - --training FixedStep # setup training schedule
       - epoch: 20
-        bs_init: 2048
+        bs_init: 4096
 
 setting:
   - module: IO # setup output directory

@@ -20,13 +20,13 @@ dataset:
       - --max-workers 4
       - --mc-processes WplusJets tW
       - --friends "" bbreww/metadata/classifier/input/minorbkg_friend_regressor.json@@classifier_input_regressor
-  - module: bbWW.regressor.DataEval
-    option:
-      - --no-SR # remove SR
-      - --data-source detector # loads data
-      - --metadata bbreww/metadata/classifier/datasets/datasets_data_v5 # choose dataset
-      - --max-workers 4
-      - --friends "" bbreww/metadata/classifier/input/data_friend_regressor.json@@classifier_input_regressor # set input friend tree
+  #- module: bbWW.regressor.DataEval
+  #  option:
+  #    - --no-SR # remove SR
+  #    - --data-source detector # loads data
+  #    - --metadata bbreww/metadata/classifier/datasets/datasets_data_v5 # choose dataset
+  #    - --max-workers 4
+  #    - --friends "" bbreww/metadata/classifier/input/data_friend_regressor.json@@classifier_input_regressor # set input friend tree
 
 
 model:
@@ -51,4 +51,3 @@ setting:
   - module: ml.DataLoader
     option:
       - num_workers: 0
-      - batch_eval: 268435456 # 2^28 --> significantly increases GPU memory usage!

@@ -17,11 +17,11 @@ else
 fi
 
 # train with train.yml and common.yml configs
-./src/pyml.py \
-    template "{model: ${MODEL}}" $WFS/train.yml \
-    -from $WFS/common.yml \
-    -setting Monitor "address: :${port}" \
-    -flag debug # use debug flag
+#./src/pyml.py \
+#    template "{model: ${MODEL}}" $WFS/train.yml \
+#    -from $WFS/common.yml \
+#    -setting Monitor "address: :${port}" \
+#    -flag debug # use debug flag
 
 # TODO: add regression-specific analysis (loss curves, resolution plots)
 # ./src/pyml.py analyze \

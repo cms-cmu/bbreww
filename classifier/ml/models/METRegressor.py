@@ -85,11 +85,14 @@ def _RegressorInput(batch: BatchType, device: tt.Device, selection: Tensor = Non
         batch[k] = v.to(device, non_blocking=True)
     inputs = [batch.pop(k) for k in (Input.bJetCand, Input.nonbJetCand, Input.leadingLep, 
                                      Input.MET, Input.ancillary)]
+
+    # keep lepton tensor accessible for W mass loss computation
+    batch["_leadingLep"] = inputs[2]
     if selection is not None:
         selection = selection.to(device, non_blocking=True)
         inputs = [i[selection] for i in inputs]
+        batch["_leadingLep"] = inputs[2]
     return inputs
-
 
 class _RegressorSkim(Skimmer):
     def __init__(

@@ -1,5 +1,6 @@
 import awkward as ak
 import numpy as np
+from coffea.nanoevents.methods import vector
 from bbreww.analysis.helpers.common import met_reconstr, distance, elliptical_region
 
 def Hbb_candidate_selection(events):
@@ -63,9 +64,10 @@ def Wqq_candidate_selection(events):
 
 def Hww_candidate_selection(events):
     Hww_cand = events.Wlnu_cand + events.Wqq_cand
-    Hww_cand["dr"]   = events.Wlnu_cand.delta_r  (events.Wqq_cand)
+    Hww_cand["dr"]   = events.Wlnu_cand.delta_r(events.Wqq_cand)
     Hww_cand["dphi"] = events.Wlnu_cand.delta_phi(events.Wqq_cand)
     Hww_cand["lqq_dr"] = events.Wlnu_cand.lep.delta_r(events.Wqq_cand)
+    Hww_cand["lqq_mass"] = (events.Wlnu_cand.lep+events.Wqq_cand).mass
 
     events['Hww_cand'] = Hww_cand
     return events
@@ -204,8 +206,20 @@ def ttbar_soft_candidate_selection(events):
 
     return events
 
+def regressed_nu(events, met_regression: bool = False):
+    if met_regression:
+        events["reg_nu"] = ak.zip({
+            "x": events.met_regressor.nu_px,
+            "y": events.met_regressor.nu_py,
+            "z": events.met_regressor.nu_pz,
+            "t": np.sqrt((events.met_regressor.nu_px**2 + events.met_regressor.nu_py**2 + events.met_regressor.nu_pz**2)),
+        },
+        with_name="LorentzVector",
+        behavior=vector.behavior,
+        )
+    return events
 
-def candidate_selection(events, params, year, run_SvB, classifier_SvB = None):
+def candidate_selection(events, params, year, run_SvB, run_MET_regression, classifier_SvB = None):
 
     #
     # Common
@@ -232,8 +246,10 @@ def candidate_selection(events, params, year, run_SvB, classifier_SvB = None):
     events = Wqq_soft_candidate_selection(events, year)
     events = Hww_soft_candidate_selection(events)
     events = ttbar_soft_candidate_selection(events)
-
+    events = regressed_nu(events, run_MET_regression)
+    
     return events
+
 
 ## function only for skimmer
 def bjet_flag(events,params,year):

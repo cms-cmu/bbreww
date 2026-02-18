@@ -1,5 +1,4 @@
 runner:
-  max_workers: 400 
   skipbadfiles: False
   workers: 8
   condor_memory: 10GB
@@ -24,7 +23,9 @@ runner:
 
 # processor specific flags below
 config:
-  dump_signal_phh: True
+  dump_signal_phh: false
   run_SvB: True
+  run_MET_regression: True
   friends:
     SvB: "bbreww/metadata/classifier/output/result_lowpt.json@@analysis.0.merged"
+    met_regressor: "bbreww/metadata/regressor/output/result.json@@analysis.0.merged"

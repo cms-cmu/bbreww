@@ -132,6 +132,50 @@ class RegressorModel(Model):
             device=device,
         )
         self._benchmarks = benchmarks
+        # Three independent optimizers — created lazily after model is on device
+        self._opt_backbone = None
+        self._opt_onshell = None
+        self._opt_offshell = None
+
+    def _ensure_optimizers(self):
+        """Create three independent optimizers if not yet initialized."""
+        if self._opt_backbone is not None:
+            return
+        import torch.optim as optim
+        from torch.optim.lr_scheduler import MultiStepLR
+        nn = self._nn
+
+        # Collect parameter id sets for the two regressor heads
+        onshell_params = (
+            list(nn.nu_regressor_onshell.parameters()) +
+            list(nn.nu_cholesky_onshell.parameters())
+        )
+        offshell_params = (
+            list(nn.nu_regressor_offshell.parameters()) +
+            list(nn.nu_cholesky_offshell.parameters())
+        )
+        head_ids = {id(p) for p in onshell_params + offshell_params}
+
+        # Everything else is backbone (embedding, attention, classifier, W mass heads)
+        backbone_params = [p for p in nn.parameters() if id(p) not in head_ids]
+
+        self._opt_backbone = optim.Adam(backbone_params, lr=1e-2)
+        self._opt_onshell = optim.Adam(onshell_params, lr=1e-2)
+        self._opt_offshell = optim.Adam(offshell_params, lr=1e-2)
+
+        # Mirror the same LR schedule as the framework (FixedStep defaults)
+        lr_milestones = [15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
+        lr_gamma = 0.25
+        self._lr_backbone = MultiStepLR(self._opt_backbone, milestones=lr_milestones, gamma=lr_gamma)
+        self._lr_onshell = MultiStepLR(self._opt_onshell, milestones=lr_milestones, gamma=lr_gamma)
+        self._lr_offshell = MultiStepLR(self._opt_offshell, milestones=lr_milestones, gamma=lr_gamma)
+
+    def parameters(self):
+        """Return a dummy parameter so the framework's optimizer is harmless.
+        Real optimization is handled by three internal optimizers in train()."""
+        if not hasattr(self, '_dummy_param'):
+            self._dummy_param = torch.nn.Parameter(torch.zeros(1, device=self._device))
+        return iter([self._dummy_param])
 
     @property
     def ghost_batch(self):
@@ -158,13 +202,41 @@ class RegressorModel(Model):
     def nn(self):
         return self._nn
 
+    def _unpack_forward(self, batch: BatchType):
+        nu_pred_on, L_on, nu_pred_off, L_off, (logit_onshell, pz_hint_on) = self._nn(*_RegressorInput(batch, self._device))
+        batch["pred_nu_on"] = nu_pred_on
+        batch["cholesky_L_on"] = L_on
+        batch["pred_nu_off"] = nu_pred_off
+        batch["cholesky_L_off"] = L_off
+        batch["logit_onshell"] = logit_onshell
+        batch["pz_hint_on"] = pz_hint_on
+
     def train(self, batch: BatchType) -> Tensor:
-        pred, estimated_mW, regime_prob = self._nn(*_RegressorInput(batch, self._device))
-        batch["pred_nu"] = pred
-        batch["estimated_mW"] = estimated_mW
-        batch["regime_prob"] = regime_prob
-        loss = self._loss(batch)
-        return loss
+        self._ensure_optimizers()
+        self._unpack_forward(batch)
+        loss_backbone, loss_onshell, loss_offshell = self._loss(batch)
+
+        # Zero all gradients before accumulating from all three losses
+        self._opt_backbone.zero_grad()
+        self._opt_onshell.zero_grad()
+        self._opt_offshell.zero_grad()
+
+        # Backward all three losses (gradients accumulate in shared backbone)
+        loss_backbone.backward(retain_graph=True)
+        loss_onshell.backward(retain_graph=True)
+        loss_offshell.backward()
+
+        # Step all three optimizers (each updates only its own param group)
+        self._opt_backbone.step()
+        self._opt_onshell.step()
+        self._opt_offshell.step()
+
+        # Return a requires_grad tensor for the framework's loss.backward()/opt.step().
+        # The real value is preserved for logging (loss.item()), but backward produces
+        # zero gradients so the framework's optimizer step is a no-op.
+        total = loss_backbone.item() + loss_onshell.item() + loss_offshell.item()
+        dummy = torch.tensor(total, device=self._device, requires_grad=True)
+        return dummy + 0  # enables .backward() but produces no real gradients
 
     def validate(self, batches: Iterable[BatchType]) -> dict[str]:
         weight = 0.0
@@ -172,13 +244,14 @@ class RegressorModel(Model):
         scalar_funcs = self._benchmarks.scalars
 
         for batch in batches:
-            pred, estimated_mW, regime_prob = self._nn(*_RegressorInput(batch, self._device))
-            batch["pred_nu"] = pred
-            batch["estimated_mW"] = estimated_mW
-            batch["regime_prob"] = regime_prob
+            self._unpack_forward(batch)
             sumw = to_num(batch[Input.weight].sum())
             if scalar_funcs is None:
-                scalars["loss"] += to_num(self._loss(batch)) * sumw
+                l_bb, l_on, l_off = self._loss(batch)
+                scalars["loss"] += (to_num(l_bb) + to_num(l_on) + to_num(l_off)) * sumw
+                scalars["loss_backbone"] += to_num(l_bb) * sumw
+                scalars["loss_onshell"] += to_num(l_on) * sumw
+                scalars["loss_offshell"] += to_num(l_off) * sumw
             else:
                 for func in scalar_funcs:
                     measured = func(batch)
@@ -193,6 +266,11 @@ class RegressorModel(Model):
     def step(self, epoch: int = None):
         if self.ghost_batch is not None and self.ghost_batch.step(epoch):
             self._nn.setGhostBatches(self.ghost_batch.get_bs(), False)
+        # Step LR schedulers for all three internal optimizers
+        if self._opt_backbone is not None:
+            self._lr_backbone.step()
+            self._lr_onshell.step()
+            self._lr_offshell.step()
 
 
 class RegressorTraining(MultiStageTraining):
@@ -320,14 +398,38 @@ class RegressorModelEval(Model):
         selection = self._splitter.split(batch)[SplitterKeys.validation]
         selector = Selector(selection)
 
-        pred, estimated_mW, regime_prob = self._nn(*_RegressorInput(batch, self._device, selection))
+        nu_pred_on, L_on, nu_pred_off, L_off, (logit_onshell, pz_hint_on) = self._nn(*_RegressorInput(batch, self._device, selection))
+        p_onshell = torch.sigmoid(logit_onshell)
+
+        # Extract marginal sigmas from Cholesky: sigma_i = sqrt((L @ L^T)_{ii})
+        cov_on = torch.bmm(L_on, L_on.transpose(-1, -2))
+        sigma_on = cov_on.diagonal(dim1=-2, dim2=-1).sqrt()
+        cov_off = torch.bmm(L_off, L_off.transpose(-1, -2))
+        sigma_off = cov_off.diagonal(dim1=-2, dim2=-1).sqrt()
+
+        # Select neutrino based on classifier: p_onshell > 0.5 → use on-shell regressor
+        use_on = (p_onshell > 0.5).unsqueeze(-1)  # (n, 1)
+        nu_sel = torch.where(use_on, nu_pred_on, nu_pred_off)
+        sigma_sel = torch.where(use_on, sigma_on, sigma_off)
 
         output = {
-            "nu_pt": pred[:, 0],
-            "nu_eta": pred[:, 1],
-            "nu_phi": pred[:, 2],
-            "estimated_mW": estimated_mW.squeeze(-1).squeeze(-1),
-            "regime_prob": regime_prob.squeeze(-1),
+            # Selected (best hypothesis) neutrino
+            "nu_px": nu_sel[:, 0],
+            "nu_py": nu_sel[:, 1],
+            "nu_pz": nu_sel[:, 2],
+            "nu_sigma_px": sigma_sel[:, 0],
+            "nu_sigma_py": sigma_sel[:, 1],
+            "nu_sigma_pz": sigma_sel[:, 2],
+            # On-shell hypothesis
+            "nu_px_on": nu_pred_on[:, 0],
+            "nu_py_on": nu_pred_on[:, 1],
+            "nu_pz_on": nu_pred_on[:, 2],
+            # Off-shell hypothesis
+            "nu_px_off": nu_pred_off[:, 0],
+            "nu_py_off": nu_pred_off[:, 1],
+            "nu_pz_off": nu_pred_off[:, 2],
+            # Classifier
+            "p_onshell": p_onshell,
         }
         return selector.pad(map_batch(self._mapping, output))
 

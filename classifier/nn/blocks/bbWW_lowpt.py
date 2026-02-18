@@ -218,7 +218,7 @@ class InputEmbed(nn.Module):
         a[:, 2, :] = torch.log(a[:, 2, :])  # log transform event HT
 
         #reconstruct leptonic W by solving MET pz with W mass constraint
-        W_lep1, W_lep2, off_shell_score = get_lepW(l[:, :4], nu)
+        W_lep1, W_lep2, off_shell_score, _, _ = get_lepW(l[:, :4], nu)
         W_lep = torch.cat([W_lep1, W_lep2], dim=2)
         
         #a = torch.cat([a, off_shell_score.view(n, 1, 1)], dim=1)

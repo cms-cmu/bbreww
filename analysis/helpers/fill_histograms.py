@@ -1,16 +1,18 @@
 from src.hist_tools import Collection, Fill
 from src.hist_tools.object import Elec, Jet, LorentzVector, Muon, Lepton
+import awkward as ak
+import numpy as np
+from bbreww.analysis.helpers.hist_templates import SvBHists, Chi2Hists, TTbarHists, regressionHists
 
-from bbreww.analysis.helpers.hist_templates import SvBHists, Chi2Hists, TTbarHists
-
-def add_bbWW_common_hists(fill, hist):
+def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = False):
 
     #
     #  Event Level
     #
     fill += hist.add("nPVs", (101, -0.5, 100.5, ("PV.npvs", "Number of Primary Vertices")))
     fill += hist.add("nPVsGood", (101, -0.5, 100.5, ("PV.npvsGood", "Number of Good Primary Vertices")))
-    fill += hist.add("MET", (50, -0.5, 250, ("MET.pt", "MET pT [GeV]")))
+    fill += hist.add("MET_pt", (50, -0.5, 250, ("MET.pt", R"MET $p_T$ [GeV]")))
+    fill += hist.add("MET_phi", (50, -4, 4, ("MET.phi", R"MET $Phi$")))
     fill += hist.add("njets", (10, -0.5, 9.5, ("njets", "jet multiplicity")))
 
     ## W-qq quark vs. gluon selection candidates
@@ -52,6 +54,57 @@ def add_bbWW_common_hists(fill, hist):
     #            (50, 0, 250, ('gen_hadW.mass', 'W->qq gen mass [GeV]')),
     #            (50, 0, 250, ('true_ak4_2', r'W->qq subleading jet $p_T$')))
 
+        #
+    # Signal vs Backgrounds classifier scores hists
+    if SvB:
+        fill += SvBHists(("SvB", "SvB Classifier"), "SvB")
+
+    ## distribution and resolution plots for MET regressor
+    if MET_regression:
+        fill += hist.add("genNu_pt", (50, 0, 200, ("genNu_pt", R"gen $\nu p_T$ [GeV]")))
+        fill += hist.add("genNu_eta", (50, -5, 5, ("genNu_eta", R"gen $\nu \eta$")))
+        fill += hist.add("genNu_phi", (50, -5, 5, ("genNu_phi", R"gen $\nu \phi$")))
+        fill += hist.add("gen_lepW_mass", (30, 0, 150, ("gen_lepW_mass", R"gen leptonic $m_W$ [GeV]")))
+        fill += hist.add("islepW", (2, 0, 1.1, ("isLepW", R"leptonic W on shell boolean")))
+
+        fill += hist.add("reg_mW",
+                          (30, 0, 150, ('reg_mW', R"Regressed leptonic W mass [GeV]")),
+                          reg_mW=lambda events: (events.reg_nu + events.leading_lep).mass
+                          )
+
+        fill += hist.add("reg_nu_pt_res",
+                        (30, 0, 100, ("nu_pt_res", R"(True - Regressed) $\nu p_T$ [GeV]")),
+                        nu_pt_res=lambda events: ak.fill_none(ak.mask(events.gen_lepW_mass, ~events.isLepW), np.nan)
+                        )
+        fill += hist.add("reg_nu_phi_res",
+                        (50, -5, 5, ("nu_phi_res", R"(True - Regressed) $\nu \Phi$")),
+                        nu_phi_res=lambda events: events.genNu_phi -events.reg_nu.phi
+                        )
+        fill += hist.add("reg_nu_eta_res",
+                        (50, -5, 5, ("nu_eta_res", R"(True - Regressed) $\nu \eta$")),
+                        nu_eta_res=lambda events: events.genNu_eta -events.reg_nu.eta
+                        )
+        fill += hist.add("mW_res",
+                        (40, -100, 100, ("mW_res", R"(True - Regressed) leptonic $m_W$")),
+                        mW_res=lambda events: ak.fill_none(events.gen_lepW_mass - (events.reg_nu + events.leading_lep).mass, np.nan)
+                         )
+        # reco resolutions before regression
+        fill += hist.add("reco_nu_pt_res",
+                         (40, -100, 100, ("nu_pt_res", R"(True - Reco) $\nu \ p_T$ [GeV]")),
+                         nu_pt_res=lambda events: events.genNu_pt -events.DeepMETResolutionTune.pt
+                         )
+        fill += hist.add("reco_nu_phi_res",
+                         (50, -5, 5, ("nu_phi_res", R"(True - Reco) $\nu \ \Phi$")),
+                         nu_phi_res=lambda events: events.genNu_phi -events.DeepMETResolutionTune.phi
+                         )
+        
+        fill += regressionHists(("met_regressor", "MET Regressor"), "met_regressor")
+
+#        fill += hist.add("mbb_vs_mWW",
+#                         (50, 0, 250, ('Hbb_cand.mass', 'H->bb Candidate Mass [GeV]')),
+#                         (50, 0,   5, ('HWW', r'$\Delta R$ between b-candidates')),
+#                         HWW= lambda events: (events.reg_nu + events.leading_lep + events.q_cands_nom[:,0] + events.q_cands_nom[:,1]).mass)
+
     return fill, hist
 
 
@@ -64,7 +117,8 @@ def fill_histograms_nominal(
     #channel_list: list = ['hadronic_W','leptonic_W'],
     flavor_list: list = ['e', 'mu'],
     region_list: list = ['SR', 'CR'],
-    run_SvB: bool = False
+    run_SvB: bool = False,
+    run_MET_regression: bool = False,
 ):
 
     fill = Fill(
@@ -85,7 +139,7 @@ def fill_histograms_nominal(
     #
     #  Common Histograms:  Hbb and leptons
     #
-    fill, hist = add_bbWW_common_hists(fill, hist)
+    fill, hist = add_bbWW_common_hists(fill, hist, run_SvB, run_MET_regression)
 
     # jet selection efficiencies
     fill += hist.add("true_jets_sublead.pt", (50, -0.5, 250, ("true_ak4_2", "pT [GeV]")))
@@ -111,19 +165,11 @@ def fill_histograms_nominal(
     #
     fill += LorentzVector.plot_pair( ("HWW", R"$H_{WW}$"), "Hww_cand", skip=["n","lead","subl","st"], bins={"mass": (100, 100, 400)}, )
     fill += hist.add("HWW.lqq_dr", (50, -0.5, 10, ("Hww_cand.lqq_dr", "qq - lepton  delta R")))
-
-    fill += hist.add("mbb_vs_lep_qq_dr",
-            (50, 0, 250, ('Hbb_cand.mass', 'H->bb Candidate Mass [GeV]')),
-            (50, 0, 5, ('Hww_cand.lqq_dr', r'$\Delta R$ between leading lepton and selected qq')))
+    fill += hist.add("HWW.lqq_mass", (50, -0.5, 10, ("Hww_cand.lqq_mass", "(qq + lepton) mass ")))
     
     #  TTbar Candidate
     #
     fill += TTbarHists( ("tt", R"$t\bar{t}$"), "tt_sel" )
-
-    #
-    # Signal vs Backgrounds classifier scores hists
-    if run_SvB:
-        fill += SvBHists(("SvB", "SvB Classifier"), "SvB")
 
     # fill histograms
     fill(events, hist)
@@ -140,6 +186,7 @@ def fill_histograms(
     flavor_list: list = ['e', 'mu'],
     region_list: list = ['SR', 'CR'],
     run_SvB: bool = False,
+    run_MET_regression: bool = False,
 ):
 
     fill = Fill(
@@ -156,7 +203,7 @@ def fill_histograms(
         **dict((s, ...) for s in histCuts)
     )
 
-    fill, hist = add_bbWW_common_hists(fill, hist)
+    fill, hist = add_bbWW_common_hists(fill, hist, run_SvB, run_MET_regression)
 
     # jet selection efficiencies
     fill += hist.add("true_jets_sublead.pt", (10, 14.5, 30, ("true_ak4_2", "pT [GeV]")))
@@ -186,10 +233,6 @@ def fill_histograms(
     fill += LorentzVector.plot_pair( ("HWW_soft", R"$H_{WW}$ (soft)"), "Hww_cand_soft", skip=["n","lead","subl","st"], bins={"mass": (100, 100, 400)}, )
 
     fill += TTbarHists( ("tt_soft", R"$t\bar{t}$"), "tt_soft_minChi2" )
-
-    # Signal vs Backgrounds classifier scores hists
-    if run_SvB:
-        fill += SvBHists(("SvB", "SvB Classifier"), "SvB")
 
     # fill histograms
     fill(events, hist)

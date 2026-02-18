@@ -13,76 +13,76 @@ from rich.table import Table
 
 ### newly added features (needs to move to base class):
 
+def get_nu_pz_cartesian(l_pt, l_eta, l_phi, l_mass, nu_px, nu_py, mW=80.379):
+    """Solve the W mass quadratic constraint for neutrino pz.
+
+    Lepton inputs are (pt, eta, phi, mass) as flat (N,) or (N, 1) tensors.
+    Neutrino inputs are Cartesian (nu_px, nu_py) as flat (N,) or (N, 1) tensors.
+    Returns (pz_sol1, pz_sol2, is_complex) with same shape as inputs.
+    """
+    l_px = l_pt * torch.cos(l_phi)
+    l_py = l_pt * torch.sin(l_phi)
+    l_pz = l_pt * torch.sinh(l_eta)
+    l_E  = torch.sqrt(l_px**2 + l_py**2 + l_pz**2 + l_mass**2)
+
+    met_pt_sq = nu_px**2 + nu_py**2
+    A = (l_px * nu_px + l_py * nu_py) + (mW**2 - l_E**2 + l_px**2 + l_py**2 + l_pz**2) / 2
+    C = l_E**2 - l_pz**2
+    disc = (2 * A * l_pz)**2 - 4 * (l_E**2 * met_pt_sq - A**2) * C
+
+    is_complex = disc < 0
+    real_part = (2 * A * l_pz) / (2 * C + 1e-8)
+    delta = torch.sqrt(torch.abs(disc) + 1e-8) / (2 * C + 1e-8)
+    pz1 = torch.where(is_complex, real_part, real_part + delta)
+    pz2 = torch.where(is_complex, real_part, real_part - delta)
+
+    # off_shell_score: |delta| when complex (measures how far off-shell), 0 when real
+    off_shell_score = torch.where(is_complex, delta, torch.zeros_like(delta))
+
+    return pz1, pz2, is_complex, off_shell_score
+
+
 def get_lepW(l, nu, mW=80.379):
     """
     Reconstruct neutrino pz using W mass constraint and return two W candidates
-    
+
     Inputs:
         l: Lepton [N, 4, 1] with (pt, eta, phi, M)
         nu: MET [N, 2, 1] with (pt, phi)
         mW: W boson mass (default 80.379 GeV)
-    
+
     Returns:
         W_cand1: First leptonic W four-vector [N, 4, 1] (pt, eta, phi, M)
-        W_cand2: Second leptonic W four-vector [N, 4, 1] (pt, eta, phi, M)  
+        W_cand2: Second leptonic W four-vector [N, 4, 1] (pt, eta, phi, M)
         off_shell_score: Magnitude of imaginary part if discriminant < 0
+        pz1, pz2: The two neutrino pz solutions [N, 1, 1]
     """
-    # Extract lepton (pt, eta, phi, M)
     l_pt, l_eta, l_phi, l_mass = l[:, 0:1], l[:, 1:2], l[:, 2:3], l[:, 3:4]
-    
-    # Convert lepton to Cartesian (E, px, py, pz)
+    met_pt, met_phi = nu[:, 0:1], nu[:, 1:2]
+    nu_px = met_pt * torch.cos(met_phi)
+    nu_py = met_pt * torch.sin(met_phi)
+
+    pz1, pz2, _, off_shell_score = get_nu_pz_cartesian(l_pt, l_eta, l_phi, l_mass, nu_px, nu_py, mW=mW)
+
+    # Build W four-vectors from lepton + neutrino
     l_px = l_pt * torch.cos(l_phi)
     l_py = l_pt * torch.sin(l_phi)
     l_pz = l_pt * torch.sinh(l_eta)
-    l_energy = torch.sqrt(l_pt**2 * torch.cosh(l_eta)**2 + l_mass**2)
-    
-    # Extract MET (pt, phi)
-    met_pt, met_phi = nu[:, 0:1], nu[:, 1:2]
-    
-    # Convert MET to Cartesian
-    nu_px = met_pt * torch.cos(met_phi)
-    nu_py = met_pt * torch.sin(met_phi)
-    
-    # Quadratic coefficients for pz_nu
-    A = (l_px * nu_px + l_py * nu_py) + (mW**2 - l_mass**2) / 2
-    B = l_energy**2 * met_pt**2
-    C = l_energy**2 - l_pz**2
-    discriminant = (2 * A * l_pz)**2 - 4 * (B - A**2) * C
-    
-    # Real part: -b / 2a
-    real_part = (2 * A * l_pz) / (2 * C + 1e-8)  # Small epsilon for numerical stability
-    
-    # Handle complex vs real discriminant
-    is_complex = discriminant < 0
-    delta = torch.sqrt(torch.abs(discriminant)) / (2 * C + 1e-8)
-    
-    # If real: pz = real ± delta. If complex: pz = real (take real part only)
-    pz1 = torch.where(is_complex, real_part, real_part + delta)
-    pz2 = torch.where(is_complex, real_part, real_part - delta)
-    
-    # Off-shell score: 0 if real solutions, |delta| if complex
-    off_shell_score = torch.where(is_complex, torch.abs(delta), torch.zeros_like(delta))
-    
+    l_energy = torch.sqrt(l_px**2 + l_py**2 + l_pz**2 + l_mass**2)
+
     def make_w(nu_pz):
-        """Construct W 4-vector from lepton + neutrino, return as (pt, eta, phi, M)"""
-        # Neutrino energy (massless)
         nu_energy = torch.sqrt(met_pt**2 + nu_pz**2)
-        
-        # W = lepton + neutrino in Cartesian
-        w_energy = l_energy + nu_energy
         w_px = l_px + nu_px
         w_py = l_py + nu_py
         w_pz = l_pz + nu_pz
-        
-        # Convert back to (pt, eta, phi, M)
+        w_energy = l_energy + nu_energy
         w_pt = torch.sqrt(w_px**2 + w_py**2)
         w_phi = torch.atan2(w_py, w_px)
         w_eta = torch.asinh(w_pz / (w_pt + 1e-8))
         w_mass_sq = w_energy**2 - w_px**2 - w_py**2 - w_pz**2
         w_mass = torch.sqrt(torch.clamp(w_mass_sq, min=0))
-        
         return torch.cat([w_pt, w_eta, w_phi, w_mass], dim=1)
-    
+
     return make_w(pz1), make_w(pz2), off_shell_score, pz1, pz2
 
 
@@ -1466,7 +1466,7 @@ class InputEmbed(nn.Module):
         a[:, 2, :] = torch.log(a[:, 2, :])  # log transform event HT
 
         #reconstruct leptonic W by solving MET pz with W mass constraint
-        W_lep1, W_lep2, off_shell_score = get_lepW(l[:, :4], nu)
+        W_lep1, W_lep2, off_shell_score, _, _ = get_lepW(l[:, :4], nu)
         W_lep = torch.cat([W_lep1, W_lep2], dim=2)
 
         a = torch.cat([a, off_shell_score.view(n, 1, 1)], dim=1) # test feature: run in next iteration

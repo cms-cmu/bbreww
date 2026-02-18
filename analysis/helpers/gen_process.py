@@ -9,16 +9,33 @@ def add_gen_info(events, is_mc):
         events['GenPart','isTop'] = (abs(gen.pdgId)==6)&gen.hasFlags(['fromHardProcess', 'isLastCopy'])
         events['GenPart','isW'] = (abs(gen.pdgId)==24)&gen.hasFlags(['fromHardProcess', 'isLastCopy'])
         events['GenPart','isZ'] = (abs(gen.pdgId)==23)&gen.hasFlags(['fromHardProcess', 'isLastCopy'])
+        is_genb = (abs(gen.pdgId)==5)&gen.hasFlags(['fromHardProcess', 'isLastCopy'])
 
         events['isHtoW'] = events.GenPart[(events.GenPart[events.GenPart[events.GenPart.isW].genPartIdxMother].pdgId== 25)]
         genNu = ak.pad_none(gen_match(events.GenPart, [12, 14], [24]), 1, axis=1)[:, 0]  # e, mu neutrinos coming from W decay
-        events['genNu_pt'] = ak.fill_none(genNu.pt, -1)
-        events['genNu_eta'] = ak.fill_none(genNu.eta, -1)
-        events['genNu_phi'] = ak.fill_none(genNu.phi, -1)
+        events['genNu'] = genNu
+        events['genNu_pt'] = ak.fill_none(genNu.pt, np.nan)
+        events['genNu_eta'] = ak.fill_none(genNu.eta, np.nan)
+        events['genNu_phi'] = ak.fill_none(genNu.phi, np.nan)
 
         ## non-bjets gen matched with W jets decaying to quarks
         gen_qFromW = gen_match(events.GenPart, [1,2,3,4], [24])
         events['gen_bFromH'] = gen_match(events.GenPart, [5], [25])
+        
+        # find hadronically decaying tops
+        top_parent_indices = get_ancestor_index(gen, 6) # all gen particles decaying from top
+        is_light_quark = (abs(gen.pdgId) >= 1) & (abs(gen.pdgId) <= 4)
+        is_from_W = (get_ancestor_id(gen, 24) == 24)
+        parent_top_index = top_parent_indices[is_light_quark & is_from_W]
+        parent_top_index = ak.fill_none(ak.firsts(parent_top_index), -999)
+
+        # find b-jets from hadronically decaying top
+        b_parent_top_idx = top_parent_indices[is_genb]
+        is_b_from_had_top = ak.any(b_parent_top_idx == parent_top_index, axis=-1)
+        gen_b_from_had_top = gen[is_genb][is_b_from_had_top]
+        #isHadB= ak.any(gen_b_from_had_top.metric_table(events.Jet)< 0.2,axis=1)
+        #is_max_pt = (events.Jet.pt == ak.max(events.Jet[isHadB].pt, axis=1, keepdims=True))
+        #events['Jet', 'isHadB'] = isHadB & is_max_pt
 
         try:
             events['Jet', 'isQfromW']= ak.any(gen_qFromW.metric_table(events.Jet)< 0.2,axis=1)
@@ -33,24 +50,24 @@ def add_gen_info(events, is_mc):
             
             lepWidx = gen[is_lep].genPartIdxMother
             gen_lepW = gen[lepWidx]
-            events['gen_lepW_mass'] = ak.fill_none(ak.firsts(gen_lepW.mass, 0))
-
+            events['gen_lepW_mass'] = ak.fill_none(ak.firsts(gen_lepW.mass), np.nan)
+            
             hadWidx = gen[~is_lep & (abs(gen.pdgId) <= 5)].genPartIdxMother
             hadW = events.GenPart[hadWidx]
             hadW = hadW[hadW.isW]
             events['gen_hadW'] = hadW[:,0] # (pick 0 index because there are duplicate W's due to 2 quarks) 
-            events['isLepW'] = ak.fill_none(ak.firsts(events.gen_lepW_mass > events.gen_hadW.mass), -1, axis=0)
+            events['isLepW'] = ak.fill_none(events.gen_lepW_mass > events.gen_hadW.mass, -1)
         except:
             events['Jet', 'isQfromW'] = ak.zeros_like(events.Jet.pt, dtype=bool)
-            events['isLepW'] = ak.full_like(events.event, -1)
-            events['gen_lepW_mass'] = ak.full_like(events.event, -1)
-
+            events['isLepW'] = ak.ones_like(events.event) * -1
+            events['gen_lepW_mass'] = ak.ones_like(events.event) * -1
+            
         events['isHtoW'] = events.GenPart[(events.GenPart[events.GenPart[events.GenPart.isW].genPartIdxMother].pdgId== 25)]
-
+        
         if 'HH' in events.metadata['dataset']:
             events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
     else:
-        events['isLepW'] = ak.full_like(events.event, -1)
+        events['isLepW'] = ak.ones_like(events.event) * -1
 
     return events
 
@@ -121,6 +138,50 @@ def gen_match(genpart, pdgid, ancestors):
         return genpart[pid][decaymatch]
 
     return genpart[pid]
+
+def get_ancestor_id(genpart, ancestor_id):
+    # Start with the immediate mothers
+    mother_idx = genpart.genPartIdxMother
+    
+    for _ in range(10): 
+        # Get the PDG ID of the current 'mothers'
+        valid_idx = mother_idx >= 0
+        current_mother_ids = ak.where(valid_idx, abs(genpart[mother_idx].pdgId), 0)
+        
+        # If the mother is what we want, we're done for that particle
+        # If not, we update mother_idx to the next level up
+        mother_idx = ak.where((current_mother_ids != ancestor_id) & valid_idx, 
+                              genpart[mother_idx].genPartIdxMother, 
+                              mother_idx)
+    
+    return ak.where(mother_idx >= 0, abs(genpart[mother_idx].pdgId), 0)
+
+def get_ancestor_index(genpart, target_pdgid):
+    # Start with the immediate mothers of every particle
+    current_idx = genpart.genPartIdxMother
+    
+    # We will track the 'best' index we've found so far
+    # Initialize with -1 (no ancestor found)
+    ancestor_idx = ak.full_like(current_idx, -1)
+
+    # Climb the tree (10 iterations is usually the max depth for ttbar/HH)
+    for _ in range(10):
+        # 1. Identify where we are currently pointing
+        in_bounds = (current_idx >= 0)
+        current_pdg = ak.where(in_bounds, abs(genpart[current_idx].pdgId), 0)
+        
+        # 2. If the particle we are looking at IS the target (e.g. Top), 
+        # save this index as our final answer for those specific particles.
+        is_target = (current_pdg == target_pdgid)
+        ancestor_idx = ak.where(is_target, current_idx, ancestor_idx)
+        
+        # 3. For particles where we HAVEN'T hit the target yet, 
+        # move 'current_idx' up one more level to the mother of the current mother.
+        current_idx = ak.where(in_bounds & ~is_target, 
+                               genpart[current_idx].genPartIdxMother, 
+                               current_idx)
+                               
+    return ancestor_idx
 
 def gen_studies(events, is_mc):
     if is_mc:

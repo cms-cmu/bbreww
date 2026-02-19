@@ -59,7 +59,7 @@ class RegressorArch:
 @dataclass
 class GBNSchedule(MilestoneStep):
     n_batches: int = 64
-    milestones: list[int] = (1, 3, 6, 10, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)
+    milestones: list[int] = (1, 3, 6, 10, 20, 30, 35, 38, 40, 42, 44, 46, 47, 48)
     gamma: float = 0.25
 
     def __post_init__(self):
@@ -163,8 +163,8 @@ class RegressorModel(Model):
         self._opt_onshell = optim.Adam(onshell_params, lr=1e-2)
         self._opt_offshell = optim.Adam(offshell_params, lr=1e-2)
 
-        # Mirror the same LR schedule as the framework (FixedStep defaults)
-        lr_milestones = [15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
+        # LR decay schedule: hold high LR for most of training, decay in final ~15 epochs
+        lr_milestones = [35, 38, 40, 42, 44, 46, 47, 48, 49, 50]
         lr_gamma = 0.25
         self._lr_backbone = MultiStepLR(self._opt_backbone, milestones=lr_milestones, gamma=lr_gamma)
         self._lr_onshell = MultiStepLR(self._opt_onshell, milestones=lr_milestones, gamma=lr_gamma)

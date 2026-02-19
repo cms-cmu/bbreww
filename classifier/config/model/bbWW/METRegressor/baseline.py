@@ -7,6 +7,7 @@ from bbreww.classifier.config.model.bbWW.METRegressor._METRegressor import (
     METRegressorEval,
 )
 from bbreww.classifier.config.setting.bbWW import Input
+from bbreww.classifier.nn.blocks.bbWW_models import get_nu_pz_cartesian
 
 if TYPE_CHECKING:
     from src.classifier.ml import BatchType
@@ -91,14 +92,18 @@ class Train(METRegressorTrain):
             log_det = L.diagonal(dim1=-2, dim2=-1).log().sum(dim=-1)
             nll = 0.5 * (z ** 2).sum(dim=1) + log_det + 1.5 * math.log(2 * math.pi)
             nll_loss = (nll * w[mask]).sum() / w[mask].sum()
-            # W mass reconstruction loss
+            # W mass reconstruction loss in log space — asymmetric in linear mass space,
+            # which matches the right-skewed off-shell Breit-Wigner distribution.
+            # log(mW_reco) vs log(gen_mW): underestimates penalized more than overestimates.
             nu_E = torch.sqrt(p[:, 0]**2 + p[:, 1]**2 + p[:, 2]**2)
             mW_sq = (lep_E[mask] + nu_E)**2 - (lep_px[mask] + p[:, 0])**2 \
                     - (lep_py[mask] + p[:, 1])**2 - (lep_pz[mask] + p[:, 2])**2
             mW = torch.sqrt(mW_sq.clamp(min=1.0))
-            reco = F.smooth_l1_loss(mW, target_mW[mask], beta=4.0, reduction="none") / 4.0
+            log_mW = torch.log(mW)
+            log_target_mW = torch.log(target_mW[mask].clamp(min=1.0))
+            reco = F.smooth_l1_loss(log_mW, log_target_mW, beta=0.1, reduction="none")
             reco_loss = (reco * w[mask]).sum() / w[mask].sum()
-            return nll_loss + 0.25 * reco_loss
+            return nll_loss + 0.5 * reco_loss
 
         # Precompute lepton kinematics (needed for off-shell W mass reco)
         lep = batch["_leadingLep"][valid]
@@ -107,16 +112,25 @@ class Train(METRegressorTrain):
         lep_pz = lep[:, 0] * torch.sinh(lep[:, 1])
         lep_E = torch.sqrt(lep_px**2 + lep_py**2 + lep_pz**2 + lep[:, 3]**2)
 
-        # ---- Loss 1: on-shell NLL (no mW penalty — satisfied by analytic constraint) ----
+        # ---- Loss 1: on-shell NLL + BCE solution selector ----
         loss_onshell = _nll(pred_on, cholesky_L_on, target, is_on, weight)
-        
-        # run auxiliary loss with pz_hint to pick the right analytic solution at the end
-        pz_hint_on = batch["pz_hint_on"][valid]
+
+        # Train the solution selector logit with gen truth: prefer_sol1 = sol1 closer to true pz
+        logit_sol_on = batch["pz_hint_on"][valid]  # now carries logit_sol, not pz_hint
         if is_on.sum() > 0:
-            true_pz = target[:, 2] 
-            hint_aux = F.smooth_l1_loss(pz_hint_on[is_on], true_pz[is_on], reduction="none")
-            hint_aux = (hint_aux * weight[is_on]).sum() / weight[is_on].sum()
-            loss_onshell = loss_onshell + 0.1 * hint_aux
+            true_pz = target[:, 2]
+            # Get the two solutions from the on-shell head's corrected MET
+            # (pred_on[:, 0], pred_on[:, 1]) = (nu_px_on, nu_py_on); lep already computed above
+            pz_s1, pz_s2, _, _ = get_nu_pz_cartesian(
+                lep[:, 0], lep[:, 1], lep[:, 2], lep[:, 3],
+                pred_on[:, 0], pred_on[:, 1], mW=80.379,
+            )
+            prefer_sol1 = ((pz_s1 - true_pz).abs() < (pz_s2 - true_pz).abs()).float()
+            sol_bce = F.binary_cross_entropy_with_logits(
+                logit_sol_on[is_on], prefer_sol1[is_on], reduction="none"
+            )
+            sol_bce = (sol_bce * weight[is_on]).sum() / weight[is_on].sum()
+            loss_onshell = loss_onshell + 0.5 * sol_bce
 
         # ---- Loss 2: off-shell NLL + W mass reco penalty ----
         loss_offshell = _nll_and_reco(pred_off, cholesky_L_off, target, is_off, weight,

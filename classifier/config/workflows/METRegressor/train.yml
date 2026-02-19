@@ -31,8 +31,9 @@ model:
       - --kfolds 3 # use 3-fold
       - --kfold-seed FvT random # setup base seed to be ("FvT", "random")
       - --kfold-seed-offsets 0 # use seed ("FvT", "random", 0)
+      - --architecture "n_features: 16" # wider backbone: dD=16, head dH=64
       - --training FixedStep # setup training schedule
-      - epoch: 20
+      - epoch: 50
         bs_init: 4096
 
 setting:

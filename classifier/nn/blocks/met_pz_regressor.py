@@ -730,51 +730,53 @@ class METRegressor(nn.Module):
 
         self.onshell_classifier = OnShellClassifier(self.dD)
 
-        # On-shell neutrino regressor: outputs (dpx, dpy, dpz_hint)
-        # dpz_hint is used to select between two analytic pz solutions
+        dH = self.dD * 4  # wider hidden dim for regressor heads (8 → 32)
+
+        # On-shell neutrino regressor: outputs (dpx, dpy, logit_sol)
+        # logit_sol is a binary logit: sigmoid > 0.5 → prefer pz_sol1, else pz_sol2
         self.nu_regressor_onshell = nn.Sequential(
-            GhostBatchNorm1d(self.dD, features_out=self.dD, conv=True),
+            GhostBatchNorm1d(self.dD, features_out=dH, conv=True),   # expand
             NonLUModule(),
-            GhostBatchNorm1d(self.dD, features_out=self.dD, conv=True),
+            GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(self.dD, features_out=self.dD, conv=True),
+            GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(self.dD, features_out=self.dD, conv=True),
+            GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(self.dD, features_out=self.dD, conv=True),
+            GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(self.dD, features_out=3, conv=True),  # dpx, dpy, dpz_hint
+            GhostBatchNorm1d(dH, features_out=3, conv=True),         # dpx, dpy, logit_sol
         )
         # Off-shell neutrino regressor: takes context + 4 pz solutions as input
         self.nu_regressor_offshell = nn.Sequential(
-            GhostBatchNorm1d(self.dD + 4, features_out=self.dD, conv=True),
+            GhostBatchNorm1d(self.dD + 4, features_out=dH, conv=True),  # expand
             NonLUModule(),
-            GhostBatchNorm1d(self.dD, features_out=self.dD, conv=True),
+            GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(self.dD, features_out=self.dD, conv=True),
+            GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(self.dD, features_out=self.dD, conv=True),
+            GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(self.dD, features_out=self.dD, conv=True),
+            GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(self.dD, features_out=3, conv=True),  # dpx, dpy, dpz
+            GhostBatchNorm1d(dH, features_out=3, conv=True),           # dpx, dpy, dpz
         )
 
         # Per-event Cholesky factor heads for full 3x3 covariance of (px, py, pz)
         # Outputs 6 parameters: L11, L21, L22, L31, L32, L33 (lower-triangular)
         self.nu_cholesky_onshell = nn.Sequential(
-            GhostBatchNorm1d(self.dD, features_out=self.dD, conv=True),
+            GhostBatchNorm1d(self.dD, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(self.dD, features_out=self.dD, conv=True),
+            GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(self.dD, features_out=6, conv=True),
+            GhostBatchNorm1d(dH, features_out=6, conv=True),
         )
         self.nu_cholesky_offshell = nn.Sequential(
-            GhostBatchNorm1d(self.dD + 4, features_out=self.dD, conv=True),
+            GhostBatchNorm1d(self.dD + 4, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(self.dD, features_out=self.dD, conv=True),
+            GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(self.dD, features_out=6, conv=True),
+            GhostBatchNorm1d(dH, features_out=6, conv=True),
         )
 
         self.forwardCalls = 0
@@ -928,10 +930,10 @@ class METRegressor(nn.Module):
         nu_init_off = torch.cat([init_px, init_py, init_pz_off], dim=1)  # (n, 3)
 
         # --- On-shell neutrino: analytic pz from W mass constraint ---
-        delta_on = self.nu_regressor_onshell(full_context).squeeze(-1)  # (n, 3): dpx, dpy, dpz_hint
+        delta_on = self.nu_regressor_onshell(full_context).squeeze(-1)  # (n, 3): dpx, dpy, logit_sol
         nu_px_on = init_px.squeeze(1) + delta_on[:, 0]
         nu_py_on = init_py.squeeze(1) + delta_on[:, 1]
-        pz_hint  = init_pz_on.squeeze(1) + delta_on[:, 2]  # used to select quadratic solution
+        logit_sol = delta_on[:, 2]  # raw logit: sigmoid > 0.5 → prefer pz_sol1
 
         # Solve W mass quadratic with corrected (px, py), mW = 80.379 GeV
         pz_sol1, pz_sol2, _, _ = get_nu_pz_cartesian(
@@ -939,12 +941,12 @@ class METRegressor(nn.Module):
             nu_px_on, nu_py_on, mW=80.379,
         )
 
-        # Hard select: pick solution closest to the regressed pz hint
-        use_sol1 = (pz_hint - pz_sol1).abs() < (pz_hint - pz_sol2).abs()
+        # Binary select: sigmoid(logit_sol) > 0.5 → use sol1, else sol2
+        use_sol1 = logit_sol > 0.0  # equivalent to sigmoid > 0.5
         nu_pz_on = torch.where(use_sol1, pz_sol1, pz_sol2)
 
         nu_pred_on = torch.stack([nu_px_on, nu_py_on, nu_pz_on], dim=1)  # (n, 3)
-        pz_hint_on = pz_hint
+        logit_sol_on = logit_sol
 
         # --- Off-shell neutrino: regress all 3 components, with pz solutions as extra input ---
         pz_solutions = kinematic_solutions[:, [0, 1, 3, 4], :]  # (n, 4, 1): pz1_80, pz2_80, pz1_40, pz2_40
@@ -955,7 +957,7 @@ class METRegressor(nn.Module):
         L_on = _build_cholesky(self.nu_cholesky_onshell(full_context).squeeze(-1))
         L_off = _build_cholesky(self.nu_cholesky_offshell(offshell_input).squeeze(-1))
 
-        return nu_pred_on, L_on, nu_pred_off, L_off, (logit_onshell, pz_hint_on)
+        return nu_pred_on, L_on, nu_pred_off, L_off, (logit_onshell, logit_sol_on)
 
     def setStore(self, store):
         self.store = store

@@ -65,16 +65,17 @@ def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = 
         fill += hist.add("genNu_eta", (50, -5, 5, ("genNu_eta", R"gen $\nu \eta$")))
         fill += hist.add("genNu_phi", (50, -5, 5, ("genNu_phi", R"gen $\nu \phi$")))
         fill += hist.add("gen_lepW_mass", (30, 0, 150, ("gen_lepW_mass", R"gen leptonic $m_W$ [GeV]")))
+        
         fill += hist.add("islepW", (2, 0, 1.1, ("isLepW", R"leptonic W on shell boolean")))
 
         fill += hist.add("reg_mW",
                           (30, 0, 150, ('reg_mW', R"Regressed leptonic W mass [GeV]")),
-                          reg_mW=lambda events: (events.reg_nu + events.leading_lep).mass
+                          reg_mW=lambda events: ak.fill_none((events.reg_nu + events.leading_lep).mass, np.nan)
                           )
 
         fill += hist.add("reg_nu_pt_res",
-                        (30, 0, 100, ("nu_pt_res", R"(True - Regressed) $\nu p_T$ [GeV]")),
-                        nu_pt_res=lambda events: ak.fill_none(ak.mask(events.gen_lepW_mass, ~events.isLepW), np.nan)
+                        (60, -100, 100, ("nu_pt_res", R"(True - Regressed) $\nu p_T$ [GeV]")),
+                        nu_pt_res=lambda events: events.genNu_pt - events.reg_nu.pt
                         )
         fill += hist.add("reg_nu_phi_res",
                         (50, -5, 5, ("nu_phi_res", R"(True - Regressed) $\nu \Phi$")),
@@ -87,15 +88,15 @@ def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = 
         fill += hist.add("mW_res",
                         (40, -100, 100, ("mW_res", R"(True - Regressed) leptonic $m_W$")),
                         mW_res=lambda events: ak.fill_none(events.gen_lepW_mass - (events.reg_nu + events.leading_lep).mass, np.nan)
-                         )
+                        )
         # reco resolutions before regression
         fill += hist.add("reco_nu_pt_res",
                          (40, -100, 100, ("nu_pt_res", R"(True - Reco) $\nu \ p_T$ [GeV]")),
-                         nu_pt_res=lambda events: events.genNu_pt -events.DeepMETResolutionTune.pt
+                         nu_pt_res=lambda events: events.genNu_pt -events.MET.pt
                          )
         fill += hist.add("reco_nu_phi_res",
                          (50, -5, 5, ("nu_phi_res", R"(True - Reco) $\nu \ \Phi$")),
-                         nu_phi_res=lambda events: events.genNu_phi -events.DeepMETResolutionTune.phi
+                         nu_phi_res=lambda events: events.genNu_phi -events.MET.phi
                          )
         
         fill += regressionHists(("met_regressor", "MET Regressor"), "met_regressor")
@@ -114,9 +115,9 @@ def fill_histograms_nominal(
     year: str = 'UL18',
     is_mc: bool = False,
     histCuts: list = ['preselection'],
-    #channel_list: list = ['hadronic_W','leptonic_W'],
+    channel_list: list = ['hadronic_W','leptonic_W'],
     flavor_list: list = ['e', 'mu'],
-    region_list: list = ['SR', 'CR'],
+    #region_list: list = ['SR', 'CR'],
     run_SvB: bool = False,
     run_MET_regression: bool = False,
 ):
@@ -129,9 +130,9 @@ def fill_histograms_nominal(
     hist = Collection(
         process=[processName],
         year=[year],
-        #channel=channel_list,
+        channel=channel_list,
         flavor = flavor_list,
-        region = region_list,
+        #region = region_list,
         **dict((s, ...) for s in histCuts)
     )
 
@@ -182,9 +183,9 @@ def fill_histograms(
     year: str = 'UL18',
     is_mc: bool = False,
     histCuts: list = ['preselection'],
-    #channel_list: list = ['hadronic_W','leptonic_W'],
+    channel_list: list = ['hadronic_W','leptonic_W'],
     flavor_list: list = ['e', 'mu'],
-    region_list: list = ['SR', 'CR'],
+    #region_list: list = ['SR', 'CR'],
     run_SvB: bool = False,
     run_MET_regression: bool = False,
 ):
@@ -197,9 +198,9 @@ def fill_histograms(
     hist = Collection(
         process=[processName],
         year=[year],
-        #channel=channel_list,
+        channel=channel_list,
         flavor = flavor_list,
-        region = region_list,
+        #region = region_list,
         **dict((s, ...) for s in histCuts)
     )
 

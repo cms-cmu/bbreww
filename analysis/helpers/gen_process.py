@@ -57,17 +57,18 @@ def add_gen_info(events, is_mc):
             hadW = hadW[hadW.isW]
             events['gen_hadW'] = hadW[:,0] # (pick 0 index because there are duplicate W's due to 2 quarks) 
             events['isLepW'] = ak.fill_none(events.gen_lepW_mass > events.gen_hadW.mass, -1)
+
         except:
             events['Jet', 'isQfromW'] = ak.zeros_like(events.Jet.pt, dtype=bool)
             events['isLepW'] = ak.ones_like(events.event) * -1
-            events['gen_lepW_mass'] = ak.ones_like(events.event) * -1
+            events['gen_lepW_mass'] = ak.full_like(events.event, np.nan, dtype=np.float32)
             
         events['isHtoW'] = events.GenPart[(events.GenPart[events.GenPart[events.GenPart.isW].genPartIdxMother].pdgId== 25)]
         
         if 'HH' in events.metadata['dataset']:
             events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
     else:
-        events['isLepW'] = ak.ones_like(events.event) * -1
+        events['gen_lepW_mass'] = ak.full_like(events.event, np.nan, dtype=np.float32)
 
     return events
 

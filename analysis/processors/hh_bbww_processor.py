@@ -178,7 +178,6 @@ class analysis(processor.ProcessorABC):
             for k in self.friends:
                 if k.startswith("met_regressor"):
                     events[k] = self.friends[k].arrays(target) # load MET regression outputs
-                    print(events.met_regressor)
                     
         if self.apply_dvtt:
             for k in self.friends:
@@ -285,7 +284,7 @@ class analysis(processor.ProcessorABC):
         add_to_selection(
             'leptonic_W',
             #(ak.firsts(selected_events.sr_boolean) == 0), # using chi square
-            ak.mask(selected_events.isLepW == 1, selected_events.isLepW >= 0), # gen info
+            ak.fill_none(ak.mask(selected_events.isLepW == 1, selected_events.isLepW >= 0),np.nan), # gen info
             selection,
             selection_list['preselection']
         )
@@ -294,7 +293,7 @@ class analysis(processor.ProcessorABC):
         add_to_selection(
             'hadronic_W',
             #ak.firsts(selected_events.sr_boolean) == 1, # using chi square
-            ak.mask(selected_events.isLepW == 0, selected_events.isLepW >= 0), # gen info
+            ak.fill_none(ak.mask(selected_events.isLepW == 0, selected_events.isLepW >= 0), np.nan), # gen info
             selection,
             selection_list['preselection']
         )
@@ -356,7 +355,7 @@ class analysis(processor.ProcessorABC):
                         "SvB", 
                         nominal_selection)
                 )
-            
+
         ### Test Feature
         if self.make_spanet_input:
             from bbreww.analysis.helpers.friendtrees.dump_spanet import dump_spanet_h5
@@ -367,7 +366,6 @@ class analysis(processor.ProcessorABC):
             )
         #######
 
-            
         if not shift_name:
              # Dump signal SvB.phh for quantile rebinning
             if 'GluGlu' in self.dataset and self.dump_signal_phh and self.run_SvB:
@@ -394,9 +392,9 @@ class analysis(processor.ProcessorABC):
                 histCuts=['preselection',
                         'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b', 'SvB_tail_lowpt'
                         ],
-                #channel_list=['hadronic_W', 'leptonic_W'],
+                channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
-                region_list=['SR', 'CR'],
+                #region_list=['SR', 'CR'],
                 run_SvB = self.run_SvB,
                 run_MET_regression = self.run_MET_regression
             )
@@ -407,9 +405,9 @@ class analysis(processor.ProcessorABC):
                 year=self.year_label,
                 is_mc=self.is_mc,
                 histCuts=['nominal_4j2b', 'SvB_tail'],
-                #channel_list=['hadronic_W', 'leptonic_W'],
+                channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
-                region_list=['SR', 'CR'],
+                #region_list=['SR', 'CR'],
                 run_SvB = self.run_SvB,
                 run_MET_regression = self.run_MET_regression
                 )

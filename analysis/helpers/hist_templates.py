@@ -18,11 +18,10 @@ class TTbarHists(Template):
     hadTop = LorentzVector.plot_pair(("...", R"hadTop"), "hadTop", skip=["n","lead","subl","st"], bins={"mass": (100, 0, 400)}, )
 
 class regressionHists(Template):
-    #reg_phi = H((50, -3, 3, ('nu_phi', R"Regressed MET$\Phi$")))
-    #reg_eta = H((50, -3, 3, ('nu_eta', R"Regressed MET$\eta$"))) 
-    #reg_pt = H((50, 0, 200, ('nu_pt', R"Regressed MET$p_T$ [GeV]")))
-    #reg_prob = H((10, 0, 1.1, ('regime_prob', "regime prob")))
-    estimated_mW = H((30, 0, 150, ('estimated_mW', "estimated_mW")))
+    reg_px = H((50, -150, 150, ('nu_px', R"Regressed MET $p_x$")))
+    reg_py = H((50, -150, 150, ('nu_py', R"Regressed MET $p_y$"))) 
+    reg_pz = H((50, -150, 150, ('nu_pt', R"Regressed MET $p_z$ [GeV]")))
+    p_onshell = H((10, 0, 1.1, ('p_onshell', "on shell probability")))
     
 class SvBHists(Template):
     phh      = H((50, 0, 1, ('phh', "Regressed P(Signal)")))

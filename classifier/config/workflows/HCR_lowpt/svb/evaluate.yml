@@ -1,0 +1,54 @@
+# template:
+# - model: path to model
+# - FvT: path to friend tree
+
+main:
+  module: evaluate
+  option:
+    - --max-evaluators 8 # use 3 workers to evaluate
+
+dataset:
+  - module: bbWW.svb.Eval
+    option:
+      - --metadata bbreww/metadata/classifier/datasets/datasets_v5
+      - --max-workers 4 
+      - --mc-processes GluGluToHHTo2B2VLNu2J ttbar 
+      - --friends "" bbreww/metadata/classifier/input/output_friend_lowpt.json@@classifier_input_lowpt
+  - module: bbWW.svb.Eval
+    option:
+      - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
+      - --max-workers 4 
+      - --mc-processes WplusJets tW
+      - --friends "" bbreww/metadata/classifier/input/minorbkg_friend_lowpt.json@@classifier_input_lowpt
+  - module: bbWW.svb.DataEval
+    option:
+      - --no-SR # remove SR
+      - --data-source detector # loads data
+      - --metadata bbreww/metadata/classifier/datasets/datasets_data_v5 # choose dataset
+      - --max-workers 4
+      - --friends "" bbreww/metadata/classifier/input/data_friend_lowpt.json@@classifier_input_lowpt # set input friend tree
+
+
+model:
+  - module: bbWW.HCR_lowpt.baseline_svb.Eval
+    option:
+      - --models
+      - Final # choose name of the model to evaluate, for now only Final is available
+      - "{model}/result.json" # setup the path to the training result
+
+analysis:
+  - module: kfold.Merge # merge different k-folds
+    option:
+      - --name svb # set the name of friend tree
+      - --step 100000 # set the step to read ROOT files
+      - --workers 5
+      - --clean # remove the original files
+
+setting:
+  - module: IO
+    option:
+      - output: "{SvB}"
+  - module: ml.DataLoader
+    option:
+      - num_workers: 0
+      - batch_eval: 268435456 # 2^28 --> significantly increases GPU memory usage!

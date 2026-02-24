@@ -66,6 +66,12 @@ class Train(CommonTrain):
         default=None,
         help="custom normalization factors per label (json format)",
     )
+    argparser.add_argument(
+        "--ttbar-prescale",
+        default=1,
+        type=int,
+        help="prescale factor for ttbar events (e.g., 10 keeps 1/10 of events)",
+    )
     def preprocess_by_group(self):
         from src.classifier.df.tools import add_label_index, add_label_index_from_column, prescale
 
@@ -81,13 +87,23 @@ class Train(CommonTrain):
             ),
         )
         if "ttbar" in self.mc_processes:
+            ttbar_processors = [
+                lambda: _signal_selection,
+                lambda: add_label_index("ttbar"),
+            ]
+            # Add prescaling if requested
+            if self.opts.ttbar_prescale > 1:
+                ttbar_processors.insert(
+                    0,
+                    lambda: prescale(
+                        scale=self.opts.ttbar_prescale,
+                        seed=("ttbar", "prescale", 0),
+                    ),
+                )
             ps.append(
                 _group.fullmatch(
                     ("label:ttbar",),
-                    processors=[
-                        lambda: _signal_selection,
-                        lambda: add_label_index("ttbar"),
-                    ],
+                    processors=ttbar_processors,
                     name="ttbar selection",
                 ),
             ) 

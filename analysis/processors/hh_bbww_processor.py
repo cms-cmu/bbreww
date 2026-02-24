@@ -265,8 +265,8 @@ class analysis(processor.ProcessorABC):
         #add regions separated by chi square calculation
         add_to_selection(
             'leptonic_W',
-            (ak.firsts(selected_events.sr_boolean) == 0), # using chi square
-            #ak.firsts(selected_events.isLepW), # ML classifier
+            #(ak.firsts(selected_events.sr_boolean) == 0), # using chi square
+            selected_events.isLepW, # gen info
             selection,
             selection_list['preselection']
         )
@@ -274,8 +274,8 @@ class analysis(processor.ProcessorABC):
         # hadronic_W = ak.zeros_like(presel_mask,dtype=bool)
         add_to_selection(
             'hadronic_W',
-            ak.firsts(selected_events.sr_boolean) == 1, # using chi square
-            #ak.firsts(~selected_events.isLepW), # ML classifier
+            #ak.firsts(selected_events.sr_boolean) == 1, # using chi square
+            ~selected_events.isLepW, # gen info
             selection,
             selection_list['preselection']
         )
@@ -287,9 +287,6 @@ class analysis(processor.ProcessorABC):
             selection,
             selection_list['preselection']
         )
-        # last three bins of SvB distribution
-        selected_events['SvB_tail'] = ((selected_events.nominal_4j2b) & (selected_events.SvB.phh > 0.94)
-                                       if (self.run_SvB) else ak.ones_like(selected_events.MET.pt, dtype= bool))
 
         # add chi square cuts selection in each analysis region
         selected_events['chi_sq_nom_4j2b'] = selected_events.nominal_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
@@ -297,28 +294,40 @@ class analysis(processor.ProcessorABC):
         selected_events['chi_sq_lowpt_4j2b'] = selected_events.lowpt_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
 
         selected_events['channel'] = ak.zip({
-            'hadronic_W': selection.all('hadronic_W')[selection.all(*selection_list['preselection'])],
-            'leptonic_W': selection.all('leptonic_W')[selection.all(*selection_list['preselection'])]
+        'hadronic_W': selection.all('hadronic_W')[selection.all(*selection_list['preselection'])],
+        'leptonic_W': selection.all('leptonic_W')[selection.all(*selection_list['preselection'])]
         })
 
-        selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
-        # keep analysis_selections for compatibility with friendtrees code although it's redundant
-        analysis_selections = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
+        # last three bins of SvB distribution
+        selected_events['SvB_tail'] = ((selected_events.nominal_4j2b) & (selected_events.SvB.phh > 0.60)
+                                       if (self.run_SvB) else ak.ones_like(selected_events.MET.pt, dtype= bool))
+
+        selected_events['SvB_tail_lowpt'] = ((selected_events.lowpt_4j2b) & (selected_events.SvB.phh > 0.60)
+                                       if (self.run_SvB) else ak.ones_like(selected_events.MET.pt, dtype= bool))
         
+        
+        selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
+
+        # different selections to use for creating friendtrees
+        nominal_selection = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
+        lowpt_selection = selection.all(*selection_list['lowpt_4j2b']) & selection.all(*selection_list['preselection']) # lowpt selection
+        full_selection = ((selection.all(*selection_list['lowpt_4j2b']) | selection.all(*selection_list['nominal_4j2b']))
+                          & selection.all(*selection_list['preselection'])) # lowpt + nominal selection
+
         # create classifier inputs root files (creates root files in EOS and json file pointing to all files)
         friends = { 'friends': {} }
         if self.make_classifier_input is not None:
             from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_input_friend
             friends["friends"] = ( friends["friends"]
                 | dump_input_friend(
-                    selected_events[selected_events.nominal_4j2b],
+                    selected_events[selected_events.lowpt_4j2b | selected_events.nominal_4j2b], # selected_events[selected_events.nominal_4j2b]
                     self.make_classifier_input,
-                    "classifier_input",
-                    analysis_selections,
-                    weight = "weight"
+                    "classifier_input_lowpt",
+                    full_selection, # nominal_selections
+                    nonbcand = "q_cands_soft",
+                    weight = "weight",
                 )
             )
-
         
         # dumps classifier evaluation output into friendtrees (only possible when SvB model is provided)
         if self.make_friend_SvB is not None:
@@ -327,7 +336,7 @@ class analysis(processor.ProcessorABC):
                 dump_SvB(selected_events[selected_events.nominal_4j2b], 
                         self.make_friend_SvB, 
                         "SvB", 
-                        analysis_selections)
+                        nominal_selection)
                 )
 
         if not shift_name:
@@ -337,7 +346,7 @@ class analysis(processor.ProcessorABC):
                 'sum_genweights': np.sum(selected_events.genWeight) if self.is_mc else self.n_events,
             }
             # add cuts for different regions
-            cutflow_list = ['nominal_4j2b','nominal_3j2b', 'lowpt_4j2b', 'lowpt_3j2b', 'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b', 'SvB_tail']
+            cutflow_list = ['nominal_4j2b','nominal_3j2b', 'lowpt_4j2b', 'lowpt_3j2b', 'SvB_tail', 'SvB_tail_lowpt'] # 'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b'
             for cuts in cutflow_list:
                 cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True, fill_flavour = True)
             cutflow.add_output(output['events_processed'], self.dataset)
@@ -349,12 +358,12 @@ class analysis(processor.ProcessorABC):
                 year=self.year_label,
                 is_mc=self.is_mc,
                 histCuts=['preselection',
-                        'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b',
-                        'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b',
+                        'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b'
                         ],
                 channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
-                region_list=['SR', 'CR']
+                region_list=['SR', 'CR'],
+                run_SvB = self.run_SvB
             )
 
             hists_4j2b = fill_histograms_nominal(
@@ -362,7 +371,7 @@ class analysis(processor.ProcessorABC):
                 processName=self.processName,
                 year=self.year_label,
                 is_mc=self.is_mc,
-                histCuts=['nominal_4j2b',   'chi_sq_nom_4j2b' ],
+                histCuts=['nominal_4j2b', 'SvB_tail'],
                 channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
                 region_list=['SR', 'CR'],

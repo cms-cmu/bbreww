@@ -16,8 +16,8 @@ bash bbreww/scripts/run_processor.sh \
     --processor "bbreww/analysis/processors/hh_bbww_processor.py" \
     --metadata "bbreww/metadata/skims_v5" \
     --config "bbreww/analysis/metadata/HHbbWW.yml" \
-    --datasets "GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic" \
-    --year "2022_preEE 2022_EE" \
+    --datasets "GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic TTToHadronic TTTo2L2Nu WtoLNu-2Jets_0J WtoLNu-2Jets_1J WtoLNu-2Jets_2J TbarWplustoLNu2Q TbarWplusto2L2Nu TWminustoLNu2Q TWminusto2L2Nu" \
+    --year "2022_preEE 2022_EE 2023_preBPix 2023_BPix" \
     --output-filename "output.coffea" \
     --output-subdir "full_run" \
     --no-test \

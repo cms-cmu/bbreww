@@ -3,13 +3,16 @@ runner:
   skipbadfiles: False
   workers: 6
   friend_merge_step: 100000
-  condor_memory: 16GB
+  condor_memory: 6GB
   data_tier: picoAOD
   condor_cores: 1
-  friend_base: &friend_base root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v4/
+  # friend_base: &friend_base root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/
+  friend_base: &friend_base output/test/
   condor_transfer_input_files:
     - src/
-    - bbreww/
+    - bbreww/analysis/
+    - bbreww/metadata/
+
   allowlist_sites:
     - T3_US_CMU
     - T3_US_FNALLPC

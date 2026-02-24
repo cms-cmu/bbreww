@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 
 from src.classifier.config.state.label import MultiClass
 from src.classifier.task import ArgParser
-from bbreww.classifier.config.setting.bbWWHCR import Input, MassRegion, Output
-from bbreww.classifier.config.model.bbWW.base._GCN import ROC_BIN, HCREval, HCRTrain
+from bbreww.classifier.config.setting.bbWW import Input, MassRegion, Output
+from bbreww.classifier.config.model.bbWW.GCN._GCN import ROC_BIN, HCREval, HCRTrain
 
 if TYPE_CHECKING:
     from src.classifier.ml import BatchType

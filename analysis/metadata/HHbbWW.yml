@@ -1,15 +1,14 @@
 runner:
   max_workers: 400 
   skipbadfiles: False
-  workers: 8
-  condor_memory: 8GB
+  workers: 16
+  condor_memory: 12GB
   data_tier: picoAOD
   condor_cores: 1
   condor_transfer_input_files:
     - src/
     - bbreww/analysis/
     - bbreww/metadata/
-
     
   # rucio_regex_sites: 'T[123]_(US|CH|DE|UK)'
   allowlist_sites:
@@ -25,7 +24,7 @@ runner:
 
 # uncomment lines below to run with SvB scores
 config:
-  run_SvB: False
+  run_SvB: True
   friends:
-    SvB: "bbreww/metadata/classifier/output/result.json@@analysis.0.merged"
+    SvB: "bbreww/metadata/classifier/output/result_lowpt.json@@analysis.0.merged"
 

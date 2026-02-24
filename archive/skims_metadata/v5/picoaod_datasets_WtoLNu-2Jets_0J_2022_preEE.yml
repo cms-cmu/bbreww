@@ -1,0 +1,204 @@
+WtoLNu-2Jets_0J_2022_preEE:
+  count: 192985602
+  cutflow:
+    e_region:
+      events:
+        all: 14435258.0
+        lumimask: 14435258.0
+        njets: 5513.0
+        passNoiseFilter: 14434899.0
+        trigger: 10598650.0
+        twoBjets: 8561.0
+      weights:
+        all: 942181070638.7031
+        lumimask: 942181070638.7031
+        njets: 373879576.6171875
+        passNoiseFilter: 942156896378.5703
+        trigger: 693504290111.1875
+        twoBjets: 574001768.9140625
+    mu_region:
+      events:
+        all: 19445707.0
+        lumimask: 19445707.0
+        njets: 3690.0
+        passNoiseFilter: 19444951.0
+        trigger: 17391000.0
+        twoBjets: 6270.0
+      weights:
+        all: 1267728634332.9453
+        lumimask: 1267728634332.9453
+        njets: 247375438.640625
+        passNoiseFilter: 1267679972877.2734
+        trigger: 1134547941230.1875
+        twoBjets: 421367524.515625
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_0J_2022_preEE/picoAOD.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v4', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_WtoLNu-2Jets_0J_2022_preEE.yml',
+      output_path='output/skimmer', years=['2022_preEE'], datasets=['WtoLNu-2Jets_0J'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    barista:
+      diff: ''
+      hash: ff59ed46382bcdd95530038cca46a346eb925af2
+    bbreww:
+      diff: "diff --git a/analysis/helpers/candidate_selection.py b/analysis/helpers/candidate_selection.py\n\
+        index ca04acf..24f3d02 100644\n--- a/analysis/helpers/candidate_selection.py\n\
+        +++ b/analysis/helpers/candidate_selection.py\n@@ -129,11 +129,11 @@ def ttbar_candidate_selection(events,\
+        \ run_SvB: bool = True):\n def Wqq_soft_candidate_selection(events, year):\n\
+        \     QvG_key = 'btagPNetQvG' if '202' in year else 'particleNetAK4_QvsG'\
+        \ # use particleNET for quark vs. gluon tagging\n \n-    q_cands_soft = events.q_cands_soft[ak.argsort(getattr(events.q_cands_soft,QvG_key),\
+        \ axis=1, ascending=False)] #particleNetAK4_QvsG btagPNetQvG\n+    q_cands_soft\
+        \ = events.q_cands_soft_init[ak.argsort(getattr(events.q_cands_soft_init,QvG_key),\
+        \ axis=1, ascending=False)] #particleNetAK4_QvsG btagPNetQvG\n     q_cands_soft\
+        \ = q_cands_soft[:,:3] #top 3 quark vs gluon non b-jets\n     q_cands_soft\
+        \ = q_cands_soft[ak.argsort(q_cands_soft.pt, axis=1, ascending=False)] #pt\
+        \ sort the jets\n     events['q_cands_soft'] = q_cands_soft\n-\n+    \n  \
+        \   jj_i = ak.argcombinations(q_cands_soft, 2, replacement = False, fields=[\"\
+        j1\",\"j2\"]) #take dijet combinations\n     jj_i = jj_i[(q_cands_soft[jj_i.j1]\
+        \ - q_cands_soft[jj_i.j2]).eta<2.0]\n     #jj_i = jj_i[(q_cands_soft[jj_i.j1]\
+        \ + q_cands_soft[jj_i.j2]).mass<120.0] #dijet cuts\ndiff --git a/analysis/helpers/fill_histograms.py\
+        \ b/analysis/helpers/fill_histograms.py\nindex f8971b0..475bdcd 100644\n---\
+        \ a/analysis/helpers/fill_histograms.py\n+++ b/analysis/helpers/fill_histograms.py\n\
+        @@ -163,6 +163,10 @@ def fill_histograms(\n \n     fill += TTbarHists( (\"\
+        tt_soft\", R\"$t\\bar{t}$\"), \"tt_soft_minChi2\" )\n \n+    # gen matched\
+        \ soft jets\n+    fill += hist.add(\"true_soft_jets.pt\", (20, -0.5, 50, (\"\
+        q_soft_true_init.pt\", \"pT [GeV]\")))\n+    fill += hist.add(\"true_soft_jets_sel.pt\"\
+        , (20, -0.5, 50, (\"q_soft_true_sel.pt\", \"pT[GeV]\")))\n+\n     # fill histograms\n\
+        \     fill(events, hist)\n \ndiff --git a/analysis/helpers/gen_process.py\
+        \ b/analysis/helpers/gen_process.py\nindex eddc5d1..0c50c6e 100644\n--- a/analysis/helpers/gen_process.py\n\
+        +++ b/analysis/helpers/gen_process.py\n@@ -23,6 +23,8 @@ def add_gen_info(events,\
+        \ is_mc):\n \n         try:\n             events['Jet', 'isQfromW']= ak.any(gen_qFromW.metric_table(events.Jet)<\
+        \ 0.2,axis=1)\n+            events['Jet', 'isGenFromW'] = ak.sum(events.Jet.isQfromW,\
+        \ axis=1) == 2\n+\n             if 'HH' in events.metadata['dataset']:\n \
+        \                events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)<\
+        \ 0.2,axis=1)\n \n@@ -38,7 +40,7 @@ def add_gen_info(events, is_mc):\n   \
+        \          hadW = ak.pad_none(hadW[hadW.isW], 1, axis=1)\n \n            \
+        \ events['isLepW'] = lepW.mass > hadW[:,0].mass # (pick 0 index because there\
+        \ are duplicate W's due to 2 quarks) \n-        \n+            \n        \
+        \ except:\n             events['Jet', 'isQfromW'] = ak.zeros_like(events.Jet.pt,\
+        \ dtype=bool)\n             events['isLepW'] = ak.ones_like(events.Jet.pt,\
+        \ dtype = bool)\n@@ -135,25 +137,11 @@ def gen_studies(events, is_mc):\n \
+        \        except:\n             pass #above sequence will fail for datasets\
+        \ that don't have jets in every event\n \n-        '''events['Wjets_pre_lead']\
+        \ = ak.pad_none(matched_jets_pre,2,axis=1)[:,0]\n-        events['Wjets_pre_sublead']\
+        \ = ak.pad_none(matched_jets_pre,2,axis=1)[:,1]\n-\n-        ## check if both\
+        \ jets are gen matched within an event\n-        true_dijet_mask = (ak.count(matched_jets_pre.pt,axis=1)\
+        \ == 2)\n-        events['dijets_pre_lead'] = ak.mask(matched_jets_pre,true_dijet_mask)[:,0]\n\
+        -        events['dijets_pre_sublead'] = ak.mask(matched_jets_pre,true_dijet_mask)[:,1]\n\
+        -\n-        # repeat procedure to check how many jets we lose to quark vs.\
+        \ gluon score selection\n-        matched_jets_post = ak.mask(events.j_nonbcand,events.j_nonbcand.isQfromW)\n\
+        -        matched_jets_post = matched_jets_post[ak.argsort(matched_jets_post.pt,\
+        \ axis=1, ascending=False)]\n-        events['Wjets_post_lead'] = ak.pad_none(matched_jets_post,2,axis=1)[:,0]\n\
+        -        events['Wjets_post_sublead'] = ak.pad_none(matched_jets_post,2,axis=1)[:,1]\n\
+        -\n-        ## check if both jets are gen matched after quark vs. gluon selection\n\
+        -        true_dijet_mask = (ak.count(matched_jets_post.pt,axis=1) == 2)\n\
+        -        events['dijets_post_lead'] = ak.mask(matched_jets_post,true_dijet_mask)[:,0]\n\
+        -        events['dijets_post_sublead'] = ak.mask(matched_jets_post,true_dijet_mask)[:,1]'''\n\
+        -\n+        true_jets = events.Jet[events.Jet.isQfromW]\n+        sel_jets\
+        \ = events.q_cands_soft[events.q_cands_soft.isQfromW]\n+        events['q_soft_true_init']\
+        \ = ak.mask(true_jets, ak.sum(true_jets.isQfromW, axis=1) == 2)\n+       \
+        \ events['q_soft_true_sel'] = ak.mask(sel_jets, (ak.sum(sel_jets.isQfromW,axis=1)\
+        \ == 2))\n+        print(events.q_soft_true_init.pt)\n         ## met and\
+        \ W mass resolution\n         #events['W_mass_res'] = ak.firsts(gen_W.mass[gen_W.mass\
+        \ < 55.0]) - events.qq_sel_mass\n         #events['genW_mass'] = gen_W.mass[gen_W.mass\
+        \ > 55.0]\ndiff --git a/analysis/helpers/object_selection.py b/analysis/helpers/object_selection.py\n\
+        index 2dfa4d2..e591475 100644\n--- a/analysis/helpers/object_selection.py\n\
+        +++ b/analysis/helpers/object_selection.py\n@@ -99,7 +99,7 @@ def jet_selection(events,\
+        \ params, year):\n \n     q_cands_soft = ak.concatenate([q_cands_nom, j_candidates_soft],\
+        \ axis=1)\n     q_cands_soft = q_cands_soft[ak.argsort(q_cands_soft.pt, axis=1,\
+        \ ascending=False)] # pT sort the jets\n-    events['q_cands_soft'] = q_cands_soft\n\
+        +    events['q_cands_soft_init'] = q_cands_soft\n \n \n     return events\n\
+        diff --git a/analysis/processors/hh_bbww_processor.py b/analysis/processors/hh_bbww_processor.py\n\
+        index 03a0ab3..cb6895f 100644\n--- a/analysis/processors/hh_bbww_processor.py\n\
+        +++ b/analysis/processors/hh_bbww_processor.py\n@@ -318,7 +318,6 @@ class\
+        \ analysis(processor.ProcessorABC):\n                     weight = \"weight\"\
+        \n                 )\n             )\n-\n         \n         # dumps classifier\
+        \ evaluation output into friendtrees (only possible when SvB model is provided)\n\
+        \         if self.make_friend_SvB is not None:\ndiff --git a/classifier/config/workflows/HCR/svb/run.sh\
+        \ b/classifier/config/workflows/HCR/svb/run.sh\nindex 90d2ab5..4833267 100755\n\
+        --- a/classifier/config/workflows/HCR/svb/run.sh\n+++ b/classifier/config/workflows/HCR/svb/run.sh\n\
+        @@ -17,7 +17,7 @@ else\n     port=$1\n fi\n \n-# train with train.yml and\
+        \ common.yml configs\n+#train with train.yml and common.yml configs\n ./src/pyml.py\
+        \ \\\n     template \"{model: ${MODEL}, FvT: ${FvT}}\" $WFS/train.yml \\\n\
+        \     -from $WFS/common.yml \\\n@@ -32,8 +32,8 @@ fi\n     -setting IO \"\
+        report: FvT\" \\\n     -setting Monitor \"address: :${port}\"\n \n-# evaluate\
+        \ with evaluate.yml and common.yml configs\n-./src/pyml.py \\\n-    template\
+        \ \"{model: ${MODEL}, SvB: ${SvB}}\" $WFS/evaluate.yml \\\n-    -from $WFS/common.yml\
+        \ \\\n-    -setting Monitor \"address: :${port}\"\n+#evaluate with evaluate.yml\
+        \ and common.yml configs\n+#./src/pyml.py \\\n+#    template \"{model: ${MODEL},\
+        \ SvB: ${SvB}}\" $WFS/evaluate.yml \\\n+#    -from $WFS/common.yml \\\n+#\
+        \    -setting Monitor \"address: :${port}\"\ndiff --git a/metadata/skims_v5/WPlusJets.yml\
+        \ b/metadata/skims_v5/WPlusJets.yml\nindex 9f7bf71..ff31e79 100644\n--- a/metadata/skims_v5/WPlusJets.yml\n\
+        +++ b/metadata/skims_v5/WPlusJets.yml\n@@ -3,8 +3,8 @@ WtoLNu-2Jets_0J:\n\
+        \       nanoAOD: /WtoLNu-2Jets_0J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v3/NANOAODSIM\n\
+        \       picoAOD:\n         files: \n-\n-        saved_events: 120048\n+  \
+        \      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_0J_2022_preEE/picoAOD.root\n\
+        +        saved_events: 12173\n         sumw: 12029080234356.0\n         sumw2:\
+        \ 1.1811751142180782e+18\n         total_events: 192985602\n@@ -23,8 +23,8\
+        \ @@ WtoLNu-2Jets_0J:\n       picoAOD:\n         count: 400648969\n      \
+        \   files:\n-\n-        saved_events: 340779\n+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_0J_2023_preBPix/picoAOD.root\n\
+        +        saved_events: 38167\n         sumw: 24971706658880.0\n         sumw2:\
+        \ 2.45218597501141e+18\n         total_events: 400648969\n@@ -33,8 +33,8 @@\
+        \ WtoLNu-2Jets_0J:\n       picoAOD:\n         count: 199057715\n         files:\n\
+        -\n-        saved_events: 169380\n+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_0J_2023_BPix/picoAOD.root\n\
+        +        saved_events: 19141\n         sumw: 12407048405072.0\n         sumw2:\
+        \ 1.2183396846529413e+18\n         total_events: 199057715\n@@ -45,8 +45,8\
+        \ @@ WtoLNu-2Jets_1J:\n     nanoAOD: /WtoLNu-2Jets_1J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM\n\
+        \     picoAOD:\n       files: \n-\n-      saved_events: 622816\n+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_1J_2022_preEE/picoAOD.root\n\
+        +      saved_events: 57186\n       sumw: 6745765114436.0\n       sumw2: 1.374846379159978e+18\n\
+        \       total_events: 141406789\n@@ -55,8 +55,8 @@ WtoLNu-2Jets_1J:\n    \
+        \ picoAOD:\n       count: 522553517\n       files:\n-\n-      saved_events:\
+        \ 2308667\n+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_1J_2022_EE/picoAOD.root\n\
+        +      saved_events: 194584\n       sumw: 24933248681242.0\n       sumw2:\
+        \ 5.0805963362169e+18\n       total_events: 522553517\n@@ -65,8 +65,8 @@ WtoLNu-2Jets_1J:\n\
+        \     picoAOD:\n       count: 308622412\n       files:\n-\n-      saved_events:\
+        \ 1650981\n+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_1J_2023_preBPix/picoAOD.root\n\
+        +      saved_events: 169980\n       sumw: 14726174748176.0\n       sumw2:\
+        \ 3.000622598280184e+18\n       total_events: 308622412\n@@ -75,8 +75,8 @@\
+        \ WtoLNu-2Jets_1J:\n     picoAOD:\n       count: 149340770\n       files:\n\
+        -\n-      saved_events: 794780\n+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_1J_2023_BPix/picoAOD.root\n\
+        +      saved_events: 82012\n       sumw: 7126894972416.0\n       sumw2: 1.4519855716384113e+18\n\
+        \       total_events: 149340770\n@@ -87,8 +87,8 @@ WtoLNu-2Jets_2J:\n    \
+        \ nanoAOD: /WtoLNu-2Jets_2J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM\n\
+        \     picoAOD:\n       files:   \n-\n-      saved_events: 3231173\n+     \
+        \ - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_2J_2022_preEE/picoAOD.root\n\
+        +      saved_events: 486179\n       sumw: 2652487296811.0\n       sumw2: 7.209113670170706e+17\n\
+        \       total_events: 102791770\n@@ -97,8 +97,10 @@ WtoLNu-2Jets_2J:\n   \
+        \  picoAOD: \n       count: 344572777\n       files:\n-\n-      saved_events:\
+        \ 10440417\n+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_2J_2022_EE/picoAOD.chunk0.root\n\
+        +      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_2J_2022_EE/picoAOD.chunk1.root\n\
+        +      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_2J_2022_EE/picoAOD.chunk2.root\n\
+        +      saved_events: 1480467\n       sumw: 8893305299484.0\n       sumw2:\
+        \ 2.4165984409799885e+18\n       total_events: 344572777\n@@ -107,8 +109,10\
+        \ @@ WtoLNu-2Jets_2J:\n     picoAOD:\n       count: 193796359\n       files:\n\
+        -\n-      saved_events: 6444578\n+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_2J_2023_preBPix/picoAOD.chunk0.root\n\
+        +      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_2J_2023_preBPix/picoAOD.chunk1.root\n\
+        +      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_2J_2023_preBPix/picoAOD.chunk2.root\n\
+        +      saved_events: 1019578\n       sumw: 4999230396168.0\n       sumw2:\
+        \ 1.3591554834133156e+18\n       total_events: 193796359\n@@ -117,8 +121,9\
+        \ @@ WtoLNu-2Jets_2J:\n     picoAOD:\n       count: 99486651\n       files:\n\
+        -\n-      saved_events: 3288858\n+      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_2J_2023_BPix/picoAOD.chunk0.root\n\
+        +      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_2J_2023_BPix/picoAOD.chunk1.root\n\
+        +      saved_events: 521362\n       sumw: 2567156015400.0\n       sumw2: 6.977315167440732e+17\n\
+        \       total_events: 99486651\ndiff --git a/scripts/analysis_test_mc.sh b/scripts/analysis_test_mc.sh\n\
+        index 5b880dc..d5a11c5 100644\n--- a/scripts/analysis_test_mc.sh\n+++ b/scripts/analysis_test_mc.sh\n\
+        @@ -18,7 +18,7 @@ bash bbreww/scripts/run_processor.sh \\\n     --processor\
+        \ \"bbreww/analysis/processors/hh_bbww_processor.py\" \\\n     --metadata\
+        \ \"bbreww/metadata/skims_v5\" \\\n     --config \"bbreww/analysis/metadata/HHbbWW.yml\"\
+        \ \\\n-    --datasets \"GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic\" \\\
+        \n+    --datasets \"GluGluToHHTo2B2VLNu2J_kl_1p00\" \\\n     --year \"2022_EE\"\
+        \ \\\n     --output-filename \"test.coffea\" \\\n     --output-subdir \"${JOB_NAME}\"\
+        \ \n"
+      hash: b869a6bcfebd5b3b4542ed6df5428dec968d77c5
+    date: '2025-12-08 22:31:53'
+  saved_events: 12173
+  sumw: 12029080234356.0
+  sumw2: 1.1811751142180782e+18
+  sumw2_raw: 1.1811751263046717e+18
+  sumw_raw: 12029079061977.842
+  total_events: 192985602

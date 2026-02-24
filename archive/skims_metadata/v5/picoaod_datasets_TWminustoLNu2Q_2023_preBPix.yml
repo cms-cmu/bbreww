@@ -1,0 +1,150 @@
+TWminustoLNu2Q_2023_preBPix:
+  count: 9650268
+  cutflow:
+    e_region:
+      events:
+        all: 1721782.0
+        lumimask: 1721782.0
+        njets: 458566.0
+        passNoiseFilter: 1721084.0
+        trigger: 1477139.0
+        twoBjets: 483536.0
+      weights:
+        all: 61960154.447776794
+        lumimask: 61960154.447776794
+        njets: 16501950.320388794
+        passNoiseFilter: 61935035.24253845
+        trigger: 53156304.86053848
+        twoBjets: 17400483.724960327
+    mu_region:
+      events:
+        all: 2256004.0
+        lumimask: 2256004.0
+        njets: 626013.0
+        passNoiseFilter: 2254990.0
+        trigger: 2032869.0
+        twoBjets: 660784.0
+      weights:
+        all: 81184983.43112183
+        lumimask: 81184983.43112183
+        njets: 22527860.522586823
+        passNoiseFilter: 81148492.20746613
+        trigger: 73155366.76866531
+        twoBjets: 23779106.43509674
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/TWminustoLNu2Q_2023_preBPix/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/TWminustoLNu2Q_2023_preBPix/picoAOD.chunk1.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/TWminustoLNu2Q_2023_preBPix/picoAOD.chunk2.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v4', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', output_file='picoaod_datasets_TWminustoLNu2Q_2023_preBPix.yml',
+      output_path='output/skimmer', years=['2023_preBPix'], datasets=['TWminustoLNu2Q'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    barista:
+      diff: "diff --git a/src/classifier/ml/training.py b/src/classifier/ml/training.py\n\
+        index eeed5714..d7762b7b 100644\n--- a/src/classifier/ml/training.py\n+++\
+        \ b/src/classifier/ml/training.py\n@@ -111,6 +111,9 @@ class TrainingStage(BenchmarkStage):\n\
+        \             \"name\": self.name,\n             \"parameters\": self.model.n_parameters,\n\
+        \         }\n+\n+        ### self.model.nn = torch.compile(self.model.nn)\
+        \ ## TEST feature, need to check first\n+\n         opt = self.schedule.optimizer(self.model.parameters())\n\
+        \         lr = self.schedule.lr_scheduler(opt)\n         bs = self.schedule.bs_scheduler(\n\
+        diff --git a/src/classifier/nn/dataset/evaluation.py b/src/classifier/nn/dataset/evaluation.py\n\
+        index 68551d14..70e771d7 100644\n--- a/src/classifier/nn/dataset/evaluation.py\n\
+        +++ b/src/classifier/nn/dataset/evaluation.py\n@@ -1,8 +1,11 @@\n from __future__\
+        \ import annotations\n \n+\n import logging\n import sys\n from abc import\
+        \ ABC, abstractmethod\n+from functools import reduce\n+import operator\n from\
+        \ concurrent.futures import ProcessPoolExecutor\n from queue import Queue\n\
+        \ from threading import Thread\n@@ -239,7 +242,7 @@ class ChainLoader(Generic[Unpack[_ChainResultT]]):\n\
+        \ \n     @property\n     def result(self) -> tuple[Unpack[_ChainResultT]]:\n\
+        -        return (*(loader.result for loader in self.__loaders),)\n+      \
+        \  return reduce(operator.add, (loader.result for loader in self.__loaders))\n\
+        \ \n     def __iter__(self) -> Generator[tuple[BatchDumper, BatchType], None,\
+        \ None]:\n         with (\ndiff --git a/src/physics/corrections.yml b/src/physics/corrections.yml\n\
+        index 8961cfb2..640f01a5 100644\n--- a/src/physics/corrections.yml\n+++ b/src/physics/corrections.yml\n\
+        @@ -348,12 +348,12 @@\n   JEC_MC: 'src/data/JEC/Summer23Prompt23_V3_MC.tar.gz'\n\
+        \   # JER_MC: 'src/data/JEC/Summer20UL16APV_JRV3_MC.tar.gz'\n   JEC_DATA:\
+        \  ### all eras are C. Labels in the code are arbitrary\n-    A: 'src/data/JEC/Summer23Prompt23_RunCv123_V3_DATA.tar.gz'\n\
+        -    B: 'src/data/JEC/Summer23Prompt23_RunCv123_V3_DATA.tar.gz'\n-    C: 'src/data/JEC/Summer23Prompt23_RunCv123_V3_DATA.tar.gz'\n\
+        -    D: 'src/data/JEC/Summer23Prompt23_RunCv123_V3_DATA.tar.gz'\n-    E: 'src/data/JEC/Summer23Prompt23_RunCv123_V3_DATA.tar.gz'\n\
+        -    F: 'src/data/JEC/Summer23Prompt23_RunCv123_V3_DATA.tar.gz'\n+    A: 'src/data/JEC/Summer23Prompt23_RunCv123_V4_DATA.tar.gz'\n\
+        +    B: 'src/data/JEC/Summer23Prompt23_RunCv123_V4_DATA.tar.gz'\n+    C: 'src/data/JEC/Summer23Prompt23_RunCv123_V4_DATA.tar.gz'\n\
+        +    D: 'src/data/JEC/Summer23Prompt23_RunCv123_V4_DATA.tar.gz'\n+    E: 'src/data/JEC/Summer23Prompt23_RunCv123_V4_DATA.tar.gz'\n\
+        +    F: 'src/data/JEC/Summer23Prompt23_RunCv123_V4_DATA.tar.gz'\n   JES_uncertainties:\n\
+        \     - DUMMY\n   btagSF: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/DUMMY/btagging.json.gz'\n\
+        @@ -398,8 +398,8 @@\n   JEC_MC: 'src/data/JEC/Summer23BPixPrompt23_V3_MC.tar.gz'\n\
+        \   # JER_MC: 'src/data/JEC/Summer20UL16APV_JRV3_MC.tar.gz'\n   JEC_DATA:\
+        \  ### all eras here are officially era D. Labels in the code are arbitrary\n\
+        -    D: 'src/data/JEC/Summer23BPixPrompt23_RunD_V3_DATA.tar.gz'\n-    E: 'src/data/JEC/Summer23BPixPrompt23_RunD_V3_DATA.tar.gz'\n\
+        +    D: 'src/data/JEC/Summer23BPixPrompt23_RunD_V4_DATA.tar.gz'\n+    E: 'src/data/JEC/Summer23BPixPrompt23_RunD_V4_DATA.tar.gz'\n\
+        \   JES_uncertainties:\n     - DUMMY\n   btagSF: '/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/DUMMY/btagging.json.gz'\n\
+        diff --git a/src/tools/compute_lumi_processes.py b/src/tools/compute_lumi_processes.py\n\
+        index 63d39649..6a89d701 100644\n--- a/src/tools/compute_lumi_processes.py\n\
+        +++ b/src/tools/compute_lumi_processes.py\n@@ -20,7 +20,7 @@ def group_lumis_into_ranges(lumi_list):\n\
+        \     if not lumi_list:\n         return []\n     \n-    sorted_lumis = sorted(lumi_list)\n\
+        +    sorted_lumis = sorted(set(lumi_list))\n     ranges = []\n     start =\
+        \ end = sorted_lumis[0]\n     \n"
+      hash: 9db3575c72fd5bb364a2c1a6a7ef0448ad50863a
+    bbreww:
+      diff: "diff --git a/classifier/config/workflows/HCR/svb/run.sh b/classifier/config/workflows/HCR/svb/run.sh\n\
+        index 90d2ab5..4833267 100755\n--- a/classifier/config/workflows/HCR/svb/run.sh\n\
+        +++ b/classifier/config/workflows/HCR/svb/run.sh\n@@ -17,7 +17,7 @@ else\n\
+        \     port=$1\n fi\n \n-# train with train.yml and common.yml configs\n+#train\
+        \ with train.yml and common.yml configs\n ./src/pyml.py \\\n     template\
+        \ \"{model: ${MODEL}, FvT: ${FvT}}\" $WFS/train.yml \\\n     -from $WFS/common.yml\
+        \ \\\n@@ -32,8 +32,8 @@ fi\n     -setting IO \"report: FvT\" \\\n     -setting\
+        \ Monitor \"address: :${port}\"\n \n-# evaluate with evaluate.yml and common.yml\
+        \ configs\n-./src/pyml.py \\\n-    template \"{model: ${MODEL}, SvB: ${SvB}}\"\
+        \ $WFS/evaluate.yml \\\n-    -from $WFS/common.yml \\\n-    -setting Monitor\
+        \ \"address: :${port}\"\n+#evaluate with evaluate.yml and common.yml configs\n\
+        +#./src/pyml.py \\\n+#    template \"{model: ${MODEL}, SvB: ${SvB}}\" $WFS/evaluate.yml\
+        \ \\\n+#    -from $WFS/common.yml \\\n+#    -setting Monitor \"address: :${port}\"\
+        \ndiff --git a/classifier/nn/blocks/bbWW_models.py b/classifier/nn/blocks/bbWW_models.py\n\
+        index 2820504..e2c8190 100644\n--- a/classifier/nn/blocks/bbWW_models.py\n\
+        +++ b/classifier/nn/blocks/bbWW_models.py\n@@ -1924,6 +1924,7 @@ class HCR(nn.Module):\n\
+        \ \n         bbMdR = NonLU(bbMdR)\n         qqMdR = NonLU(qqMdR)\n+      \
+        \  self._WW_logits = qqMdr.detach()\n         bbnMdR = NonLU(bbnMdR)\n   \
+        \      scalars = torch.cat([lepQQdR, lnu_mT], dim= -1)\n \n@@ -1966,7 +1967,7\
+        \ @@ class HCR(nn.Module):\n                         qqMdR[:, :, 0, 1:2],\
+        \ # there are duplicate pairs, so only keep 1\n                         scalars],\
+        \ dim=-1)        \n         WW_final = self.WW_final_embed(WW)\n-        self._WW_logits=\
+        \ WW_final.detach() # save WW system score\n+        #self._WW_logits= WW_final.detach()\
+        \ # save WW system score\n         \n         HH = torch.cat([\n         \
+        \        bb,\ndiff --git a/plots/makePlots.py b/plots/makePlots.py\nindex\
+        \ 071b88a..61ac51f 100644\n--- a/plots/makePlots.py\n+++ b/plots/makePlots.py\n\
+        @@ -52,7 +52,7 @@ def doPlots(varList, debug=False):\n             vDict[\"\
+        write_yaml\"] = True\n \n         for flavor in [\"e\", \"mu\", sum]:\n- \
+        \           #for channel in [\"hadronic_W\", \"leptonic_W\", sum]:\n+    \
+        \    #for channel in [\"hadronic_W\", \"leptonic_W\", sum]:\n            \
+        \ for region in [\"SR\", \"CR\", sum]:\n \n                 if debug: print(f\"\
+        plotting 1D ...{v}\")\ndiff --git a/scripts/analysis_plot_all.sh b/scripts/analysis_plot_all.sh\n\
+        index 6ff9612..7eec617 100644\n--- a/scripts/analysis_plot_all.sh\n+++ b/scripts/analysis_plot_all.sh\n\
+        @@ -21,7 +21,7 @@ ls $INPUT_DIR/\n ls $INPUT_DIR/output.coffea\n \n display_section_header\
+        \ \"Running makePlots.py\"\n-run_command python bbreww/plots/makePlots.py\
+        \ output/full_run/output.coffea -o output/analysis_plot_mc -m bbreww/plots/metadata/plotsAll.yml\
+        \ --modifiers bbreww/plots/metadata/plotModifiers.yml\n+run_command python\
+        \ bbreww/plots/makePlots.py output/full_run/output2023preBPix.coffea -o output/analysis_plot_mc\
+        \ -m bbreww/plots/metadata/plotsAll.yml --modifiers bbreww/plots/metadata/plotModifiers.yml\n\
+        \ \n display_section_header \"Checking if pdf files exist\"\n ls $OUTPUT_DIR/Run3/preselection/flavor_sum/channel_sum/Hbb_mass.pdf\n\
+        diff --git a/scripts/analysis_run3.sh b/scripts/analysis_run3.sh\nindex 563c08f..904b324\
+        \ 100644\n--- a/scripts/analysis_run3.sh\n+++ b/scripts/analysis_run3.sh\n\
+        @@ -16,7 +16,7 @@ bash bbreww/scripts/run_processor.sh \\\n     --processor\
+        \ \"bbreww/analysis/processors/hh_bbww_processor.py\" \\\n     --metadata\
+        \ \"bbreww/metadata/skims_v4\" \\\n     --config \"bbreww/analysis/metadata/HHbbWW.yml\"\
+        \ \\\n-    --datasets \"data__EGamma data__SingleMuon GluGluToHHTo2B2VLNu2J_kl_1p00\
+        \ TTToSemiLeptonic TTToHadronic TTTo2L2Nu WtoLNu-2Jets_0J WtoLNu-2Jets_1J\
+        \ WtoLNu-2Jets_2J TbarWplustoLNu2Q TbarWplusto2L2Nu TWminustoLNu2Q TWminusto2L2Nu\"\
+        \ \\\n+    --datasets \"GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic\" \\\
+        \n     --year \"2022_preEE 2022_EE\" \\\n     --output-filename \"output.coffea\"\
+        \ \\\n     --output-subdir \"full_run\" \\\n"
+      hash: 04d04b18b3f0927bcf416b79312f42f347521a3b
+    date: '2025-12-04 13:00:16'
+  saved_events: 1084579
+  sumw: 347275662.4453125
+  sumw2: 12497993558.25
+  sumw2_raw: 12497994136.946957
+  sumw_raw: 347275674.95760024
+  total_events: 9650268

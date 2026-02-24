@@ -6,7 +6,8 @@ runner:
   condor_memory: 6GB
   data_tier: picoAOD
   condor_cores: 1
-  friend_base: &friend_base root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/
+  # friend_base: &friend_base root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/
+  friend_base: &friend_base output/test/
   condor_transfer_input_files:
     - src/
     - bbreww/analysis/

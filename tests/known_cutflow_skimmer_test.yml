@@ -21,22 +21,21 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         SvB_tail: 7231.0
         SvB_tail_lowpt: 7231.0
       weights:
-        lumimask: 4.283300541196229
-        passNoiseFilter: 4.283300541196229
-        trigger: 4.283300541196229
-        jet_veto_mask: 3.892215990615185
-        oneEorM: 3.892215990615185
-        oneBjet: 3.794868491683119
-        twoBjets: 2.660356420900472
-        tau_veto: 2.6445546430755296
-        njets_ak8: 1.8670269481228612
-        mll_cut: 1.8669166694424917
-        nominal_4j2b: 0.9947760484333645
-        nominal_3j2b: 0.6956292430727944
-        lowpt_4j2b: 0.4837984967278707
-        lowpt_3j2b: 0.3883421242812564
-        SvB_tail: 1.8669166694424917
-        SvB_tail_lowpt: 1.8669166694424917
+        lumimask: 4.427142339428581
+        passNoiseFilter: 4.427142339428581
+        trigger: 4.427142339428581
+        jet_veto_mask: 4.024652276270974
+        oneEorM: 4.024652276270974
+        oneBjet: 3.927304777338907
+        twoBjets: 2.7619602375453978
+        tau_veto: 2.7456806273791665
+        njets_ak8: 1.9291088785894894
+        mll_cut: 1.9289958489256358
+        nominal_4j2b: 1.027347408083242
+        nominal_3j2b: 0.7196404631717601
+        lowpt_4j2b: 0.5005474261952425
+        lowpt_3j2b: 0.4011010146471513
+        SvB_tail: 1.9289958489256358
     mu_region:
       events:
         lumimask: 22501.0
@@ -56,6 +55,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         SvB_tail: 9820.0
         SvB_tail_lowpt: 9820.0
       weights:
+<<<<<<< HEAD
         lumimask: 6.647775731301673
         passNoiseFilter: 6.647775731301673
         trigger: 6.647775731301673
@@ -102,3 +102,46 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         lowpt_3j2b: 0.13714355407728274
         SvB_tail: 0.7128412908329764
         SvB_tail_lowpt: 0.7128412908329764
+=======
+        lumimask: 6.862491137511175
+        passNoiseFilter: 6.862491137511175
+        trigger: 6.862491137511175
+        jet_veto_mask: 6.225385307436078
+        oneEorM: 6.225385307436078
+        oneBjet: 6.056455119921008
+        twoBjets: 4.237262340130634
+        tau_veto: 4.207327125092654
+        njets_ak8: 3.0458470450832085
+        mll_cut: 3.043363305808914
+        nominal_4j2b: 1.6855374795939753
+        nominal_3j2b: 1.0953487270177527
+        lowpt_4j2b: 0.7646115945772805
+        lowpt_3j2b: 0.5932142316376582
+        SvB_tail: 3.043363305808914
+    SR:
+      events:
+        nominal_4j2b: 6470.0
+        nominal_3j2b: 4350.0
+        lowpt_4j2b: 2971.0
+        lowpt_3j2b: 2311.0
+        SvB_tail: 11752.0
+      weights:
+        nominal_4j2b: 1.8730947557594206
+        nominal_3j2b: 1.24552370245768
+        lowpt_4j2b: 0.8508514410423164
+        lowpt_3j2b: 0.66664927476677
+        SvB_tail: 3.3905954715685067
+    CR:
+      events:
+        nominal_4j2b: 1580.0
+        nominal_3j2b: 1014.0
+        lowpt_4j2b: 707.0
+        lowpt_3j2b: 575.0
+        SvB_tail: 2862.0
+      weights:
+        nominal_4j2b: 0.46278737219712773
+        nominal_3j2b: 0.3108789603980574
+        lowpt_4j2b: 0.21732939310746735
+        lowpt_3j2b: 0.18070396477998704
+        SvB_tail: 0.8608207300845823
+>>>>>>> 445f46c (Update analysis plotting scripts and cutflow configurations for consistency)

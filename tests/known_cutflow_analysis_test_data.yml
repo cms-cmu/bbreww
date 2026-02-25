@@ -122,8 +122,13 @@ data__SingleMuon_2022_preEEC:
         nominal_3j2b: 4.0
         lowpt_4j2b: 4.0
         lowpt_3j2b: 2.0
+<<<<<<< HEAD
         SvB_tail: 10.0
         SvB_tail_lowpt: 10.0
+=======
+        SvB_tail: 0.0
+        SvB_tail_lowpt: 0.0
+>>>>>>> 60180f8 (Refactor dataset names in YAML and script files for consistency)
       weights:
         lumimask: 47.0
         passNoiseFilter: 47.0

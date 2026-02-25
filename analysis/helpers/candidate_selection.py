@@ -16,13 +16,13 @@ def Hbb_candidate_selection(events):
 
     events['Hbb_cand'] = Hbb_cand
 
-    #
-    #  Define the SR and CR regions
+    
+    # Define the SR and CR based on H ->> bb candidate mass and delta_R
     signal_region = elliptical_region(events.Hbb_cand.mass, events.Hbb_cand.dr,
-                                        105, 1.5, 70, 1.51 ) # elliptical signal region
+                                        115, 1.5, 75, 1.3 ) # elliptical signal region
     control_region = ((~signal_region)
                         & elliptical_region(events.Hbb_cand.mass, events.Hbb_cand.dr,
-                                            105, 1.5, 110, 2.38)) # sideband TTbar control region
+                                            115, 1.5, 115, 2.0)) # sideband TTbar control region
 
     events['region'] = ak.zip({
         'SR': ak.fill_none(signal_region, False),
@@ -129,11 +129,11 @@ def ttbar_candidate_selection(events, run_SvB: bool = True):
 def Wqq_soft_candidate_selection(events, year):
     QvG_key = 'btagPNetQvG' if '202' in year else 'particleNetAK4_QvsG' # use particleNET for quark vs. gluon tagging
 
-    q_cands_soft = events.q_cands_soft[ak.argsort(getattr(events.q_cands_soft,QvG_key), axis=1, ascending=False)] #particleNetAK4_QvsG btagPNetQvG
+    q_cands_soft = events.q_cands_soft_init[ak.argsort(getattr(events.q_cands_soft_init,QvG_key), axis=1, ascending=False)] #particleNetAK4_QvsG btagPNetQvG
     q_cands_soft = q_cands_soft[:,:3] #top 3 quark vs gluon non b-jets
     q_cands_soft = q_cands_soft[ak.argsort(q_cands_soft.pt, axis=1, ascending=False)] #pt sort the jets
     events['q_cands_soft'] = q_cands_soft
-
+    
     jj_i = ak.argcombinations(q_cands_soft, 2, replacement = False, fields=["j1","j2"]) #take dijet combinations
     jj_i = jj_i[(q_cands_soft[jj_i.j1] - q_cands_soft[jj_i.j2]).eta<2.0]
     #jj_i = jj_i[(q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2]).mass<120.0] #dijet cuts
@@ -172,7 +172,6 @@ def ttbar_soft_candidate_selection(events):
 
     tt_soft_1["mass_distance"] = distance(lepTop_soft_1.mass,  hadTop_soft_1.mass,  172.5, 172.5)
 
-
     lepTop_soft_2 = (events.Wlnu_cand + events.b_cands[:,0])
     hadTop_soft_2 = (events.b_cands[:,1] + events.qq_soft) #hadronic candidate 2
 
@@ -186,7 +185,6 @@ def ttbar_soft_candidate_selection(events):
     tt_soft_2["hadTop", "dphi"] = events.b_cands[:,1].delta_phi(events.qq_soft)
 
     tt_soft_2["mass_distance"] = distance(lepTop_soft_2.mass,  hadTop_soft_2.mass,  172.5, 172.5)
-
 
     b_sel_soft =  tt_soft_1.mass_distance < tt_soft_2.mass_distance
 
@@ -202,6 +200,7 @@ def ttbar_soft_candidate_selection(events):
     tt_soft["p","dphi"] = tt_best_soft.lepTop.delta_r(tt_best_soft.hadTop)
 
     events['tt_soft'] = tt_soft
+
     return events
 
 

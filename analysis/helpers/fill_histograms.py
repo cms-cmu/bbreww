@@ -21,19 +21,16 @@ def add_bbWW_common_hists(fill, hist):
                     (50, 0, 250, ('Hbb_cand.mass', 'H->bb Candidate Mass [GeV]')),
                     (50, 0,   5, ('Hbb_cand.dr', r'$\Delta R$ between b-candidates')))
 
-
     #
-    # Wlnu Candidate
+    # Wlnu Candidate and leptonic top
     #
     fill += Lepton.plot_leptonMeT( ("Wlnu", R"$W_{lnu}$"), "Wlnu_cand", skip=["n"], bins={"mass": (120, 0, 200)}, )
-
 
     #
     # Leptons
     #
     fill += Elec.plot( ("Elec", R"$Elec$"), "sel_elec", skip=["n"], )
     fill += Muon.plot( ("Muon", R"$Muon$"), "sel_muon", skip=["n"], )
-
 
     #
     #  From before
@@ -46,11 +43,9 @@ def add_bbWW_common_hists(fill, hist):
                     (50, 0, 250, ('bjets_genjets_mass', 'H->bb Candidate (genjets) Mass [GeV]')),
                     (50, 0, 5, ('bjets_genjets_dr', r'$\Delta R$ between b-candidates (genjets)')))
 
-    fill += hist.add("lep_qq_pt_dr",
-                (50, 0, 250, ('leading_lep.pt', 'leading lepton pT [GeV]')),
-                (50, 0, 5, ('lep_qq_dr', r'$\Delta R$ between leading lepton and selected qq')))
-
-
+    fill += hist.add("genW_mass_vs_subl_jet_pt",
+                (50, 0, 250, ('gen_hadW.mass', 'W->qq gen mass [GeV]')),
+                (50, 0, 250, ('true_ak4_2', r'W->qq subleading jet $p_T$')))
 
     return fill, hist
 
@@ -87,6 +82,14 @@ def fill_histograms_nominal(
     #
     fill, hist = add_bbWW_common_hists(fill, hist)
 
+    # jet selection efficiencies
+    fill += hist.add("true_jets_sublead.pt", (50, -0.5, 250, ("true_ak4_2", "pT [GeV]")))
+    fill += hist.add("true_jets_lead.pt", (50, -0.5, 250, ("true_ak4_1", "pT [GeV]")))
+    fill += hist.add("true_soft_jets_sel_sublead.pt", (50, -0.5, 250, ("q_soft_true_sublead", "pT[GeV]"))) # softjet 1
+    fill += hist.add("true_soft_jets_sel_lead.pt", (50, -0.5, 250, ("q_soft_true_lead", "pT[GeV]"))) # softjet 2
+    fill += hist.add("true_nom_jets_sel_sublead.pt", (50, -0.5, 250, ("q_nom_true_sublead", "pT[GeV]"))) # nominal jet 1
+    fill += hist.add("true_nom_jets_sel_lead.pt", (50, -0.5, 250, ("q_nom_true_lead", "pT[GeV]"))) # nominal jet 2    
+    
     fill += Chi2Hists(("chi2_hadWs",      "chi2 hadWs"),         "chi2_hadWs")
     fill += Chi2Hists(("chi2_hadW",       "chi2 hadW"),          "chi2_hadW")
     fill += Chi2Hists(("chi2_tt",         "chi2 tt"),            "chi2_tt")
@@ -102,6 +105,9 @@ def fill_histograms_nominal(
     fill += LorentzVector.plot_pair( ("HWW", R"$H_{WW}$"), "Hww_cand", skip=["n","lead","subl","st"], bins={"mass": (100, 100, 400)}, )
     fill += hist.add("HWW.lqq_dr", (50, -0.5, 10, ("Hww_cand.lqq_dr", "qq - lepton  delta R")))
 
+    fill += hist.add("mbb_vs_lep_qq_dr",
+            (50, 0, 250, ('Hbb_cand.mass', 'H->bb Candidate Mass [GeV]')),
+            (50, 0, 5, ('Hww_cand.lqq_dr', r'$\Delta R$ between leading lepton and selected qq')))
     #
     #  TTbar Candidate
     #
@@ -115,7 +121,7 @@ def fill_histograms_nominal(
     # fill histograms
     fill(events, hist)
 
-    return hist.to_dict(nonempty=True)
+    return hist.to_dict(nonempty=False)
 
 def fill_histograms(
     events,
@@ -125,7 +131,8 @@ def fill_histograms(
     histCuts: list = ['preselection'],
     channel_list: list = ['hadronic_W','leptonic_W'],
     flavor_list: list = ['e', 'mu'],
-    region_list: list = ['SR', 'CR']
+    region_list: list = ['SR', 'CR'],
+    run_SvB: bool = False,
 ):
 
     fill = Fill(
@@ -144,6 +151,14 @@ def fill_histograms(
 
     fill, hist = add_bbWW_common_hists(fill, hist)
 
+    # jet selection efficiencies
+    fill += hist.add("true_jets_sublead.pt", (10, 14.5, 30, ("true_ak4_2", "pT [GeV]")))
+    fill += hist.add("true_jets_lead.pt", (10, 14.5, 30, ("true_ak4_1", "pT [GeV]")))
+    fill += hist.add("true_soft_jets_sel_sublead.pt", (10, 14.5, 30, ("q_soft_true_sublead", "pT[GeV]"))) # softjet 1
+    fill += hist.add("true_soft_jets_sel_lead.pt", (10, 14.5, 30, ("q_soft_true_lead", "pT[GeV]"))) # softjet 2
+    fill += hist.add("true_nom_jets_sel_sublead.pt", (10, 14.5, 30, ("q_nom_true_sublead", "pT[GeV]"))) # nominal jet 1
+    fill += hist.add("true_nom_jets_sel_lead.pt", (10, 14.5, 30, ("q_nom_true_lead", "pT[GeV]"))) # nominal jet 2
+    
     fill += Chi2Hists(("chi2_hadWs", "chi2 hadWs"), "chi2_hadWs",
                       skip=["tot_4j", "Hww_mass", "Wqq_mass",]
                       )
@@ -163,7 +178,11 @@ def fill_histograms(
 
     fill += TTbarHists( ("tt_soft", R"$t\bar{t}$"), "tt_soft_minChi2" )
 
+    # Signal vs Backgrounds classifier scores hists
+    if run_SvB:
+        fill += SvBHists(("SvB", "SvB Classifier"), "SvB")
+
     # fill histograms
     fill(events, hist)
 
-    return hist.to_dict(nonempty=True)
+    return hist.to_dict(nonempty=False)

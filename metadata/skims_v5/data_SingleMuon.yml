@@ -1,4 +1,4 @@
-data__SingleMuon0:
+data__SingleMuon:
   2022_preEE:
     lumi: 7.98
     nanoAOD:
@@ -48,100 +48,89 @@ data__SingleMuon0:
   2023_preBPix: ## 2023 era labels are arbitrary
     lumi: 
     nanoAOD:
-      A: /Muon0/Run2023C-22Sep2023_v1-v1/NANOAOD
-      B: /Muon0/Run2023C-22Sep2023_v2-v1/NANOAOD
-      C: /Muon0/Run2023C-22Sep2023_v3-v1/NANOAOD
-      D: /Muon0/Run2023C-22Sep2023_v4-v1/NANOAOD
+      C01: /Muon0/Run2023C-22Sep2023_v1-v1/NANOAOD
+      C02: /Muon0/Run2023C-22Sep2023_v2-v1/NANOAOD
+      C03: /Muon0/Run2023C-22Sep2023_v3-v1/NANOAOD
+      C04: /Muon0/Run2023C-22Sep2023_v4-v1/NANOAOD
+      C11: /Muon1/Run2023C-22Sep2023_v1-v1/NANOAOD
+      C12: /Muon1/Run2023C-22Sep2023_v2-v1/NANOAOD
+      C13: /Muon1/Run2023C-22Sep2023_v3-v1/NANOAOD
+      C14: /Muon1/Run2023C-22Sep2023_v4-v2/NANOAOD
     picoAOD:
-      A:
+      C01:
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__SingleMuon0_2023_preBPixA/picoAOD.root
         saved_events: 202010
         total_events: 54715896
-      B: 
+      C02: 
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__SingleMuon0_2023_preBPixB/picoAOD.root
         saved_events: 62114
         total_events: 17063451
-      C:
+      C03:
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__SingleMuon0_2023_preBPixC/picoAOD.root
         saved_events: 78021
         total_events: 20015377
-      D:
+      C04:
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__SingleMuon0_2023_preBPixD/picoAOD.chunk0.root
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__SingleMuon0_2023_preBPixD/picoAOD.chunk1.root
         saved_events: 521119
         total_events: 138943783
-  2023_BPix: ## 2023 era labels are arbitrary
-    lumi:
-    nanoAOD: 
-      D: /Muon0/Run2023D-22Sep2023_v1-v1/NANOAOD
-      E: /Muon0/Run2023D-22Sep2023_v2-v1/NANOAOD
-    picoAOD:
-      D: 
-        files:
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__SingleMuon0_2023_BPixD/picoAOD.root
-        saved_events: 358494
-        total_events: 100291308
-      E:
-        files:
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__SingleMuon0_2023_BPixE/picoAOD.root
-        saved_events: 76470
-        total_events: 21462916
-
-data__SingleMuon1:
-  2023_preBPix: ## 2023 era labels are arbitrary
-    lumi: 
-    nanoAOD:
-      A: /Muon1/Run2023C-22Sep2023_v1-v1/NANOAOD
-      B: /Muon1/Run2023C-22Sep2023_v2-v1/NANOAOD
-      C: /Muon1/Run2023C-22Sep2023_v3-v1/NANOAOD
-      D: /Muon1/Run2023C-22Sep2023_v4-v2/NANOAOD
-    picoAOD:
-      A:
+      C11:
         count: 54698315.0
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__SingleMuon1_2023_preBPixA/picoAOD.root
         saved_events: 201598
         total_events: 54698315
-      B:
+      C12:
         count: 17059895.0
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__SingleMuon1_2023_preBPixB/picoAOD.root
         saved_events: 61826
         total_events: 17059895
-      C:
+      C13:
         count: 20010429.0
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__SingleMuon1_2023_preBPixC/picoAOD.root
         saved_events: 77795
         total_events: 20010429
-      D:
+      C14:
         count: 138912262.0
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__SingleMuon1_2023_preBPixD/picoAOD.chunk0.root
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__SingleMuon1_2023_preBPixD/picoAOD.chunk1.root
         saved_events: 522121
         total_events: 138912262
+
   2023_BPix: ## 2023 era labels are arbitrary
     lumi:
-    nanoAOD:
-      D: /Muon1/Run2023D-22Sep2023_v1-v1/NANOAOD
-      E: /Muon1/Run2023D-22Sep2023_v2-v1/NANOAOD
+    nanoAOD: 
+      D01: /Muon0/Run2023D-22Sep2023_v1-v1/NANOAOD
+      D02: /Muon0/Run2023D-22Sep2023_v2-v1/NANOAOD
+      D11: /Muon1/Run2023D-22Sep2023_v1-v1/NANOAOD
+      D12: /Muon1/Run2023D-22Sep2023_v2-v1/NANOAOD
     picoAOD:
-      D:
+      D01: 
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__SingleMuon0_2023_BPixD/picoAOD.root
+        saved_events: 358494
+        total_events: 100291308
+      D02:
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__SingleMuon0_2023_BPixE/picoAOD.root
+        saved_events: 76470
+        total_events: 21462916
+      D11:
         count: 100281976.0
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__SingleMuon1_2023_BPixD/picoAOD.root
         saved_events: 358654
         total_events: 100281976
-      E:
+      D12:
         count: 21463645.0
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__SingleMuon1_2023_BPixE/picoAOD.root
         saved_events: 76662
         total_events: 21463645
-  
-

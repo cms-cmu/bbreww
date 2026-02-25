@@ -32,7 +32,7 @@ def doPlots(varList, debug=False):
         cfg.set_hist_key(hist_key)
 
         if hist_key == "hists":
-            cut = "preselection"
+            cut = "lowpt_4j2b"
         elif hist_key == "hists_4j2b":
             cut = "nominal_4j2b"
         
@@ -74,8 +74,9 @@ def doPlots(varList, debug=False):
     #
     #  2D Plots
     #
-    for v in varList:
+    for v, hist_key in varList:
         if debug: print(v)
+        cfg.set_hist_key(hist_key)
 
         vDict = cfg.plotModifiers.get(v, {})
 

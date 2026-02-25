@@ -56,6 +56,7 @@ def jet_selection(events, params, year):
     j_soft = j_clean[j_clean.issoft]
     events['nsoftjets']= ak.num(j_soft, axis=1)
     events['njets'] = ak.fill_none(ak.num(j_clean[j_clean.isnominal],axis=1),np.nan)
+    #events['njets'] = ak.fill_none(ak.num(j_init,axis=1),np.nan) # all jets, including soft
     events['has_3_presel_jets'] = (ak.num(j_init[j_init.preselected],axis=1)>2)
     events['has_exactly_3_presel_jets'] = (ak.num(j_init[j_init.preselected],axis=1)==3)
     events['has_4_presel_jets'] = (ak.num(j_init[j_init.preselected],axis=1)>3)
@@ -90,16 +91,17 @@ def jet_selection(events, params, year):
     #
     q_cands_nom = j_candidates_nom[:,2:] # ak.mask(j_candidates_nom[:,2:], ak.num(j_candidates_nom[:,2:],axis=1)>=2) # require 2 or more q-jet candidates
     q_cands_nom = q_cands_nom[ak.argsort(q_cands_nom.pt, axis=1, ascending=False)] # pT sort the jets
-    events["q_cands_nom"] = ak.mask(q_cands_nom[:,:2], ak.num(j_candidates_nom[:,2:],axis=1)>=2)
+    events["q_cands_nom"] = ak.mask(q_cands_nom[:,:2], ak.num(q_cands_nom,axis=1)>=2)
 
     #
     # Soft Jet Selection
     #
     j_candidates_soft = j_candidates[j_candidates.issoft]
+    events['j_soft'] = j_candidates_soft
 
     q_cands_soft = ak.concatenate([q_cands_nom, j_candidates_soft], axis=1)
     q_cands_soft = q_cands_soft[ak.argsort(q_cands_soft.pt, axis=1, ascending=False)] # pT sort the jets
-    events['q_cands_soft'] = q_cands_soft
+    events['q_cands_soft_init'] = q_cands_soft
 
 
     return events

@@ -18,10 +18,8 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         nominal_3j2b: 83.0
         lowpt_4j2b: 66.0
         lowpt_3j2b: 39.0
-        chi_sq_nom_4j2b: 71.0
-        chi_sq_nom_3j2b: 43.0
-        chi_sq_lowpt_4j2b: 47.0
-        SvB_tail: 205.0
+        SvB_tail: 40.0
+        SvB_tail_lowpt: 24.0
       weights:
         lumimask: 0.12573331191595966
         passNoiseFilter: 0.12573331191595966
@@ -37,10 +35,8 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         nominal_3j2b: 0.026543604193653994
         lowpt_4j2b: 0.02311730340253771
         lowpt_3j2b: 0.01027418012235068
-        chi_sq_nom_4j2b: 0.018753963132938003
-        chi_sq_nom_3j2b: 0.015424022346125376
-        chi_sq_lowpt_4j2b: 0.016488834961647093
-        SvB_tail: 0.05986224413083549
+        SvB_tail: 0.009958823943785835
+        SvB_tail_lowpt: 0.00848575906091652
     mu_region:
       events:
         lumimask: 572.0
@@ -57,10 +53,8 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         nominal_3j2b: 96.0
         lowpt_4j2b: 74.0
         lowpt_3j2b: 50.0
-        chi_sq_nom_4j2b: 90.0
-        chi_sq_nom_3j2b: 47.0
-        chi_sq_lowpt_4j2b: 52.0
-        SvB_tail: 259.0
+        SvB_tail: 63.0
+        SvB_tail_lowpt: 36.0
       weights:
         lumimask: 0.17560221891700295
         passNoiseFilter: 0.17560221891700295
@@ -76,48 +70,38 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         nominal_3j2b: 0.028285122857236222
         lowpt_4j2b: 0.022644903465815828
         lowpt_3j2b: 0.014268891132466462
-        chi_sq_nom_4j2b: 0.027316710202930368
-        chi_sq_nom_3j2b: 0.013443590034672853
-        chi_sq_lowpt_4j2b: 0.014774145303472402
-        SvB_tail: 0.07937930638087706
+        SvB_tail: 0.01799801241470149
+        SvB_tail_lowpt: 0.011339907578324074
     SR:
       events:
-        nominal_4j2b: 169.0
-        nominal_3j2b: 121.0
-        lowpt_4j2b: 93.0
+        nominal_4j2b: 173.0
+        nominal_3j2b: 124.0
+        lowpt_4j2b: 97.0
         lowpt_3j2b: 57.0
-        chi_sq_nom_4j2b: 125.0
-        chi_sq_nom_3j2b: 67.0
-        chi_sq_lowpt_4j2b: 73.0
-        SvB_tail: 319.0
+        SvB_tail: 98.0
+        SvB_tail_lowpt: 55.0
       weights:
-        nominal_4j2b: 0.049772043313482214
-        nominal_3j2b: 0.0369809904203629
-        lowpt_4j2b: 0.028930406393362428
-        lowpt_3j2b: 0.016979902325971064
-        chi_sq_nom_4j2b: 0.03620084108258013
-        chi_sq_nom_3j2b: 0.020694405648529233
-        chi_sq_lowpt_4j2b: 0.02212496172677395
-        SvB_tail: 0.0956823520328157
+        nominal_4j2b: 0.05099598117502241
+        nominal_3j2b: 0.03818071240146388
+        lowpt_4j2b: 0.03065099616033598
+        lowpt_3j2b: 0.016690691148696493
+        SvB_tail: 0.02709630854176841
+        SvB_tail_lowpt: 0.017943328600782595
     CR:
       events:
-        nominal_4j2b: 34.0
-        nominal_3j2b: 30.0
-        lowpt_4j2b: 25.0
+        nominal_4j2b: 27.0
+        nominal_3j2b: 27.0
+        lowpt_4j2b: 21.0
         lowpt_3j2b: 14.0
-        chi_sq_nom_4j2b: 20.0
-        chi_sq_nom_3j2b: 14.0
-        chi_sq_lowpt_4j2b: 16.0
-        SvB_tail: 73.0
+        SvB_tail: 4.0
+        SvB_tail_lowpt: 5.0
       weights:
-        nominal_4j2b: 0.00977832993299697
-        nominal_3j2b: 0.008318631849234464
-        lowpt_4j2b: 0.00855888165574745
-        lowpt_3j2b: 0.002960600508253084
-        chi_sq_nom_4j2b: 0.006354954448478726
-        chi_sq_nom_3j2b: 0.0049069017572949845
-        chi_sq_lowpt_4j2b: 0.005352532005588766
-        SvB_tail: 0.021297812096997507
+        nominal_4j2b: 0.007301354052533754
+        nominal_3j2b: 0.006061529470140886
+        lowpt_4j2b: 0.0057809114907813024
+        lowpt_3j2b: 0.0028685087439701195
+        SvB_tail: 0.0007099105681423279
+        SvB_tail_lowpt: 0.0018823380384580036
 TTToSemiLeptonic_2022_EE:
   n_events: 1000
   sum_genweights: 152682.265625
@@ -138,10 +122,8 @@ TTToSemiLeptonic_2022_EE:
         nominal_3j2b: 64.0
         lowpt_4j2b: 39.0
         lowpt_3j2b: 33.0
-        chi_sq_nom_4j2b: 85.0
-        chi_sq_nom_3j2b: 27.0
-        chi_sq_lowpt_4j2b: 27.0
-        SvB_tail: 197.0
+        SvB_tail: 2.0
+        SvB_tail_lowpt: 0.0
       weights:
         lumimask: 14.27352584302999
         passNoiseFilter: 14.27352584302999
@@ -157,10 +139,8 @@ TTToSemiLeptonic_2022_EE:
         nominal_3j2b: 2.2160497972087345
         lowpt_4j2b: 1.3490176275425534
         lowpt_3j2b: 1.0899218906051815
-        chi_sq_nom_4j2b: 2.969290229344811
-        chi_sq_nom_3j2b: 1.021401518264152
-        chi_sq_lowpt_4j2b: 1.021401518264152
-        SvB_tail: 6.702247750033686
+        SvB_tail: 0.045927453324410374
+        SvB_tail_lowpt: 0.0
     mu_region:
       events:
         lumimask: 566.0
@@ -177,10 +157,8 @@ TTToSemiLeptonic_2022_EE:
         nominal_3j2b: 82.0
         lowpt_4j2b: 47.0
         lowpt_3j2b: 47.0
-        chi_sq_nom_4j2b: 102.0
-        chi_sq_nom_3j2b: 27.0
-        chi_sq_lowpt_4j2b: 29.0
-        SvB_tail: 256.0
+        SvB_tail: 3.0
+        SvB_tail_lowpt: 0.0
       weights:
         lumimask: 20.89299659626988
         passNoiseFilter: 20.89299659626988
@@ -196,45 +174,35 @@ TTToSemiLeptonic_2022_EE:
         nominal_3j2b: 3.010836806094106
         lowpt_4j2b: 1.5695449994169781
         lowpt_3j2b: 1.935574113084248
-        chi_sq_nom_4j2b: 3.71843842147014
-        chi_sq_nom_3j2b: 1.0374645056657128
-        chi_sq_lowpt_4j2b: 1.1279471448633882
-        SvB_tail: 9.465824209812629
+        SvB_tail: 0.10765567582068022
+        SvB_tail_lowpt: 0.0
     SR:
       events:
-        nominal_4j2b: 74.0
-        nominal_3j2b: 26.0
-        lowpt_4j2b: 14.0
-        lowpt_3j2b: 17.0
-        chi_sq_nom_4j2b: 52.0
-        chi_sq_nom_3j2b: 10.0
-        chi_sq_lowpt_4j2b: 11.0
-        SvB_tail: 105.0
+        nominal_4j2b: 68.0
+        nominal_3j2b: 21.0
+        lowpt_4j2b: 10.0
+        lowpt_3j2b: 16.0
+        SvB_tail: 5.0
+        SvB_tail_lowpt: 0.0
       weights:
-        nominal_4j2b: 2.7625553619138734
-        nominal_3j2b: 0.8888895120810585
-        lowpt_4j2b: 0.47355995220337943
-        lowpt_3j2b: 0.6001902320323025
-        chi_sq_nom_4j2b: 1.9216591851695166
-        chi_sq_nom_3j2b: 0.36336844322093487
-        chi_sq_lowpt_4j2b: 0.38829983581880084
-        SvB_tail: 3.8363055461495548
+        nominal_4j2b: 2.51098455702863
+        nominal_3j2b: 0.7816659967446834
+        lowpt_4j2b: 0.3885234197431969
+        lowpt_3j2b: 0.5780032491561099
+        SvB_tail: 0.1535831291450906
+        SvB_tail_lowpt: 0.0
     CR:
       events:
-        nominal_4j2b: 42.0
-        nominal_3j2b: 31.0
-        lowpt_4j2b: 16.0
-        lowpt_3j2b: 17.0
-        chi_sq_nom_4j2b: 31.0
-        chi_sq_nom_3j2b: 12.0
-        chi_sq_lowpt_4j2b: 12.0
-        SvB_tail: 75.0
+        nominal_4j2b: 43.0
+        nominal_3j2b: 28.0
+        lowpt_4j2b: 17.0
+        lowpt_3j2b: 13.0
+        SvB_tail: 0.0
+        SvB_tail_lowpt: 0.0
       weights:
-        nominal_4j2b: 1.5075998699451736
-        nominal_3j2b: 1.2560774640332628
-        lowpt_4j2b: 0.6026656842976659
-        lowpt_3j2b: 0.7377902366097857
-        chi_sq_nom_4j2b: 1.1708378956930892
-        chi_sq_nom_3j2b: 0.5105335526288031
-        chi_sq_lowpt_4j2b: 0.5105335526288031
-        SvB_tail: 2.848055790852625
+        nominal_4j2b: 1.5946868937279401
+        nominal_3j2b: 1.0396022993160312
+        lowpt_4j2b: 0.5698305568529087
+        lowpt_3j2b: 0.5541501993373111
+        SvB_tail: 0.0
+        SvB_tail_lowpt: 0.0

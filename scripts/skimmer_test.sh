@@ -14,12 +14,12 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-OUTPUT_DIR="${OUTPUT_BASE_DIR}/${JOB_NAME}/"
+OUTPUT_DIR="${OUTPUT_BASE_DIR}/${JOB_NAME}"
 create_output_directory "$OUTPUT_DIR"
 
 display_section_header "Changing metadata"
-BASE_PATH="/srv/${OUTPUT_DIR}/"
-[[ $(hostname) = *runner* ]] && BASE_PATH="/builds/${CI_PROJECT_PATH}/${JOB_NAME}/"
+BASE_PATH="${OUTPUT_DIR}"
+[[ $(hostname) = *runner* ]] && BASE_PATH="/builds/${CI_PROJECT_PATH}/${JOB_NAME}"
 
 sed -e "s|base_path.*|base_path: ${BASE_PATH}|" \
     -e "s|#max.*|maxchunks: 2|" \

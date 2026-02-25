@@ -10,23 +10,23 @@ main:
 dataset:
   - module: bbWW.svb.Eval
     option:
-      - --metadata bbreww/metadata/classifier/datasets/datasets_v4
+      - --metadata bbreww/metadata/classifier/datasets/datasets_v5
       - --max-workers 4 
       - --mc-processes GluGluToHHTo2B2VLNu2J ttbar 
-      - --friends "" bbreww/metadata/classifier/friendtrees/output_friend.json@@classifier_input
+      - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input
   - module: bbWW.svb.Eval
     option:
-      - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v4
+      - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
       - --max-workers 4 
       - --mc-processes WplusJets tW
-      - --friends "" bbreww/metadata/classifier/friendtrees/minorbkg_friend.json@@classifier_input
+      - --friends "" bbreww/metadata/classifier/input/minorbkg_friend.json@@classifier_input
   - module: bbWW.svb.DataEval
     option:
       - --no-SR # remove SR
       - --data-source detector # loads data
-      - --metadata bbreww/metadata/classifier/datasets/datasets_data_v4 # choose dataset
+      - --metadata bbreww/metadata/classifier/datasets/datasets_data_v5 # choose dataset
       - --max-workers 4 
-      - --friends "" bbreww/metadata/classifier/friendtrees/data_friend.json@@classifier_input # set input friend tree
+      - --friends "" bbreww/metadata/classifier/input/data_friend.json@@classifier_input # set input friend tree
 
 
 model:

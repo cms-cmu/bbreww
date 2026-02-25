@@ -1,4 +1,4 @@
-data__EGamma0:
+data__EGamma:
   2022_preEE:
     lumi: 7.98
     nanoAOD: 
@@ -46,82 +46,58 @@ data__EGamma0:
   2023_preBPix: ## 2023 era labels are arbitrary
     lumi:
     nanoAOD:
-      A: /EGamma0/Run2023C-22Sep2023_v1-v1/NANOAOD
-      B: /EGamma0/Run2023C-22Sep2023_v2-v1/NANOAOD
-      C: /EGamma0/Run2023C-22Sep2023_v3-v1/NANOAOD
-      D: /EGamma0/Run2023C-22Sep2023_v4-v1/NANOAOD
+      C01: /EGamma0/Run2023C-22Sep2023_v1-v1/NANOAOD
+      C02: /EGamma0/Run2023C-22Sep2023_v2-v1/NANOAOD
+      C03: /EGamma0/Run2023C-22Sep2023_v3-v1/NANOAOD
+      C04: /EGamma0/Run2023C-22Sep2023_v4-v1/NANOAOD
+      C11: /EGamma1/Run2023C-22Sep2023_v1-v1/NANOAOD
+      C12: /EGamma1/Run2023C-22Sep2023_v2-v1/NANOAOD
+      C13: /EGamma1/Run2023C-22Sep2023_v3-v1/NANOAOD
+      C14: /EGamma1/Run2023C-22Sep2023_v4-v1/NANOAOD
     picoAOD:
-      A: 
+      C01: 
         count: 67598081.0
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__EGamma0_2023_preBPixA/picoAOD.root
         saved_events: 149586
         total_events: 67598081
-      B:
+      C02:
         count: 17233307.0
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__EGamma0_2023_preBPixB/picoAOD.root
         saved_events: 45381
         total_events: 17233307
-      C:
+      C03:
         count: 21993048.0
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__EGamma0_2023_preBPixC/picoAOD.root
         saved_events: 57658
         total_events: 21993048
-      D:
+      C04:
         count: 160108119.0
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__EGamma0_2023_preBPixD/picoAOD.root
         saved_events: 386152
         total_events: 160108119
-  2023_BPix: ## 2023 era labels are arbitrary
-    lumi:
-    nanoAOD:
-      D: /EGamma0/Run2023D-22Sep2023_v1-v1/NANOAOD
-      E: /EGamma0/Run2023D-22Sep2023_v2-v1/NANOAOD
-    picoAOD:
-      D:
-        count: 105892646.0
-        files:
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__EGamma0_2023_BPixD/picoAOD.root
-        saved_events: 256652
-        total_events: 105892646
-      E:
-        count: 22657211.0
-        files:
-        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__EGamma0_2023_BPixE/picoAOD.root
-        saved_events: 54830
-        total_events: 22657211
-
-data__EGamma1:
-  2023_preBPix: ## 2023 era labels are arbitrary
-    lumi:
-    nanoAOD:
-      A: /EGamma1/Run2023C-22Sep2023_v1-v1/NANOAOD
-      B: /EGamma1/Run2023C-22Sep2023_v2-v1/NANOAOD
-      C: /EGamma1/Run2023C-22Sep2023_v3-v1/NANOAOD
-      D: /EGamma1/Run2023C-22Sep2023_v4-v1/NANOAOD
-    picoAOD:
-      A:
+      C11:
         count: 67582665.0
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__EGamma1_2023_preBPixA/picoAOD.root
         saved_events: 150524
         total_events: 67582665
-      B:
+      C12:
         count: 17230822.0
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__EGamma1_2023_preBPixB/picoAOD.root
         saved_events: 45072
         total_events: 17230822
-      C:
+      C13:
         count: 21987586.0
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__EGamma1_2023_preBPixC/picoAOD.root
         saved_events: 57317
         total_events: 21987586
-      D:
+      C14:
         count: 160049621.0
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__EGamma1_2023_preBPixD/picoAOD.root
@@ -130,16 +106,30 @@ data__EGamma1:
   2023_BPix: ## 2023 era labels are arbitrary
     lumi:
     nanoAOD:
-      D: /EGamma1/Run2023D-22Sep2023_v1-v1/NANOAOD
-      E: /EGamma1/Run2023D-22Sep2023_v2-v1/NANOAOD
+      D01: /EGamma0/Run2023D-22Sep2023_v1-v1/NANOAOD
+      D02: /EGamma0/Run2023D-22Sep2023_v2-v1/NANOAOD
+      D11: /EGamma1/Run2023D-22Sep2023_v1-v1/NANOAOD
+      D12: /EGamma1/Run2023D-22Sep2023_v2-v1/NANOAOD
     picoAOD:
-      D:
+      D01:
+        count: 105892646.0
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__EGamma0_2023_BPixD/picoAOD.root
+        saved_events: 256652
+        total_events: 105892646
+      D02:
+        count: 22657211.0
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__EGamma0_2023_BPixE/picoAOD.root
+        saved_events: 54830
+        total_events: 22657211
+      D11:
         count: 105824276.0
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__EGamma1_2023_BPixD/picoAOD.root
         saved_events: 256829
         total_events: 105824276
-      E:
+      D12:
         count: 22653287.0
         files:
         - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/data__EGamma1_2023_BPixE/picoAOD.root

@@ -45,7 +45,7 @@ def Wlnu_candidate_selection(events):
     Wlnu_cand["nu"]  = nu
     Wlnu_cand["dr"]   = Wlnu_cand["lep"].delta_r(Wlnu_cand["nu"])
     Wlnu_cand["deta"]   = Wlnu_cand["lep"].eta - Wlnu_cand["nu"].eta
-    print(Wlnu_cand["deta"])
+
     Wlnu_cand["dphi"] = Wlnu_cand["lep"].delta_phi(Wlnu_cand["nu"])
     Wlnu_cand["mT"]   = np.sqrt(2 * Wlnu_cand.lep.pt * Wlnu_cand.nu.pt * (1 - np.cos(Wlnu_cand.dphi)))
     

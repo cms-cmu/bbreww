@@ -20,7 +20,10 @@ class TTbarHists(Template):
 class regressionHists(Template):
     reg_px = H((50, -150, 150, ('nu_px', R"Regressed MET $p_x$")))
     reg_py = H((50, -150, 150, ('nu_py', R"Regressed MET $p_y$"))) 
-    reg_pz = H((50, -150, 150, ('nu_pt', R"Regressed MET $p_z$ [GeV]")))
+    reg_pz = H((50, -150, 150, ('nu_pz', R"Regressed MET $p_z$ [GeV]")))
+    sigma_pz_on = H((50, 0, 100, ('sigma_pz_on', R"on shell uncertainty")))
+    sigma_pz_off = H((50, 0, 100, ('sigma_pz_off', R"off shell uncertainty"))) 
+
     p_onshell = H((10, 0, 1.1, ('p_onshell', "on shell probability")))
     
 class SvBHists(Template):

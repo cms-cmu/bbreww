@@ -59,7 +59,7 @@ class RegressorArch:
 @dataclass
 class GBNSchedule(MilestoneStep):
     n_batches: int = 64
-    milestones: list[int] = (1, 3, 6, 10, 20, 30, 35, 38, 40, 42, 44, 46, 47, 48)
+    milestones: list[int] = (1, 3, 6, 10, 20, 30, 38, 42, 45, 47)
     gamma: float = 0.25
 
     def __post_init__(self):
@@ -159,12 +159,13 @@ class RegressorModel(Model):
         # Everything else is backbone (embedding, attention, classifier, W mass heads)
         backbone_params = [p for p in nn.parameters() if id(p) not in head_ids]
 
-        self._opt_backbone = optim.Adam(backbone_params, lr=1e-2)
-        self._opt_onshell = optim.Adam(onshell_params, lr=1e-2)
-        self._opt_offshell = optim.Adam(offshell_params, lr=1e-2)
+        self._opt_backbone = optim.Adam(backbone_params, lr=6e-3)
+        self._opt_onshell = optim.Adam(onshell_params, lr=6e-3)
+        self._opt_offshell = optim.Adam(offshell_params, lr=6e-3)
 
         # LR decay schedule: hold high LR for most of training, decay in final ~15 epochs
-        lr_milestones = [35, 38, 40, 42, 44, 46, 47, 48, 49, 50]
+        # Scaled from 75-epoch schedule to 50 epochs (~67%): decay starts at ~35
+        lr_milestones = [35, 38, 41, 43, 45, 46, 47, 48, 49, 50]
         lr_gamma = 0.25
         self._lr_backbone = MultiStepLR(self._opt_backbone, milestones=lr_milestones, gamma=lr_gamma)
         self._lr_onshell = MultiStepLR(self._opt_onshell, milestones=lr_milestones, gamma=lr_gamma)
@@ -263,6 +264,84 @@ class RegressorModel(Model):
 
         return {"scalars": scalars}
 
+    def fit_selector_gate(self, batches: Iterable[BatchType]):
+        """Fit the logistic regression selector_gate on validation data after training.
+
+        Collects (p_onshell, sigma_pz_on, sigma_pz_off) and gen labels from all
+        validation batches, then fits the 3-input linear gate with BCE loss.
+        """
+        all_features = []
+        all_labels = []
+        all_weights = []
+
+        self._nn.eval()
+        with torch.no_grad():
+            for batch in batches:
+                self._unpack_forward(batch)
+                logit_onshell = batch["logit_onshell"]
+                p_onshell = torch.sigmoid(logit_onshell)
+
+                pred_on = batch["pred_nu_on"]
+                pred_off = batch["pred_nu_off"]
+                L_on = batch["cholesky_L_on"]
+                L_off = batch["cholesky_L_off"]
+
+                cov_on = torch.bmm(L_on, L_on.transpose(-1, -2))
+                sigma_on = cov_on.diagonal(dim1=-2, dim2=-1).sqrt()
+                cov_off = torch.bmm(L_off, L_off.transpose(-1, -2))
+                sigma_off = cov_off.diagonal(dim1=-2, dim2=-1).sqrt()
+
+                genLepW = batch[Input.genLepW]
+                isLepW = genLepW[:, 0]
+                weight = batch[Input.weight].clamp(min=0)
+                has_label = (isLepW >= 0)
+
+                if has_label.sum() == 0:
+                    continue
+
+                features = torch.stack([
+                    p_onshell[has_label],
+                    sigma_on[has_label, 2],
+                    sigma_off[has_label, 2],
+                ], dim=1)
+                all_features.append(features)
+                all_labels.append(isLepW[has_label])
+                all_weights.append(weight[has_label])
+
+        if not all_features:
+            logging.warning("No labeled events for selector_gate fitting")
+            return
+
+        X = torch.cat(all_features, dim=0)  # (N, 3)
+        y = torch.cat(all_labels, dim=0)    # (N,)
+        w = torch.cat(all_weights, dim=0)   # (N,)
+
+        # Normalize weights
+        w = w / w.sum()
+
+        # Fit with BCE loss using L-BFGS (converges in few iterations for logistic regression)
+        gate = self._nn.selector_gate
+        gate.train()
+        optimizer = torch.optim.LBFGS(gate.parameters(), lr=1.0, max_iter=100)
+
+        def closure():
+            optimizer.zero_grad()
+            logits = gate(X).squeeze(-1)
+            loss = F.binary_cross_entropy_with_logits(logits, y, weight=w, reduction="sum")
+            loss.backward()
+            return loss
+
+        optimizer.step(closure)
+        gate.eval()
+
+        # Log the learned coefficients
+        with torch.no_grad():
+            w_val = gate.weight.data.squeeze()
+            b_val = gate.bias.data.item()
+            logging.info(
+                f"selector_gate fitted: w=[{w_val[0]:.3f}, {w_val[1]:.3f}, {w_val[2]:.3f}], b={b_val:.3f}"
+            )
+
     def step(self, epoch: int = None):
         if self.ghost_batch is not None and self.ghost_batch.step(epoch):
             self._nn.setGhostBatches(self.ghost_batch.get_bs(), False)
@@ -339,6 +418,14 @@ class RegressorTraining(MultiStageTraining):
             )
             self._model.ghost_batch = self._ghost_batch
             layers.setLayerRequiresGrad(requires_grad=True)
+        # Fit the logistic regression selector_gate on validation data
+        from src.classifier.nn.dataset import simple_loader
+        from src.classifier.config.setting.ml import DataLoader as DLConfig
+        val_dataset = validation_sets[SplitterKeys.validation]
+        val_loader = simple_loader(val_dataset, batch_size=DLConfig.batch_eval, shuffle=False, drop_last=False)
+        logging.info("Fitting selector_gate on validation data...")
+        self._model.fit_selector_gate(val_loader)
+
         output_stage = OutputStage(name="Final", path=f"{self.name}__{self.uuid}.pkl")
         output_path = output_stage.absolute_path
         if not output_path.is_null:
@@ -400,6 +487,8 @@ class RegressorModelEval(Model):
 
         nu_pred_on, L_on, nu_pred_off, L_off, (logit_onshell, pz_hint_on) = self._nn(*_RegressorInput(batch, self._device, selection))
         p_onshell = torch.sigmoid(logit_onshell)
+        
+        jet_weights = self._nn._jet_weights  # (n, 6): per-jet attention weights (2 heads × 3 jets)
 
         # Extract marginal sigmas from Cholesky: sigma_i = sqrt((L @ L^T)_{ii})
         cov_on = torch.bmm(L_on, L_on.transpose(-1, -2))
@@ -407,8 +496,11 @@ class RegressorModelEval(Model):
         cov_off = torch.bmm(L_off, L_off.transpose(-1, -2))
         sigma_off = cov_off.diagonal(dim1=-2, dim2=-1).sqrt()
 
-        # Select neutrino based on classifier: p_onshell > 0.5 → use on-shell regressor
-        use_on = (p_onshell > 0.5).unsqueeze(-1)  # (n, 1)
+        # Select neutrino using learned logistic regression gate
+        # Fitted on validation data after training; replaces hard cuts on p_onshell and sigma_pz
+        gate_input = torch.stack([p_onshell, sigma_on[:, 2], sigma_off[:, 2]], dim=1)  # (n, 3)
+        gate_logit = self._nn.selector_gate(gate_input).squeeze(-1)  # (n,)
+        use_on = (gate_logit > 0.0).unsqueeze(-1)  # (n, 1)
         nu_sel = torch.where(use_on, nu_pred_on, nu_pred_off)
         sigma_sel = torch.where(use_on, sigma_on, sigma_off)
 
@@ -428,8 +520,18 @@ class RegressorModelEval(Model):
             "nu_px_off": nu_pred_off[:, 0],
             "nu_py_off": nu_pred_off[:, 1],
             "nu_pz_off": nu_pred_off[:, 2],
+            # Per-hypothesis sigmas (before selection)
+            "nu_sigma_pz_on": sigma_on[:, 2],
+            "nu_sigma_pz_off": sigma_off[:, 2],
             # Classifier
             "p_onshell": p_onshell,
+            # Per-jet attention weights (2 heads × 3 jets)
+            "jet_weight_0": jet_weights[:, 0],
+            "jet_weight_1": jet_weights[:, 1],
+            "jet_weight_2": jet_weights[:, 2],
+            "jet_weight_3": jet_weights[:, 3],
+            "jet_weight_4": jet_weights[:, 4],
+            "jet_weight_5": jet_weights[:, 5],
         }
         return selector.pad(map_batch(self._mapping, output))
 

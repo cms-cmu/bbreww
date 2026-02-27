@@ -17,6 +17,7 @@ def add_gen_info(events, is_mc):
         events['genNu_pt'] = ak.fill_none(genNu.pt, np.nan)
         events['genNu_eta'] = ak.fill_none(genNu.eta, np.nan)
         events['genNu_phi'] = ak.fill_none(genNu.phi, np.nan)
+        events['genNu_pz'] = ak.fill_none(genNu.pz, np.nan)
 
         ## non-bjets gen matched with W jets decaying to quarks
         gen_qFromW = gen_match(events.GenPart, [1,2,3,4], [24])
@@ -43,15 +44,18 @@ def add_gen_info(events, is_mc):
 
             if 'HH' in events.metadata['dataset']:
                 events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
-
+                
             ## flag which W is on shell (only for signal)
             is_lep = ((events.GenPart[events.GenPart.genPartIdxMother].isW) &
                 ((abs(events.GenPart.pdgId) == 11) | (abs(events.GenPart.pdgId) == 13))) # electrons or muons
             
             lepWidx = gen[is_lep].genPartIdxMother
             gen_lepW = gen[lepWidx]
-            events['gen_lepW_mass'] = ak.fill_none(ak.firsts(gen_lepW.mass), np.nan)
-            
+            events['gen_lepW_mass'] = ak.fill_none(
+                ak.firsts(ak.values_astype(gen_lepW.mass, np.float32)),
+                np.nan
+            )
+
             hadWidx = gen[~is_lep & (abs(gen.pdgId) <= 5)].genPartIdxMother
             hadW = events.GenPart[hadWidx]
             hadW = hadW[hadW.isW]
@@ -191,7 +195,7 @@ def gen_studies(events, is_mc):
         gen_W= events.GenPart[events.GenPart.isW]
         gen_b = ak.pad_none(events.gen_bFromH, 2,axis=1)
 
-        try:
+        if 1 == 1:
             ## non-bjets gen matched with W jets decaying to quarks
             j_sel = events.Jet[events.Jet.isclean]
             j_sel = j_sel[j_sel.preselected]
@@ -218,26 +222,36 @@ def gen_studies(events, is_mc):
             events['q_nom_true_lead'] =  ak.fill_none(ak.mask(sel_jets_nom.pt, 
                                                       (ak.sum(sel_jets_nom.isQfromW,axis=1) == 2))[:,0], 
                                                       np.nan)
-            # check how well ML classifier is selecting jets (test)
-            ml_qq_scores = ak.concatenate(
-                [ak.singletons(events.SvB.WW_score1),
-                 ak.singletons(events.SvB.WW_score2),
-                 ak.singletons(events.SvB.WW_score3)], axis=1)
-            ml_qq_scores = ak.mask(ml_qq_scores, ~np.isnan(events.SvB.phh))
-            ml_qq_index = ak.argmax(ml_qq_scores, axis=1, keepdims=True)
 
-            valid_mask = ~np.isnan(events.SvB.phh) & (ak.num(events.q_cands_soft) >= 2) & ~(ak.firsts(ml_qq_index == 2) & ak.num(events.q_cands_soft) == 2)
-            qq_jet_map = ak.mask(ak.argcombinations(events.q_cands_soft, 2, fields = ["l", "sl"]), valid_mask)
-
-            sel_qq_l = events.q_cands_soft[qq_jet_map[ml_qq_index].l]
-            sel_qq_sl = events.q_cands_soft[qq_jet_map[ml_qq_index].sl]
-            sel_qq_l = sel_qq_l[sel_qq_l.isQfromW]
-            sel_qq_sl = sel_qq_sl[sel_qq_sl.isQfromW]
-
-            events['q_ml_true_lead'] = ak.fill_none(ak.mask(sel_qq_l.pt, ak.num(sel_qq_sl.pt) == 1), np.nan)
-            events['q_ml_true_sublead'] = ak.fill_none(ak.mask(sel_qq_sl.pt, ak.num(sel_qq_l.pt) == 1), np.nan)
-        except:
-            pass #above sequence will fail for datasets that don't have jets in every event
+            # non b-jets selected from regressor classification
+            #n_true_soft = ak.sum(events.q_cands_soft.isQfromW, axis=1)
+            #ml_lead_correct = (events.sel_qq_l.isQfromW == 1)
+            #ml_sublead_correct = (events.sel_qq_sl.isQfromW == 1)
+            #
+            ## both jets correct (denominator: 2 true jets in q_cands_soft)
+            #both_in_soft = n_true_soft == 2
+            #ml_both_correct = ml_lead_correct & ml_sublead_correct & both_in_soft
+            #events['q_ml_true_lead'] = ak.where(ml_both_correct, events.q_soft_true_lead, np.nan)
+            #events['q_ml_true_sublead'] = ak.where(ml_both_correct, events.q_soft_true_sublead, np.nan)
+            #
+            ## leading ML jet correct (denominator: >= 1 true jet in q_cands_soft)
+            #at_least_one = n_true_soft >= 1
+            #lead_pt = ak.fill_none(ak.mask(sel_jets_soft.pt, at_least_one)[:,0], np.nan)
+            #events['q_ml_lead_denom'] = lead_pt
+            #events['q_ml_lead_numer'] = ak.where(ml_lead_correct & at_least_one, lead_pt, np.nan)
+            #
+            ## subleading ML jet correct (denominator: >= 2 true jets in q_cands_soft)
+            #events['q_ml_sublead_denom'] = events.q_soft_true_sublead  # already requires == 2
+            #events['q_ml_sublead_numer'] = ak.where(ml_sublead_correct & both_in_soft,
+            #                                         events.q_soft_true_sublead, np.nan)
+            #
+            ## p_onshell and sigma_pz_on for misclassified events with gen_lepW_mass < 20 GeV
+            #low_genW = events.gen_lepW_mass < 20.0
+            #misclass_low_genW = low_genW
+            #events['misclass_p_onshell'] = ak.where(misclass_low_genW, events.met_regressor.p_onshell, np.nan)
+            #events['misclass_sigma_pz_on'] = ak.where(misclass_low_genW, events.met_regressor.sigma_pz_off, np.nan)
+        #except:
+        #    pass #above sequence will fail for datasets that don't have jets in every event
 
         ## met and W mass resolution
         #events['W_mass_res'] = ak.firsts(gen_W.mass[gen_W.mass < 55.0]) - events.qq_sel_mass

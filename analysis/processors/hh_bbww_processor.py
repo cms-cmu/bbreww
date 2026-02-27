@@ -1,3 +1,4 @@
+
 import warnings
 import logging
 
@@ -178,7 +179,7 @@ class analysis(processor.ProcessorABC):
             for k in self.friends:
                 if k.startswith("met_regressor"):
                     events[k] = self.friends[k].arrays(target) # load MET regression outputs
-                    
+            
         if self.apply_dvtt:
             for k in self.friends:
                 if k.startswith("DvTT"):
@@ -339,9 +340,10 @@ class analysis(processor.ProcessorABC):
                 | dump_input_friend(
                     selected_events[selected_events.nominal_4j2b | selected_events.lowpt_4j2b], # selected_events[selected_events.nominal_4j2b]
                     self.make_classifier_input,
-                    "classifier_input_regressor",
+                    "regressor_input_4nb",
                     full_selection, # nominal_selection
                     nonbcand = "q_cands_soft",
+                    met = "MET",
                     weight = "weight",
                 )
             )

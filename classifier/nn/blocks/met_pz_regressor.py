@@ -1,32 +1,29 @@
 from .bbWW_models import *
 
-class OnShellClassifier(nn.Module):
-    """Binary classifier for on-shell vs off-shell leptonic W.
+# helper: signed-log W mass quadratic discriminant for classifier
+def _w_mass_discriminant(lep_pt, lep_eta, lep_phi, lep_mass, nu_px, nu_py):
+    lep_px = lep_pt * torch.cos(lep_phi)
+    lep_py = lep_pt * torch.sin(lep_phi)
+    lep_pz = lep_pt * torch.sinh(lep_eta)
+    lep_E = torch.sqrt(lep_px**2 + lep_py**2 + lep_pz**2 + lep_mass**2)
+    A = (lep_px * nu_px + lep_py * nu_py) + (80.379**2 - lep_E**2 + lep_px**2 + lep_py**2 + lep_pz**2) / 2
+    C = lep_E**2 - lep_pz**2
+    met_pt_sq = nu_px**2 + nu_py**2
+    disc = (2 * A * lep_pz)**2 - 4 * (lep_E**2 * met_pt_sq - A**2) * C
+    return (torch.sign(disc) * torch.log1p(torch.abs(disc))).unsqueeze(1)  # (n, 1, 1)
 
-    Routes events to the appropriate neutrino regressor at inference time.
-    Trained with BCE on isLepW labels.
-    """
+# helper function: per-event Cholesky factors for both hypotheses
+def _build_cholesky(chol_raw):
+    n = chol_raw.shape[0]
+    L = torch.zeros(n, 3, 3, device=chol_raw.device, dtype=chol_raw.dtype)
+    L[:, 0, 0] = F.softplus(chol_raw[:, 0]).clamp(min= 1e-6, max=200.0)
+    L[:, 1, 0] = chol_raw[:, 1]
+    L[:, 1, 1] = F.softplus(chol_raw[:, 2]).clamp(min= 1e-6, max=200.0)
+    L[:, 2, 0] = chol_raw[:, 3]
+    L[:, 2, 1] = chol_raw[:, 4]
+    L[:, 2, 2] = F.softplus(chol_raw[:, 5]).clamp(min= 1e-6, max=200.0)
+    return L
 
-    def __init__(self, dD):
-        super().__init__()
-        # Shared residual block
-        self.block = nn.Sequential(
-            GhostBatchNorm1d(dD, features_out=dD, conv=True),
-            NonLUModule(),
-            GhostBatchNorm1d(dD, features_out=dD, conv=True),
-            NonLUModule(),
-        )
-        # Binary classifier: p(on-shell)
-        self.classifier = nn.Sequential(
-            GhostBatchNorm1d(dD, features_out=1, conv=True),
-        )
-
-    def forward(self, x):
-        # Residual connection
-        x = x + self.block(x)
-        logit_onshell = self.classifier(x).squeeze(-1).squeeze(-1)  # (n,): raw logit
-        return logit_onshell
-    
 class InputEmbed(nn.Module):
     def __init__(
         self,
@@ -396,6 +393,8 @@ class InputEmbed(nn.Module):
         return b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR, mask, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep, derived_kinematics, kinematic_solutions
 
     def updateMeanStd(self,  b, nb, l, nu, a):
+        if b.shape[0] == 0: # guard against empty batches from random initialization
+            return
         (b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR,
         mask, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep, derived_kinematics, kinematic_solutions) = self.dataPrep(
                                                                         b, nb, l, nu, a)
@@ -591,7 +590,49 @@ class InputEmbed(nn.Module):
         soln = self.solnConv(NonLU(soln))
 
         return b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep, derived, soln, kinematic_solutions
-    
+  
+
+class OnShellClassifier(nn.Module):
+    """Binary classifier for on-shell vs off-shell leptonic W.
+
+    Routes events to the appropriate neutrino regressor at inference time.
+    Trained with BCE on isLepW labels.
+
+    Input: onshell_input + oss_80 + oss_40 + disc_feat = 2*dD + 12
+    """
+
+    def __init__(self, dD):
+        super().__init__()
+        # Project enriched input (2*dD + 12) down to dD
+        self.input_embed = GhostBatchNorm1d(2*dD + 12, features_out=dD, conv=True)
+        # Two residual blocks
+        self.block1 = nn.Sequential(
+            GhostBatchNorm1d(dD, features_out=dD, conv=True),
+            NonLUModule(),
+            GhostBatchNorm1d(dD, features_out=dD, conv=True),
+            NonLUModule(),
+        )
+        self.block2 = nn.Sequential(
+            GhostBatchNorm1d(dD, features_out=dD, conv=True),
+            NonLUModule(),
+            GhostBatchNorm1d(dD, features_out=dD, conv=True),
+            NonLUModule(),
+        )
+        # Binary classifier: p(on-shell)
+        self.classifier = nn.Sequential(
+            GhostBatchNorm1d(dD, features_out=dD, conv=True),
+            NonLUModule(),
+            GhostBatchNorm1d(dD, features_out=1, conv=True),
+        )
+
+    def forward(self, classifier_input):
+        # classifier_input: (n, 2*dD+12, 1)
+        x = self.input_embed(classifier_input)
+        x = x + self.block1(x)
+        x = x + self.block2(x)
+        logit_onshell = self.classifier(x).squeeze(-1).squeeze(-1)  # (n,): raw logit
+        return logit_onshell
+      
 class METRegressor(nn.Module):
     def __init__(
         self,
@@ -681,7 +722,7 @@ class METRegressor(nn.Module):
             phase_symmetric=self.phase_symmetric,
             scalar_dim = 4,
             layers=self.layers,
-            inputLayers=[self.lepWResNetBlock.conv[-1], self.nonbDiJetResNetBlock.reinforce[-1]],
+            inputLayers=[self.lepWResNetBlock.conv[-1], self.inputEmbed.nonbJetConv],
             device=self.device,
         )
         self.layers.addLayer(self.attention_WW, self.attention_WW.inputLayers)
@@ -719,23 +760,22 @@ class METRegressor(nn.Module):
         )
         self.layers.addLayer(self.select_tt, [self.attention_tt])
 
-        self.select_WW = GhostBatchNorm1d(
-            self.dD,
-            features_out=1,  # Single score per candidate
+        # Embed lepton-jet deltaR for attention bias (qv)
+        self.jet_dR_embed = GhostBatchNorm1d(
+            1,
+            features_out=self.dD,
             conv=True,
-            bias=False,  # No bias because softmax is translation invariant
-            name="non-bjet pairing selector"
+            name="jet deltaR embedder",
         )
-        self.layers.addLayer(self.select_WW, [self.attention_WW])
 
         self.onshell_classifier = OnShellClassifier(self.dD)
 
-        dH = self.dD * 4  # wider hidden dim for regressor heads (8 → 32)
+        dH = self.dD * 4  # wider hidden dim for regressor heads
 
-        # On-shell neutrino regressor: outputs (dpx, dpy, logit_sol)
-        # logit_sol is a binary logit: sigmoid > 0.5 → prefer pz_sol1, else pz_sol2
+        # On-shell neutrino regressor: outputs (dpx, dpy)
+        # +dD: lep_W0, +2: init_px/py, +1: lnu_mT, +6: jet_weights = 2*dD+9
         self.nu_regressor_onshell = nn.Sequential(
-            GhostBatchNorm1d(self.dD, features_out=dH, conv=True),   # expand
+            GhostBatchNorm1d(2*self.dD + 9, features_out=dH, conv=True),   # expand
             NonLUModule(),
             GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
@@ -745,11 +785,26 @@ class METRegressor(nn.Module):
             NonLUModule(),
             GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(dH, features_out=3, conv=True),         # dpx, dpy, logit_sol
+            GhostBatchNorm1d(dH, features_out=2, conv=True),         # dpx, dpy
         )
-        # Off-shell neutrino regressor: takes context + 4 pz solutions as input
+        # pz solution selector: onshell_input + rapidity gaps + |eta_nu| + oss_corrected
+        # Runs after px/py correction so features use corrected pz solutions
+        # +dD: lep_W0, +2: init_px/py, +1: lnu_mT, +6: jet_weights,
+        # +2: deta_sol1/2, +2: |eta_nu_sol1/2|, +1: log1p(oss_corrected) = 2*dD+14
+        self.pz_selector = nn.Sequential(
+            GhostBatchNorm1d(2*self.dD + 14, features_out=dH, conv=True),
+            NonLUModule(),
+            GhostBatchNorm1d(dH, features_out=dH, conv=True),
+            NonLUModule(),
+            GhostBatchNorm1d(dH, features_out=1, conv=True),         # logit_sol
+        )
+        # Off-shell neutrino regressor: context + lep_W0 + 4 pz solutions + lnu_mT + jet_weights
+        # +dD: lep_W0, +4: pz solutions, +1: lnu_mT, +6: jet_weights (2 heads * 3 jets) = 2*dD+11
+        # Extra hidden layer vs on-shell head: unconstrained 3D regression is harder
         self.nu_regressor_offshell = nn.Sequential(
-            GhostBatchNorm1d(self.dD + 4, features_out=dH, conv=True),  # expand
+            GhostBatchNorm1d(2*self.dD + 11, features_out=dH, conv=True),  # expand
+            NonLUModule(),
+            GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
             GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
@@ -765,19 +820,28 @@ class METRegressor(nn.Module):
         # Per-event Cholesky factor heads for full 3x3 covariance of (px, py, pz)
         # Outputs 6 parameters: L11, L21, L22, L31, L32, L33 (lower-triangular)
         self.nu_cholesky_onshell = nn.Sequential(
-            GhostBatchNorm1d(self.dD, features_out=dH, conv=True),
+            GhostBatchNorm1d(2*self.dD + 9, features_out=dH, conv=True),
             NonLUModule(),
             GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
             GhostBatchNorm1d(dH, features_out=6, conv=True),
         )
         self.nu_cholesky_offshell = nn.Sequential(
-            GhostBatchNorm1d(self.dD + 4, features_out=dH, conv=True),
+            GhostBatchNorm1d(2*self.dD + 11, features_out=dH, conv=True),
             NonLUModule(),
             GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
             GhostBatchNorm1d(dH, features_out=6, conv=True),
         )
+
+        # Post-hoc logistic regression for on-shell vs off-shell selection at inference.
+        # Input: (p_onshell, sigma_pz_on, sigma_pz_off) → logit.
+        # Fitted on validation data after training completes; replaces hard cuts.
+        self.selector_gate = nn.Linear(3, 1)
+        # Initialize to approximate the old hard cuts as a starting point
+        with torch.no_grad():
+            self.selector_gate.weight.copy_(torch.tensor([[2.0, 0.5, -0.5]]))
+            self.selector_gate.bias.copy_(torch.tensor([-1.0]))
 
         self.forwardCalls = 0
 
@@ -802,11 +866,14 @@ class METRegressor(nn.Module):
         self.scalars_embed.setGhostBatches(nGhostBatches)
         self.qv_embed.setGhostBatches(nGhostBatches)
         self.select_tt.setGhostBatches(nGhostBatches)
-        self.select_WW.setGhostBatches(nGhostBatches)
+        self.jet_dR_embed.setGhostBatches(nGhostBatches)
         # Output heads: iterate GBN layers in sequential modules and classifier
-        for module in (self.nu_regressor_onshell, self.nu_regressor_offshell,
+        self.onshell_classifier.input_embed.setGhostBatches(nGhostBatches)
+        for module in (self.nu_regressor_onshell, self.pz_selector,
+                       self.nu_regressor_offshell,
                        self.nu_cholesky_onshell, self.nu_cholesky_offshell,
-                       self.onshell_classifier.block, self.onshell_classifier.classifier):
+                       self.onshell_classifier.block1, self.onshell_classifier.block2,
+                       self.onshell_classifier.classifier):
             for layer in module:
                 if hasattr(layer, "setGhostBatches"):
                     layer.setGhostBatches(nGhostBatches)
@@ -818,6 +885,7 @@ class METRegressor(nn.Module):
         # Save raw inputs before embedding overwrites them
         raw_met = nu.clone()  # (n, 2): [pt, phi]
         raw_lep = l.clone()   # (n, 6): [pt, eta, phi, mass, isE, isM]
+        raw_nb  = nb.clone()  # (n, 4*nj): non-b jets for deltaR computation
         (b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bbqqMdR,
         bWhadMdR, bWlepMdR, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep,
         derived, soln, kinematic_solutions) = self.inputEmbed(
@@ -895,66 +963,127 @@ class METRegressor(nn.Module):
         TT_score = F.softmax(TT_logits, dim=-1)  # Shape: (n, 6)
         TT_context = torch.matmul(TT, TT_score.unsqueeze(-1))
 
+        # Individual jet attention: leptonic W queries individual non-b jets
+        nb_jets = nb[:, :, :3]          # (n, dD, 3) original jets (drop augmented permutations)
+        jet_mask = mask_bbn.view(n, 3)  # (n, 3) per-jet padding mask
+
+        # Compute deltaR between lepton and individual jets from raw kinematics
+        nb_raw = raw_nb.view(n, 4, -1)[:, :, :3]  # (n, 4, 3) original raw jets
+        lep_raw = raw_lep.view(n, 6, 1)
+        lepNBdR = calcDeltaR(lep_raw, nb_raw)      # (n, 1, 3)
+        jet_dR = self.jet_dR_embed(lepNBdR, jet_mask)  # (n, dD, 3) embedded deltaR
+
         WW, WW0, WW_weights = self.attention_WW(
-            lep_W.expand(-1, -1, 3),
-            qq,
-            mask_qq.unsqueeze(1).expand(-1, 3, -1),
-            lep_W0.expand(-1, -1, 3),
-            qqMdR,
+            lep_W,                     # q:  (n, dD, 1) single leptonic W query
+            nb_jets,                   # v:  (n, dD, 3) individual jets
+            jet_mask.unsqueeze(1),     # mask: (n, 1, 3)
+            lep_W0,                    # q0: (n, dD, 1) residual
+            jet_dR,                    # qv: (n, dD, 3) deltaR attention bias
             scalars,
             self.debug
         )
+        # WW is (n, dD, 1) - enriched leptonic W after attending to jets
+        WW_sel = WW
 
-        WW_logits = self.select_WW(WW).view(n, 3)
-        WW_logits = F.softmax(WW_logits, dim=-1)
-        self._WW_logits = WW_logits.detach()
-        WW_sel = torch.matmul(WW, WW_logits.unsqueeze(-1))  # (n, dD, 1)
+        # Per-jet attention weights (attached for gradient flow)
+        # Concatenate heads to preserve per-head information: (n, h, 1, 3) -> (n, h*3)
+        jet_weights = WW_weights.squeeze(2).reshape(n, -1)  # (n, h*3=6)
+        self._jet_weights = jet_weights.detach()  # for monitoring
 
         # build context from all other objects in the event
         leptonic_query = lep_W + soln + derived  # all (n, dD, 1)
         full_context = leptonic_query + WW_sel + TT_context + bb  # (n, dD, 1)
-
-        # Classify on-shell vs off-shell
-        logit_onshell = self.onshell_classifier(full_context)
 
         # Initial estimate: px, py from MET; pz from kinematic solutions
         met_pt = raw_met[:, 0:1]   # (n, 1)
         met_phi = raw_met[:, 1:2]  # (n, 1)
         init_px = met_pt * torch.cos(met_phi)  # (n, 1)
         init_py = met_pt * torch.sin(met_phi)  # (n, 1)
-        
-        # On-shell initial pz: average of 80 GeV W mass constraint solutions
-        init_pz_on = 0.5 * (kinematic_solutions[:, 0, :] + kinematic_solutions[:, 1, :])  # (n, 1)
-        # Off-shell initial pz: average of 40 GeV W mass constraint solutions
-        init_pz_off = 0.5 * (kinematic_solutions[:, 3, :] + kinematic_solutions[:, 4, :])  # (n, 1)
-        nu_init_off = torch.cat([init_px, init_py, init_pz_off], dim=1)  # (n, 3)
 
-        # --- On-shell neutrino: analytic pz from W mass constraint ---
-        delta_on = self.nu_regressor_onshell(full_context).squeeze(-1)  # (n, 3): dpx, dpy, logit_sol
+        # Raw leptonic transverse mass from MET and lepton (before embedding)
+        lep_pt_raw = raw_lep[:, 0:1]   # (n, 1)
+        dphi_lnu = raw_lep[:, 2:3] - raw_met[:, 1:2]  # lep phi - MET phi
+        lnu_mT_raw = torch.sqrt(
+            (2 * lep_pt_raw * met_pt * (1 - torch.cos(dphi_lnu))).clamp(min=1e-6)
+        )  # (n, 1)
+
+        # Shared enriched input: full_context + lep_W0 + init_px + init_py + lnu_mT + jet_weights
+        # Used by on-shell px/py regressor and on-shell Cholesky (2*dD + 9)
+        jet_weights_feat = jet_weights.unsqueeze(-1)  # (n, 6, 1)
+        lnu_mT_feat = lnu_mT_raw.unsqueeze(1)         # (n, 1, 1)
+        onshell_input = torch.cat([
+            full_context, lep_W0,
+            init_px.unsqueeze(1), init_py.unsqueeze(1),
+            lnu_mT_feat, jet_weights_feat,
+        ], dim=1)  # (n, 2*dD+9, 1)
+
+        # Classifier gets additional discriminant features:
+        # oss_80, oss_40 (compressed off-shell scores) + W mass discriminant (continuous)
+        # log1p compresses the bimodal distribution (0 for real solutions, huge for complex).
+        # Add 1e-3 floor so all-on-shell ghost batches still have nonzero variance in GBN.
+        oss_80 = torch.log1p(kinematic_solutions[:, 2:3, :] + 1e-3)  # (n, 1, 1)
+        oss_40 = torch.log1p(kinematic_solutions[:, 5:6, :] + 1e-3)  # (n, 1, 1)
+
+        disc_feat = _w_mass_discriminant(lep_pt_raw, raw_lep[:, 1:2], raw_lep[:, 2:3], raw_lep[:, 3:4], init_px, init_py)
+
+        classifier_input = torch.cat([
+            onshell_input, oss_80, oss_40, disc_feat,
+        ], dim=1)  # (n, 2*dD+12, 1)
+
+        # Classify on-shell vs off-shell
+        logit_onshell = self.onshell_classifier(classifier_input)
+
+        # initial pz: average of 80/40 GeV W mass constraint solutions for on/off shell
+        init_pz_on = 0.5 * (kinematic_solutions[:, 0, :] + kinematic_solutions[:, 1, :])  # (n, 1)
+        init_pz_off = 0.5 * (kinematic_solutions[:, 3, :] + kinematic_solutions[:, 4, :])  # (n, 1)
+
+        nu_init_off = torch.cat([init_px, init_py, init_pz_off], dim=1)  # (n, 3)
+        delta_on = self.nu_regressor_onshell(onshell_input).squeeze(-1)  # (n, 2): dpx, dpy
         nu_px_on = init_px.squeeze(1) + delta_on[:, 0]
         nu_py_on = init_py.squeeze(1) + delta_on[:, 1]
-        logit_sol = delta_on[:, 2]  # raw logit: sigmoid > 0.5 → prefer pz_sol1
 
         # Solve W mass quadratic with corrected (px, py), mW = 80.379 GeV
-        pz_sol1, pz_sol2, _, _ = get_nu_pz_cartesian(
+        pz_sol1, pz_sol2, _, oss_corrected = get_nu_pz_cartesian(
             raw_lep[:, 0], raw_lep[:, 1], raw_lep[:, 2], raw_lep[:, 3],
             nu_px_on, nu_py_on, mW=80.379,
         )
 
-        # Binary select: sigmoid(logit_sol) > 0.5 → use sol1, else sol2
+        # Lepton-neutrino rapidity for both pz solutions (from corrected MET)
+        lep_eta = raw_lep[:, 1]  # (n,)
+        nu_E_sol1 = torch.sqrt(nu_px_on**2 + nu_py_on**2 + pz_sol1**2 + 1e-8)
+        nu_E_sol2 = torch.sqrt(nu_px_on**2 + nu_py_on**2 + pz_sol2**2 + 1e-8)
+        eta_nu_sol1 = torch.atanh((pz_sol1 / nu_E_sol1).clamp(-1 + 1e-6, 1 - 1e-6))
+        eta_nu_sol2 = torch.atanh((pz_sol2 / nu_E_sol2).clamp(-1 + 1e-6, 1 - 1e-6))
+        deta_sol1 = eta_nu_sol1 - lep_eta
+        deta_sol2 = eta_nu_sol2 - lep_eta
+
+        # pz selector: onshell context + rapidity features + corrected off-shell score
+        selector_input = torch.cat([
+            onshell_input,
+            deta_sol1.unsqueeze(-1).unsqueeze(-1),              # (n, 1, 1)
+            deta_sol2.unsqueeze(-1).unsqueeze(-1),              # (n, 1, 1)
+            eta_nu_sol1.unsqueeze(-1).unsqueeze(-1),             # (n, 1, 1)
+            eta_nu_sol2.unsqueeze(-1).unsqueeze(-1),             # (n, 1, 1)
+            torch.log1p(oss_corrected + 1e-3).unsqueeze(-1).unsqueeze(-1),  # (n, 1, 1)
+        ], dim=1)  # (n, 2*dD+14, 1)
+        logit_sol = self.pz_selector(selector_input).squeeze(-1).squeeze(-1)  # (n,)
+
+        # Binary select: sigmoid(logit_sol) > 0.5 → use sol1, else sol2 for analytic nu_pz
         use_sol1 = logit_sol > 0.0  # equivalent to sigmoid > 0.5
         nu_pz_on = torch.where(use_sol1, pz_sol1, pz_sol2)
 
         nu_pred_on = torch.stack([nu_px_on, nu_py_on, nu_pz_on], dim=1)  # (n, 3)
         logit_sol_on = logit_sol
 
-        # --- Off-shell neutrino: regress all 3 components, with pz solutions as extra input ---
+        # --- Off-shell neutrino: regress all 3 components ---
         pz_solutions = kinematic_solutions[:, [0, 1, 3, 4], :]  # (n, 4, 1): pz1_80, pz2_80, pz1_40, pz2_40
-        offshell_input = torch.cat([full_context, pz_solutions], dim=1)  # (n, dD+4, 1)
+        offshell_input = torch.cat(
+            [full_context, lep_W0, pz_solutions, lnu_mT_feat, jet_weights_feat], dim=1
+            )  # (n, 2*dD+11, 1)
         delta_off = self.nu_regressor_offshell(offshell_input).squeeze(-1)  # (n, 3)
         nu_pred_off = nu_init_off + delta_off
 
-        L_on = _build_cholesky(self.nu_cholesky_onshell(full_context).squeeze(-1))
+        L_on = _build_cholesky(self.nu_cholesky_onshell(onshell_input).squeeze(-1))
         L_off = _build_cholesky(self.nu_cholesky_offshell(offshell_input).squeeze(-1))
 
         return nu_pred_on, L_on, nu_pred_off, L_off, (logit_onshell, logit_sol_on)
@@ -968,15 +1097,3 @@ class METRegressor(nn.Module):
         # print(self.storeData)
         print(self.store)
         np.save(self.store, self.storeData)
-
-# helper function: per-event Cholesky factors for both hypotheses
-def _build_cholesky(chol_raw):
-    n = chol_raw.shape[0]
-    L = torch.zeros(n, 3, 3, device=chol_raw.device, dtype=chol_raw.dtype)
-    L[:, 0, 0] = F.softplus(chol_raw[:, 0]).clamp(min= 1e-6, max=200.0)
-    L[:, 1, 0] = chol_raw[:, 1]
-    L[:, 1, 1] = F.softplus(chol_raw[:, 2]).clamp(min= 1e-6, max=200.0)
-    L[:, 2, 0] = chol_raw[:, 3]
-    L[:, 2, 1] = chol_raw[:, 4]
-    L[:, 2, 2] = F.softplus(chol_raw[:, 5]).clamp(min= 1e-6, max=200.0)
-    return L

@@ -128,3 +128,96 @@ WtoLNu-2Jets_2J:
       sumw2: 6.977315167440732e+17
       total_events: 99486651
   xs: 3616.0
+
+  # ==============================================================================
+# 2024 BINNED DATASETS
+# ==============================================================================
+# --- 0 Jet Bins ---
+WtoLNu-2Jets_0J_pt100:
+  '2024':
+    nanoAOD: /WtoLNu-2Jets_Bin-PTLNu-100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM
+    picoAOD:
+      files: []
+  xs: 0.0 # <--- ADD SPECIFIC XS HERE
+WtoLNu-2Jets_0J_pt200:
+  xs: 0.0 # <--- ADD SPECIFIC XS HERE
+  '2024':
+    nanoAOD: /WtoLNu-2Jets_Bin-PTLNu-200_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v1/NANOAODSIM
+    picoAOD:
+      files: []
+WtoLNu-2Jets_0J_pt400:
+  xs: 0.0 # <--- ADD SPECIFIC XS HERE
+  '2024':
+    nanoAOD: /WtoLNu-2Jets_Bin-PTLNu-400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+    picoAOD:
+      files: []
+WtoLNu-2Jets_0J_pt600:
+  xs: 0.0 # <--- ADD SPECIFIC XS HERE
+  '2024':
+    nanoAOD: /WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v1/NANOAODSIM
+    picoAOD:
+      files: []
+
+# --- 1 Jet Bins ---
+WtoLNu-2Jets_1J_pt40to100:
+  xs: 0.0 # <--- ADD SPECIFIC XS HERE
+  '2024':
+    nanoAOD: /WtoLNu-2Jets_Bin-1J-PTLNu-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM
+    picoAOD:
+      files: []
+WtoLNu-2Jets_1J_pt100to200:
+  xs: 0.0 # <--- ADD SPECIFIC XS HERE
+  '2024':
+    nanoAOD: /WtoLNu-2Jets_Bin-1J-PTLNu-100to200_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM
+    picoAOD:
+      files: []
+WtoLNu-2Jets_1J_pt200to400:
+  xs: 0.0 # <--- ADD SPECIFIC XS HERE
+  '2024':
+    nanoAOD: /WtoLNu-2Jets_Bin-1J-PTLNu-200to400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+    picoAOD:
+      files: []
+WtoLNu-2Jets_1J_pt400to600:
+  xs: 0.0 # <--- ADD SPECIFIC XS HERE
+  '2024':
+    nanoAOD: /WtoLNu-2Jets_Bin-1J-PTLNu-400to600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+    picoAOD:
+      files: []
+WtoLNu-2Jets_1J_pt600:
+  xs: 0.0 # <--- ADD SPECIFIC XS HERE
+  '2024':
+    nanoAOD: /WtoLNu-2Jets_Bin-1J-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+    picoAOD:
+      files: []
+
+# --- 2 Jet Bins ---
+WtoLNu-2Jets_2J_pt40to100:
+  xs: 0.0 # <--- ADD SPECIFIC XS HERE
+  '2024':
+    nanoAOD: /WtoLNu-2Jets_Bin-2J-PTLNu-40to100_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM
+    picoAOD:
+      files: []
+WtoLNu-2Jets_2J_pt100to200:
+  xs: 0.0 # <--- ADD SPECIFIC XS HERE
+  '2024':
+    nanoAOD: /WtoLNu-2Jets_Bin-2J-PTLNu-100to200_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v3/NANOAODSIM
+    picoAOD:
+      files: []
+WtoLNu-2Jets_2J_pt200to400:
+  xs: 0.0 # <--- ADD SPECIFIC XS HERE
+  '2024':
+    nanoAOD: /WtoLNu-2Jets_Bin-2J-PTLNu-200to400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+    picoAOD:
+      files: []
+WtoLNu-2Jets_2J_pt400to600:
+  xs: 0.0 # <--- ADD SPECIFIC XS HERE
+  '2024':
+    nanoAOD: /WtoLNu-2Jets_Bin-2J-PTLNu-400to600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+    picoAOD:
+      files: []
+WtoLNu-2Jets_2J_pt600:
+  xs: 0.0 # <--- ADD SPECIFIC XS HERE
+  '2024':
+    nanoAOD: /WtoLNu-2Jets_Bin-2J-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+    picoAOD:
+      files: []

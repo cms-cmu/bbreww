@@ -43,7 +43,9 @@ def Wlnu_candidate_selection(events):
     Wlnu_cand["pz_1"] = pz_1
     Wlnu_cand["pz_2"] = pz_2
     Wlnu_cand["nu"]  = nu
-    Wlnu_cand["dr"]   = Wlnu_cand["lep"].delta_r  (Wlnu_cand["nu"])
+    Wlnu_cand["dr"]   = Wlnu_cand["lep"].delta_r(Wlnu_cand["nu"])
+    Wlnu_cand["deta"]   = Wlnu_cand["lep"].eta - Wlnu_cand["nu"].eta
+    print(Wlnu_cand["deta"])
     Wlnu_cand["dphi"] = Wlnu_cand["lep"].delta_phi(Wlnu_cand["nu"])
     Wlnu_cand["mT"]   = np.sqrt(2 * Wlnu_cand.lep.pt * Wlnu_cand.nu.pt * (1 - np.cos(Wlnu_cand.dphi)))
     
@@ -133,9 +135,14 @@ def Wqq_soft_candidate_selection(events, year):
     QvG_key = 'btagPNetQvG' if '202' in year else 'particleNetAK4_QvsG' # use particleNET for quark vs. gluon tagging
 
     q_cands_soft = events.q_cands_soft_init[ak.argsort(getattr(events.q_cands_soft_init,QvG_key), axis=1, ascending=False)] #particleNetAK4_QvsG btagPNetQvG
-    q_cands_soft = q_cands_soft[:,:3] #top 3 quark vs gluon non b-jets
+    q_cands_soft = q_cands_soft[:,:4] #top 4 quark vs gluon non b-jets
     q_cands_soft = q_cands_soft[ak.argsort(q_cands_soft.pt, axis=1, ascending=False)] #pt sort the jets
     events['q_cands_soft'] = q_cands_soft
+
+    ## pt sorting soft + nominal candidates
+    q_cands_pt_sorted = events.q_cands_soft_init[ak.argsort(events.q_cands_soft_init.pt, axis=1, ascending=False)]
+    events['q_cands_pt_sorted'] = ak.pad_none(q_cands_pt_sorted[:,:2], 2, axis=1)
+    ####
     
     jj_i = ak.argcombinations(q_cands_soft, 2, replacement = False, fields=["j1","j2"]) #take dijet combinations
     #jj_i = jj_i[(q_cands_soft[jj_i.j1] - q_cands_soft[jj_i.j2]).eta<2.0]
@@ -217,6 +224,29 @@ def regressed_nu(events, met_regression: bool = False):
         with_name="LorentzVector",
         behavior=vector.behavior,
         )
+
+        #check how well regressor is selecting jets
+        ml_jet_scores = ak.concatenate(
+            [ak.singletons(0.5 * (events.met_regressor.jet_weight_0 + events.met_regressor.jet_weight_3)),  # jet 0: avg of head1, head2
+             ak.singletons(0.5 * (events.met_regressor.jet_weight_1 + events.met_regressor.jet_weight_4)),  # jet 1
+             ak.singletons(0.5 * (events.met_regressor.jet_weight_2 + events.met_regressor.jet_weight_5))], # jet 2
+            axis=1)
+
+        has_two_jets = ak.num(events.q_cands_soft) >= 2
+        valid_nu = ~np.isnan(events.met_regressor.nu_pz)
+        mask_all = has_two_jets & valid_nu
+
+        # Sort jets by attention weight descending, keep only indices pointing to real jets
+        masked_scores = ak.mask(ml_jet_scores, mask_all)
+        sorted_indices = ak.argsort(masked_scores, ascending=False)
+        n_jets = ak.num(events.q_cands_soft)
+        sorted_indices = sorted_indices[sorted_indices < n_jets]
+
+        # Top 2 jets by attention weight
+        events['sel_qq_l']  = events.q_cands_soft[sorted_indices[:, 0:1]]
+        events['sel_qq_sl'] = events.q_cands_soft[sorted_indices[:, 1:2]]
+        events['HWW_mass'] = ak.fill_none((events.sel_qq_l + events.sel_qq_sl + events.leading_lep + events.reg_nu).mass, np.nan)        
+
     return events
 
 def candidate_selection(events, params, year, run_SvB, run_MET_regression, classifier_SvB = None):

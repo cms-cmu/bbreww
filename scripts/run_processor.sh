@@ -193,18 +193,19 @@ OUTPUT_DIR="${OUTPUT_BASE}/${OUTPUT_SUBDIR}/"
 create_output_directory "$OUTPUT_DIR"
 
 echo "############### Running test processor"
-cmd=(python runner.py 
-    -p "$PROCESSOR_PATH" 
-    -m "$METADATA_PATH" 
-    -c "$CONFIG_PATH" 
+cmd=(python runner.py
+    -p "$PROCESSOR_PATH"
+    -m "$METADATA_PATH"
+    -c "$CONFIG_PATH"
     --triggers "$TRIGGERS_PATH"
     --luminosities "$LUMINOSITIES_PATH"
-    -d $DATASETS 
+    --friends None
+    -d $DATASETS
     -y $YEAR
-    -op "$OUTPUT_DIR" 
-    -o "$OUTPUT_FILENAME" 
+    -op "$OUTPUT_DIR"
+    -o "$OUTPUT_FILENAME"
     $CONDOR_MODE
-    $TEST_MODE 
+    $TEST_MODE
     $ADDITIONAL_FLAGS
 )
 run_command "${cmd[@]}"

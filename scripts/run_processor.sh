@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e  # Terminate script immediately if any command returns a non-zero exit code
 
 # Source common functions
 source "src/scripts/common.sh"
@@ -199,7 +200,7 @@ cmd=(python runner.py
     -c "$CONFIG_PATH"
     --triggers "$TRIGGERS_PATH"
     --luminosities "$LUMINOSITIES_PATH"
-    --friends None
+    --friends ""
     -d $DATASETS
     -y $YEAR
     -op "$OUTPUT_DIR"

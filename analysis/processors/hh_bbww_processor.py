@@ -256,11 +256,13 @@ class analysis(processor.ProcessorABC):
         )
         
         # add electrons and muons SFs (includes reco, id, isolation, and trigger), top pT reweighting factors, b-taggins SFs
-        weights, list_weight_names = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, list_weight_names, self.year, self.is_mc)
-        weights, list_weight_names = add_sf_top_pt(self.processName, self.top_pt_reweight, events, weights, list_weight_names)
-        weights, list_weight_names = add_btagweights(events, weights, list_weight_names, shift_name, 
-                                    corrections_metadata = self.params[self.year], jet_field='b_cands')
-
+        if self.is_mc:
+            weights, list_weight_names = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, list_weight_names, self.year)
+            weights, list_weight_names = add_sf_top_pt(self.processName, self.top_pt_reweight, events, weights, list_weight_names)            
+            weights, list_weight_names = add_btagweights(events, weights, list_weight_names, shift_name, 
+                                                         corrections_metadata=self.params[self.year],
+                                                         jet_field='b_cands')
+            
         events['weight'] = weights.weight()
 
         #study sequential cutflow (get weights and events after each cut)

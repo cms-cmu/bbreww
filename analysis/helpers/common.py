@@ -163,36 +163,35 @@ def get_mu_sfs(params, muon, year):
 
 #combined electron and muon scale factors
 # 0: electron, 1: muon
-def add_lepton_sfs(params, events, electron, muon, weights, list_weight_names, year, is_mc):
-    if is_mc:
-        ele_reco_sf, ele_id_sf, ele_trig_sf = get_ele_sfs(params, electron, year)
-        mu_reco_sf = ak.ones_like(events.Muon.pt, dtype = float)
-        mu_iso_sf, mu_id_sf, mu_trig_sf = get_mu_sfs(params, muon, year)
-        ele_iso_sf = ak.ones_like(events.Electron.pt, dtype = float)
+def add_lepton_sfs(params, events, electron, muon, weights, list_weight_names, year):
+    ele_reco_sf, ele_id_sf, ele_trig_sf = get_ele_sfs(params, electron, year)
+    mu_reco_sf = ak.ones_like(events.Muon.pt, dtype = float)
+    mu_iso_sf, mu_id_sf, mu_trig_sf = get_mu_sfs(params, muon, year)
+    ele_iso_sf = ak.ones_like(events.Electron.pt, dtype = float)
 
-        reco_sf = ak.where(events.e_region, # select leading lepton out of leading electrons and leading muons
-                        ak.firsts(ele_reco_sf[electron.istight]),# leading electrons
-                        ak.firsts(mu_reco_sf[muon.istight])) # leading muons
-        id_sf = ak.where(events.e_region,
-                        ak.firsts(ele_id_sf[electron.istight]),
-                        ak.firsts(mu_id_sf[muon.istight]))
-        iso_sf = ak.where(events.e_region,
-                        ak.firsts(ele_iso_sf[electron.istight]),
-                        ak.firsts(mu_iso_sf[muon.istight]))
-        trig_sf = ak.where(events.e_region,
-                        ak.firsts(ele_trig_sf[electron.istight]),
-                        ak.firsts(mu_trig_sf[muon.istight]))
+    reco_sf = ak.where(events.e_region, # select leading lepton out of leading electrons and leading muons
+                    ak.firsts(ele_reco_sf[electron.istight]),# leading electrons
+                    ak.firsts(mu_reco_sf[muon.istight])) # leading muons
+    id_sf = ak.where(events.e_region,
+                    ak.firsts(ele_id_sf[electron.istight]),
+                    ak.firsts(mu_id_sf[muon.istight]))
+    iso_sf = ak.where(events.e_region,
+                    ak.firsts(ele_iso_sf[electron.istight]),
+                    ak.firsts(mu_iso_sf[muon.istight]))
+    trig_sf = ak.where(events.e_region,
+                    ak.firsts(ele_trig_sf[electron.istight]),
+                    ak.firsts(mu_trig_sf[muon.istight]))
 
-        weights.add('reco_sf', reco_sf)
-        weights.add('id_sf', id_sf)
-        weights.add('iso_sf', iso_sf)
-        weights.add('trig_sf', trig_sf)
+    weights.add('reco_sf', reco_sf)
+    weights.add('id_sf', id_sf)
+    weights.add('iso_sf', iso_sf)
+    weights.add('trig_sf', trig_sf)
 
-        list_weight_names.append(f"Ele_reco_SF")
-        list_weight_names.append(f"Muon_iso_SF")
-        list_weight_names.append(f"Ele_id_SF")
-        list_weight_names.append(f"Muon_id_SF")
-        list_weight_names.append(f"Ele_trig_SF")
-        list_weight_names.append(f"Muon_trig_SF")
-
+    list_weight_names.append(f"Ele_reco_SF")
+    list_weight_names.append(f"Muon_iso_SF")
+    list_weight_names.append(f"Ele_id_SF")
+    list_weight_names.append(f"Muon_id_SF")
+    list_weight_names.append(f"Ele_trig_SF")
+    list_weight_names.append(f"Muon_trig_SF")
+    
     return weights, list_weight_names

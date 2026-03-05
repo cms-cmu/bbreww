@@ -18,9 +18,6 @@ data__SingleMuon0_2022_preEED:
         nominal_3j2b: 3.0
         lowpt_4j2b: 2.0
         lowpt_3j2b: 1.0
-        chi_sq_nom_4j2b: 2.0
-        chi_sq_nom_3j2b: 1.0
-        chi_sq_lowpt_4j2b: 1.0
         SvB_tail: 6.0
       weights:
         lumimask: 29.0
@@ -37,9 +34,6 @@ data__SingleMuon0_2022_preEED:
         nominal_3j2b: 3.0
         lowpt_4j2b: 2.0
         lowpt_3j2b: 1.0
-        chi_sq_nom_4j2b: 2.0
-        chi_sq_nom_3j2b: 1.0
-        chi_sq_lowpt_4j2b: 1.0
         SvB_tail: 6.0
     mu_region:
       events:
@@ -57,9 +51,6 @@ data__SingleMuon0_2022_preEED:
         nominal_3j2b: 101.0
         lowpt_4j2b: 68.0
         lowpt_3j2b: 67.0
-        chi_sq_nom_4j2b: 82.0
-        chi_sq_nom_3j2b: 32.0
-        chi_sq_lowpt_4j2b: 35.0
         SvB_tail: 280.0
       weights:
         lumimask: 971.0
@@ -76,9 +67,6 @@ data__SingleMuon0_2022_preEED:
         nominal_3j2b: 101.0
         lowpt_4j2b: 68.0
         lowpt_3j2b: 67.0
-        chi_sq_nom_4j2b: 82.0
-        chi_sq_nom_3j2b: 32.0
-        chi_sq_lowpt_4j2b: 35.0
         SvB_tail: 280.0
     SR:
       events:
@@ -86,18 +74,12 @@ data__SingleMuon0_2022_preEED:
         nominal_3j2b: 20.0
         lowpt_4j2b: 10.0
         lowpt_3j2b: 18.0
-        chi_sq_nom_4j2b: 20.0
-        chi_sq_nom_3j2b: 7.0
-        chi_sq_lowpt_4j2b: 8.0
         SvB_tail: 57.0
       weights:
         nominal_4j2b: 29.0
         nominal_3j2b: 20.0
         lowpt_4j2b: 10.0
         lowpt_3j2b: 18.0
-        chi_sq_nom_4j2b: 20.0
-        chi_sq_nom_3j2b: 7.0
-        chi_sq_lowpt_4j2b: 8.0
         SvB_tail: 57.0
     CR:
       events:
@@ -105,18 +87,12 @@ data__SingleMuon0_2022_preEED:
         nominal_3j2b: 21.0
         lowpt_4j2b: 10.0
         lowpt_3j2b: 14.0
-        chi_sq_nom_4j2b: 13.0
-        chi_sq_nom_3j2b: 5.0
-        chi_sq_lowpt_4j2b: 5.0
         SvB_tail: 51.0
       weights:
         nominal_4j2b: 27.0
         nominal_3j2b: 21.0
         lowpt_4j2b: 10.0
         lowpt_3j2b: 14.0
-        chi_sq_nom_4j2b: 13.0
-        chi_sq_nom_3j2b: 5.0
-        chi_sq_lowpt_4j2b: 5.0
         SvB_tail: 51.0
 data__SingleMuon0_2022_preEEC:
   n_events: 1001
@@ -138,9 +114,6 @@ data__SingleMuon0_2022_preEEC:
         nominal_3j2b: 4.0
         lowpt_4j2b: 4.0
         lowpt_3j2b: 2.0
-        chi_sq_nom_4j2b: 3.0
-        chi_sq_nom_3j2b: 1.0
-        chi_sq_lowpt_4j2b: 1.0
         SvB_tail: 10.0
       weights:
         lumimask: 47.0
@@ -157,9 +130,6 @@ data__SingleMuon0_2022_preEEC:
         nominal_3j2b: 4.0
         lowpt_4j2b: 4.0
         lowpt_3j2b: 2.0
-        chi_sq_nom_4j2b: 3.0
-        chi_sq_nom_3j2b: 1.0
-        chi_sq_lowpt_4j2b: 1.0
         SvB_tail: 10.0
     mu_region:
       events:
@@ -177,9 +147,6 @@ data__SingleMuon0_2022_preEEC:
         nominal_3j2b: 102.0
         lowpt_4j2b: 57.0
         lowpt_3j2b: 72.0
-        chi_sq_nom_4j2b: 81.0
-        chi_sq_nom_3j2b: 36.0
-        chi_sq_lowpt_4j2b: 37.0
         SvB_tail: 260.0
       weights:
         lumimask: 954.0
@@ -196,9 +163,6 @@ data__SingleMuon0_2022_preEEC:
         nominal_3j2b: 102.0
         lowpt_4j2b: 57.0
         lowpt_3j2b: 72.0
-        chi_sq_nom_4j2b: 81.0
-        chi_sq_nom_3j2b: 36.0
-        chi_sq_lowpt_4j2b: 37.0
         SvB_tail: 260.0
     SR:
       events:
@@ -206,18 +170,12 @@ data__SingleMuon0_2022_preEEC:
         nominal_3j2b: 13.0
         lowpt_4j2b: 7.0
         lowpt_3j2b: 11.0
-        chi_sq_nom_4j2b: 14.0
-        chi_sq_nom_3j2b: 6.0
-        chi_sq_lowpt_4j2b: 6.0
         SvB_tail: 41.0
       weights:
         nominal_4j2b: 23.0
         nominal_3j2b: 13.0
         lowpt_4j2b: 7.0
         lowpt_3j2b: 11.0
-        chi_sq_nom_4j2b: 14.0
-        chi_sq_nom_3j2b: 6.0
-        chi_sq_lowpt_4j2b: 6.0
         SvB_tail: 41.0
     CR:
       events:
@@ -225,16 +183,10 @@ data__SingleMuon0_2022_preEEC:
         nominal_3j2b: 21.0
         lowpt_4j2b: 10.0
         lowpt_3j2b: 19.0
-        chi_sq_nom_4j2b: 21.0
-        chi_sq_nom_3j2b: 7.0
-        chi_sq_lowpt_4j2b: 8.0
         SvB_tail: 53.0
       weights:
         nominal_4j2b: 24.0
         nominal_3j2b: 21.0
         lowpt_4j2b: 10.0
         lowpt_3j2b: 19.0
-        chi_sq_nom_4j2b: 21.0
-        chi_sq_nom_3j2b: 7.0
-        chi_sq_lowpt_4j2b: 8.0
         SvB_tail: 53.0

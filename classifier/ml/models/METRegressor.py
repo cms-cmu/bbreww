@@ -132,6 +132,8 @@ class RegressorModel(Model):
             device=device,
         )
         self._benchmarks = benchmarks
+        n_params = sum(p.numel() for p in self._nn.parameters() if p.requires_grad)
+        logging.info(f"METRegressor: {n_params:,} trainable parameters")
         # Three independent optimizers — created lazily after model is on device
         self._opt_backbone = None
         self._opt_onshell = None
@@ -164,7 +166,7 @@ class RegressorModel(Model):
         self._opt_offshell = optim.Adam(offshell_params, lr=6e-3)
 
         # LR decay schedule: hold high LR for most of training, decay in final ~15 epochs
-        # Scaled from 75-epoch schedule to 50 epochs (~67%): decay starts at ~35
+        # Backbone converges by epoch ~15, plateau 15-35, then aggressive fine-tuning
         lr_milestones = [35, 38, 41, 43, 45, 46, 47, 48, 49, 50]
         lr_gamma = 0.25
         self._lr_backbone = MultiStepLR(self._opt_backbone, milestones=lr_milestones, gamma=lr_gamma)
@@ -265,11 +267,14 @@ class RegressorModel(Model):
         return {"scalars": scalars}
 
     def fit_selector_gate(self, batches: Iterable[BatchType]):
-        """Fit the logistic regression selector_gate on validation data after training.
+        """Fit a BDT selector_gate on validation data after training.
 
         Collects (p_onshell, sigma_pz_on, sigma_pz_off) and gen labels from all
-        validation batches, then fits the 3-input linear gate with BCE loss.
+        validation batches, then fits a sklearn GradientBoostingClassifier.
         """
+        from sklearn.ensemble import GradientBoostingClassifier
+        import numpy as np
+
         all_features = []
         all_labels = []
         all_weights = []
@@ -281,8 +286,6 @@ class RegressorModel(Model):
                 logit_onshell = batch["logit_onshell"]
                 p_onshell = torch.sigmoid(logit_onshell)
 
-                pred_on = batch["pred_nu_on"]
-                pred_off = batch["pred_nu_off"]
                 L_on = batch["cholesky_L_on"]
                 L_off = batch["cholesky_L_off"]
 
@@ -304,43 +307,47 @@ class RegressorModel(Model):
                     sigma_on[has_label, 2],
                     sigma_off[has_label, 2],
                 ], dim=1)
-                all_features.append(features)
-                all_labels.append(isLepW[has_label])
-                all_weights.append(weight[has_label])
+                all_features.append(features.cpu())
+                all_labels.append(isLepW[has_label].cpu())
+                all_weights.append(weight[has_label].cpu())
 
         if not all_features:
             logging.warning("No labeled events for selector_gate fitting")
             return
 
-        X = torch.cat(all_features, dim=0)  # (N, 3)
-        y = torch.cat(all_labels, dim=0)    # (N,)
-        w = torch.cat(all_weights, dim=0)   # (N,)
+        X = torch.cat(all_features, dim=0).numpy()   # (N, 3)
+        y = torch.cat(all_labels, dim=0).numpy()      # (N,)
+        w = torch.cat(all_weights, dim=0).numpy()      # (N,)
 
-        # Normalize weights
-        w = w / w.sum()
+        # Filter out NaN/Inf
+        valid = np.isfinite(X).all(axis=1) & np.isfinite(y) & np.isfinite(w) & (w > 0)
+        X, y, w = X[valid], y[valid], w[valid]
 
-        # Fit with BCE loss using L-BFGS (converges in few iterations for logistic regression)
-        gate = self._nn.selector_gate
-        gate.train()
-        optimizer = torch.optim.LBFGS(gate.parameters(), lr=1.0, max_iter=100)
+        logging.info(
+            f"selector_gate BDT data: N={len(y)}, "
+            f"X min={X.min():.4f}, X max={X.max():.4f}, "
+            f"y unique={np.unique(y).tolist()}, "
+            f"on-shell frac={y.mean():.4f}"
+        )
 
-        def closure():
-            optimizer.zero_grad()
-            logits = gate(X).squeeze(-1)
-            loss = F.binary_cross_entropy_with_logits(logits, y, weight=w, reduction="sum")
-            loss.backward()
-            return loss
+        bdt = GradientBoostingClassifier(
+            n_estimators=200,
+            max_depth=4,
+            learning_rate=0.1,
+            subsample=0.8,
+            min_samples_leaf=100,
+        )
+        bdt.fit(X, y, sample_weight=w)
+        self._nn.selector_gate_bdt = bdt
 
-        optimizer.step(closure)
-        gate.eval()
-
-        # Log the learned coefficients
-        with torch.no_grad():
-            w_val = gate.weight.data.squeeze()
-            b_val = gate.bias.data.item()
-            logging.info(
-                f"selector_gate fitted: w=[{w_val[0]:.3f}, {w_val[1]:.3f}, {w_val[2]:.3f}], b={b_val:.3f}"
-            )
+        # Evaluate
+        pred = bdt.predict(X)
+        acc = (pred == y).mean()
+        baseline_acc = ((X[:, 0] > 0.5) == y).mean()
+        logging.info(
+            f"selector_gate BDT fitted: acc={acc:.4f}, baseline(p>0.5)={baseline_acc:.4f}, "
+            f"feature_importances={dict(zip(['p_onshell', 'sigma_pz_on', 'sigma_pz_off'], bdt.feature_importances_.round(3)))}"
+        )
 
     def step(self, epoch: int = None):
         if self.ghost_batch is not None and self.ghost_batch.step(epoch):
@@ -418,7 +425,7 @@ class RegressorTraining(MultiStageTraining):
             )
             self._model.ghost_batch = self._ghost_batch
             layers.setLayerRequiresGrad(requires_grad=True)
-        # Fit the logistic regression selector_gate on validation data
+        # Fit the BDT selector_gate on validation data
         from src.classifier.nn.dataset import simple_loader
         from src.classifier.config.setting.ml import DataLoader as DLConfig
         val_dataset = validation_sets[SplitterKeys.validation]
@@ -434,6 +441,7 @@ class RegressorTraining(MultiStageTraining):
                 torch.save(
                     {
                         "model": self._model.nn.state_dict(),
+                        "selector_gate_bdt": self._model.nn.selector_gate_bdt,
                         "metadata": self.metadata,
                         "uuid": self.uuid,
                         "arch": self._arch.save(),
@@ -475,7 +483,8 @@ class RegressorModelEval(Model):
             ancillaryFeatures=InputBranch.feature_ancillary,
             device=device,
         )
-        self._nn.load_state_dict(saved["model"])
+        self._nn.load_state_dict(saved["model"], strict=False)
+        self._nn.selector_gate_bdt = saved.get("selector_gate_bdt", None)
 
     @property
     def nn(self):
@@ -496,11 +505,19 @@ class RegressorModelEval(Model):
         cov_off = torch.bmm(L_off, L_off.transpose(-1, -2))
         sigma_off = cov_off.diagonal(dim1=-2, dim2=-1).sqrt()
 
-        # Select neutrino using learned logistic regression gate
-        # Fitted on validation data after training; replaces hard cuts on p_onshell and sigma_pz
-        gate_input = torch.stack([p_onshell, sigma_on[:, 2], sigma_off[:, 2]], dim=1)  # (n, 3)
-        gate_logit = self._nn.selector_gate(gate_input).squeeze(-1)  # (n,)
-        use_on = (gate_logit > 0.0).unsqueeze(-1)  # (n, 1)
+        # Select neutrino using BDT gate fitted on validation data
+        import numpy as np
+        gate_input = np.column_stack([
+            p_onshell.cpu().numpy(),
+            sigma_on[:, 2].cpu().numpy(),
+            sigma_off[:, 2].cpu().numpy(),
+        ])
+        if self._nn.selector_gate_bdt is not None:
+            use_on_np = self._nn.selector_gate_bdt.predict(gate_input).astype(bool)
+        else:
+            # Fallback: use p_onshell > 0.5 if BDT not fitted
+            use_on_np = gate_input[:, 0] > 0.5
+        use_on = torch.from_numpy(use_on_np).to(self._device).unsqueeze(-1)  # (n, 1)
         nu_sel = torch.where(use_on, nu_pred_on, nu_pred_off)
         sigma_sel = torch.where(use_on, sigma_on, sigma_off)
 

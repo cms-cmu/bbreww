@@ -122,9 +122,11 @@ def ttbar_candidate_selection(events, run_SvB: bool = True):
 def Wqq_soft_candidate_selection(events, year):
     QvG_key = 'btagPNetQvG' if '202' in year else 'particleNetAK4_QvsG' # use particleNET for quark vs. gluon tagging
 
-    q_cands_soft = events.q_cands_soft_init[ak.argsort(getattr(events.q_cands_soft_init,QvG_key), axis=1, ascending=False)] #particleNetAK4_QvsG btagPNetQvG
-    q_cands_soft = q_cands_soft[:,:4] #top 4 quark vs gluon non b-jets
-    q_cands_soft = q_cands_soft[ak.argsort(q_cands_soft.pt, axis=1, ascending=False)] #pt sort the jets
+    #q_cands_soft = events.q_cands_soft_init[ak.argsort(getattr(events.q_cands_soft_init,QvG_key), axis=1, ascending=False)] #particleNetAK4_QvsG btagPNetQvG
+    #q_cands_soft = q_cands_soft[:,:4] #top 4 quark vs gluon non b-jets
+    #q_cands_soft = q_cands_soft[ak.argsort(q_cands_soft.pt, axis=1, ascending=False)] #pt sort the jets
+    q_cands_soft = events.q_cands_soft_init[ak.argsort(events.q_cands_soft_init.pt, axis=1, ascending=False)]
+    q_cands_soft = q_cands_soft[:, :4]
     events['q_cands_soft'] = q_cands_soft
 
     ## pt sorting soft + nominal candidates
@@ -203,14 +205,17 @@ def ttbar_soft_candidate_selection(events):
 
 def regressed_nu(events, met_regression: bool = False):
     if met_regression:
+        px, py, pz = events.met_regressor.nu_px, events.met_regressor.nu_py, events.met_regressor.nu_pz
+        pt = np.sqrt(px**2 + py**2)
         events["reg_nu"] = ak.zip({
-            "x": events.met_regressor.nu_px,
-            "y": events.met_regressor.nu_py,
-            "z": events.met_regressor.nu_pz,
-            "t": np.sqrt((events.met_regressor.nu_px**2 + events.met_regressor.nu_py**2 + events.met_regressor.nu_pz**2)),
+            "pt": pt,
+            "eta": np.arcsinh(pz / pt),
+            "phi": np.arctan2(py, px),
+            "mass": ak.zeros_like(pt),
+            "charge": ak.zeros_like(pt, dtype=int),
         },
-            with_name="LorentzVector",
-            behavior=vector.behavior,
+        with_name="PtEtaPhiMCandidate",
+        behavior=vector.behavior,
         )
         events["reg_mW"] =  ak.fill_none((events.reg_nu + events.leading_lep).mass, np.nan) # regressed leptonic W mass
         

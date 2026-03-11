@@ -180,6 +180,5 @@ def apply_met_corrections_after_jec(events, jets):
 
     # TEMP hack: CorrectedMETFactory assumes up and down are symmetric, but nanov15 provides up and down separately
     met_factory = CorrectedMETFactory(jec_name_map)
-    met_variations = met_factory.build(met, jets, {})
-
+    met_variations = met_factory.build(events.MET, jets)
     return met_variations

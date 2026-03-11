@@ -110,12 +110,13 @@ def met_reconstr(events, lep):
     pz_1, pz_2 = nu_pz(lep, met)
     pz =  ak.where(abs(pz_1) <= abs(pz_2), pz_1, pz_2)
     nu = ak.zip({
-            "x": met.pt * np.cos(met.phi),
-            "y": met.pt * np.sin(met.phi),
-            "z": pz,
-            "t": np.sqrt(met.pt**2 + pz**2),
+            "pt": met.pt,
+            "eta": np.arcsinh(pz / met.pt),
+            "phi": met.phi,
+            "mass": ak.zeros_like(met.pt),
+            "charge": ak.zeros_like(met.pt, dtype=int),
         },
-        with_name="LorentzVector",
+        with_name="PtEtaPhiMCandidate",
         behavior=vector.behavior,
     )
 

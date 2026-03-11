@@ -160,7 +160,7 @@ def apply_bbWW_preselection(events, year,params, isMC):
 
     #select leading lepton out of electrons/muons. Use ak.singletons to slice entries, not whole events
     events["leptons"] = ak.concatenate([events.sel_muon, events.sel_elec], axis=1)
-    events['leading_lep'] = ak.with_name(ak.firsts(events.leptons), 'PtEtaPhiMLorentzVector') #reapply 4-vector behavior after concatenate
+    events['leading_lep'] = ak.with_name(ak.firsts(events.leptons), 'PtEtaPhiMCandidate') #reapply 4-vector behavior after concatenate
 
     events = tau_selection(events,params)
     events = jet_selection(events,params, year)

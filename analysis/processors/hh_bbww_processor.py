@@ -326,7 +326,7 @@ class analysis(processor.ProcessorABC):
         selected_events['SvB_tail_lowpt'] = ((selected_events.lowpt_4j2b) & (selected_events.SvB.phh > 0.6)
                                        if (self.run_SvB) else ak.ones_like(selected_events.MET.pt, dtype= bool))
         
-        selected_events = gen_studies(selected_events, self.is_mc) # gen particle studies for MC
+        selected_events = gen_studies(selected_events, self.is_mc, run_MET_regression = self.run_MET_regression) # gen particle studies for MC
         
         # different selections to use for creating friendtrees
         nominal_selection = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])

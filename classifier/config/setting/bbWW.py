@@ -11,7 +11,7 @@ class InputBranch(GlobalSetting):
     feature_genNu: list[str] = ["pt", "eta", "phi"]
     feature_genLepW: list[str] = ["onShell", "genLepWmass"]
     nbJetCand: int = 2
-    nnonbJetCand: int = 3 # nominal: 2, lowpt: 3
+    nnonbJetCand: int = 4 # nominal: 2, lowpt: 3
 
     @classmethod
     def get__feature_bJetCand(cls, var: list[str]):

@@ -13,13 +13,13 @@ dataset:
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
       - --max-workers 4
       - --mc-processes GluGluToHHTo2B2VLNu2J ttbar
-      - --friends "" bbreww/metadata/regressor/input/output_friend_regressor.json@@classifier_input_regressor
-  - module: bbWW.regressor.Eval
-    option:
-      - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
-      - --max-workers 4
-      - --mc-processes WplusJets tW
-      - --friends "" bbreww/metadata/regressor/input/minorbkg_friend_regressor.json@@classifier_input_regressor
+      - --friends "" bbreww/metadata/regressor/input/regressor_friend_4nb.json@@regressor_input_4nb
+  #- module: bbWW.regressor.Eval
+  #  option:
+  #    - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
+  #    - --max-workers 4
+  #    - --mc-processes WplusJets tW
+  #    - --friends "" bbreww/metadata/regressor/input/minorbkg_friend_regressor.json@@classifier_input_regressor
   #- module: bbWW.regressor.DataEval
   #  option:
   #    - --no-SR # remove SR

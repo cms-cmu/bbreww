@@ -39,6 +39,28 @@ def calc_mW(lep, nu):
 
     return mW
 
+def _nu_bjet_dR(nu_px, nu_py, pz, raw_b):
+    """Compute deltaR between neutrino (given pz) and each b-jet.
+
+    Args:
+        nu_px, nu_py: (n,) neutrino px, py
+        pz: (n,) neutrino pz
+        raw_b: (n, 10) raw b-jet features [pt, eta, phi, mass, btag] x 2
+    Returns:
+        dR_b1, dR_b2: (n,) deltaR to each b-jet
+    """
+    nu_E = torch.sqrt(nu_px**2 + nu_py**2 + pz**2 + 1e-8)
+    nu_eta = torch.atanh((pz / nu_E).clamp(-1 + 1e-6, 1 - 1e-6))
+    nu_phi = torch.atan2(nu_py, nu_px)
+    b = raw_b.view(-1, 5, 2)  # (n, 5, 2)
+    b1_eta, b1_phi = b[:, 1, 0], b[:, 2, 0]
+    b2_eta, b2_phi = b[:, 1, 1], b[:, 2, 1]
+    dphi1 = torch.remainder(nu_phi - b1_phi + math.pi, 2 * math.pi) - math.pi
+    dphi2 = torch.remainder(nu_phi - b2_phi + math.pi, 2 * math.pi) - math.pi
+    dR_b1 = torch.sqrt((nu_eta - b1_eta)**2 + dphi1**2 + 1e-8)
+    dR_b2 = torch.sqrt((nu_eta - b2_eta)**2 + dphi2**2 + 1e-8)
+    return dR_b1, dR_b2
+
 def _deta_solutions(raw_lep, nu_px, nu_py, pz_sol1, pz_sol2):
     """Compute delta-eta between lepton and neutrino for both pz solutions.
 
@@ -61,7 +83,7 @@ def _hadW_mass(raw_nb, ww_weights):
 
     Args:
         raw_nb: (n, 4*nj) flat raw non-b jet features [pt, eta, phi, mass] per jet
-        ww_weights: (n, heads, 1, 3) detached attention weights over 3 jets
+        ww_weights: (n, heads, 1, nj) detached attention weights over nj jets
     Returns:
         (n, 1, 1) hadronic W candidate mass
     """
@@ -70,11 +92,11 @@ def _hadW_mass(raw_nb, ww_weights):
     nj = nb.shape[2]
     if nj < 2:
         return torch.zeros(n, 1, 1, device=raw_nb.device)
-    # Average attention across heads: (n, heads, 1, 3) → (n, 3)
-    attn = ww_weights.squeeze(2).mean(dim=1)  # (n, 3)
+    # Average attention across heads: (n, heads, 1, nj) → (n, nj)
+    attn = ww_weights.squeeze(2).mean(dim=1)  # (n, nj)
     # Zero out attention for padded jets (pt == -1)
     padded = (nb[:, 0, :] < 0)  # (n, nj)
-    attn = attn.masked_fill(padded[:, :3], 0.0)
+    attn = attn.masked_fill(padded, 0.0)
     # Select top-2 jets by attention weight per event
     _, top2 = attn.topk(2, dim=1)  # (n, 2)
     # Gather the two selected jets: need (n, 4, 2)
@@ -228,7 +250,8 @@ class InputEmbed(nn.Module):
             name="M(a,b), dR(a,b) convolution",
         )
 
-        self.bsl, self.wsl = 2, 3
+        self.bsl, self.wsl = 2, 4
+        self.qqsl = self.wsl * (self.wsl - 1) // 2  # C(wsl, 2) = 6 dijet pairs
 
         self.register_buffer('mask_bb_same', torch.zeros((1, self.bsl, self.bsl), dtype=torch.bool))
         for i in range(self.bsl):
@@ -279,7 +302,7 @@ class InputEmbed(nn.Module):
         )
 
         self.derivedEmbed = GhostBatchNorm1d(
-            8,
+            5 + self.qqsl,  # qqsl dijet masses + mbb + lnu_mT + dphi_lep_met + pt_bb + dphi_bb_met
             features_out=self.dD,
             phase_symmetric=phase_symmetric,
             conv=True,
@@ -353,13 +376,13 @@ class InputEmbed(nn.Module):
         )
 
         qq, qqPxPyPzE = addFourVectors(
-            nb[:, :, (0, 0, 1)], nb[:, :, (1, 2, 2)]
+            nb[:, :, (0, 0, 0, 1, 1, 2)], nb[:, :, (1, 2, 3, 2, 3, 3)]
         )
 
         ## top reconstruction
         bWhad, bWhadPxPyPzE = addFourVectors(
             b[:, :, (0, 1)].unsqueeze(3),  # [batch, 4, 2, 1]
-            qq.unsqueeze(2)                # [batch, 4, 1, 3]
+            qq.unsqueeze(2)                # [batch, 4, 1, qqsl]
         )
         bWlep, bWlepPxPyPzE = addFourVectors(
             b[:, :, (1, 1, 0, 0)],
@@ -374,13 +397,16 @@ class InputEmbed(nn.Module):
             [b, 2 * torch.ones((n, 1, 2), dtype=torch.float, device=device)], 1
         )  # label bJets with 2 (-1 for mask, 0 for not preselected, 1 for preselected jet)
         nb = torch.cat(
-            [nb, torch.ones((n, 1, 3), dtype=torch.float, device=device)], 1
+            [nb, torch.ones((n, 1, 4), dtype=torch.float, device=device)], 1
         ) 
-        mask = (nb[:, 3, :] == -1)
+        mask = (nb[:, -1, :] == -1) # check the label row for -1 padded values
         mask_qq = torch.stack([
             mask[:, 0] | mask[:, 1],  # qq[0] = nb[0] + nb[1]
             mask[:, 0] | mask[:, 2],  # qq[1] = nb[0] + nb[2]
+            mask[:, 0] | mask[:, 3],  # qq[1] = nb[0] + nb[3]
             mask[:, 1] | mask[:, 2],  # qq[2] = nb[1] + nb[2]
+            mask[:, 1] | mask[:, 3],  # qq[2] = nb[1] + nb[3]
+            mask[:, 2] | mask[:, 3],  # qq[2] = nb[2] + nb[3]
         ], dim=1) # mask for di-jet candidates involving padded entries
 
         bPxPyPzE = PxPyPzE(b)
@@ -428,15 +454,13 @@ class InputEmbed(nn.Module):
         qq[:, (0, 3), :] = torch.log(1 + qq[:, (0, 3), :])
 
         b = torch.cat([b, b[:, :, (1,0)]] , 2) # create permutation invariance by augmenting opposite order of same jets
-        nb = torch.cat([nb, nb[:, :, (2,1,0)]] , 2)
+        nb = torch.cat([nb, nb[:, :, (3,2,1,0)]] , 2)
 
         # only keep relative angular information so that learned features are invariant under global phi rotations and eta/phi flips
         b[:, 2:3, :] = calcDeltaPhi(bb, b[:, :, :]) # replace jet phi with deltaPhi between dijet and jet
 
-        # Extract derived kinematics as a (batch, 8, 1) tensor
-        mjj_01 = qq[:, 3:4, 0:1]  # third W candidate mass (jets 0,1)
-        mjj_02 = qq[:, 3:4, 1:2]  # second W candidate mass (jets 0,2)
-        mjj_12 = qq[:, 3:4, 2:3]  # first W candidate mass (jets 1,2)
+        # Extract derived kinematics as a (batch, 5+qqsl, 1) tensor
+        mjj_all = qq[:, 3:4, :]  # (batch, 1, qqsl) all dijet masses
         mbb = bb[:, 3:4, 0:1]     # bb mass
 
         dphi_lep_met = calcDeltaPhi(l, nu)
@@ -444,13 +468,13 @@ class InputEmbed(nn.Module):
         dphi_bb_met = calcDeltaPhi(bb, nu)
 
         derived_kinematics = torch.cat([
-            mjj_01, mjj_02, mjj_12,  # 3 W mass candidates
+            mjj_all.transpose(1, 2),  # (batch, qqsl, 1) all W mass candidates
             mbb,                      # Higgs mass candidate
             lnu_mT,                   # transverse mass
             dphi_lep_met,             # angular separation lep-MET
             pt_bb,                    # pT of bb system
             dphi_bb_met               # angular separation bb-MET
-        ], dim=1)  # Shape: (batch, 8, 1)
+        ], dim=1)  # Shape: (batch, 5+qqsl, 1)
 
         return b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR, mask, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep, derived_kinematics, kinematic_solutions
 
@@ -491,14 +515,14 @@ class InputEmbed(nn.Module):
 
         mask_MdRtt = torch.cat(
             (
-                mask_bWhad,  # (n, 6)
-                mask_bWlep.view(n, -1)  # (n, 2)
+                mask_bWhad,  # (n, bsl*qqsl=12)
+                mask_bWlep.view(n, -1)  # (n, 4)
             ),
             dim=1
-        )  # Result: (n, 8)
+        )  # Result: (n, 16)
 
 
-        bWhad = bWhad.view(n, 4, -1)  # (n, 4, 2, 3) -> (n, 4, 6)
+        bWhad = bWhad.view(n, 4, -1)  # (n, 4, 2, qqsl) -> (n, 4, bsl*qqsl=12)
         bWlep = bWlep.view(n, 4, -1)  # (n, 4, 2, 1) -> (n, 4, 2)
         
         self.ancillaryEmbed.updateMeanStd(a)
@@ -567,7 +591,7 @@ class InputEmbed(nn.Module):
 
         a = self.ancillaryEmbed(a)
         # a = self.ancillaryConv(NonLU(a))
-        mask_nb =  torch.cat([mask, mask[:, [2,1,0]]], 1) # augment mask from 2 to 4, matching pattern for jets
+        mask_nb =  torch.cat([mask, mask[:, [3,2,1,0]]], 1) # augment mask from 2 to 4, matching pattern for jets
         nb = self.nonbJetEmbed(nb, mask_nb)
         qq = self.nonbDiJetEmbed(qq)
         nb = nb + a
@@ -582,7 +606,7 @@ class InputEmbed(nn.Module):
         bbMdR = bbMdR.view(n, 2, self.bsl*self.bsl)
         qqMdR = qqMdR.view(n, 2, self.wsl*self.wsl)
         bbnMdR = bbnMdR.view(n, 2, self.wsl)
-        bbqqMdR = bbqqMdR.view(n, 2, self.wsl)        
+        bbqqMdR = bbqqMdR.view(n, 2, self.qqsl)
         mask_bbMdR = mask_bbMdR.view(n, -1)
         mask_qqMdR = mask_qqMdR.view(n, -1)
         mask_bbn = mask_bbn.view(n, -1)
@@ -603,7 +627,7 @@ class InputEmbed(nn.Module):
             n, self.dD, 1, self.wsl
         )
         bbqqMdR = MdR[:, :,  self.bsl * self.bsl + self.wsl * self.wsl + self.wsl :].view(
-            n, self.dD, 1, self.wsl
+            n, self.dD, 1, self.qqsl
         )
 
         
@@ -621,10 +645,10 @@ class InputEmbed(nn.Module):
         MdRtt = self.MdRttEmbed(MdRtt, mask_MdRtt)
         MdRtt = self.MdRttConv(NonLU(MdRtt), mask_MdRtt)
 
-        bWhadMdR = MdRtt[:, :, :self.bsl* self.wsl].view(
-            n, self.dD, self.bsl, self.wsl
+        bWhadMdR = MdRtt[:, :, :self.bsl * self.qqsl].view(
+            n, self.dD, self.bsl, self.qqsl
         )
-        bWlepMdR = MdRtt[:, :, self.bsl*self.wsl:].view(
+        bWlepMdR = MdRtt[:, :, self.bsl * self.qqsl:].view(
             n, self.dD, self.bsl * 2, 1
         )
 
@@ -654,46 +678,34 @@ class InputEmbed(nn.Module):
         return b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep, derived, soln, kinematic_solutions
   
 
-class OnShellClassifier(nn.Module):
-    """Binary classifier for on-shell vs off-shell leptonic W.
+class HypothesisClassifier(nn.Module):
+    """Siamese classifier for on-shell vs off-shell leptonic W.
 
-    Routes events to the appropriate neutrino regressor at inference time.
-    Trained with BCE on isLepW labels.
+    Shared-weight scorer evaluates each hypothesis independently, then subtracts.
+    Positive logit → on-shell preferred.
 
-    Input: onshell_input + oss_corr + nu_on(3) + nu_off(3) + mW_on + mW_off + hadW = 2*dD + 12
+    Per-branch input: shared_base (2*dD+5) + oss_corr (1) + nu_det (3) + mW (1) + sigma_pz (1) = 2*dD+11
     """
 
     def __init__(self, dD):
         super().__init__()
-        # Project enriched input (2*dD + 12) down to dD
-        self.input_embed = GhostBatchNorm1d(2*dD + 12, features_out=dD, conv=True)
-        # Two residual blocks
-        self.block1 = nn.Sequential(
-            GhostBatchNorm1d(dD, features_out=dD, conv=True),
+        # Shared scorer: processes each hypothesis branch independently
+        dH = dD * 4
+        self.hypothesis_scorer = nn.Sequential(
+            GhostBatchNorm1d(2*dD + 11, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(dD, features_out=dD, conv=True),
+            GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
-        )
-        self.block2 = nn.Sequential(
-            GhostBatchNorm1d(dD, features_out=dD, conv=True),
+            GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(dD, features_out=dD, conv=True),
-            NonLUModule(),
-        )
-        # Binary classifier: p(on-shell)
-        self.classifier = nn.Sequential(
-            GhostBatchNorm1d(dD, features_out=dD, conv=True),
-            NonLUModule(),
-            GhostBatchNorm1d(dD, features_out=1, conv=True),
+            GhostBatchNorm1d(dH, features_out=1, conv=True),
         )
 
-    def forward(self, classifier_input):
-        # classifier_input: (n, 2*dD+12, 1)
-        x = self.input_embed(classifier_input)
-        x = x + self.block1(x)
-        x = x + self.block2(x)
-        logit_onshell = self.classifier(x).squeeze(-1).squeeze(-1)  # (n,): raw logit
-        return logit_onshell
+    def forward(self, on_features, off_features):
+        # on_features, off_features: (n, 2*dD+11, 1)
+        score_on = self.hypothesis_scorer(on_features).squeeze(-1).squeeze(-1)   # (n,)
+        score_off = self.hypothesis_scorer(off_features).squeeze(-1).squeeze(-1)  # (n,)
+        return score_on - score_off  # positive → on-shell
       
 class METRegressor(nn.Module):
     def __init__(
@@ -782,7 +794,7 @@ class METRegressor(nn.Module):
             self.dD,
             heads=2,
             phase_symmetric=self.phase_symmetric,
-            scalar_dim = 4,
+            scalar_dim = 7,
             layers=self.layers,
             inputLayers=[self.lepWResNetBlock.conv[-1], self.inputEmbed.nonbJetConv],
             device=self.device,
@@ -794,16 +806,20 @@ class METRegressor(nn.Module):
             heads=2,
             phase_symmetric=self.phase_symmetric,
             layers=self.layers,
-            scalar_dim = 4,
+            scalar_dim = 7,
             inputLayers=[self.bWhadResNetBlock.conv[-1], self.bWlepResNetBlock.conv[-1]],
             device=self.device,
         )
         self.layers.addLayer(self.attention_tt, self.attention_tt.inputLayers)
 
+        self.bsl = self.inputEmbed.bsl
+        self.wsl = self.inputEmbed.wsl
+        self.qqsl = self.inputEmbed.qqsl
+
         self.scalars_embed = GhostBatchNorm1d(
-            4, 
+            self.qqsl + 1,  # qqsl lepQQdR values + 1 lnu_mT
             features_out=self.dD,
-            conv=True, 
+            conv=True,
             name="scalar physics relationships embed"
         )
 
@@ -830,7 +846,7 @@ class METRegressor(nn.Module):
             name="jet deltaR embedder",
         )
 
-        self.onshell_classifier = OnShellClassifier(self.dD)
+        self.onshell_classifier = HypothesisClassifier(self.dD)
 
         dH = self.dD * 4  # wider hidden dim for regressor heads
 
@@ -850,16 +866,18 @@ class METRegressor(nn.Module):
             GhostBatchNorm1d(dH, features_out=2, conv=True),         # dpx, dpy
         )
         # Siamese pz solution scorer: shared weights score each solution independently.
-        # Per-solution input: onshell_input (2*dD+3) + deta (1) + pz (1) + oss_corr (1) = 2*dD+6
+        # Per-solution input: onshell_input (2*dD+3) + deta (1) + pz (1) + oss_corr (1)
+        #                     + dR_b1 (1) + dR_b2 (1) = 2*dD+8
         # Runs twice (once per solution) with shared weights; output = score1 - score2.
+        dH_sel = self.dD * 6  # wider hidden dim for selector (more feature interactions)
         self.pz_solution_scorer = nn.Sequential(
-            GhostBatchNorm1d(2*self.dD + 6, features_out=dH, conv=True),
+            GhostBatchNorm1d(2*self.dD + 8, features_out=dH_sel, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(dH, features_out=dH, conv=True),
+            GhostBatchNorm1d(dH_sel, features_out=dH_sel, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(dH, features_out=dH, conv=True),
+            GhostBatchNorm1d(dH_sel, features_out=dH_sel, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(dH, features_out=1, conv=True),         # scalar score
+            GhostBatchNorm1d(dH_sel, features_out=1, conv=True),         # scalar score
         )
         # Off-shell neutrino regressor: context + lep_W0 + 4 pz solutions + lnu_mT + hadW_mass
         # +dD: lep_W0, +4: pz solutions, +1: lnu_mT, +1: hadW_mass = 2*dD+6
@@ -928,12 +946,10 @@ class METRegressor(nn.Module):
         self.select_tt.setGhostBatches(nGhostBatches)
         self.jet_dR_embed.setGhostBatches(nGhostBatches)
         # Output heads: iterate GBN layers in sequential modules and classifier
-        self.onshell_classifier.input_embed.setGhostBatches(nGhostBatches)
         for module in (self.nu_regressor_onshell, self.pz_solution_scorer,
                        self.nu_regressor_offshell,
                        self.nu_cholesky_onshell, self.nu_cholesky_offshell,
-                       self.onshell_classifier.block1, self.onshell_classifier.block2,
-                       self.onshell_classifier.classifier):
+                       self.onshell_classifier.hypothesis_scorer):
             for layer in module:
                 if hasattr(layer, "setGhostBatches"):
                     layer.setGhostBatches(nGhostBatches)
@@ -945,6 +961,7 @@ class METRegressor(nn.Module):
         # Save raw inputs before embedding overwrites them
         raw_met = nu.clone()  # (n, 2): [pt, phi]
         raw_lep = l.clone()   # (n, 6): [pt, eta, phi, mass, isE, isM]
+        raw_b   = b.clone()   # (n, 10): [pt, eta, phi, mass, btag] x 2 b-jets
         raw_nb  = nb.clone()  # (n, 4*nj): non-b jets for deltaR computation
         (b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bbqqMdR,
         bWhadMdR, bWlepMdR, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep,
@@ -994,51 +1011,63 @@ class METRegressor(nn.Module):
         bbqqMdR = NonLU(bbqqMdR)
         scalars = torch.cat([lepQQdR, lnu_mT], dim=-1).squeeze(1)
 
-        bWhad_exp = bWhadMdR.reshape(n, -1, 6).repeat_interleave(4, dim=2)
-        bWlep_exp = bWlepMdR.squeeze(-1).repeat(1, 1, 6)
+        n_bWhad = self.bsl * self.qqsl  # 2*6=12 top_had candidates
+        n_bWlep = self.bsl * 2           # 4 top_lep candidates
+        n_tt = n_bWhad * n_bWlep         # 48 total pairings
 
-        bbn_flat = bbnMdR.squeeze(2)
-        bbn_w0 = torch.cat([bbn_flat[:, :, 0:1], bbn_flat[:, :, 1:2]], dim=1)
-        bbn_w1 = torch.cat([bbn_flat[:, :, 0:1], bbn_flat[:, :, 2:3]], dim=1)
-        bbn_w2 = torch.cat([bbn_flat[:, :, 1:2], bbn_flat[:, :, 2:3]], dim=1)
+        bWhad_exp = bWhadMdR.reshape(n, -1, n_bWhad).repeat_interleave(n_bWlep, dim=2)
+        bWlep_exp = bWlepMdR.squeeze(-1).repeat(1, 1, n_bWhad)
 
-        bbn_exp = torch.cat([bbn_w0, bbn_w1, bbn_w2], dim=2)
-        bbn_exp = bbn_exp.repeat_interleave(4, dim=2).repeat(1, 1, 2)
-        bbqq_exp = bbqqMdR.squeeze(2)
-        bbqq_exp = bbqq_exp.repeat_interleave(4, dim=2).repeat(1, 1, 2)
+        bbn_flat = bbnMdR.squeeze(2)  # (n, dD, wsl=4)
+        # Map each qq pair to its constituent nonbjets: C(wsl,2) pairs
+        qq_idx = []
+        for i in range(self.wsl):
+            for j in range(i + 1, self.wsl):
+                qq_idx.append((i, j))
+        bbn_qq = torch.cat([
+            torch.cat([bbn_flat[:, :, i:i+1], bbn_flat[:, :, j:j+1]], dim=1)
+            for i, j in qq_idx
+        ], dim=2)  # (n, 2*dD, qqsl=6)
+        # Expand: repeat_interleave(4) for bWlep, repeat(2) for b-jets
+        bbn_exp = bbn_qq.repeat_interleave(n_bWlep, dim=2).repeat(1, 1, self.bsl)  # (n, 2*dD, n_tt=48)
+
+        bbqq_exp = bbqqMdR.squeeze(2)  # (n, dD, qqsl=6)
+        bbqq_exp = bbqq_exp.repeat_interleave(n_bWlep, dim=2).repeat(1, 1, self.bsl)  # (n, dD, 48)
 
         qv_tt = torch.cat([bWhad_exp, bWlep_exp, bbn_exp, bbqq_exp], dim=1)
         qv_tt = self.qv_embed(qv_tt)
 
-        mask_tt = torch.zeros(n, 6, 4, dtype=torch.bool, device=self.device)
-        mask_tt[:, 0:3, 2:4] = True
-        mask_tt[:, 3:6, 0:2] = True
+        # Mask: bWhad[0:qqsl] use b0, can't pair with bWlep[2:4] (also b0)
+        #        bWhad[qqsl:2*qqsl] use b1, can't pair with bWlep[0:2] (also b1)
+        mask_tt = torch.zeros(n, n_bWhad, n_bWlep, dtype=torch.bool, device=self.device)
+        mask_tt[:, :self.qqsl, 2:4] = True
+        mask_tt[:, self.qqsl:, 0:2] = True
 
         # TTbar pairing selection
         TT, TT0, TT_weights = self.attention_tt(
             bWhad, bWlep, mask_tt, bWhad0, qv_tt, scalars, debug=self.debug
         )
-        TT_logits = self.select_tt(TT)  # Shape: (n, 6, 1)
-        TT_logits = TT_logits.view(n, 6)  # Shape: (n, 6)
-        TT_score = F.softmax(TT_logits, dim=-1)  # Shape: (n, 6)
+        TT_logits = self.select_tt(TT)  # Shape: (n, n_bWhad, 1)
+        TT_logits = TT_logits.view(n, n_bWhad)  # Shape: (n, 12)
+        TT_score = F.softmax(TT_logits, dim=-1)  # Shape: (n, 12)
         TT_context = torch.matmul(TT, TT_score.unsqueeze(-1))
 
         # Individual jet attention: leptonic W queries individual non-b jets
-        nb_jets = nb[:, :, :3]          # (n, dD, 3) original jets (drop augmented permutations)
-        jet_mask = mask_bbn.view(n, 3)  # (n, 3) per-jet padding mask
+        nb_jets = nb[:, :, :self.wsl]          # (n, dD, wsl) original jets (drop augmented permutations)
+        jet_mask = mask_bbn.view(n, self.wsl)  # (n, wsl) per-jet padding mask
 
         # Compute deltaR between lepton and individual jets from raw kinematics
-        nb_raw = raw_nb.view(n, 4, -1)[:, :, :3]  # (n, 4, 3) original raw jets
+        nb_raw = raw_nb.view(n, 4, -1)[:, :, :self.wsl]  # (n, 4, wsl) original raw jets
         lep_raw = raw_lep.view(n, 6, 1)
-        lepNBdR = calcDeltaR(lep_raw, nb_raw)      # (n, 1, 3)
-        jet_dR = self.jet_dR_embed(lepNBdR, jet_mask)  # (n, dD, 3) embedded deltaR
+        lepNBdR = calcDeltaR(lep_raw, nb_raw)      # (n, 1, wsl)
+        jet_dR = self.jet_dR_embed(lepNBdR, jet_mask)  # (n, dD, wsl) embedded deltaR
 
         WW, WW0, WW_weights = self.attention_WW(
             lep_W,                     # q:  (n, dD, 1) single leptonic W query
-            nb_jets,                   # v:  (n, dD, 3) individual jets
-            jet_mask.unsqueeze(1),     # mask: (n, 1, 3)
+            nb_jets,                   # v:  (n, dD, wsl) individual jets
+            jet_mask.unsqueeze(1),     # mask: (n, 1, wsl)
             lep_W0,                    # q0: (n, dD, 1) residual
-            jet_dR,                    # qv: (n, dD, 3) deltaR attention bias
+            jet_dR,                    # qv: (n, dD, wsl) deltaR attention bias
             scalars,
             self.debug
         )
@@ -1046,8 +1075,8 @@ class METRegressor(nn.Module):
         WW_sel = WW
 
         # Per-jet attention weights (attached for gradient flow)
-        # Concatenate heads to preserve per-head information: (n, h, 1, 3) -> (n, h*3)
-        jet_weights = WW_weights.squeeze(2).reshape(n, -1)  # (n, h*3=6)
+        # Concatenate heads to preserve per-head information: (n, h, 1, wsl) -> (n, h*wsl)
+        jet_weights = WW_weights.squeeze(2).reshape(n, -1)  # (n, h*wsl)
         self._jet_weights = jet_weights.detach()  # for monitoring
 
         # build context from all other objects in the event
@@ -1103,21 +1132,29 @@ class METRegressor(nn.Module):
 
         # Siamese pz selector: score each solution with shared weights, then subtract
         oss_corr_sel = torch.log1p(oss_corrected + 1e-3).unsqueeze(-1).unsqueeze(-1)  # (n, 1, 1)
-        
+
+        # DeltaR between neutrino (per pz solution) and each b-jet
+        dR_b1_sol1, dR_b2_sol1 = _nu_bjet_dR(nu_px_on, nu_py_on, pz_sol1, raw_b)
+        dR_b1_sol2, dR_b2_sol2 = _nu_bjet_dR(nu_px_on, nu_py_on, pz_sol2, raw_b)
+
         sol1_input = torch.cat([
             onshell_input,
             deta_sol1.unsqueeze(-1).unsqueeze(-1),
             pz_sol1.unsqueeze(-1).unsqueeze(-1),
             oss_corr_sel,
-        ], dim=1)  # (n, 2*dD+6, 1)
-        
+            dR_b1_sol1.unsqueeze(-1).unsqueeze(-1),
+            dR_b2_sol1.unsqueeze(-1).unsqueeze(-1),
+        ], dim=1)  # (n, 2*dD+8, 1)
+
         sol2_input = torch.cat([
             onshell_input,
             deta_sol2.unsqueeze(-1).unsqueeze(-1),
             pz_sol2.unsqueeze(-1).unsqueeze(-1),
             oss_corr_sel,
-        ], dim=1)  # (n, 2*dD+6, 1)
-        
+            dR_b1_sol2.unsqueeze(-1).unsqueeze(-1),
+            dR_b2_sol2.unsqueeze(-1).unsqueeze(-1),
+        ], dim=1)  # (n, 2*dD+8, 1)
+
         score1 = self.pz_solution_scorer(sol1_input).squeeze(-1).squeeze(-1)  # (n,)
         score2 = self.pz_solution_scorer(sol2_input).squeeze(-1).squeeze(-1)  # (n,)
         logit_sol = score1 - score2  # positive → prefer sol1
@@ -1140,18 +1177,47 @@ class METRegressor(nn.Module):
         L_on = _build_cholesky(self.nu_cholesky_onshell(onshell_input).squeeze(-1))
         L_off = _build_cholesky(self.nu_cholesky_offshell(offshell_input).squeeze(-1))
 
-        # add computed neutrino kinematics (detached) and W mass to classifier
+        # --- Siamese hypothesis classifier ---
         nu_on_det = nu_pred_on.detach().unsqueeze(-1)   # (n, 3, 1)
         nu_off_det = nu_pred_off.detach().unsqueeze(-1)  # (n, 3, 1)
-        mW_on = calc_mW(raw_lep[:, :4], nu_pred_on.detach()).unsqueeze(-1).unsqueeze(-1)   # (n, 1, 1)
+        mW_on_const = torch.full((n, 1, 1), 80.379, device=raw_lep.device)  # (n, 1, 1)
         mW_off = calc_mW(raw_lep[:, :4], nu_pred_off.detach()).unsqueeze(-1).unsqueeze(-1)  # (n, 1, 1)
+        sigma_pz_on = L_on[:, 2, 2].detach().unsqueeze(-1).unsqueeze(-1)   # (n, 1, 1)
+        sigma_pz_off = L_off[:, 2, 2].detach().unsqueeze(-1).unsqueeze(-1)  # (n, 1, 1)
+        oss_40 = torch.log1p(kinematic_solutions[:, 5:6, :] + 1e-3)  # (n, 1, 1)
 
-        classifier_input = torch.cat([
-            onshell_input, oss_corr, nu_on_det, nu_off_det, mW_on, mW_off,
-        ], dim=1)  # (n, 2*dD+12, 1)
+        # Corrected discriminant from off-shell regressor's px/py at mW=80 (symmetric with oss_corr)
+        _, _, _, oss_corr_off = get_nu_pz_cartesian(
+            raw_lep[:, 0], raw_lep[:, 1], raw_lep[:, 2], raw_lep[:, 3],
+            nu_pred_off[:, 0].detach(), nu_pred_off[:, 1].detach(), mW=80.379,
+        )
+        oss_corr_off = torch.log1p(oss_corr_off + 1e-3).unsqueeze(-1).unsqueeze(-1)  # (n, 1, 1)
+
+        # Shared base: event-level features independent of hypothesis
+        shared_base = torch.cat([
+            onshell_input, oss_80, oss_40,
+        ], dim=1)  # (n, 2*dD+5, 1)
+
+        # On-shell branch: hypothesis-specific features
+        on_features = torch.cat([
+            shared_base,
+            oss_corr,         # corrected discriminant from on-shell regressor at mW=80
+            nu_on_det,        # (n, 3, 1)
+            mW_on_const,      # 80.379 GeV
+            sigma_pz_on,      # pz uncertainty from on-shell Cholesky
+        ], dim=1)  # (n, 2*dD+11, 1)
+
+        # Off-shell branch: hypothesis-specific features
+        off_features = torch.cat([
+            shared_base,
+            oss_corr_off,     # corrected discriminant from off-shell regressor at mW=80
+            nu_off_det,       # (n, 3, 1)
+            mW_off,           # reconstructed off-shell W mass
+            sigma_pz_off,     # pz uncertainty from off-shell Cholesky
+        ], dim=1)  # (n, 2*dD+11, 1)
 
         # Classify on-shell vs off-shell
-        logit_onshell = self.onshell_classifier(classifier_input)
+        logit_onshell = self.onshell_classifier(on_features, off_features)
 
         return nu_pred_on, L_on, nu_pred_off, L_off, (logit_onshell, logit_sol_on)
 

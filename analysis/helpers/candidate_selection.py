@@ -224,7 +224,8 @@ def regressed_nu(events, met_regression: bool = False):
         with_name="LorentzVector",
         behavior=vector.behavior,
         )
-
+        events["reg_mW"] =  ak.fill_none((events.reg_nu + events.leading_lep).mass, np.nan) # regressed leptonic W mass
+        
         #check how well regressor is selecting jets
         ml_jet_scores = ak.concatenate(
             [ak.singletons(0.5 * (events.met_regressor.jet_weight_0 + events.met_regressor.jet_weight_3)),  # jet 0: avg of head1, head2

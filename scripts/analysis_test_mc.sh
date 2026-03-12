@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e  # Terminate script immediately if any command returns a non-zero exit code
 
 JOB_NAME="analysis_test_mc"
 

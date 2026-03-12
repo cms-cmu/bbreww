@@ -1,9 +1,11 @@
 import numpy as np
 import awkward as ak
-import logging
-import correctionlib
+import pickle
+import tempfile
+import awkward as ak
 from coffea.nanoevents.methods import vector
 from bbreww.analysis.helpers.corrections import get_ele_sf, get_mu_id_sf, get_mu_iso_sf, get_mu_trig_sf, get_ele_trig_sf
+from src.storage.eos import EOS
 
 def distance(x1,y1,x2,y2):
     return abs(ak.fill_none(np.sqrt((x2-x1)**2+(y2-y1)**2),np.nan))
@@ -40,6 +42,38 @@ def elliptical_region(x, y, center_x, center_y, width, height):
 
     return result <= 1
 
+def dump_phh_to_pickle(selected_events, dataset, output_path):
+    """Dump signal SvB.phh data to a pickle file for quantile rebinning.
+
+    Supports writing to EOS by first writing to a local temp file,
+    then copying to the remote destination.
+    """
+    phh_data = {
+        'dataset': dataset,
+        'nominal_4j2b': {
+            'phh': ak.to_numpy(selected_events.SvB.phh[selected_events.nominal_4j2b & selected_events.region.SR]),
+            'weight': ak.to_numpy(selected_events.weight[selected_events.nominal_4j2b & selected_events.region.SR]),
+        },
+        'lowpt_4j2b': {
+            'phh': ak.to_numpy(selected_events.SvB.phh[selected_events.lowpt_4j2b & selected_events.region.SR]),
+            'weight': ak.to_numpy(selected_events.weight[selected_events.lowpt_4j2b & selected_events.region.SR]),
+        },
+    }
+
+    eos_path = EOS(output_path)
+    if eos_path.is_local:
+        with open(output_path, 'wb') as f:
+            pickle.dump(phh_data, f)
+    else:
+        with tempfile.NamedTemporaryFile(suffix='.pkl', delete=False) as f:
+            temp_path = f.name
+            pickle.dump(phh_data, f)
+        try:
+            EOS(temp_path).copy_to(eos_path, parents=True, overwrite=True)
+        finally:
+            import os
+            os.remove(temp_path)
+
 
 def update_events(events, collections):
     """Return a shallow copy of events array with some collections swapped out"""
@@ -64,7 +98,8 @@ def nu_pz(l,v):
 
     pz_1 = ak.fill_none((2*A*l.pz + sqrt_discriminant)/(2*C), np.nan)
     pz_2 = ak.fill_none((2*A*l.pz - sqrt_discriminant)/(2*C), np.nan)
-    return ak.where(abs(pz_1) <= abs(pz_2), pz_1, pz_2)
+    #return ak.where(abs(pz_1) <= abs(pz_2), pz_1, pz_2)
+    return pz_1, pz_2
 
 def chi_square(data, mean, std, power=1):
     chi2 = ((data - mean)/std)**power
@@ -72,7 +107,8 @@ def chi_square(data, mean, std, power=1):
 
 def met_reconstr(events, lep):
     met = events.MET
-    pz = nu_pz(lep, met)
+    pz_1, pz_2 = nu_pz(lep, met)
+    pz =  ak.where(abs(pz_1) <= abs(pz_2), pz_1, pz_2)
     nu = ak.zip({
             "x": met.pt * np.cos(met.phi),
             "y": met.pt * np.sin(met.phi),
@@ -83,7 +119,7 @@ def met_reconstr(events, lep):
         behavior=vector.behavior,
     )
 
-    return nu
+    return nu, pz_1, pz_2
 
 def get_ele_sfs(params, electron, year):
     reco_sf =  ak.where(
@@ -127,28 +163,35 @@ def get_mu_sfs(params, muon, year):
 
 #combined electron and muon scale factors
 # 0: electron, 1: muon
-def add_lepton_sfs(params, events, electron, muon, weights, year, is_mc):
-    if is_mc:
-        ele_reco_sf, ele_id_sf, ele_trig_sf = get_ele_sfs(params, electron, year)
-        mu_reco_sf = ak.ones_like(events.Muon.pt, dtype = float)
-        mu_iso_sf, mu_id_sf, mu_trig_sf = get_mu_sfs(params, muon, year)
-        ele_iso_sf = ak.ones_like(events.Electron.pt, dtype = float)
+def add_lepton_sfs(params, events, electron, muon, weights, list_weight_names, year):
+    ele_reco_sf, ele_id_sf, ele_trig_sf = get_ele_sfs(params, electron, year)
+    mu_reco_sf = ak.ones_like(events.Muon.pt, dtype = float)
+    mu_iso_sf, mu_id_sf, mu_trig_sf = get_mu_sfs(params, muon, year)
+    ele_iso_sf = ak.ones_like(events.Electron.pt, dtype = float)
 
-        reco_sf = ak.where(events.e_region, # select leading lepton out of leading electrons and leading muons
-                        ak.firsts(ele_reco_sf[electron.istight]),# leading electrons
-                        ak.firsts(mu_reco_sf[muon.istight])) # leading muons
-        id_sf = ak.where(events.e_region,
-                        ak.firsts(ele_id_sf[electron.istight]),
-                        ak.firsts(mu_id_sf[muon.istight]))
-        iso_sf = ak.where(events.e_region,
-                        ak.firsts(ele_iso_sf[electron.istight]),
-                        ak.firsts(mu_iso_sf[muon.istight]))
-        trig_sf = ak.where(events.e_region,
-                        ak.firsts(ele_trig_sf[electron.istight]),
-                        ak.firsts(mu_trig_sf[muon.istight]))
+    reco_sf = ak.where(events.e_region, # select leading lepton out of leading electrons and leading muons
+                    ak.firsts(ele_reco_sf[electron.istight]),# leading electrons
+                    ak.firsts(mu_reco_sf[muon.istight])) # leading muons
+    id_sf = ak.where(events.e_region,
+                    ak.firsts(ele_id_sf[electron.istight]),
+                    ak.firsts(mu_id_sf[muon.istight]))
+    iso_sf = ak.where(events.e_region,
+                    ak.firsts(ele_iso_sf[electron.istight]),
+                    ak.firsts(mu_iso_sf[muon.istight]))
+    trig_sf = ak.where(events.e_region,
+                    ak.firsts(ele_trig_sf[electron.istight]),
+                    ak.firsts(mu_trig_sf[muon.istight]))
 
-        weights.add('reco_sf', reco_sf)
-        weights.add('id_sf', id_sf)
-        weights.add('iso_sf', iso_sf)
-        weights.add('trig_sf', trig_sf)
-    return weights
+    weights.add('reco_sf', reco_sf)
+    weights.add('id_sf', id_sf)
+    weights.add('iso_sf', iso_sf)
+    weights.add('trig_sf', trig_sf)
+
+    list_weight_names.append(f"Ele_reco_SF")
+    list_weight_names.append(f"Muon_iso_SF")
+    list_weight_names.append(f"Ele_id_SF")
+    list_weight_names.append(f"Muon_id_SF")
+    list_weight_names.append(f"Ele_trig_SF")
+    list_weight_names.append(f"Muon_trig_SF")
+    
+    return weights, list_weight_names

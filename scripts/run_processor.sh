@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e  # Terminate script immediately if any command returns a non-zero exit code
 
 # Source common functions
 source "src/scripts/common.sh"
@@ -193,18 +194,19 @@ OUTPUT_DIR="${OUTPUT_BASE}/${OUTPUT_SUBDIR}/"
 create_output_directory "$OUTPUT_DIR"
 
 echo "############### Running test processor"
-cmd=(python runner.py 
-    -p "$PROCESSOR_PATH" 
-    -m "$METADATA_PATH" 
-    -c "$CONFIG_PATH" 
+cmd=(python runner.py
+    -p "$PROCESSOR_PATH"
+    -m "$METADATA_PATH"
+    -c "$CONFIG_PATH"
     --triggers "$TRIGGERS_PATH"
     --luminosities "$LUMINOSITIES_PATH"
-    -d $DATASETS 
+    --friends ""
+    -d $DATASETS
     -y $YEAR
-    -op "$OUTPUT_DIR" 
-    -o "$OUTPUT_FILENAME" 
+    -op "$OUTPUT_DIR"
+    -o "$OUTPUT_FILENAME"
     $CONDOR_MODE
-    $TEST_MODE 
+    $TEST_MODE
     $ADDITIONAL_FLAGS
 )
 run_command "${cmd[@]}"

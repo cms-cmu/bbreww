@@ -397,7 +397,9 @@ class HCRModelEval(Model):
         output = {}
         output["tt_b1Whad"] = TT_cands[:, 0]
         output["tt_b2Whad"] = TT_cands[:, 1]
-        output["WW_score"] = WW_score
+        output["WW_score1"] = WW_score[:,0]
+        output["WW_score2"] = WW_score[:,1]
+        output["WW_score3"] = WW_score[:,2]
         for i, label in enumerate(self._classes):   
             output[f"p_{label}"] = HH[:, i]
         return selector.pad(map_batch(self._mapping, output))

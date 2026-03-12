@@ -29,3 +29,4 @@ triggers:
     - IsoMu24
     - Ele28_eta2p1_WPTight_Gsf_HT150
   2023_BPix: *triggers_2023
+  '2024': *triggers_2023

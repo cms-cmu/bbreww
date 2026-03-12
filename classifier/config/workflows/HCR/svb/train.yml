@@ -17,19 +17,19 @@ dataset:
       - --mc-processes ttbar
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
       - --norm 4 #set TTbar to be 4 times weight of signal
-      - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input # set input friend tree
+      - --friends "" bbreww/metadata/classifier/input/output_friend_nom.json@@classifier_input_nom # set input friend tree
     
   - module: bbWW.svb.Background
     option:
       - --mc-processes WplusJets tW
       - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
       - --norm 2
-      - --friends "" bbreww/metadata/classifier/input/minorbkg_friend.json@@classifier_input # set input friend tree
+      - --friends "" bbreww/metadata/classifier/input/minorbkg_friend_nom.json@@classifier_input_nom # set input friend tree
 
   - module: bbWW.svb.Signal
     option:
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
-      - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input # set input friend tree
+      - --friends "" bbreww/metadata/classifier/input/output_friend_nom.json@@classifier_input_nom # set input friend tree
       #- --train-bsm
 
 model:

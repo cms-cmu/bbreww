@@ -8,7 +8,7 @@ runner:
   class_name: Skimmer
   data_tier: nanoAOD
   condor_cores: 1
-  condor_memory: 10GB
+  worker_memory: 10GB
   analysis_base_path: 
     - bbreww
   condor_transfer_input_files:

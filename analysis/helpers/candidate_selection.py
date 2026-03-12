@@ -1,5 +1,6 @@
 import awkward as ak
 import numpy as np
+from coffea.nanoevents.methods import vector
 from bbreww.analysis.helpers.common import met_reconstr, distance, elliptical_region
 
 def Hbb_candidate_selection(events):
@@ -34,16 +35,20 @@ def Hbb_candidate_selection(events):
 
 def Wlnu_candidate_selection(events):
 
-    # calculate MET pz requiring (lepton + nu).mass == W_mass
-    nu = met_reconstr(events, events.leading_lep)
+    # calculate MET pz requiring (lepton + nu).mass == W_mass and take the smaller solution
+    nu, pz_1, pz_2 = met_reconstr(events, events.leading_lep)
 
     Wlnu_cand = events.leading_lep + nu
     Wlnu_cand["lep"] = events.leading_lep
+    Wlnu_cand["pz_1"] = pz_1
+    Wlnu_cand["pz_2"] = pz_2
     Wlnu_cand["nu"]  = nu
-    Wlnu_cand["dr"]   = Wlnu_cand["lep"].delta_r  (Wlnu_cand["nu"])
+    Wlnu_cand["dr"]   = Wlnu_cand["lep"].delta_r(Wlnu_cand["nu"])
+    Wlnu_cand["deta"]   = Wlnu_cand["lep"].eta - Wlnu_cand["nu"].eta
+
     Wlnu_cand["dphi"] = Wlnu_cand["lep"].delta_phi(Wlnu_cand["nu"])
     Wlnu_cand["mT"]   = np.sqrt(2 * Wlnu_cand.lep.pt * Wlnu_cand.nu.pt * (1 - np.cos(Wlnu_cand.dphi)))
-
+    
     events['Wlnu_cand'] = Wlnu_cand
     return events
 
@@ -61,9 +66,10 @@ def Wqq_candidate_selection(events):
 
 def Hww_candidate_selection(events):
     Hww_cand = events.Wlnu_cand + events.Wqq_cand
-    Hww_cand["dr"]   = events.Wlnu_cand.delta_r  (events.Wqq_cand)
+    Hww_cand["dr"]   = events.Wlnu_cand.delta_r(events.Wqq_cand)
     Hww_cand["dphi"] = events.Wlnu_cand.delta_phi(events.Wqq_cand)
     Hww_cand["lqq_dr"] = events.Wlnu_cand.lep.delta_r(events.Wqq_cand)
+    Hww_cand["lqq_mass"] = (events.Wlnu_cand.lep+events.Wqq_cand).mass
 
     events['Hww_cand'] = Hww_cand
     return events
@@ -120,22 +126,26 @@ def ttbar_candidate_selection(events, run_SvB: bool = True):
                      })
 
     tt_sel["p","dr"]   = tt_best.lepTop.delta_r(tt_best.hadTop)
-    tt_sel["p","dphi"] = tt_best.lepTop.delta_r(tt_best.hadTop)
+    tt_sel["p","dphi"] = tt_best.lepTop.delta_phi(tt_best.hadTop)
 
     events['tt_sel'] = tt_sel
     return events
-
 
 def Wqq_soft_candidate_selection(events, year):
     QvG_key = 'btagPNetQvG' if '202' in year else 'particleNetAK4_QvsG' # use particleNET for quark vs. gluon tagging
 
     q_cands_soft = events.q_cands_soft_init[ak.argsort(getattr(events.q_cands_soft_init,QvG_key), axis=1, ascending=False)] #particleNetAK4_QvsG btagPNetQvG
-    q_cands_soft = q_cands_soft[:,:3] #top 3 quark vs gluon non b-jets
+    q_cands_soft = q_cands_soft[:,:4] #top 4 quark vs gluon non b-jets
     q_cands_soft = q_cands_soft[ak.argsort(q_cands_soft.pt, axis=1, ascending=False)] #pt sort the jets
     events['q_cands_soft'] = q_cands_soft
+
+    ## pt sorting soft + nominal candidates
+    q_cands_pt_sorted = events.q_cands_soft_init[ak.argsort(events.q_cands_soft_init.pt, axis=1, ascending=False)]
+    events['q_cands_pt_sorted'] = ak.pad_none(q_cands_pt_sorted[:,:2], 2, axis=1)
+    ####
     
     jj_i = ak.argcombinations(q_cands_soft, 2, replacement = False, fields=["j1","j2"]) #take dijet combinations
-    jj_i = jj_i[(q_cands_soft[jj_i.j1] - q_cands_soft[jj_i.j2]).eta<2.0]
+    #jj_i = jj_i[(q_cands_soft[jj_i.j1] - q_cands_soft[jj_i.j2]).eta<2.0]
     #jj_i = jj_i[(q_cands_soft[jj_i.j1] + q_cands_soft[jj_i.j2]).mass<120.0] #dijet cuts
     events['dijet_combs_new'] = jj_i
 
@@ -203,8 +213,44 @@ def ttbar_soft_candidate_selection(events):
 
     return events
 
+def regressed_nu(events, met_regression: bool = False):
+    if met_regression:
+        events["reg_nu"] = ak.zip({
+            "x": events.met_regressor.nu_px,
+            "y": events.met_regressor.nu_py,
+            "z": events.met_regressor.nu_pz,
+            "t": np.sqrt((events.met_regressor.nu_px**2 + events.met_regressor.nu_py**2 + events.met_regressor.nu_pz**2)),
+        },
+        with_name="LorentzVector",
+        behavior=vector.behavior,
+        )
+        events["reg_mW"] =  ak.fill_none((events.reg_nu + events.leading_lep).mass, np.nan) # regressed leptonic W mass
+        
+        #check how well regressor is selecting jets
+        ml_jet_scores = ak.concatenate(
+            [ak.singletons(0.5 * (events.met_regressor.jet_weight_0 + events.met_regressor.jet_weight_3)),  # jet 0: avg of head1, head2
+             ak.singletons(0.5 * (events.met_regressor.jet_weight_1 + events.met_regressor.jet_weight_4)),  # jet 1
+             ak.singletons(0.5 * (events.met_regressor.jet_weight_2 + events.met_regressor.jet_weight_5))], # jet 2
+            axis=1)
 
-def candidate_selection(events, params, year, run_SvB, classifier_SvB = None):
+        has_two_jets = ak.num(events.q_cands_soft) >= 2
+        valid_nu = ~np.isnan(events.met_regressor.nu_pz)
+        mask_all = has_two_jets & valid_nu
+
+        # Sort jets by attention weight descending, keep only indices pointing to real jets
+        masked_scores = ak.mask(ml_jet_scores, mask_all)
+        sorted_indices = ak.argsort(masked_scores, ascending=False)
+        n_jets = ak.num(events.q_cands_soft)
+        sorted_indices = sorted_indices[sorted_indices < n_jets]
+
+        # Top 2 jets by attention weight
+        events['sel_qq_l']  = events.q_cands_soft[sorted_indices[:, 0:1]]
+        events['sel_qq_sl'] = events.q_cands_soft[sorted_indices[:, 1:2]]
+        events['HWW_mass'] = ak.fill_none((events.sel_qq_l + events.sel_qq_sl + events.leading_lep + events.reg_nu).mass, np.nan)        
+
+    return events
+
+def candidate_selection(events, params, year, run_SvB, run_MET_regression, classifier_SvB = None):
 
     #
     # Common
@@ -212,7 +258,7 @@ def candidate_selection(events, params, year, run_SvB, classifier_SvB = None):
     events = Hbb_candidate_selection(events)
     events = Wlnu_candidate_selection(events)
 
-    # add ML classifier output scores
+    # compute ML classifier output from within the processor (currently directly evaluating in the classifier framework)
     if classifier_SvB is not None:
         from bbreww.analysis.helpers.classifier.SvB_helpers import compute_SvB
         compute_SvB(events,
@@ -231,8 +277,10 @@ def candidate_selection(events, params, year, run_SvB, classifier_SvB = None):
     events = Wqq_soft_candidate_selection(events, year)
     events = Hww_soft_candidate_selection(events)
     events = ttbar_soft_candidate_selection(events)
-
+    events = regressed_nu(events, run_MET_regression)
+    
     return events
+
 
 ## function only for skimmer
 def bjet_flag(events,params,year):

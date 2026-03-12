@@ -3,10 +3,11 @@ runner:
   skipbadfiles: False
   workers: 6
   friend_merge_step: 100000
-  condor_memory: 6GB
+  worker_memory: 10GB
   data_tier: picoAOD
   condor_cores: 1
   # friend_base: &friend_base root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/
+  # spanet_base: &spanet_base root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/spanet_output	
   friend_base: &friend_base output/test/
   condor_transfer_input_files:
     - src/
@@ -26,6 +27,7 @@ runner:
 
 
 config:
-  make_classifier_input: *friend_base
+  make_spanet_input: *spanet_base
+  #make_classifier_input: *friend_base
   fill_hists: false
   run_SvB: false

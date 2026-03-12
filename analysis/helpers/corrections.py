@@ -122,7 +122,7 @@ def get_ttbar_weight(pt):
     return np.exp(0.0615 - 0.0005 * np.clip(pt, 0, 800))
 
 ### taken from https://github.com/PocketCoffea/AnalysisConfigs/blob/main/configs/ttHbb/semileptonic/common/weights/custom_weights.py#L17-L39
-def add_sf_top_pt(pname, apply_reweight, events, weights):
+def add_sf_top_pt(pname, apply_reweight, events, weights, list_weight_names):
     if apply_reweight & ('TT' in pname):
         #print("Computing top pt reweighting for sample: ", metadata["sample"])
         part = events.GenPart
@@ -142,11 +142,12 @@ def add_sf_top_pt(pname, apply_reweight, events, weights):
         weight = np.sqrt(ak.prod([top_weight, antitop_weight], axis=0))
         # for i in range(10):
             # print("Top pt: {},   Top SF: {},   AntiTop pt :  {},   AntiTop SF: {}".format(part.pt[i,0], top_weight[i], part.pt[i,1], antitop_weight[i]))
+        list_weight_names.append('top_pt_reweight')
     else:
         weight = np.ones(len(events), dtype=np.float64)
 
     weights.add('top_pt_reweight', weight)
-    return weights
+    return weights, list_weight_names
 
 ### might move this to src
 def apply_met_corrections_after_jec(events, jets):

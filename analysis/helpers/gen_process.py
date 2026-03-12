@@ -1,3 +1,4 @@
+import logging
 import awkward as ak
 import numpy as np
 from functools import reduce
@@ -9,17 +10,34 @@ def add_gen_info(events, is_mc):
         events['GenPart','isTop'] = (abs(gen.pdgId)==6)&gen.hasFlags(['fromHardProcess', 'isLastCopy'])
         events['GenPart','isW'] = (abs(gen.pdgId)==24)&gen.hasFlags(['fromHardProcess', 'isLastCopy'])
         events['GenPart','isZ'] = (abs(gen.pdgId)==23)&gen.hasFlags(['fromHardProcess', 'isLastCopy'])
-        events['GenPart','isNu'] = ((abs(gen.pdgId)==12)|(abs(gen.pdgId)==14))#& gen.hasFlags(['isPrompt'])
+        is_genb = (abs(gen.pdgId)==5)&gen.hasFlags(['fromHardProcess', 'isLastCopy'])
 
-        #print(ak.local_index(events.GenPart[events.GenPart.isW].pdgId))
-        #print(events.GenPart[events.GenPart.isLepW].pdgId)
-        
-        
         events['isHtoW'] = events.GenPart[(events.GenPart[events.GenPart[events.GenPart.isW].genPartIdxMother].pdgId== 25)]
+        genNu = ak.pad_none(gen_match(events.GenPart, [12, 14], [24]), 1, axis=1)[:, 0]  # e, mu neutrinos coming from W decay
+        events['genNu'] = genNu
+        events['genNu_pt'] = ak.fill_none(genNu.pt, np.nan)
+        events['genNu_eta'] = ak.fill_none(genNu.eta, np.nan)
+        events['genNu_phi'] = ak.fill_none(genNu.phi, np.nan)
+        events['genNu_pz'] = ak.fill_none(genNu.pz, np.nan)
 
         ## non-bjets gen matched with W jets decaying to quarks
         gen_qFromW = gen_match(events.GenPart, [1,2,3,4], [24])
         events['gen_bFromH'] = gen_match(events.GenPart, [5], [25])
+        
+        # find hadronically decaying tops
+        top_parent_indices = get_ancestor_index(gen, 6) # all gen particles decaying from top
+        is_light_quark = (abs(gen.pdgId) >= 1) & (abs(gen.pdgId) <= 4)
+        is_from_W = (get_ancestor_id(gen, 24) == 24)
+        parent_top_index = top_parent_indices[is_light_quark & is_from_W]
+        parent_top_index = ak.fill_none(ak.firsts(parent_top_index), -999)
+
+        # find b-jets from hadronically decaying top
+        b_parent_top_idx = top_parent_indices[is_genb]
+        is_b_from_had_top = ak.any(b_parent_top_idx == parent_top_index, axis=-1)
+        gen_b_from_had_top = gen[is_genb][is_b_from_had_top]
+        #isHadB= ak.any(gen_b_from_had_top.metric_table(events.Jet)< 0.2,axis=1)
+        #is_max_pt = (events.Jet.pt == ak.max(events.Jet[isHadB].pt, axis=1, keepdims=True))
+        #events['Jet', 'isHadB'] = isHadB & is_max_pt
 
         try:
             events['Jet', 'isQfromW']= ak.any(gen_qFromW.metric_table(events.Jet)< 0.2,axis=1)
@@ -27,30 +45,35 @@ def add_gen_info(events, is_mc):
 
             if 'HH' in events.metadata['dataset']:
                 events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
-
+                
             ## flag which W is on shell (only for signal)
             is_lep = ((events.GenPart[events.GenPart.genPartIdxMother].isW) &
                 ((abs(events.GenPart.pdgId) == 11) | (abs(events.GenPart.pdgId) == 13))) # electrons or muons
             
             lepWidx = gen[is_lep].genPartIdxMother
-            lepW = gen[lepWidx]
+            gen_lepW = gen[lepWidx]
+            events['gen_lepW_mass'] = ak.fill_none(
+                ak.firsts(ak.values_astype(gen_lepW.mass, np.float32)),
+                np.nan
+            )
 
             hadWidx = gen[~is_lep & (abs(gen.pdgId) <= 5)].genPartIdxMother
             hadW = events.GenPart[hadWidx]
             hadW = hadW[hadW.isW]
             events['gen_hadW'] = hadW[:,0] # (pick 0 index because there are duplicate W's due to 2 quarks) 
-            events['isLepW'] = ak.firsts(lepW.mass > events.gen_hadW.mass)
+            events['isLepW'] = ak.fill_none(events.gen_lepW_mass > events.gen_hadW.mass, -1)
 
         except:
             events['Jet', 'isQfromW'] = ak.zeros_like(events.Jet.pt, dtype=bool)
-            events['isLepW'] = ak.ones_like(events.event, dtype = bool)
-
+            events['isLepW'] = ak.ones_like(events.event) * -1
+            events['gen_lepW_mass'] = ak.full_like(events.event, np.nan, dtype=np.float32)
+            
         events['isHtoW'] = events.GenPart[(events.GenPart[events.GenPart[events.GenPart.isW].genPartIdxMother].pdgId== 25)]
-
+        
         if 'HH' in events.metadata['dataset']:
             events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
     else:
-        events['isLepW'] = ak.ones_like(events.event, dtype = bool)
+        events['gen_lepW_mass'] = ak.full_like(events.event, np.nan, dtype=np.float32)
 
     return events
 
@@ -122,11 +145,54 @@ def gen_match(genpart, pdgid, ancestors):
 
     return genpart[pid]
 
-def gen_studies(events, is_mc):
+def get_ancestor_id(genpart, ancestor_id):
+    # Start with the immediate mothers
+    mother_idx = genpart.genPartIdxMother
+    
+    for _ in range(10): 
+        # Get the PDG ID of the current 'mothers'
+        valid_idx = mother_idx >= 0
+        current_mother_ids = ak.where(valid_idx, abs(genpart[mother_idx].pdgId), 0)
+        
+        # If the mother is what we want, we're done for that particle
+        # If not, we update mother_idx to the next level up
+        mother_idx = ak.where((current_mother_ids != ancestor_id) & valid_idx, 
+                              genpart[mother_idx].genPartIdxMother, 
+                              mother_idx)
+    
+    return ak.where(mother_idx >= 0, abs(genpart[mother_idx].pdgId), 0)
+
+def get_ancestor_index(genpart, target_pdgid):
+    # Start with the immediate mothers of every particle
+    current_idx = genpart.genPartIdxMother
+    
+    # We will track the 'best' index we've found so far
+    # Initialize with -1 (no ancestor found)
+    ancestor_idx = ak.full_like(current_idx, -1)
+
+    # Climb the tree (10 iterations is usually the max depth for ttbar/HH)
+    for _ in range(10):
+        # 1. Identify where we are currently pointing
+        in_bounds = (current_idx >= 0)
+        current_pdg = ak.where(in_bounds, abs(genpart[current_idx].pdgId), 0)
+        
+        # 2. If the particle we are looking at IS the target (e.g. Top), 
+        # save this index as our final answer for those specific particles.
+        is_target = (current_pdg == target_pdgid)
+        ancestor_idx = ak.where(is_target, current_idx, ancestor_idx)
+        
+        # 3. For particles where we HAVEN'T hit the target yet, 
+        # move 'current_idx' up one more level to the mother of the current mother.
+        current_idx = ak.where(in_bounds & ~is_target, 
+                               genpart[current_idx].genPartIdxMother, 
+                               current_idx)
+                               
+    return ancestor_idx
+
+def gen_studies(events, is_mc, run_MET_regression):
     if is_mc:
         ## gen level studies
         events = add_gen_info(events, is_mc)
-        gen_nu= ak.firsts(events.GenPart[events.GenPart.isNu])
         gen_W= events.GenPart[events.GenPart.isW]
         gen_b = ak.pad_none(events.gen_bFromH, 2,axis=1)
 
@@ -144,6 +210,7 @@ def gen_studies(events, is_mc):
             
             sel_jets_soft = events.q_cands_soft[events.q_cands_soft.isQfromW]
             sel_jets_nom = events.q_cands_nom[events.q_cands_nom.isQfromW]
+            
             events['q_soft_true_sublead'] =  ak.fill_none(ak.mask(sel_jets_soft.pt, 
                                                           (ak.sum(sel_jets_soft.isQfromW,axis=1) == 2))[:,1], 
                                                           np.nan)
@@ -156,19 +223,50 @@ def gen_studies(events, is_mc):
             events['q_nom_true_lead'] =  ak.fill_none(ak.mask(sel_jets_nom.pt, 
                                                       (ak.sum(sel_jets_nom.isQfromW,axis=1) == 2))[:,0], 
                                                       np.nan)
+
+            if run_MET_regression:
+            	# non b-jets selected from regressor classification
+            	n_true_soft = ak.sum(events.q_cands_soft.isQfromW, axis=1)
+            	ml_lead_correct = (events.sel_qq_l.isQfromW == 1)
+            	ml_sublead_correct = (events.sel_qq_sl.isQfromW == 1)
+            	
+            	# both jets correct (denominator: 2 true jets in q_cands_soft)
+            	both_in_soft = n_true_soft == 2
+            	ml_both_correct = ml_lead_correct & ml_sublead_correct & both_in_soft
+            	events['q_ml_true_lead'] = ak.where(ml_both_correct, events.q_soft_true_lead, np.nan)
+            	events['q_ml_true_sublead'] = ak.where(ml_both_correct, events.q_soft_true_sublead, np.nan)
+            	
+            	# leading ML jet correct (denominator: >= 1 true jet in q_cands_soft)
+            	at_least_one = n_true_soft >= 1
+            	lead_pt = ak.fill_none(ak.mask(sel_jets_soft.pt, at_least_one)[:,0], np.nan)
+            	events['q_ml_lead_denom'] = lead_pt
+            	events['q_ml_lead_numer'] = ak.where(ml_lead_correct & at_least_one, lead_pt, np.nan)
+            	
+            	# subleading ML jet correct (denominator: >= 2 true jets in q_cands_soft)
+            	events['q_ml_sublead_denom'] = events.q_soft_true_sublead  # already requires == 2
+            	events['q_ml_sublead_numer'] = ak.where(ml_sublead_correct & both_in_soft,
+            	                                        events.q_soft_true_sublead, np.nan)
+            	
+            	# p_onshell and sigma_pz_on for misclassified events with gen_lepW_mass < 20 GeV
+            	misclass_low_genW = abs(events.reg_mW - 80.0) <= 5.0 
+            	events['misclass_p_onshell'] = ak.where(misclass_low_genW, events.met_regressor.p_onshell, np.nan)
+            	events['misclass_sigma_pz_on'] = ak.where(misclass_low_genW, events.met_regressor.sigma_pz_on, np.nan)
         except:
+            print(events.reg_mW)
+            logging.info("warning: skipping gen studies of true W jets due to error")
             pass #above sequence will fail for datasets that don't have jets in every event
 
         ## met and W mass resolution
         #events['W_mass_res'] = ak.firsts(gen_W.mass[gen_W.mass < 55.0]) - events.qq_sel_mass
         #events['genW_mass'] = gen_W.mass[gen_W.mass > 55.0]
         #####################
-
+        
         ### study input parameters to chi square
         events['bjets_genjets_mass'] = ak.fill_none((events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen).mass,np.nan)
         events['bjets_genjets_dr'] = ak.fill_none(events.b_cands[:,0].matched_gen.delta_r(events.b_cands[:,1].matched_gen),np.nan)
         #events['bcand_genjets_mass'] = (events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen)
         events['gen_bb'] = ak.fill_none(gen_b[:,0] + gen_b[:,1], np.nan)
+        
         if 'HH' in events.metadata['dataset']:
             genjet_from_b =  ak.pad_none(events.b_cands[events.b_cands.isbFromH].matched_gen,2,axis=1)
             events['genjet_from_b'] = ak.fill_none(genjet_from_b[:,0] + genjet_from_b[:,1], np.nan)

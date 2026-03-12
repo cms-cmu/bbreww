@@ -1,5 +1,6 @@
 import numpy as np
 import awkward as ak
+from src.physics.objects.jet_corrections import apply_jerc_corrections_jsonpog
 
 ######
 ## Electron

@@ -42,6 +42,10 @@ TbarWplustoLNu2Q:
       sumw: 186681211.3671875
       sumw2: 6730991172.5
       total_events: 5177861
+  '2024':
+    nanoAOD: /TbarWplustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+    picoAOD:
+      files:
   xs: 19.31
 
 TbarWplusto2L2Nu:
@@ -83,6 +87,10 @@ TbarWplusto2L2Nu:
       sumw: 9468815.318359375
       sumw2: 36039322.0546875
       total_events: 2488000
+  '2024':
+    nanoAOD: /TbarWplusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+    picoAOD:
+      files:
   xs: 4.67
 
 TWminustoLNu2Q:
@@ -132,6 +140,10 @@ TWminustoLNu2Q:
       sumw: 178219854.0546875
       sumw2: 6413904930.5
       total_events: 4952467
+  '2024':
+    nanoAOD: /TWminustoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+    picoAOD:
+      files:
   xs: 19.31
 
 TWminusto2L2Nu:
@@ -176,4 +188,8 @@ TWminusto2L2Nu:
       sumw: 9416999.836914062
       sumw2: 35774716.568359375
       total_events: 2479000
-  xs: 4.67
+  '2024':
+    nanoAOD: /TWminusto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
+    picoAOD:
+      files:
+    xs: 4.67

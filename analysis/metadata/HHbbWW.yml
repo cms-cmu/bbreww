@@ -1,8 +1,7 @@
 runner:
-  max_workers: 400 
   skipbadfiles: False
-  workers: 16
-  condor_memory: 12GB
+  workers: 8
+  worker_memory: 8GB
   data_tier: picoAOD
   condor_cores: 1
   condor_transfer_input_files:
@@ -22,9 +21,11 @@ runner:
     - T2_US_MIT
     - T2_US_Purdue
 
-# uncomment lines below to run with SvB scores
+# processor specific flags below
 config:
-  run_SvB: True
+  dump_signal_phh: false
+  run_SvB: false
+  run_MET_regression: false
   friends:
     SvB: "bbreww/metadata/classifier/output/result_lowpt.json@@analysis.0.merged"
-
+    met_regressor: "bbreww/metadata/regressor/output/result.json@@analysis.0.merged"

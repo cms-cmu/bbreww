@@ -11,17 +11,17 @@ OUTPUT_BASE_DIR=$(parse_output_base_arg "output/" "$@") || exit 1
 
 [[ $(hostname) = *runner* ]] && OUTPUT_BASE_DIR="/builds/$CI_PROJECT_PATH/output"
 
-INPUT_DIR="$OUTPUT_BASE_DIR/skimmer_test"
+INPUT_DIR="bbreww/metadata"
 OUTPUT_DIR="$OUTPUT_BASE_DIR/${JOB_NAME}"
 create_output_directory "$OUTPUT_DIR"
 
 display_section_header "Printing input yml file"
-cat $INPUT_DIR/picoaod_datasets.yml
+cat $INPUT_DIR/datasets.yml
 
 display_section_header "Modifying dataset file with skimmer ci output"
 run_command python src/tools/merge_yaml_datasets.py \
     -m $INPUT_DIR/datasets.yml \
-    -f $INPUT_DIR/picoaod_datasets.yml \
+    -f $INPUT_DIR/datasets.yml \
     -o $OUTPUT_DIR/datasets.yml
 cat $OUTPUT_DIR/datasets.yml
 

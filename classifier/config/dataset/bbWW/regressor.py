@@ -6,9 +6,11 @@ from src.classifier.task import ArgParser
 from src.classifier.config.dataset.HCR import _group
 from src.classifier.task import ArgParser, converter, parse
 from src.classifier.config.setting.df import Columns
+from src.classifier.config.setting.cms import CollisionData
 from bbreww.classifier.config.dataset.bbWW._common import CommonEval, CommonTrain
 from bbreww.classifier.config.dataset.bbWW import _picoAOD
 from bbreww.classifier.config.setting.bbWW import Input, InputBranch
+
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -94,8 +96,26 @@ class Train(CommonTrain):
 
         return list(super().preprocess_by_group()) + ps
 
+# use only semileptonic ttbar for regression
+class _ttbar(_picoAOD._MCDataset):
+    processes = ("ttbar",)
 
-class Background(_picoAOD.Background, Train):
+    def __new__(cls, self: _picoAOD.MC, metadata: str):
+        filelists = []
+        if "ttbar" in self.mc_processes:
+            for year in CollisionData.eras:
+                filelists.append(
+                    [
+                        f"label:ttbar,year:{year}",
+                        metadata + f".TTToSemiLeptonic.{year}.picoAOD.files",
+                    ]
+                )
+        return filelists
+        
+class RegressorBackground(_picoAOD.MC):
+    pico_filelists = (_ttbar,)
+
+class Background(RegressorBackground, Train):
     argparser = ArgParser()
     argparser.add_argument(
         "--norm",
@@ -118,7 +138,7 @@ class Signal(_picoAOD.Signal, Train):
     ...
 
 
-class TrainBaseline(_picoAOD.Signal, _picoAOD.Background, Train):
+class TrainBaseline(_picoAOD.Signal, Background, Train):
     """Baseline training with signal and background processes"""
     ...
 
@@ -131,3 +151,4 @@ class Eval(_picoAOD.Signal, _picoAOD.Background, CommonEval):
 class DataEval(_picoAOD.Data, CommonEval):
     """Data Evaluation for MET regressor"""
     ...
+

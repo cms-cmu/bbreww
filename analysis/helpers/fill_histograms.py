@@ -76,16 +76,14 @@ def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = 
         fill += hist.add("islepW", (2, 0, 1.1, ("isLepW", R"leptonic W on shell boolean")))
 
         fill += hist.add("reg_mW",
-                          (30, 0, 150, ('reg_mW', R"Regressed leptonic W mass [GeV]")),
-                          reg_mW=lambda events: ak.fill_none((events.reg_nu + events.leading_lep).mass, np.nan))
-
+                          (30, 0, 150, ('reg_mW', R"Regressed leptonic W mass [GeV]")))
         fill += hist.add("reg_nu_pt_res",
                         (40, -100, 100, ("nu_pt_res", R"(True - Regressed) $\nu p_T$ [GeV]")),
                         nu_pt_res=lambda events: events.genNu_pt - events.reg_nu.pt
                         )
         fill += hist.add("reg_nu_pz_res",
-                        (40, -100, 100, ("nu_pz_res", R"(True - Regressed) $\nu |p_z|$")),
-                        nu_pz_res=lambda events: abs(events.genNu_pz) - abs(events.reg_nu.pz)
+                        (40, -5, 5, ("nu_pz_res", R"(True - Regressed) $\nu |p_z|$")),
+                        nu_pz_res= lambda events: events.genNu_pz - events.reg_nu.pz
                         )
         fill += hist.add("reg_nu_eta_res",
                         (50, -5, 5, ("nu_eta_res", R"(True - Regressed) $\nu \eta$")),
@@ -220,18 +218,18 @@ def fill_histograms(
     fill, hist = add_bbWW_common_hists(fill, hist, run_SvB, run_MET_regression)
 
     # jet selection efficiencies
-    fill += hist.add("true_jets_sublead.pt", (10, 14.5, 30, ("true_ak4_2", "pT [GeV]")))
-    fill += hist.add("true_jets_lead.pt", (10, 14.5, 30, ("true_ak4_1", "pT [GeV]")))
-    fill += hist.add("true_soft_jets_sel_sublead.pt", (10, 14.5, 30, ("q_soft_true_sublead", "pT[GeV]"))) # softjet 1
-    fill += hist.add("true_soft_jets_sel_lead.pt", (10, 14.5, 30, ("q_soft_true_lead", "pT[GeV]"))) # softjet 2
-    fill += hist.add("true_nom_jets_sel_sublead.pt", (10, 14.5, 30, ("q_nom_true_sublead", "pT[GeV]"))) # nominal jet 1
-    fill += hist.add("true_nom_jets_sel_lead.pt", (10, 14.5, 30, ("q_nom_true_lead", "pT[GeV]"))) # nominal jet 2
-    fill += hist.add("true_ml_jets_sel_lead.pt", (10, 14.5, 30, ("q_ml_true_lead", "pT[GeV]"))) # ml both correct
-    fill += hist.add("true_ml_jets_sel_sublead.pt", (10, 14.5, 30, ("q_ml_true_sublead", "pT[GeV]"))) # ml both correct
-    fill += hist.add("ml_lead_denom.pt", (10, 14.5, 30, ("q_ml_lead_denom", "pT[GeV]"))) # >= 1 true jet
-    fill += hist.add("ml_lead_numer.pt", (10, 14.5, 30, ("q_ml_lead_numer", "pT[GeV]"))) # ML lead correct
-    fill += hist.add("ml_sublead_denom.pt", (10, 14.5, 30, ("q_ml_sublead_denom", "pT[GeV]"))) # >= 2 true jets
-    fill += hist.add("ml_sublead_numer.pt", (10, 14.5, 30, ("q_ml_sublead_numer", "pT[GeV]"))) # ML sublead correct
+    fill += hist.add("true_jets_sublead.pt", (20, 14.5, 30, ("true_ak4_2", "pT [GeV]")))
+    fill += hist.add("true_jets_lead.pt", (20, 14.5, 30, ("true_ak4_1", "pT [GeV]")))
+    fill += hist.add("true_soft_jets_sel_sublead.pt", (20, 14.5, 30, ("q_soft_true_sublead", "pT[GeV]"))) # softjet 1
+    fill += hist.add("true_soft_jets_sel_lead.pt", (20, 14.5, 30, ("q_soft_true_lead", "pT[GeV]"))) # softjet 2
+    fill += hist.add("true_nom_jets_sel_sublead.pt", (20, 14.5, 30, ("q_nom_true_sublead", "pT[GeV]"))) # nominal jet 1
+    fill += hist.add("true_nom_jets_sel_lead.pt", (20, 14.5, 30, ("q_nom_true_lead", "pT[GeV]"))) # nominal jet 2
+    fill += hist.add("true_ml_jets_sel_lead.pt", (20, 14.5, 30, ("q_ml_true_lead", "pT[GeV]"))) # ml both correct
+    fill += hist.add("true_ml_jets_sel_sublead.pt", (20, 14.5, 30, ("q_ml_true_sublead", "pT[GeV]"))) # ml both correct
+    fill += hist.add("ml_lead_denom.pt", (20, 14.5, 30, ("q_ml_lead_denom", "pT[GeV]"))) # >= 1 true jet
+    fill += hist.add("ml_lead_numer.pt", (20, 14.5, 30, ("q_ml_lead_numer", "pT[GeV]"))) # ML lead correct
+    fill += hist.add("ml_sublead_denom.pt", (20, 14.5, 30, ("q_ml_sublead_denom", "pT[GeV]"))) # >= 2 true jets
+    fill += hist.add("ml_sublead_numer.pt", (20, 14.5, 30, ("q_ml_sublead_numer", "pT[GeV]"))) # ML sublead correct
     fill += hist.add("misclass_p_onshell", (10, 0, 1.1, ("misclass_p_onshell", "p(on-shell)"))) # misclassified & gen_lepW < 20
     fill += hist.add("misclass_sigma_pz_on", (50, 0, 100, ("misclass_sigma_pz_on", "on-shell uncertainty"))) # misclassified & gen_lepW < 20
 

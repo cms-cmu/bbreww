@@ -189,7 +189,7 @@ def get_ancestor_index(genpart, target_pdgid):
                                
     return ancestor_idx
 
-def gen_studies(events, is_mc):
+def gen_studies(events, is_mc, run_MET_regression):
     if is_mc:
         ## gen level studies
         events = add_gen_info(events, is_mc)
@@ -224,32 +224,33 @@ def gen_studies(events, is_mc):
                                                       (ak.sum(sel_jets_nom.isQfromW,axis=1) == 2))[:,0], 
                                                       np.nan)
 
-            # non b-jets selected from regressor classification
-            n_true_soft = ak.sum(events.q_cands_soft.isQfromW, axis=1)
-            ml_lead_correct = (events.sel_qq_l.isQfromW == 1)
-            ml_sublead_correct = (events.sel_qq_sl.isQfromW == 1)
-            
-            # both jets correct (denominator: 2 true jets in q_cands_soft)
-            both_in_soft = n_true_soft == 2
-            ml_both_correct = ml_lead_correct & ml_sublead_correct & both_in_soft
-            events['q_ml_true_lead'] = ak.where(ml_both_correct, events.q_soft_true_lead, np.nan)
-            events['q_ml_true_sublead'] = ak.where(ml_both_correct, events.q_soft_true_sublead, np.nan)
-            
-            # leading ML jet correct (denominator: >= 1 true jet in q_cands_soft)
-            at_least_one = n_true_soft >= 1
-            lead_pt = ak.fill_none(ak.mask(sel_jets_soft.pt, at_least_one)[:,0], np.nan)
-            events['q_ml_lead_denom'] = lead_pt
-            events['q_ml_lead_numer'] = ak.where(ml_lead_correct & at_least_one, lead_pt, np.nan)
-            
-            # subleading ML jet correct (denominator: >= 2 true jets in q_cands_soft)
-            events['q_ml_sublead_denom'] = events.q_soft_true_sublead  # already requires == 2
-            events['q_ml_sublead_numer'] = ak.where(ml_sublead_correct & both_in_soft,
-                                                     events.q_soft_true_sublead, np.nan)
-            
-            # p_onshell and sigma_pz_on for misclassified events with gen_lepW_mass < 20 GeV
-            misclass_low_genW = abs(events.reg_mW - 80.0) <= 5.0 
-            events['misclass_p_onshell'] = ak.where(misclass_low_genW, events.met_regressor.p_onshell, np.nan)
-            events['misclass_sigma_pz_on'] = ak.where(misclass_low_genW, events.met_regressor.sigma_pz_on, np.nan)
+            if run_MET_regression:
+            	# non b-jets selected from regressor classification
+            	n_true_soft = ak.sum(events.q_cands_soft.isQfromW, axis=1)
+            	ml_lead_correct = (events.sel_qq_l.isQfromW == 1)
+            	ml_sublead_correct = (events.sel_qq_sl.isQfromW == 1)
+            	
+            	# both jets correct (denominator: 2 true jets in q_cands_soft)
+            	both_in_soft = n_true_soft == 2
+            	ml_both_correct = ml_lead_correct & ml_sublead_correct & both_in_soft
+            	events['q_ml_true_lead'] = ak.where(ml_both_correct, events.q_soft_true_lead, np.nan)
+            	events['q_ml_true_sublead'] = ak.where(ml_both_correct, events.q_soft_true_sublead, np.nan)
+            	
+            	# leading ML jet correct (denominator: >= 1 true jet in q_cands_soft)
+            	at_least_one = n_true_soft >= 1
+            	lead_pt = ak.fill_none(ak.mask(sel_jets_soft.pt, at_least_one)[:,0], np.nan)
+            	events['q_ml_lead_denom'] = lead_pt
+            	events['q_ml_lead_numer'] = ak.where(ml_lead_correct & at_least_one, lead_pt, np.nan)
+            	
+            	# subleading ML jet correct (denominator: >= 2 true jets in q_cands_soft)
+            	events['q_ml_sublead_denom'] = events.q_soft_true_sublead  # already requires == 2
+            	events['q_ml_sublead_numer'] = ak.where(ml_sublead_correct & both_in_soft,
+            	                                        events.q_soft_true_sublead, np.nan)
+            	
+            	# p_onshell and sigma_pz_on for misclassified events with gen_lepW_mass < 20 GeV
+            	misclass_low_genW = abs(events.reg_mW - 80.0) <= 5.0 
+            	events['misclass_p_onshell'] = ak.where(misclass_low_genW, events.met_regressor.p_onshell, np.nan)
+            	events['misclass_sigma_pz_on'] = ak.where(misclass_low_genW, events.met_regressor.sigma_pz_on, np.nan)
         except:
             print(events.reg_mW)
             logging.info("warning: skipping gen studies of true W jets due to error")

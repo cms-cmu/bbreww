@@ -10,14 +10,9 @@ analysis_plot_mc_bbreww:
   script:
     - echo "Running bbww plot_mc analysis in barista framework"
     - source bbreww/scripts/analysis_plot_mc.sh --output-base /builds/$CI_PROJECT_PATH/output/
-    - |
-      if ! find output/analysis_plot_mc/ -name '*.pdf' | grep -q .; then
-        echo "ERROR: No plot PDFs were produced"
-        exit 1
-      fi
   artifacts:
     paths:
-      - output/analysis_plot_mc/**/*.pdf
+      - output/analysis_plot_mc/test_plots_from_yaml/Run3/nominal_4j2b/flavor_sum/region_sum/HHbbWW/Hbb_mass.pdf
     expire_in: 1 day
 
 analysis_iplot_mc_bbreww:

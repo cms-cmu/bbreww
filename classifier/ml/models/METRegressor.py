@@ -138,6 +138,7 @@ class RegressorModel(Model):
         self._opt_backbone = None
         self._opt_onshell = None
         self._opt_offshell = None
+        self._classifier_frozen = False
 
     def _ensure_optimizers(self):
         """Create three independent optimizers if not yet initialized."""
@@ -165,9 +166,8 @@ class RegressorModel(Model):
         self._opt_onshell = optim.Adam(onshell_params, lr=6e-3)
         self._opt_offshell = optim.Adam(offshell_params, lr=6e-3)
 
-        # LR decay schedule: hold high LR for most of training, decay in final ~15 epochs
-        # Backbone converges by epoch ~15, plateau 15-35, then aggressive fine-tuning
-        lr_milestones = [35, 38, 41, 43, 45, 46, 47, 48, 49, 50]
+        # LR decay schedule: hold high LR for most of training, decay in final ~10 epochs
+        lr_milestones = [40, 43, 45, 47, 48, 49, 50]
         lr_gamma = 0.25
         self._lr_backbone = MultiStepLR(self._opt_backbone, milestones=lr_milestones, gamma=lr_gamma)
         self._lr_onshell = MultiStepLR(self._opt_onshell, milestones=lr_milestones, gamma=lr_gamma)
@@ -219,25 +219,20 @@ class RegressorModel(Model):
         self._unpack_forward(batch)
         loss_backbone, loss_onshell, loss_offshell = self._loss(batch)
 
-        # Zero all gradients before accumulating from all three losses
+        # Train all three losses simultaneously
         self._opt_backbone.zero_grad()
         self._opt_onshell.zero_grad()
         self._opt_offshell.zero_grad()
-
-        # Backward all three losses (gradients accumulate in shared backbone)
         loss_backbone.backward(retain_graph=True)
         loss_onshell.backward(retain_graph=True)
         loss_offshell.backward()
-
-        # Step all three optimizers (each updates only its own param group)
+        torch.nn.utils.clip_grad_norm_(self._nn.parameters(), max_norm=1.0)
         self._opt_backbone.step()
         self._opt_onshell.step()
         self._opt_offshell.step()
+        total = loss_backbone.item() + loss_onshell.item() + loss_offshell.item()
 
         # Return a requires_grad tensor for the framework's loss.backward()/opt.step().
-        # The real value is preserved for logging (loss.item()), but backward produces
-        # zero gradients so the framework's optimizer step is a no-op.
-        total = loss_backbone.item() + loss_onshell.item() + loss_offshell.item()
         dummy = torch.tensor(total, device=self._device, requires_grad=True)
         return dummy + 0  # enables .backward() but produces no real gradients
 
@@ -323,6 +318,10 @@ class RegressorModel(Model):
         valid = np.isfinite(X).all(axis=1) & np.isfinite(y) & np.isfinite(w) & (w > 0)
         X, y, w = X[valid], y[valid], w[valid]
 
+        if len(y) == 0:
+            logging.warning("No valid events after NaN/Inf filtering for selector_gate BDT")
+            return
+
         logging.info(
             f"selector_gate BDT data: N={len(y)}, "
             f"X min={X.min():.4f}, X max={X.max():.4f}, "
@@ -349,10 +348,11 @@ class RegressorModel(Model):
             f"feature_importances={dict(zip(['p_onshell', 'sigma_pz_on', 'sigma_pz_off'], bdt.feature_importances_.round(3)))}"
         )
 
+
     def step(self, epoch: int = None):
         if self.ghost_batch is not None and self.ghost_batch.step(epoch):
             self._nn.setGhostBatches(self.ghost_batch.get_bs(), False)
-        # Step LR schedulers for all three internal optimizers
+        # Step LR schedulers for internal optimizers
         if self._opt_backbone is not None:
             self._lr_backbone.step()
             self._lr_onshell.step()
@@ -425,13 +425,7 @@ class RegressorTraining(MultiStageTraining):
             )
             self._model.ghost_batch = self._ghost_batch
             layers.setLayerRequiresGrad(requires_grad=True)
-        # Fit the BDT selector_gate on validation data
-        from src.classifier.nn.dataset import simple_loader
-        from src.classifier.config.setting.ml import DataLoader as DLConfig
-        val_dataset = validation_sets[SplitterKeys.validation]
-        val_loader = simple_loader(val_dataset, batch_size=DLConfig.batch_eval, shuffle=False, drop_last=False)
-        logging.info("Fitting selector_gate on validation data...")
-        self._model.fit_selector_gate(val_loader)
+
 
         output_stage = OutputStage(name="Final", path=f"{self.name}__{self.uuid}.pkl")
         output_path = output_stage.absolute_path
@@ -441,7 +435,6 @@ class RegressorTraining(MultiStageTraining):
                 torch.save(
                     {
                         "model": self._model.nn.state_dict(),
-                        "selector_gate_bdt": self._model.nn.selector_gate_bdt,
                         "metadata": self.metadata,
                         "uuid": self.uuid,
                         "arch": self._arch.save(),
@@ -484,7 +477,6 @@ class RegressorModelEval(Model):
             device=device,
         )
         self._nn.load_state_dict(saved["model"], strict=False)
-        self._nn.selector_gate_bdt = saved.get("selector_gate_bdt", None)
 
     @property
     def nn(self):
@@ -496,7 +488,7 @@ class RegressorModelEval(Model):
 
         nu_pred_on, L_on, nu_pred_off, L_off, (logit_onshell, pz_hint_on) = self._nn(*_RegressorInput(batch, self._device, selection))
         p_onshell = torch.sigmoid(logit_onshell)
-        
+
         jet_weights = self._nn._jet_weights  # (n, 6): per-jet attention weights (2 heads × 3 jets)
 
         # Extract marginal sigmas from Cholesky: sigma_i = sqrt((L @ L^T)_{ii})
@@ -505,19 +497,8 @@ class RegressorModelEval(Model):
         cov_off = torch.bmm(L_off, L_off.transpose(-1, -2))
         sigma_off = cov_off.diagonal(dim1=-2, dim2=-1).sqrt()
 
-        # Select neutrino using BDT gate fitted on validation data
-        import numpy as np
-        gate_input = np.column_stack([
-            p_onshell.cpu().numpy(),
-            sigma_on[:, 2].cpu().numpy(),
-            sigma_off[:, 2].cpu().numpy(),
-        ])
-        if self._nn.selector_gate_bdt is not None:
-            use_on_np = self._nn.selector_gate_bdt.predict(gate_input).astype(bool)
-        else:
-            # Fallback: use p_onshell > 0.5 if BDT not fitted
-            use_on_np = gate_input[:, 0] > 0.5
-        use_on = torch.from_numpy(use_on_np).to(self._device).unsqueeze(-1)  # (n, 1)
+        # Select neutrino using classifier p_onshell directly
+        use_on = (p_onshell > 0.5).unsqueeze(-1)  # (n, 1)
         nu_sel = torch.where(use_on, nu_pred_on, nu_pred_off)
         sigma_sel = torch.where(use_on, sigma_on, sigma_off)
 

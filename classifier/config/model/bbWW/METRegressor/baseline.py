@@ -65,6 +65,7 @@ class Train(METRegressorTrain):
         isLepW = genLepW[:, 0]                 # (n,): 1=on-shell, 0=off-shell, -1=unknown
         target_mW = genLepW[:, 1]              # (n,)
         is_on = (isLepW == 1)
+        is_on_regressor = (isLepW == 1) | (isLepW == -1)  # include ttbar (on-shell W, valid genNu)
         is_off = (isLepW == 0)
         has_label = (isLepW >= 0)
 
@@ -123,8 +124,9 @@ class Train(METRegressorTrain):
         lep_E = torch.sqrt(lep_px**2 + lep_py**2 + lep_pz**2 + lep[:, 3]**2)
 
         # ---- Loss 1: on-shell proper mixture NLL + auxiliary selector BCE ----
+        # Uses is_on_regressor to include semileptonic ttbar (on-shell W, valid genNu)
         logit_sol_on = batch["pz_hint_on"][valid]  # carries logit_sol from regressor
-        if is_on.sum() > 0 and weight[is_on].sum() > 0:
+        if is_on_regressor.sum() > 0 and weight[is_on_regressor].sum() > 0:
             # Re-solve quadratic with corrected MET to get both pz solutions
             pz_s1, pz_s2, _, _ = get_nu_pz_cartesian(
                 lep[:, 0], lep[:, 1], lep[:, 2], lep[:, 3],
@@ -146,33 +148,33 @@ class Train(METRegressorTrain):
 
                 return 0.5 * (z ** 2).sum(dim=1) + log_det + 1.5 * math.log(2 * math.pi)
 
-            nll1 = _nll_per_event(pred_sol1, cholesky_L_on, target, is_on)  # (n_on,)
-            nll2 = _nll_per_event(pred_sol2, cholesky_L_on, target, is_on)  # (n_on,)
+            nll1 = _nll_per_event(pred_sol1, cholesky_L_on, target, is_on_regressor)
+            nll2 = _nll_per_event(pred_sol2, cholesky_L_on, target, is_on_regressor)
 
             # Proper mixture NLL: -log(p1 * exp(-nll1) + p2 * exp(-nll2))
             # Uses log-sum-exp for numerical stability
-            log_p1 = F.logsigmoid(logit_sol_on[is_on])    # log(sigmoid(x))
-            log_p2 = F.logsigmoid(-logit_sol_on[is_on])   # log(1 - sigmoid(x))
+            log_p1 = F.logsigmoid(logit_sol_on[is_on_regressor])
+            log_p2 = F.logsigmoid(-logit_sol_on[is_on_regressor])
             mixture_nll = -torch.logaddexp(log_p1 - nll1, log_p2 - nll2)
 
-            w_on = weight[is_on]
+            w_on = weight[is_on_regressor]
             loss_mixture = (mixture_nll * w_on).sum() / w_on.sum()
 
             # Auxiliary BCE: truth-match selector to the closer pz root
-            true_pz = target[is_on, 2]
-            dist1 = (pz_s1[is_on] - true_pz).abs()
-            dist2 = (pz_s2[is_on] - true_pz).abs()
-            
+            true_pz = target[is_on_regressor, 2]
+            dist1 = (pz_s1[is_on_regressor] - true_pz).abs()
+            dist2 = (pz_s2[is_on_regressor] - true_pz).abs()
+
             target_sol = (dist1 < dist2).float()  # 1 if sol1 closer, 0 if sol2
-            # Downweight near-degenerate cases where both roots are similar
+            # Soft margin: smoothly downweight degenerate cases where both roots are similar
             margin = (dist1 - dist2).abs()
-            sol_weight = w_on * (margin > 5.0).float().clamp(min=0.1)
+            sol_weight = (w_on * torch.sigmoid((margin - 5.0) / 2.0)).detach()
             sol_bce = F.binary_cross_entropy_with_logits(
-                logit_sol_on[is_on], target_sol,
+                logit_sol_on[is_on_regressor], target_sol,
                 weight=sol_weight, reduction="sum"
             ) / sol_weight.sum()
 
-            loss_onshell = loss_mixture + 1.0 * sol_bce
+            loss_onshell = loss_mixture + 2.0 * sol_bce
         else:
             loss_onshell = torch.tensor(0.0, device=pred_on.device, requires_grad=True)
 

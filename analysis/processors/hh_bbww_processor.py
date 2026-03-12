@@ -287,7 +287,7 @@ class analysis(processor.ProcessorABC):
         add_to_selection(
             'leptonic_W',
             #(ak.firsts(selected_events.sr_boolean) == 0), # using chi square
-            ak.fill_none(ak.mask(selected_events.isLepW == 1, selected_events.isLepW >= 0),np.nan), # gen info
+            (ak.fill_none(ak.mask(selected_events.isLepW == 1, selected_events.isLepW >= 0),np.nan)) if self.is_mc else ak.ones_like(events.event),
             selection,
             selection_list['preselection']
         )
@@ -296,7 +296,7 @@ class analysis(processor.ProcessorABC):
         add_to_selection(
             'hadronic_W',
             #ak.firsts(selected_events.sr_boolean) == 1, # using chi square
-            ak.fill_none(ak.mask(selected_events.isLepW == 0, selected_events.isLepW >= 0), np.nan), # gen info
+            (ak.fill_none(ak.mask(selected_events.isLepW == 0, selected_events.isLepW >= 0), np.nan)) if self.is_mc else ak.ones_like(events.event),
             selection,
             selection_list['preselection']
         )

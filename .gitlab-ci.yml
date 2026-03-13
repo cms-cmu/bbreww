@@ -45,7 +45,7 @@ stages:
   - cutflow
 
 # Setup job that clones barista once
-setup_workspace:
+setup_bbreww:
   stage: setup
   image: alpine/git:latest
   needs:
@@ -80,9 +80,9 @@ setup_workspace:
     - k8s-cvmfs
 
 # Base template for all jobs that need the framework
-.base_analysis:
+.base_analysis_bbreww:
   needs:
-    - setup_workspace
+    - setup_bbreww
   before_script:
     - echo "Checking output directory"
     - ls $CI_PROJECT_PATH/output/ || true

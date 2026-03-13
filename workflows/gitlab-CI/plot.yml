@@ -1,9 +1,9 @@
 analysis_plot_mc_bbreww:
   stage: plot
   extends:
-    - .base_analysis
+    - .base_analysis_bbreww
   needs:
-    - setup_workspace
+    - setup_bbreww
     - analysis_test_mc_bbreww
     - voms_proxy
 
@@ -18,9 +18,9 @@ analysis_plot_mc_bbreww:
 analysis_iplot_mc_bbreww:
   stage: plot
   extends:
-    - .base_analysis
+    - .base_analysis_bbreww
   needs:
-    - setup_workspace
+    - setup_bbreww
     - analysis_test_mc_bbreww
     - voms_proxy
 

@@ -1,9 +1,9 @@
 analysis_test_cutflows_mc_bbreww:
   stage: cutflow
   extends:
-    - .base_analysis
+    - .base_analysis_bbreww
   needs:
-    - setup_workspace
+    - setup_bbreww
     - analysis_test_mc_bbreww
     - voms_proxy
   script:
@@ -17,9 +17,9 @@ analysis_test_cutflows_mc_bbreww:
 analysis_test_cutflows_data_bbreww:
   stage: cutflow
   extends:
-    - .base_analysis
+    - .base_analysis_bbreww
   needs:
-    - setup_workspace
+    - setup_bbreww
     - analysis_test_data_bbreww
     - voms_proxy
   script:
@@ -33,9 +33,9 @@ analysis_test_cutflows_data_bbreww:
 skimmer_analysis_test_cutflows_bbreww:
   stage: cutflow
   extends:
-    - .base_analysis
+    - .base_analysis_bbreww
   needs:
-    - setup_workspace
+    - setup_bbreww
     - skimmer_analysis_test_bbreww
     - voms_proxy
   script:

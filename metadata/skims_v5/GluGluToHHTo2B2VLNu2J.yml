@@ -85,15 +85,15 @@ GluGluToHHTo2B2VLNu2J_kl_1p00:
       total_events: 133053
 
   '2024':
-    nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-1p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter24NanoAOD-133X_mcRun3_2024_realistic_v8-v2/NANOAODSIM
+    nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_Par-c2-0p00-kl-1p00-kt-1p00_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
     picoAOD: 
-      count: 498062
+      count: 
       files:
-      - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/GluGluToHHTo2B2VLNu2J_kl_1p00_2024/picoAOD.root
-      saved_events: 49515
-      sumw: 14741.307220458984
-      sumw2: 547.8454217910767
-      total_events: 498062
+
+      saved_events: 
+      sumw: 
+      sumw2: 
+      total_events:
 
   xs: 0.003759
 

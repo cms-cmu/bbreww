@@ -12,7 +12,7 @@ from coffea.analysis_tools import Weights, PackedSelection
 from omegaconf import OmegaConf
 
 from src.physics.event_selection import apply_event_selection
-from src.physics.objects.jet_corrections import apply_jerc_corrections
+from src.physics.objects.jet_corrections import apply_jerc_corrections, apply_jerc_corrections_jsonpog
 from src.physics.event_weights import add_weights, add_btagweights
 from src.data_formats.root import Chunk
 
@@ -133,6 +133,7 @@ class analysis(processor.ProcessorABC):
 
         target = Chunk.from_coffea_events(events)
 
+        # for now, we load 2022 + 2023 corrections from local files and rest from cvmfs (22+23 have jetId fields)            
         jets = ak.where(
             events.Jet.btagPNetB >= self.params[self.year].btagWP.M,
             apply_jerc_corrections(
@@ -144,13 +145,13 @@ class analysis(processor.ProcessorABC):
                 jet_corr_factor=events.Jet.PNetRegPtRawCorr * events.Jet.PNetRegPtRawCorrNeutrino,
                 jet_type="AK4PFPuppiPNetRegressionPlusNeutrino"
             ),
-            apply_jerc_corrections(
+            apply_jerc_corrections_jsonpog(
                 events,
                 corrections_metadata=self.params[self.year],
                 isMC=self.is_mc,
                 run_systematics=False,
                 dataset=self.dataset,
-                jet_type="AK4PFPuppi.txt"
+                jet_type="AK4PFPuppi"
             )
         )
         met = apply_met_corrections_after_jec(events, jets)
@@ -259,10 +260,16 @@ class analysis(processor.ProcessorABC):
         if self.is_mc:
             weights, list_weight_names = add_lepton_sfs(self.params, events, events.Electron, events.Muon, weights, list_weight_names, self.year)
             weights, list_weight_names = add_sf_top_pt(self.processName, self.top_pt_reweight, events, weights, list_weight_names)            
-            weights, list_weight_names = add_btagweights(events, weights, list_weight_names, shift_name, 
-                                                         corrections_metadata=self.params[self.year],
-                                                         jet_field='b_cands')
-            
+            # Temp:  HACK — 2024 btag SF JSON has no shape corrections (only UParTAK4_wp_values); skip and set to 1.
+            if self.year == '2024':
+                weights.add("CMS_btag", np.ones(len(events)))
+                list_weight_names.append("CMS_btag")
+            else:
+                weights, list_weight_names = add_btagweights(events, weights, list_weight_names, shift_name,
+                                                             corrections_metadata=self.params[self.year],
+                                                             jet_field='b_cands')
+            events['btag_sf'] = weights.partial_weight(include=['CMS_btag'])
+
         events['weight'] = weights.weight()
 
         #study sequential cutflow (get weights and events after each cut)

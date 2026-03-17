@@ -2,7 +2,6 @@ import numpy as np
 import awkward as ak
 from src.physics.objects.jet_corrections import apply_jerc_corrections_jsonpog
 
-######
 ## Electron
 ## Electron_cutBased Int_t cut-based ID Fall17 V2
 ## (0:fail, 1:veto, 2:loose, 3:medium, 4:tight)
@@ -56,7 +55,7 @@ def lepton_preselection(events, lepton_flavour, params, id):
 ######
 
 
-def jet_preselection(events, params):
+def jet_preselection(events, params, year):
     jets = events.Jet
     nominal_cuts = params.object_preselection.Jet.nominal
     soft_cuts = params.object_preselection.Jet.soft
@@ -65,8 +64,8 @@ def jet_preselection(events, params):
     soft_pt =  (jets.pt > soft_cuts.pt) & (jets.pt < nominal_cuts.pt)
     presel_pt = jets.pt > soft_cuts.pt
     passes_eta = abs(jets.eta) < soft_cuts.eta
-    passes_jetId  = (jets.jetId & soft_cuts.jetId) == 2
-
+    passes_jetId =  events.Jet.passJetId
+    
     nominal_jets = passes_eta & nominal_pt & passes_jetId
     soft_jets = passes_eta & soft_pt & passes_jetId
     preselected_jets = passes_eta & presel_pt & passes_jetId

@@ -113,6 +113,7 @@ def dump_input_friend(
                 selection,
             )
 	)
+        | {"true_nbjet_flat": padded(events[nonbcand].isQfromW, selection)}
         | {"weight": padded(events[weight], selection)}
         | {"year" : padded(ak.full_like(events.HT, (events.metadata['year']).split('_', 1)[0]), selection)}
     )

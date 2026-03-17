@@ -63,10 +63,10 @@ def add_gen_info(events, is_mc):
                 events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
                 events['isLepW'] = ak.fill_none(events.gen_lepW_mass > events.gen_hadW.mass, -1)
             else:
-                events['isLepW'] = ak.ones_like(events.event) * -1
+                events['isLepW'] = ak.full_like(events.event, -1, dtype=np.int64)
         except:
             events['Jet', 'isQfromW'] = ak.zeros_like(events.Jet.pt, dtype=bool)
-            events['isLepW'] = ak.ones_like(events.event) * -1
+            events['isLepW'] = ak.full_like(events.event, -1, dtype=np.int64)
             events['gen_lepW_mass'] = ak.full_like(events.event, np.nan, dtype=np.float32)
             
         events['isHtoW'] = events.GenPart[(events.GenPart[events.GenPart[events.GenPart.isW].genPartIdxMother].pdgId== 25)]

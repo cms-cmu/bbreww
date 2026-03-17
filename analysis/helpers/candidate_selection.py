@@ -228,21 +228,22 @@ def regressed_nu(events, met_regression: bool = False):
         
         #check how well regressor is selecting jets
         ml_jet_scores = ak.concatenate(
-            [ak.singletons(0.5 * (events.met_regressor.jet_weight_0 + events.met_regressor.jet_weight_3)),  # jet 0: avg of head1, head2
-             ak.singletons(0.5 * (events.met_regressor.jet_weight_1 + events.met_regressor.jet_weight_4)),  # jet 1
-             ak.singletons(0.5 * (events.met_regressor.jet_weight_2 + events.met_regressor.jet_weight_5))], # jet 2
+            [ak.singletons(0.5 * (events.met_regressor.jet_weight_0 + events.met_regressor.jet_weight_4)),  # jet 0 (avg of two attention heads)
+             ak.singletons(0.5 * (events.met_regressor.jet_weight_1 + events.met_regressor.jet_weight_5)),  # jet 1
+             ak.singletons(0.5 * (events.met_regressor.jet_weight_2 + events.met_regressor.jet_weight_6)),  # jet 2
+             ak.singletons(0.5 * (events.met_regressor.jet_weight_3 + events.met_regressor.jet_weight_7))], # jet 3
             axis=1)
-
+        
         has_two_jets = ak.num(events.q_cands_soft) >= 2
         valid_nu = ~np.isnan(events.met_regressor.nu_pz)
         mask_all = has_two_jets & valid_nu
-
+        
         # Sort jets by attention weight descending, keep only indices pointing to real jets
         masked_scores = ak.mask(ml_jet_scores, mask_all)
         sorted_indices = ak.argsort(masked_scores, ascending=False)
         n_jets = ak.num(events.q_cands_soft)
         sorted_indices = sorted_indices[sorted_indices < n_jets]
-
+        
         # Top 2 jets by attention weight
         events['sel_qq_l']  = events.q_cands_soft[sorted_indices[:, 0:1]]
         events['sel_qq_sl'] = events.q_cands_soft[sorted_indices[:, 1:2]]

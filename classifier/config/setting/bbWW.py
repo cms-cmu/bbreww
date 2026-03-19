@@ -10,6 +10,7 @@ class InputBranch(GlobalSetting):
     feature_ancillary: list[str] = ["HT", "njets", "nsoftjets", "year"]
     feature_genNu: list[str] = ["pt", "eta", "phi"]
     feature_genLepW: list[str] = ["onShell", "genLepWmass"]
+    feature_true_nbjet_flat: list[str] = ["0", "1", "2", "3"]
     nbJetCand: int = 2
     nnonbJetCand: int = 4 # nominal: 2, lowpt: 3
 
@@ -41,11 +42,16 @@ class InputBranch(GlobalSetting):
     def get__feature_genLepW(cls, var: list[str]):
         return [f"genLepW_{f}" for f in var]
 
+    @classmethod
+    def get__feature_true_nbjet_flat(cls, var: list[str]):
+        return [f"true_nbjet_flat_{f}" for f in var]
+
 
 class Input(GlobalSetting):
     "Name of the keys in the input batch."
     label: str = "label"
     weight: str = "weight"
+    true_nbjet_flat: str = "true_nbjet_flat"
     bJetCand: str = "bJetCand"
     nonbJetCand: str = "nonbJetCand" 
     leadingLep: str = "leadingLep"

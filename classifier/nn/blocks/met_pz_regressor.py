@@ -92,21 +92,64 @@ def _hadW_mass(raw_nb, ww_weights):
     nj = nb.shape[2]
     if nj < 2:
         return torch.zeros(n, 1, 1, device=raw_nb.device)
+
     # Average attention across heads: (n, heads, 1, nj) → (n, nj)
     attn = ww_weights.squeeze(2).mean(dim=1)  # (n, nj)
+
     # Zero out attention for padded jets (pt == -1)
     padded = (nb[:, 0, :] < 0)  # (n, nj)
     attn = attn.masked_fill(padded, 0.0)
-    # Select top-2 jets by attention weight per event
-    _, top2 = attn.topk(2, dim=1)  # (n, 2)
-    # Gather the two selected jets: need (n, 4, 2)
+
+    _, top2 = attn.topk(2, dim=1)  # (n, 2) # Select top-2 jets by attention weight per event
     top2_exp = top2.unsqueeze(1).expand(-1, 4, -1)  # (n, 4, 2)
     sel_jets = torch.gather(nb, 2, top2_exp)  # (n, 4, 2)
+
     # Compute PxPyPzE for each selected jet and get dijet mass
     j1 = PxPyPzE(sel_jets[:, :, 0])  # (n, 4)
     j2 = PxPyPzE(sel_jets[:, :, 1])  # (n, 4)
     mass = diObjectMass(j1, j2)  # (n, 1)
+    
     return mass.unsqueeze(-1)  # (n, 1, 1)
+
+
+def compute_mjj(raw_nb, nj):
+    """For each non-b jet, compute min m_jj over its pairings with other jets.
+
+    Args:
+        raw_nb: (n, 4*nj) flat raw non-b jet features [pt, eta, phi, mass] per jet
+        nj: number of jets to consider
+    Returns:
+        (n, 1, nj) per-jet m_jj (large value for padded jets)
+    """
+    n = raw_nb.shape[0]
+    nb = raw_nb.view(n, 4, -1)[:, :, :nj]  # (n, 4, nj)
+    device = raw_nb.device
+
+    # Build all C(nj,2) pair indices
+    idx_i, idx_j = [], []
+    for i in range(nj):
+        for j in range(i + 1, nj):
+            idx_i.append(i)
+            idx_j.append(j)
+
+    # Compute dijet masses for all pairs
+    v1 = PxPyPzE(nb[:, :, idx_i])  # (n, 4, n_pairs)
+    v2 = PxPyPzE(nb[:, :, idx_j])  # (n, 4, n_pairs)
+    mjj = diObjectMass(v1, v2)     # (n, 1, n_pairs)
+
+    # Map pair masses back to individual masses (to pass to attention mechanism)
+    BIG = 999.0
+    per_jet = torch.full((n, 1, nj), BIG, device=device)
+    for p, (i, j) in enumerate(zip(idx_i, idx_j)):
+        per_jet[:, :, i] = torch.min(per_jet[:, :, i], mjj[:, :, p])
+        per_jet[:, :, j] = torch.min(per_jet[:, :, j], mjj[:, :, p])
+
+    # Mask padded jets (pt < 0)
+    padded = (nb[:, 0, :] < 0).unsqueeze(1)  # (n, 1, nj)
+    per_jet = per_jet.masked_fill(padded, BIG)
+
+    return per_jet  # (n, 1, nj)
+
 
 class InputEmbed(nn.Module):
     def __init__(
@@ -252,6 +295,8 @@ class InputEmbed(nn.Module):
 
         self.bsl, self.wsl = 2, 4
         self.qqsl = self.wsl * (self.wsl - 1) // 2  # C(wsl, 2) = 6 dijet pairs
+        self.wsl_tt = 3  # Use only first 3 jets for TT attention (reduces n_tt from 48 to 24)
+        self.qqsl_tt = self.wsl_tt * (self.wsl_tt - 1) // 2  # C(3, 2) = 3 dijet pairs for TT
 
         self.register_buffer('mask_bb_same', torch.zeros((1, self.bsl, self.bsl), dtype=torch.bool))
         for i in range(self.bsl):
@@ -396,10 +441,13 @@ class InputEmbed(nn.Module):
         b = torch.cat(
             [b, 2 * torch.ones((n, 1, 2), dtype=torch.float, device=device)], 1
         )  # label bJets with 2 (-1 for mask, 0 for not preselected, 1 for preselected jet)
+        # Detect padded jets BEFORE appending label row (padded jets have pt == -1)
+        mask = (nb[:, 0, :] < 0)  # (n, nj): True for padded jets
         nb = torch.cat(
             [nb, torch.ones((n, 1, 4), dtype=torch.float, device=device)], 1
-        ) 
-        mask = (nb[:, -1, :] == -1) # check the label row for -1 padded values
+        )
+        # Set label to -1 for padded jets so downstream code stays consistent
+        nb[:, -1, :][mask] = -1
         mask_qq = torch.stack([
             mask[:, 0] | mask[:, 1],  # qq[0] = nb[0] + nb[1]
             mask[:, 0] | mask[:, 2],  # qq[1] = nb[0] + nb[2]
@@ -692,7 +740,7 @@ class HypothesisClassifier(nn.Module):
         # Shared scorer: processes each hypothesis branch independently
         dH = dD * 4
         self.hypothesis_scorer = nn.Sequential(
-            GhostBatchNorm1d(2*dD + 11, features_out=dH, conv=True),
+            GhostBatchNorm1d(2*dD + 12, features_out=dH, conv=True),
             NonLUModule(),
             GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
@@ -806,7 +854,7 @@ class METRegressor(nn.Module):
             heads=2,
             phase_symmetric=self.phase_symmetric,
             layers=self.layers,
-            scalar_dim = 7,
+            scalar_dim = self.inputEmbed.qqsl_tt + 1,  # 3 lepQQdR + 1 lnu_mT = 4
             inputLayers=[self.bWhadResNetBlock.conv[-1], self.bWlepResNetBlock.conv[-1]],
             device=self.device,
         )
@@ -815,9 +863,11 @@ class METRegressor(nn.Module):
         self.bsl = self.inputEmbed.bsl
         self.wsl = self.inputEmbed.wsl
         self.qqsl = self.inputEmbed.qqsl
+        self.wsl_tt = self.inputEmbed.wsl_tt
+        self.qqsl_tt = self.inputEmbed.qqsl_tt
 
         self.scalars_embed = GhostBatchNorm1d(
-            self.qqsl + 1,  # qqsl lepQQdR values + 1 lnu_mT
+            self.qqsl_tt + 1,  # qqsl_tt lepQQdR values + 1 lnu_mT (only first 3 jets for TT)
             features_out=self.dD,
             conv=True,
             name="scalar physics relationships embed"
@@ -846,14 +896,30 @@ class METRegressor(nn.Module):
             name="jet deltaR embedder",
         )
 
+        # Embed per-jet min |m_jj - mW| for attention bias
+        self.jet_mjj_embed = GhostBatchNorm1d(
+            1,
+            features_out=self.dD,
+            conv=True,
+            name="jet dijet mass embedder",
+        )
+
+        # Learned combination of deltaR and dijet mass embeddings (2*dD → dD)
+        self.qv_combine = GhostBatchNorm1d(
+            2 * self.dD,
+            features_out=self.dD,
+            conv=True,
+            name="qv combine deltaR+mjj",
+        )
+
         self.onshell_classifier = HypothesisClassifier(self.dD)
 
         dH = self.dD * 4  # wider hidden dim for regressor heads
 
         # On-shell neutrino regressor: outputs (dpx, dpy)
-        # +dD: lep_W0, +2: init_px/py, +1: hadW_mass = 2*dD+3
+        # +dD: lep_W0, +1: lnu_mT, +2: init_px/py, +1: hadW_mass = 2*dD+4
         self.nu_regressor_onshell = nn.Sequential(
-            GhostBatchNorm1d(2*self.dD + 3, features_out=dH, conv=True),   # expand
+            GhostBatchNorm1d(2*self.dD + 4, features_out=dH, conv=True),   # expand
             NonLUModule(),
             GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
@@ -863,15 +929,15 @@ class METRegressor(nn.Module):
             NonLUModule(),
             GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(dH, features_out=2, conv=True),         # dpx, dpy
+            GhostBatchNorm1d(dH, features_out=3, conv=True),         # dpx, dpy, delta_mW
         )
         # Siamese pz solution scorer: shared weights score each solution independently.
-        # Per-solution input: onshell_input (2*dD+3) + deta (1) + pz (1) + oss_corr (1)
-        #                     + dR_b1 (1) + dR_b2 (1) = 2*dD+8
+        # Per-solution input: onshell_input (2*dD+4) + deta (1) + pz (1) + oss_corr (1)
+        #                     + dR_b1 (1) + dR_b2 (1) = 2*dD+9
         # Runs twice (once per solution) with shared weights; output = score1 - score2.
         dH_sel = self.dD * 6  # wider hidden dim for selector (more feature interactions)
         self.pz_solution_scorer = nn.Sequential(
-            GhostBatchNorm1d(2*self.dD + 8, features_out=dH_sel, conv=True),
+            GhostBatchNorm1d(2*self.dD + 9, features_out=dH_sel, conv=True),
             NonLUModule(),
             GhostBatchNorm1d(dH_sel, features_out=dH_sel, conv=True),
             NonLUModule(),
@@ -901,7 +967,7 @@ class METRegressor(nn.Module):
         # Per-event Cholesky factor heads for full 3x3 covariance of (px, py, pz)
         # Outputs 6 parameters: L11, L21, L22, L31, L32, L33 (lower-triangular)
         self.nu_cholesky_onshell = nn.Sequential(
-            GhostBatchNorm1d(2*self.dD + 3, features_out=dH, conv=True),
+            GhostBatchNorm1d(2*self.dD + 4, features_out=dH, conv=True),
             NonLUModule(),
             GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
@@ -945,11 +1011,15 @@ class METRegressor(nn.Module):
         self.qv_embed.setGhostBatches(nGhostBatches)
         self.select_tt.setGhostBatches(nGhostBatches)
         self.jet_dR_embed.setGhostBatches(nGhostBatches)
+        self.jet_mjj_embed.setGhostBatches(nGhostBatches)
+        self.qv_combine.setGhostBatches(nGhostBatches)
         # Output heads: iterate GBN layers in sequential modules and classifier
-        for module in (self.nu_regressor_onshell, self.pz_solution_scorer,
-                       self.nu_regressor_offshell,
-                       self.nu_cholesky_onshell, self.nu_cholesky_offshell,
-                       self.onshell_classifier.hypothesis_scorer):
+        for name, module in [("nu_regressor_onshell", self.nu_regressor_onshell),
+                             ("pz_solution_scorer", self.pz_solution_scorer),
+                             ("nu_regressor_offshell", self.nu_regressor_offshell),
+                             ("nu_cholesky_onshell", self.nu_cholesky_onshell),
+                             ("nu_cholesky_offshell", self.nu_cholesky_offshell),
+                             ("onshell_classifier.hypothesis_scorer", self.onshell_classifier.hypothesis_scorer)]:
             for layer in module:
                 if hasattr(layer, "setGhostBatches"):
                     layer.setGhostBatches(nGhostBatches)
@@ -1009,47 +1079,58 @@ class METRegressor(nn.Module):
         qqMdR = NonLU(qqMdR)
         bbnMdR = NonLU(bbnMdR)
         bbqqMdR = NonLU(bbqqMdR)
+        # Scalars for TT attention: only first 3 jets (wsl_tt) to reduce combinatorial overhead
+        scalars_tt = torch.cat([lepQQdR[:, :, :self.qqsl_tt], lnu_mT], dim=-1).squeeze(1)
+        # Scalars for WW attention: all jets
         scalars = torch.cat([lepQQdR, lnu_mT], dim=-1).squeeze(1)
 
-        n_bWhad = self.bsl * self.qqsl  # 2*6=12 top_had candidates
-        n_bWlep = self.bsl * 2           # 4 top_lep candidates
-        n_tt = n_bWhad * n_bWlep         # 48 total pairings
+        n_bWhad_tt = self.bsl * self.qqsl_tt  # 2*3=6 top_had candidates
+        n_bWlep = self.bsl * 2                 # 4 top_lep candidates
+        n_tt = n_bWhad_tt * n_bWlep            # 24 total pairings
 
-        bWhad_exp = bWhadMdR.reshape(n, -1, n_bWhad).repeat_interleave(n_bWlep, dim=2)
-        bWlep_exp = bWlepMdR.squeeze(-1).repeat(1, 1, n_bWhad)
+        # Slice bWhadMdR to first qqsl_tt pairs per b-jet
+        bWhadMdR_tt = bWhadMdR[:, :, :, :self.qqsl_tt]  # (n, dD, bsl, qqsl_tt)
+        bWhad_exp = bWhadMdR_tt.reshape(n, -1, n_bWhad_tt).repeat_interleave(n_bWlep, dim=2)
+        bWlep_exp = bWlepMdR.squeeze(-1).repeat(1, 1, n_bWhad_tt)
 
-        bbn_flat = bbnMdR.squeeze(2)  # (n, dD, wsl=4)
-        # Map each qq pair to its constituent nonbjets: C(wsl,2) pairs
-        qq_idx = []
-        for i in range(self.wsl):
-            for j in range(i + 1, self.wsl):
-                qq_idx.append((i, j))
+        bbn_flat = bbnMdR.squeeze(2)[:, :, :self.wsl_tt]  # (n, dD, wsl_tt=3)
+        # Map each qq pair to its constituent nonbjets: C(wsl_tt,2) pairs
+        qq_idx_tt = []
+        for i in range(self.wsl_tt):
+            for j in range(i + 1, self.wsl_tt):
+                qq_idx_tt.append((i, j))
         bbn_qq = torch.cat([
             torch.cat([bbn_flat[:, :, i:i+1], bbn_flat[:, :, j:j+1]], dim=1)
-            for i, j in qq_idx
-        ], dim=2)  # (n, 2*dD, qqsl=6)
+            for i, j in qq_idx_tt
+        ], dim=2)  # (n, 2*dD, qqsl_tt=3)
         # Expand: repeat_interleave(4) for bWlep, repeat(2) for b-jets
-        bbn_exp = bbn_qq.repeat_interleave(n_bWlep, dim=2).repeat(1, 1, self.bsl)  # (n, 2*dD, n_tt=48)
+        bbn_exp = bbn_qq.repeat_interleave(n_bWlep, dim=2).repeat(1, 1, self.bsl)  # (n, 2*dD, n_tt=24)
 
-        bbqq_exp = bbqqMdR.squeeze(2)  # (n, dD, qqsl=6)
-        bbqq_exp = bbqq_exp.repeat_interleave(n_bWlep, dim=2).repeat(1, 1, self.bsl)  # (n, dD, 48)
+        bbqq_exp = bbqqMdR.squeeze(2)[:, :, :self.qqsl_tt]  # (n, dD, qqsl_tt=3)
+        bbqq_exp = bbqq_exp.repeat_interleave(n_bWlep, dim=2).repeat(1, 1, self.bsl)  # (n, dD, 24)
 
         qv_tt = torch.cat([bWhad_exp, bWlep_exp, bbn_exp, bbqq_exp], dim=1)
         qv_tt = self.qv_embed(qv_tt)
 
-        # Mask: bWhad[0:qqsl] use b0, can't pair with bWlep[2:4] (also b0)
-        #        bWhad[qqsl:2*qqsl] use b1, can't pair with bWlep[0:2] (also b1)
-        mask_tt = torch.zeros(n, n_bWhad, n_bWlep, dtype=torch.bool, device=self.device)
-        mask_tt[:, :self.qqsl, 2:4] = True
-        mask_tt[:, self.qqsl:, 0:2] = True
+        # Mask: bWhad[0:qqsl_tt] use b0, can't pair with bWlep[2:4] (also b0)
+        #        bWhad[qqsl_tt:2*qqsl_tt] use b1, can't pair with bWlep[0:2] (also b1)
+        mask_tt = torch.zeros(n, n_bWhad_tt, n_bWlep, dtype=torch.bool, device=self.device)
+        mask_tt[:, :self.qqsl_tt, 2:4] = True
+        mask_tt[:, self.qqsl_tt:, 0:2] = True
+
+        # Slice bWhad to first qqsl_tt pairs per b-jet for TT attention
+        # bWhad is (n, dD, bsl*qqsl=12), need indices [0:qqsl_tt] and [qqsl:qqsl+qqsl_tt]
+        bWhad_tt_idx = list(range(self.qqsl_tt)) + list(range(self.qqsl, self.qqsl + self.qqsl_tt))
+        bWhad_tt = bWhad[:, :, bWhad_tt_idx]  # (n, dD, 6)
+        bWhad0_tt = bWhad0[:, :, bWhad_tt_idx]
 
         # TTbar pairing selection
         TT, TT0, TT_weights = self.attention_tt(
-            bWhad, bWlep, mask_tt, bWhad0, qv_tt, scalars, debug=self.debug
+            bWhad_tt, bWlep, mask_tt, bWhad0_tt, qv_tt, scalars_tt, debug=self.debug
         )
-        TT_logits = self.select_tt(TT)  # Shape: (n, n_bWhad, 1)
-        TT_logits = TT_logits.view(n, n_bWhad)  # Shape: (n, 12)
-        TT_score = F.softmax(TT_logits, dim=-1)  # Shape: (n, 12)
+        TT_logits = self.select_tt(TT)  # Shape: (n, n_bWhad_tt, 1)
+        TT_logits = TT_logits.view(n, n_bWhad_tt)  # Shape: (n, 6)
+        TT_score = F.softmax(TT_logits, dim=-1)  # Shape: (n, 6)
         TT_context = torch.matmul(TT, TT_score.unsqueeze(-1))
 
         # Individual jet attention: leptonic W queries individual non-b jets
@@ -1062,12 +1143,19 @@ class METRegressor(nn.Module):
         lepNBdR = calcDeltaR(lep_raw, nb_raw)      # (n, 1, wsl)
         jet_dR = self.jet_dR_embed(lepNBdR, jet_mask)  # (n, dD, wsl) embedded deltaR
 
+        # Per-jet min |m_jj - mW|: how close is this jet's best pairing to a W?
+        jet_mjj = compute_mjj(raw_nb, self.wsl)  # (n, 1, wsl)
+        jet_mjj = self.jet_mjj_embed(jet_mjj, jet_mask)  # (n, dD, wsl)
+
+        # Combined attention bias: concat deltaR and dijet mass, then project (2*dD → dD)
+        jet_qv = self.qv_combine(torch.cat([jet_dR, jet_mjj], dim=1), jet_mask)  # (n, dD, wsl)
+
         WW, WW0, WW_weights = self.attention_WW(
             lep_W,                     # q:  (n, dD, 1) single leptonic W query
             nb_jets,                   # v:  (n, dD, wsl) individual jets
             jet_mask.unsqueeze(1),     # mask: (n, 1, wsl)
             lep_W0,                    # q0: (n, dD, 1) residual
-            jet_dR,                    # qv: (n, dD, wsl) deltaR attention bias
+            jet_qv,                    # qv: (n, dD, wsl) deltaR + dijet mass attention bias
             scalars,
             self.debug
         )
@@ -1103,7 +1191,7 @@ class METRegressor(nn.Module):
         # Used by on-shell px/py regressor, Siamese pz selector, and on-shell Cholesky (2*dD + 3)
         lnu_mT_feat = lnu_mT_raw.unsqueeze(1)         # (n, 1, 1)
         onshell_input = torch.cat([
-            full_context, lep_W0,
+            full_context, lep_W0, lnu_mT_feat,
             init_px.unsqueeze(1), init_py.unsqueeze(1),
             hadW_mass,
         ], dim=1)  # (n, 2*dD+3, 1)
@@ -1113,14 +1201,16 @@ class METRegressor(nn.Module):
         init_pz_off = 0.5 * (kinematic_solutions[:, 3, :] + kinematic_solutions[:, 4, :])  # (n, 1)
 
         nu_init_off = torch.cat([init_px, init_py, init_pz_off], dim=1)  # (n, 3)
-        delta_on = self.nu_regressor_onshell(onshell_input).squeeze(-1)  # (n, 2): dpx, dpy
+        delta_on = self.nu_regressor_onshell(onshell_input).squeeze(-1)  # (n, 3): dpx, dpy, delta_mW
         nu_px_on = init_px.squeeze(1) + delta_on[:, 0]
         nu_py_on = init_py.squeeze(1) + delta_on[:, 1]
+        delta_mW = delta_on[:, 2].clamp(-15, 6)
+        mW_per_event = 80.379 + delta_mW
 
-        # Solve W mass quadratic with corrected (px, py), mW = 80.379 GeV
+        # Solve W mass quadratic with corrected (px, py) and per-event mW
         pz_sol1, pz_sol2, _, oss_corrected = get_nu_pz_cartesian(
             raw_lep[:, 0], raw_lep[:, 1], raw_lep[:, 2], raw_lep[:, 3],
-            nu_px_on, nu_py_on, mW=80.379,
+            nu_px_on, nu_py_on, mW=mW_per_event,
         )
 
         # Classifier: uses oss_80 (raw) + oss_corrected (from regressed px/py) + W mass discriminant
@@ -1163,7 +1253,7 @@ class METRegressor(nn.Module):
         use_sol1 = logit_sol > 0.0  # equivalent to sigmoid > 0.5
         nu_pz_on = torch.where(use_sol1, pz_sol1, pz_sol2)
 
-        nu_pred_on = torch.stack([nu_px_on, nu_py_on, nu_pz_on], dim=1)  # (n, 3)
+        nu_pred_on = torch.stack([nu_px_on, nu_py_on, nu_pz_on, delta_mW], dim=1)  # (n, 4): px, py, pz, delta_mW
         logit_sol_on = logit_sol
 
         # --- Off-shell neutrino: regress all 3 components ---
@@ -1178,9 +1268,9 @@ class METRegressor(nn.Module):
         L_off = _build_cholesky(self.nu_cholesky_offshell(offshell_input).squeeze(-1))
 
         # --- Siamese hypothesis classifier ---
-        nu_on_det = nu_pred_on.detach().unsqueeze(-1)   # (n, 3, 1)
+        nu_on_det = nu_pred_on[:, :3].detach().unsqueeze(-1)   # (n, 3, 1)
         nu_off_det = nu_pred_off.detach().unsqueeze(-1)  # (n, 3, 1)
-        mW_on_const = torch.full((n, 1, 1), 80.379, device=raw_lep.device)  # (n, 1, 1)
+        mW_on_learned = mW_per_event.detach().unsqueeze(-1).unsqueeze(-1)  # (n, 1, 1)
         mW_off = calc_mW(raw_lep[:, :4], nu_pred_off.detach()).unsqueeze(-1).unsqueeze(-1)  # (n, 1, 1)
         sigma_pz_on = L_on[:, 2, 2].detach().unsqueeze(-1).unsqueeze(-1)   # (n, 1, 1)
         sigma_pz_off = L_off[:, 2, 2].detach().unsqueeze(-1).unsqueeze(-1)  # (n, 1, 1)
@@ -1203,7 +1293,7 @@ class METRegressor(nn.Module):
             shared_base,
             oss_corr,         # corrected discriminant from on-shell regressor at mW=80
             nu_on_det,        # (n, 3, 1)
-            mW_on_const,      # 80.379 GeV
+            mW_on_learned,    # per-event mW from on-shell head
             sigma_pz_on,      # pz uncertainty from on-shell Cholesky
         ], dim=1)  # (n, 2*dD+11, 1)
 

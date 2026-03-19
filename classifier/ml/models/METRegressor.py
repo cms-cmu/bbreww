@@ -166,9 +166,9 @@ class RegressorModel(Model):
         self._opt_onshell = optim.Adam(onshell_params, lr=6e-3)
         self._opt_offshell = optim.Adam(offshell_params, lr=6e-3)
 
-        # LR decay schedule: hold high LR for most of training, decay in final ~10 epochs
-        lr_milestones = [40, 43, 45, 47, 48, 49, 50]
-        lr_gamma = 0.25
+        # LR decay: drop by 1/2 at each milestone (same as bs_milestones in train.yml)
+        lr_milestones = [5, 12, 22, 35]
+        lr_gamma = 0.5
         self._lr_backbone = MultiStepLR(self._opt_backbone, milestones=lr_milestones, gamma=lr_gamma)
         self._lr_onshell = MultiStepLR(self._opt_onshell, milestones=lr_milestones, gamma=lr_gamma)
         self._lr_offshell = MultiStepLR(self._opt_offshell, milestones=lr_milestones, gamma=lr_gamma)
@@ -213,6 +213,7 @@ class RegressorModel(Model):
         batch["cholesky_L_off"] = L_off
         batch["logit_onshell"] = logit_onshell
         batch["pz_hint_on"] = pz_hint_on
+        batch["ww_weights"] = self._nn._jet_weights
 
     def train(self, batch: BatchType) -> Tensor:
         self._ensure_optimizers()
@@ -259,100 +260,13 @@ class RegressorModel(Model):
         for k in scalars:
             scalars[k] /= weight
 
+        self._last_val_loss = scalars.get("loss", None)
         return {"scalars": scalars}
-
-    def fit_selector_gate(self, batches: Iterable[BatchType]):
-        """Fit a BDT selector_gate on validation data after training.
-
-        Collects (p_onshell, sigma_pz_on, sigma_pz_off) and gen labels from all
-        validation batches, then fits a sklearn GradientBoostingClassifier.
-        """
-        from sklearn.ensemble import GradientBoostingClassifier
-        import numpy as np
-
-        all_features = []
-        all_labels = []
-        all_weights = []
-
-        self._nn.eval()
-        with torch.no_grad():
-            for batch in batches:
-                self._unpack_forward(batch)
-                logit_onshell = batch["logit_onshell"]
-                p_onshell = torch.sigmoid(logit_onshell)
-
-                L_on = batch["cholesky_L_on"]
-                L_off = batch["cholesky_L_off"]
-
-                cov_on = torch.bmm(L_on, L_on.transpose(-1, -2))
-                sigma_on = cov_on.diagonal(dim1=-2, dim2=-1).sqrt()
-                cov_off = torch.bmm(L_off, L_off.transpose(-1, -2))
-                sigma_off = cov_off.diagonal(dim1=-2, dim2=-1).sqrt()
-
-                genLepW = batch[Input.genLepW]
-                isLepW = genLepW[:, 0]
-                weight = batch[Input.weight].clamp(min=0)
-                has_label = (isLepW >= 0)
-
-                if has_label.sum() == 0:
-                    continue
-
-                features = torch.stack([
-                    p_onshell[has_label],
-                    sigma_on[has_label, 2],
-                    sigma_off[has_label, 2],
-                ], dim=1)
-                all_features.append(features.cpu())
-                all_labels.append(isLepW[has_label].cpu())
-                all_weights.append(weight[has_label].cpu())
-
-        if not all_features:
-            logging.warning("No labeled events for selector_gate fitting")
-            return
-
-        X = torch.cat(all_features, dim=0).numpy()   # (N, 3)
-        y = torch.cat(all_labels, dim=0).numpy()      # (N,)
-        w = torch.cat(all_weights, dim=0).numpy()      # (N,)
-
-        # Filter out NaN/Inf
-        valid = np.isfinite(X).all(axis=1) & np.isfinite(y) & np.isfinite(w) & (w > 0)
-        X, y, w = X[valid], y[valid], w[valid]
-
-        if len(y) == 0:
-            logging.warning("No valid events after NaN/Inf filtering for selector_gate BDT")
-            return
-
-        logging.info(
-            f"selector_gate BDT data: N={len(y)}, "
-            f"X min={X.min():.4f}, X max={X.max():.4f}, "
-            f"y unique={np.unique(y).tolist()}, "
-            f"on-shell frac={y.mean():.4f}"
-        )
-
-        bdt = GradientBoostingClassifier(
-            n_estimators=200,
-            max_depth=4,
-            learning_rate=0.1,
-            subsample=0.8,
-            min_samples_leaf=100,
-        )
-        bdt.fit(X, y, sample_weight=w)
-        self._nn.selector_gate_bdt = bdt
-
-        # Evaluate
-        pred = bdt.predict(X)
-        acc = (pred == y).mean()
-        baseline_acc = ((X[:, 0] > 0.5) == y).mean()
-        logging.info(
-            f"selector_gate BDT fitted: acc={acc:.4f}, baseline(p>0.5)={baseline_acc:.4f}, "
-            f"feature_importances={dict(zip(['p_onshell', 'sigma_pz_on', 'sigma_pz_off'], bdt.feature_importances_.round(3)))}"
-        )
-
 
     def step(self, epoch: int = None):
         if self.ghost_batch is not None and self.ghost_batch.step(epoch):
             self._nn.setGhostBatches(self.ghost_batch.get_bs(), False)
-        # Step LR schedulers for internal optimizers
+        # Step LR schedulers (MultiStepLR — epoch-based)
         if self._opt_backbone is not None:
             self._lr_backbone.step()
             self._lr_onshell.step()
@@ -498,8 +412,8 @@ class RegressorModelEval(Model):
         sigma_off = cov_off.diagonal(dim1=-2, dim2=-1).sqrt()
 
         # Select neutrino using classifier p_onshell directly
-        use_on = (p_onshell > 0.5).unsqueeze(-1)  # (n, 1)
-        nu_sel = torch.where(use_on, nu_pred_on, nu_pred_off)
+        use_on = (p_onshell > 0.55).unsqueeze(-1)  # (n, 1)
+        nu_sel = torch.where(use_on, nu_pred_on[:, :3], nu_pred_off)
         sigma_sel = torch.where(use_on, sigma_on, sigma_off)
 
         output = {
@@ -523,13 +437,15 @@ class RegressorModelEval(Model):
             "nu_sigma_pz_off": sigma_off[:, 2],
             # Classifier
             "p_onshell": p_onshell,
-            # Per-jet attention weights (2 heads × 3 jets)
+            # Per-jet attention weights (2 heads × 4 jets)
             "jet_weight_0": jet_weights[:, 0],
             "jet_weight_1": jet_weights[:, 1],
             "jet_weight_2": jet_weights[:, 2],
             "jet_weight_3": jet_weights[:, 3],
             "jet_weight_4": jet_weights[:, 4],
             "jet_weight_5": jet_weights[:, 5],
+            "jet_weight_6": jet_weights[:, 6],
+            "jet_weight_7": jet_weights[:, 7],
         }
         return selector.pad(map_batch(self._mapping, output))
 

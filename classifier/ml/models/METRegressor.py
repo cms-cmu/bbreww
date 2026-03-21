@@ -59,7 +59,7 @@ class RegressorArch:
 @dataclass
 class GBNSchedule(MilestoneStep):
     n_batches: int = 64
-    milestones: list[int] = (1, 3, 6, 10, 20, 30, 38, 42, 45, 47)
+    milestones: list[int] = (6, 15)
     gamma: float = 0.25
 
     def __post_init__(self):
@@ -68,7 +68,7 @@ class GBNSchedule(MilestoneStep):
         self.reset()
 
     def get_bs(self):
-        self._last_bs = int(self.n_batches * (self.gamma**self.milestone))
+        self._last_bs = max(4, int(self.n_batches * (self.gamma**self.milestone)))
         return self._last_bs
 
     def get_last_bs(self):
@@ -162,12 +162,12 @@ class RegressorModel(Model):
         # Everything else is backbone (embedding, attention, classifier, W mass heads)
         backbone_params = [p for p in nn.parameters() if id(p) not in head_ids]
 
-        self._opt_backbone = optim.Adam(backbone_params, lr=6e-3)
-        self._opt_onshell = optim.Adam(onshell_params, lr=6e-3)
-        self._opt_offshell = optim.Adam(offshell_params, lr=6e-3)
+        self._opt_backbone = optim.Adam(backbone_params, lr=1.2e-2)
+        self._opt_onshell = optim.Adam(onshell_params, lr=1.2e-2)
+        self._opt_offshell = optim.Adam(offshell_params, lr=1.2e-2)
 
-        # LR decay: drop by 1/2 at each milestone (same as bs_milestones in train.yml)
-        lr_milestones = [5, 12, 22, 35]
+        # LR decay: hold flat during batch ramp-up, then decay for fine-tuning
+        lr_milestones = [38, 42, 45, 48]
         lr_gamma = 0.5
         self._lr_backbone = MultiStepLR(self._opt_backbone, milestones=lr_milestones, gamma=lr_gamma)
         self._lr_onshell = MultiStepLR(self._opt_onshell, milestones=lr_milestones, gamma=lr_gamma)

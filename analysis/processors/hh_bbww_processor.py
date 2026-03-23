@@ -135,8 +135,7 @@ class analysis(processor.ProcessorABC):
         # for now, we load 2022 + 2023 corrections from local files and rest from cvmfs (22+23 have jetId fields)
         # ak.merge_union_of_records resolves the union type created by ak.where
         # when the two branches have different fields (e.g. JER fields present in one but not the other)
-        jets = ak.merge_union_of_records(
-            ak.where(
+        jets = ak.merge_union_of_records(ak.where(
                 events.Jet.btagPNetB >= self.params[self.year].btagWP.M,
                 apply_jerc_corrections(
                     events,
@@ -155,7 +154,7 @@ class analysis(processor.ProcessorABC):
                     dataset=self.dataset,
                     jet_type="AK4PFPuppi"
                 )
-            )
+            ), axis=1
         )
         met = apply_met_corrections_after_jec(events, jets)
 

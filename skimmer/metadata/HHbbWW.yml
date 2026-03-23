@@ -1,14 +1,13 @@
 runner:
-  #maxchunks: 2
   min_workers: 1
   max_workers: 400
-  chunksize: 100000
+  chunksize: 50000
   picosize: 500000
-  basketsize: 500000
+  basketsize: 100000
   class_name: Skimmer
   data_tier: nanoAOD
   condor_cores: 1
-  worker_memory: 10GB
+  worker_memory: 8GB
   analysis_base_path: 
     - bbreww
   condor_transfer_input_files:

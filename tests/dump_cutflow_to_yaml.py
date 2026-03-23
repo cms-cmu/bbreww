@@ -19,8 +19,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--outputFile', default='cutflow.yml', help='Output YAML file')
     args = parser.parse_args()
 
-    with open(args.inputFile, 'rb') as infile:
-        hists = load(infile)
+    hists = load(args.inputFile)
     cutflow = hists['events_processed']
 
     cutflow_clean = convert_types(cutflow)

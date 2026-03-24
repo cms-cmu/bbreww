@@ -162,12 +162,12 @@ class RegressorModel(Model):
         # Everything else is backbone (embedding, attention, classifier, W mass heads)
         backbone_params = [p for p in nn.parameters() if id(p) not in head_ids]
 
-        self._opt_backbone = optim.Adam(backbone_params, lr=1.2e-2)
-        self._opt_onshell = optim.Adam(onshell_params, lr=1.2e-2)
-        self._opt_offshell = optim.Adam(offshell_params, lr=1.2e-2)
+        self._opt_backbone = optim.Adam(backbone_params, lr=6e-3)
+        self._opt_onshell = optim.Adam(onshell_params, lr=6e-3)
+        self._opt_offshell = optim.Adam(offshell_params, lr=6e-3)
 
-        # LR decay: hold flat during batch ramp-up, then decay for fine-tuning
-        lr_milestones = [38, 42, 45, 48]
+        # LR decay: halve LR at each batch size doubling (epochs 15, 25), then once more at 30
+        lr_milestones = [15, 25, 30]
         lr_gamma = 0.5
         self._lr_backbone = MultiStepLR(self._opt_backbone, milestones=lr_milestones, gamma=lr_gamma)
         self._lr_onshell = MultiStepLR(self._opt_onshell, milestones=lr_milestones, gamma=lr_gamma)

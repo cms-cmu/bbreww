@@ -133,31 +133,29 @@ class analysis(processor.ProcessorABC):
         target = Chunk.from_coffea_events(events)
 
         # for now, we load 2022 + 2023 corrections from local files and rest from cvmfs (22+23 have jetId fields)
-        # ak.merge_union_of_records resolves the union type created by ak.where
-        # when the two branches have different fields (e.g. JER fields present in one but not the other)
-        jets = ak.merge_union_of_records(ak.where(
-                events.Jet.btagPNetB >= self.params[self.year].btagWP.M,
-                apply_jerc_corrections(
-                    events,
-                    corrections_metadata=self.params[self.year],
-                    isMC=self.is_mc,
-                    run_systematics=False,
-                    dataset=self.dataset,
-                    jet_corr_factor=events.Jet.PNetRegPtRawCorr * events.Jet.PNetRegPtRawCorrNeutrino,
-                    jet_type="AK4PFPuppiPNetRegressionPlusNeutrino"
-                ),
-                apply_jerc_corrections_jsonpog(
-                    events,
-                    corrections_metadata=self.params[self.year],
-                    isMC=self.is_mc,
-                    run_systematics=False,
-                    dataset=self.dataset,
-                    jet_type="AK4PFPuppi"
-                )
-            ), axis=1
+        print(events.Jet.pt)
+        jets = ak.where(
+            events.Jet.btagPNetB >= self.params[self.year].btagWP.M,
+            apply_jerc_corrections(
+                events,
+                corrections_metadata=self.params[self.year],
+                isMC=self.is_mc,
+                run_systematics=False,
+                dataset=self.dataset,
+                jet_corr_factor=events.Jet.PNetRegPtRawCorr * events.Jet.PNetRegPtRawCorrNeutrino,
+                jet_type="AK4PFPuppiPNetRegressionPlusNeutrino"
+            ),
+            apply_jerc_corrections(
+                events,
+                corrections_metadata=self.params[self.year],
+                isMC=self.is_mc,
+                run_systematics=False,
+                dataset=self.dataset,
+                jet_type="AK4PFPuppi.txt"
+            )
         )
         met = apply_met_corrections_after_jec(events, jets)
-
+        print(jets.pt)
         shifts = [({"Jet": jets, "MET":met}, None)]
 
         '''if systematics:

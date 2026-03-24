@@ -64,7 +64,7 @@ def jet_selection(events, params, year):
     events['has_3_presel_jets'] = (ak.num(j_init, axis=1) > 2)
     events['has_exactly_3_presel_jets'] = (ak.num(j_init, axis=1) == 3)
     events['has_4_presel_jets'] = (ak.num(j_init, axis=1) > 3)
-    
+
     events['HT'] = ak.sum(j_init.pt, axis=1) # HT of all jets
     events['HTsoft'] = ak.sum(j_soft.pt, axis=1) # HT of soft jets
 
@@ -107,7 +107,6 @@ def jet_selection(events, params, year):
     q_cands_soft = ak.concatenate([q_cands_nom, j_candidates_soft], axis=1)
     q_cands_soft = q_cands_soft[ak.argsort(q_cands_soft.pt, axis=1, ascending=False)] # pT sort the jets
     events['q_cands_soft_init'] = q_cands_soft
-    print(events.q_cands_soft_init.pt, events.b_cands.pt)
 
     return events
 

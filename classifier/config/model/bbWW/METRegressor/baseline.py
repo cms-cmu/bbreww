@@ -65,7 +65,7 @@ class Train(METRegressorTrain):
         isLepW = genLepW[:, 0]                 # (n,): 1=on-shell, 0=off-shell, -1=unknown
         target_mW = genLepW[:, 1]              # (n,)
         is_on = (isLepW == 1)
-        is_on_regressor = ((isLepW == 1) | (isLepW == -1)) & (target_mW > 40)  # include ttbar; exclude events where mW constraint is invalid
+        is_on_regressor = ((isLepW == 1) | (isLepW == -1)) & (target_mW > 55)  # include ttbar; exclude events where mW constraint is invalid
         is_off = (isLepW == 0)
         has_label = (isLepW >= 0)
 

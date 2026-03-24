@@ -33,9 +33,9 @@ model:
       - --kfold-seed FvT random # setup base seed to be ("FvT", "random")
       - --kfold-seed-offsets 0 # use seed ("FvT", "random", 0)
       - --training FixedStep # setup training schedule
-      - epoch: 50
-        bs_init: 3072
-        bs_milestones: [6, 15, 25, 38]
+      - epoch: 35
+        bs_init: 12288
+        bs_milestones: [6, 15, 25]
         lr_init: 1.4e-2 # dummy
 
 setting:

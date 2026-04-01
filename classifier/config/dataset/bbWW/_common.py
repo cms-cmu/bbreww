@@ -16,7 +16,7 @@ from src.classifier.config.state import Flags
 from src.classifier.config.state.label import MultiClass
 from src.classifier.config.dataset._root import LoadGroupedRoot
 from src.classifier.config.dataset.HCR import _group
-from bbreww.classifier.config.setting.bbWW import Input, InputBranch, MassRegion
+from bbreww.classifier.config.setting.METRegressor import Input, InputBranch, MassRegion
 
 if TYPE_CHECKING:
     import pandas as pd

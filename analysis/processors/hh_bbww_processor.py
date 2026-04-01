@@ -271,7 +271,7 @@ class analysis(processor.ProcessorABC):
             events['btag_sf'] = weights.partial_weight(include=['CMS_btag'])
 
         events['weight'] = weights.weight()
-
+        
         #study sequential cutflow (get weights and events after each cut)
         if not shift_name:
             # list below contains individual selections that we might wanna study
@@ -283,7 +283,7 @@ class analysis(processor.ProcessorABC):
 
         selected_events = events[events.preselection]
         del events
-        
+
         selected_events = candidate_selection(selected_events, self.params, self.year, self.run_SvB,
                                               self.run_MET_regression, self.classifier_SvB) # select HH->bbWW candidates
         selected_events = chi_sq(selected_events) # chi square selection and calculation

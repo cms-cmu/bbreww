@@ -72,8 +72,15 @@ def add_gen_info(events, is_mc):
         events['isHtoW'] = events.GenPart[(events.GenPart[events.GenPart[events.GenPart.isW].genPartIdxMother].pdgId== 25)]
 
     else:
+        # add placeholders when running on data
         events['gen_lepW_mass'] = ak.full_like(events.event, np.nan, dtype=np.float32)
-
+        events['genNu_pt'] =  ak.full_like(events.event, np.nan, dtype=np.float32)
+        events['genNu_eta'] = ak.full_like(events.event, np.nan, dtype=np.float32)
+        events['genNu_phi'] = ak.full_like(events.event, np.nan, dtype=np.float32)
+        events['genNu_pz'] =  ak.full_like(events.event, np.nan, dtype=np.float32)
+        events['Jet', 'isQfromW']= ak.full_like(events.Jet.pt, np.nan, dtype = bool)
+        events['isLepW'] =  ak.full_like(events.event, np.nan, dtype=bool)
+        
     return events
 
 def gen_process(events, weights):

@@ -6,7 +6,7 @@ from bbreww.classifier.config.model.bbWW.METRegressor._METRegressor import (
     METRegressorTrain,
     METRegressorEval,
 )
-from bbreww.classifier.config.setting.bbWW import Input
+from bbreww.classifier.config.setting.METRegressor import Input
 from bbreww.classifier.nn.blocks.bbWW_models import get_nu_pz_cartesian
 
 if TYPE_CHECKING:
@@ -33,7 +33,7 @@ class Train(METRegressorTrain):
 
         target_ptep = batch[Input.genNu]              # (n, 3): true pT, eta, phi
         weight = batch[Input.weight]                   # (n,)
-        pred_on = batch["pred_nu_on"]                  # (n, 4): on-shell hypothesis px, py, pz, delta_mW
+        pred_on = batch["pred_nu_on"]                  # (n, 3): on-shell hypothesis px, py, pz
         pred_off = batch["pred_nu_off"]                # (n, 3): off-shell hypothesis px, py, pz
         cholesky_L_on = batch["cholesky_L_on"]         # (n, 3, 3)
         cholesky_L_off = batch["cholesky_L_off"]       # (n, 3, 3)
@@ -65,7 +65,7 @@ class Train(METRegressorTrain):
         isLepW = genLepW[:, 0]                 # (n,): 1=on-shell, 0=off-shell, -1=unknown
         target_mW = genLepW[:, 1]              # (n,)
         is_on = (isLepW == 1)
-        is_on_regressor = ((isLepW == 1) | (isLepW == -1)) & (target_mW > 55)  # include ttbar; exclude events where mW constraint is invalid
+        is_on_regressor = ((isLepW == 1) | (isLepW == -1)) # include ttbar;
         is_off = (isLepW == 0)
         has_label = (isLepW >= 0)
 
@@ -127,13 +127,10 @@ class Train(METRegressorTrain):
         # Uses is_on_regressor to include semileptonic ttbar (on-shell W, valid genNu)
         logit_sol_on = batch["pz_hint_on"][valid]  # carries logit_sol from regressor
         if is_on_regressor.sum() > 0 and weight[is_on_regressor].sum() > 0:
-            # Per-event W mass correction from on-shell head (already clamped in model)
-            delta_mW = pred_on[:, 3]
-            mW = 80.379 + delta_mW
-            # Re-solve quadratic with corrected MET and per-event mW
+            # Re-solve quadratic with corrected MET at constant mW=80.379
             pz_s1, pz_s2, _, _ = get_nu_pz_cartesian(
                 lep[:, 0], lep[:, 1], lep[:, 2], lep[:, 3],
-                pred_on[:, 0], pred_on[:, 1], mW=mW,
+                pred_on[:, 0], pred_on[:, 1], mW=80.379,
             )
             # Build full neutrino 3-vectors for each solution
             pred_sol1 = torch.stack([pred_on[:, 0], pred_on[:, 1], pz_s1], dim=1)
@@ -215,9 +212,7 @@ class Train(METRegressorTrain):
             clf_loss = torch.tensor(0.0, device=pred_on.device, requires_grad=True)
             jet_attn_loss = torch.tensor(0.0, device=pred_on.device, requires_grad=True)
 
-        loss_backbone = clf_loss + 0.5 * jet_attn_loss
-
-        return loss_backbone, loss_onshell, loss_offshell
+        return clf_loss + 0.3 * jet_attn_loss, loss_onshell, loss_offshell
 
 
 class Eval(METRegressorEval):

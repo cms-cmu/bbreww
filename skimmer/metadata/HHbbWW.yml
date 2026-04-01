@@ -3,11 +3,11 @@ runner:
   max_workers: 400
   chunksize: 50000
   picosize: 500000
-  basketsize: 100000
+  basketsize: 25000
   class_name: Skimmer
   data_tier: nanoAOD
   condor_cores: 1
-  worker_memory: 8GB
+  worker_memory: 14GB
   analysis_base_path: 
     - bbreww
   condor_transfer_input_files:
@@ -19,10 +19,10 @@ runner:
   # rucio_regex_sites: 'T[123]_(US|CH|DE|UK)'
   allowlist_sites:
     - T3_US_FNALLPC
-    - T2_US_Nebraska
+  #  - T2_US_Nebraska
   #  - T3_US_NotreDame
     - T2_US_Caltech
-    - T1_US_FNAL_Disk
+  #  - T1_US_FNAL_Disk
     - T2_US_MIT
     - T2_US_Purdue
     - T2_US_Wisconsin

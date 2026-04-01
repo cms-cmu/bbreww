@@ -9,7 +9,7 @@ from src.classifier.config.setting.df import Columns
 from src.classifier.config.setting.cms import CollisionData
 from bbreww.classifier.config.dataset.bbWW._common import CommonEval, CommonTrain
 from bbreww.classifier.config.dataset.bbWW import _picoAOD
-from bbreww.classifier.config.setting.bbWW import Input, InputBranch
+from bbreww.classifier.config.setting.METRegressor import Input, InputBranch
 
 
 if TYPE_CHECKING:

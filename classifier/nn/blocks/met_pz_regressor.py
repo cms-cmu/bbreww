@@ -929,7 +929,7 @@ class METRegressor(nn.Module):
             NonLUModule(),
             GhostBatchNorm1d(dH, features_out=dH, conv=True),
             NonLUModule(),
-            GhostBatchNorm1d(dH, features_out=3, conv=True),         # dpx, dpy, delta_mW
+            GhostBatchNorm1d(dH, features_out=2, conv=True),         # dpx, dpy
         )
         # Siamese pz solution scorer: shared weights score each solution independently.
         # Per-solution input: onshell_input (2*dD+4) + deta (1) + pz (1) + oss_corr (1)
@@ -1162,7 +1162,7 @@ class METRegressor(nn.Module):
         # WW is (n, dD, 1) - enriched leptonic W after attending to jets
         WW_sel = WW
 
-        # Per-jet attention weights (attached for gradient flow)
+        # Per-jet attention weights (attached for jet_attn_loss gradient flow)
         # Concatenate heads to preserve per-head information: (n, h, 1, wsl) -> (n, h*wsl)
         jet_weights = WW_weights.squeeze(2).reshape(n, -1)  # (n, h*wsl)
         self._jet_weights = jet_weights.detach()  # for monitoring
@@ -1201,16 +1201,14 @@ class METRegressor(nn.Module):
         init_pz_off = 0.5 * (kinematic_solutions[:, 3, :] + kinematic_solutions[:, 4, :])  # (n, 1)
 
         nu_init_off = torch.cat([init_px, init_py, init_pz_off], dim=1)  # (n, 3)
-        delta_on = self.nu_regressor_onshell(onshell_input).squeeze(-1)  # (n, 3): dpx, dpy, delta_mW
+        delta_on = self.nu_regressor_onshell(onshell_input).squeeze(-1)  # (n, 2): dpx, dpy
         nu_px_on = init_px.squeeze(1) + delta_on[:, 0]
         nu_py_on = init_py.squeeze(1) + delta_on[:, 1]
-        delta_mW = delta_on[:, 2].clamp(-15, 6)
-        mW_per_event = 80.379 + delta_mW
 
-        # Solve W mass quadratic with corrected (px, py) and per-event mW
+        # Solve W mass quadratic with corrected (px, py) at constant mW=80.379
         pz_sol1, pz_sol2, _, oss_corrected = get_nu_pz_cartesian(
             raw_lep[:, 0], raw_lep[:, 1], raw_lep[:, 2], raw_lep[:, 3],
-            nu_px_on, nu_py_on, mW=mW_per_event,
+            nu_px_on, nu_py_on, mW=80.379,
         )
 
         # Classifier: uses oss_80 (raw) + oss_corrected (from regressed px/py) + W mass discriminant
@@ -1253,7 +1251,7 @@ class METRegressor(nn.Module):
         use_sol1 = logit_sol > 0.0  # equivalent to sigmoid > 0.5
         nu_pz_on = torch.where(use_sol1, pz_sol1, pz_sol2)
 
-        nu_pred_on = torch.stack([nu_px_on, nu_py_on, nu_pz_on, delta_mW], dim=1)  # (n, 4): px, py, pz, delta_mW
+        nu_pred_on = torch.stack([nu_px_on, nu_py_on, nu_pz_on], dim=1)  # (n, 3): px, py, pz
         logit_sol_on = logit_sol
 
         # --- Off-shell neutrino: regress all 3 components ---
@@ -1268,9 +1266,9 @@ class METRegressor(nn.Module):
         L_off = _build_cholesky(self.nu_cholesky_offshell(offshell_input).squeeze(-1))
 
         # --- Siamese hypothesis classifier ---
-        nu_on_det = nu_pred_on[:, :3].detach().unsqueeze(-1)   # (n, 3, 1)
+        nu_on_det = nu_pred_on.detach().unsqueeze(-1)   # (n, 3, 1)
         nu_off_det = nu_pred_off.detach().unsqueeze(-1)  # (n, 3, 1)
-        mW_on_learned = mW_per_event.detach().unsqueeze(-1).unsqueeze(-1)  # (n, 1, 1)
+        mW_on_const = torch.full((n, 1, 1), 80.379, device=raw_lep.device)  # (n, 1, 1)
         mW_off = calc_mW(raw_lep[:, :4], nu_pred_off.detach()).unsqueeze(-1).unsqueeze(-1)  # (n, 1, 1)
         sigma_pz_on = L_on[:, 2, 2].detach().unsqueeze(-1).unsqueeze(-1)   # (n, 1, 1)
         sigma_pz_off = L_off[:, 2, 2].detach().unsqueeze(-1).unsqueeze(-1)  # (n, 1, 1)
@@ -1293,7 +1291,7 @@ class METRegressor(nn.Module):
             shared_base,
             oss_corr,         # corrected discriminant from on-shell regressor at mW=80
             nu_on_det,        # (n, 3, 1)
-            mW_on_learned,    # per-event mW from on-shell head
+            mW_on_const,               # constant 80.379 GeV
             sigma_pz_on,      # pz uncertainty from on-shell Cholesky
         ], dim=1)  # (n, 2*dD+11, 1)
 

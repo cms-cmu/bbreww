@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import math
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable, Iterable
@@ -14,7 +15,7 @@ from src.classifier.config.setting.ml import SplitterKeys
 from torch import Tensor
 
 from bbreww.classifier.nn.blocks.met_pz_regressor import METRegressor
-from bbreww.classifier.config.setting.bbWW import Input, InputBranch
+from bbreww.classifier.config.setting.METRegressor import Input, InputBranch
 from src.classifier.algorithm.utils import Selector, map_batch, to_num
 from src.classifier.nn.schedule import MilestoneStep, Schedule
 from src.classifier.utils import MemoryViewIO
@@ -59,7 +60,7 @@ class RegressorArch:
 @dataclass
 class GBNSchedule(MilestoneStep):
     n_batches: int = 64
-    milestones: list[int] = (6, 15)
+    milestones: list[int] = (1, 3, 6, 10, 20, 30, 35)
     gamma: float = 0.25
 
     def __post_init__(self):
@@ -68,7 +69,7 @@ class GBNSchedule(MilestoneStep):
         self.reset()
 
     def get_bs(self):
-        self._last_bs = max(4, int(self.n_batches * (self.gamma**self.milestone)))
+        self._last_bs = int(self.n_batches * (self.gamma**self.milestone))
         return self._last_bs
 
     def get_last_bs(self):
@@ -126,6 +127,10 @@ class RegressorModel(Model):
         self._device = device
         self._gbn = None
         self._arch = arch
+        self._epoch_clf_loss = 0.0
+        self._epoch_onshell_loss = 0.0
+        self._epoch_offshell_loss = 0.0
+        self._epoch_batches = 0
         self._nn = METRegressor(
             dijetFeatures=arch.n_features,
             ancillaryFeatures=InputBranch.feature_ancillary,
@@ -162,12 +167,17 @@ class RegressorModel(Model):
         # Everything else is backbone (embedding, attention, classifier, W mass heads)
         backbone_params = [p for p in nn.parameters() if id(p) not in head_ids]
 
+        # Store param lists for per-group gradient clipping
+        self._backbone_params = backbone_params
+        self._onshell_params = onshell_params
+        self._offshell_params = offshell_params
+
         self._opt_backbone = optim.Adam(backbone_params, lr=6e-3)
         self._opt_onshell = optim.Adam(onshell_params, lr=6e-3)
         self._opt_offshell = optim.Adam(offshell_params, lr=6e-3)
 
-        # LR decay: halve LR at each batch size doubling (epochs 15, 25), then once more at 30
-        lr_milestones = [15, 25, 30]
+        # LR decay: drop before GBN transition at epoch 10, then anneal at end
+        lr_milestones = [8, 35, 38, 41, 44]
         lr_gamma = 0.5
         self._lr_backbone = MultiStepLR(self._opt_backbone, milestones=lr_milestones, gamma=lr_gamma)
         self._lr_onshell = MultiStepLR(self._opt_onshell, milestones=lr_milestones, gamma=lr_gamma)
@@ -220,6 +230,19 @@ class RegressorModel(Model):
         self._unpack_forward(batch)
         loss_backbone, loss_onshell, loss_offshell = self._loss(batch)
 
+        # Skip batch if any loss is NaN/Inf to prevent poisoning the model
+        total = loss_backbone.item() + loss_onshell.item() + loss_offshell.item()
+        if not math.isfinite(total):
+            print(
+                f"WARNING: NaN/Inf loss detected — skipping batch. "
+                f"backbone={loss_backbone.item():.4g}  "
+                f"onshell={loss_onshell.item():.4g}  "
+                f"offshell={loss_offshell.item():.4g}",
+                flush=True,
+            )
+            dummy = torch.tensor(0.0, device=self._device, requires_grad=True)
+            return dummy + 0
+
         # Train all three losses simultaneously
         self._opt_backbone.zero_grad()
         self._opt_onshell.zero_grad()
@@ -227,10 +250,17 @@ class RegressorModel(Model):
         loss_backbone.backward(retain_graph=True)
         loss_onshell.backward(retain_graph=True)
         loss_offshell.backward()
-        torch.nn.utils.clip_grad_norm_(self._nn.parameters(), max_norm=1.0)
+        # Clip each parameter group independently so backbone isn't starved
+        torch.nn.utils.clip_grad_norm_(self._backbone_params, max_norm=1.0)
+        torch.nn.utils.clip_grad_norm_(self._onshell_params, max_norm=1.0)
+        torch.nn.utils.clip_grad_norm_(self._offshell_params, max_norm=1.0)
         self._opt_backbone.step()
         self._opt_onshell.step()
         self._opt_offshell.step()
+        self._epoch_clf_loss += loss_backbone.item()
+        self._epoch_onshell_loss += loss_onshell.item()
+        self._epoch_offshell_loss += loss_offshell.item()
+        self._epoch_batches += 1
         total = loss_backbone.item() + loss_onshell.item() + loss_offshell.item()
 
         # Return a requires_grad tensor for the framework's loss.backward()/opt.step().
@@ -266,6 +296,7 @@ class RegressorModel(Model):
     def step(self, epoch: int = None):
         if self.ghost_batch is not None and self.ghost_batch.step(epoch):
             self._nn.setGhostBatches(self.ghost_batch.get_bs(), False)
+        
         # Step LR schedulers (MultiStepLR — epoch-based)
         if self._opt_backbone is not None:
             self._lr_backbone.step()
@@ -413,7 +444,7 @@ class RegressorModelEval(Model):
 
         # Select neutrino using classifier p_onshell directly
         use_on = (p_onshell > 0.55).unsqueeze(-1)  # (n, 1)
-        nu_sel = torch.where(use_on, nu_pred_on[:, :3], nu_pred_off)
+        nu_sel = torch.where(use_on, nu_pred_on, nu_pred_off)
         sigma_sel = torch.where(use_on, sigma_on, sigma_off)
 
         output = {
@@ -462,6 +493,7 @@ class RegressorEvaluation(Evaluation):
         self._model = saved_model
         self._splitter = cross_validation
         self._mapping = output_definition
+        
 
     def stages(self):
         with fsspec.open(self._model, "rb") as f:

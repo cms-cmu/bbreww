@@ -70,6 +70,7 @@ def dump_input_friend_classifier(
                 ),
                 selection,
             ),
+        }
         | akext.to_numpy(
             padded(
                 events["region"][
@@ -88,14 +89,14 @@ def dump_input_friend_classifier(
                         "njets",
                         "nsoftjets",
                         "HT",
-		    ]	
-		],
+                    ]
+                ],
                 selection,
             )
-	)
+        )
         | {"true_nbjet_flat": padded(events[nonbcand].isQfromW, selection)}
         | {"weight": padded(events[weight], selection)}
-        | {"year" : padded(ak.full_like(events.HT, (events.metadata['year']).split('_', 1)[0]), selection)}
+        | {"year": padded(ak.full_like(events.HT, (events.metadata['year']).split('_', 1)[0]), selection)}
     )
     return dump_friend(
         events=events,
@@ -205,14 +206,14 @@ def dump_input_friend_regressor(
                         "njets",
                         "nsoftjets",
                         "HT",
-		    ]	
-		],
+                    ]
+                ],
                 selection,
             )
-	)
+        )
         | {"true_nbjet_flat": padded(events[nonbcand].isQfromW, selection)}
         | {"weight": padded(events[weight], selection)}
-        | {"year" : padded(ak.full_like(events.HT, (events.metadata['year']).split('_', 1)[0]), selection)}
+        | {"year": padded(ak.full_like(events.HT, (events.metadata['year']).split('_', 1)[0]), selection)}
     )
     return dump_friend(
         events=events,

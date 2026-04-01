@@ -88,9 +88,13 @@ def _HCRInput(batch: BatchType, device: tt.Device, selection: Tensor = None):
     for k, v in batch.items():
         batch[k] = v.to(device, non_blocking=True)
     inputs = [batch.pop(k) for k in (Input.bJetCand, Input.nonbJetCand, Input.leadingLep, Input.MET, Input.ancillary)]
+    # Optional regressor outputs -- default to None if not present in batch
+    reg_nu = batch.pop(Input.regressed_nu, None)
     if selection is not None:
         selection = selection.to(device, non_blocking=True)
         inputs = [i[selection] for i in inputs]
+        if reg_nu is not None: reg_nu = reg_nu[selection]
+    inputs.append(reg_nu)
     return inputs
 
 
@@ -165,9 +169,10 @@ class HCRModel(Model):
         batch[Output.hh_raw] = hh
         batch[Output.tt_raw] = tt
         batch[Output.ww_raw] = ww
+        batch["ww_weights"] = self._nn._jet_weights  # (n, heads, 1, wsl) per-jet attention weights
 
         loss = self._loss(batch)
-        
+
         return loss
     
     def validate(self, batches: Iterable[BatchType]) -> dict[str]:

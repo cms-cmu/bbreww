@@ -344,9 +344,9 @@ class analysis(processor.ProcessorABC):
         # create classifier inputs root files (creates root files in EOS and json file pointing to all files)
         friends = { 'friends': {} }
         if self.make_classifier_input is not None:
-            from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_input_friend
+            from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_input_friend_regressor
             friends["friends"] = ( friends["friends"]
-                | dump_input_friend(
+                | dump_input_friend_regressor(
                     selected_events[selected_events.nominal_4j2b | selected_events.lowpt_4j2b], # selected_events[selected_events.nominal_4j2b]
                     self.make_classifier_input,
                     "regressor_input_4nb",

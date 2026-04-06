@@ -1,0 +1,245 @@
+WtoLNu-2Jets_0J_pt600_2024:
+  bad_files:
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/13f26d8f-746c-41ef-b423-2220fe4dfd86.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/1dfd5c0b-bd37-495a-a5e1-d22731fc35db.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/1f46892c-0b13-4399-bcee-b6a6680771ee.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/2691e8b6-ef6b-4ae9-8dfc-63b8db53831f.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/3406eb62-5c02-49fc-93ff-d1b44e19045f.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/3db43598-6757-4afe-87e0-233cc6b4d62b.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/3fc7270f-2b4f-4afe-9d25-96d1725fa654.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/421f954b-9038-4a7e-9ab2-799eb37887a3.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/452c3714-0635-479e-bdb9-f900085f3028.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/5960f04b-3e42-4bf8-a4f3-3d5d162bdc3e.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/5dd62c9f-a49e-426a-9128-25493dc599b5.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/617a75ca-a648-451d-bd4d-8bce8f8e9cb8.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/63ff6ef2-4ba6-477d-a1e9-b89c0f6005f4.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/717d7748-b7e1-4644-bc19-666a5f3e90a5.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/931c30ce-a1e9-4ca6-870a-baa36ae0c1d3.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/aac8c2ff-13a9-4a29-9932-3c02c2222eb7.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/ae2de7ac-f719-481e-9444-e6393a770083.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/bd72b6a7-d97d-427f-b43b-1053fefbcc47.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/c0f4211c-1db4-4f4e-b482-444a0fefbdda.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/d17b0b6c-2813-46d3-b1c8-2068def6ff58.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/e3041bcc-14a8-476a-ac00-bbd9c86f1d1f.root
+  - root://cmsdcadisk.fnal.gov//dcache/uscmsdisk/store/mc/RunIII2024Summer24NanoAODv15/WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/NANOAODSIM/150X_mcRun3_2024_realistic_v2-v1/2820000/e3f2b2ac-b5e1-43c3-9aef-837fade55e75.root
+  count: 93039544
+  cutflow:
+    e_region:
+      events:
+        all: 22526226.0
+        lumimask: 22526226.0
+        njets: 448398.0
+        passNoiseFilter: 22440760.0
+        trigger: 20858780.0
+        twoBjets: 475420.0
+      weights:
+        all: 59136970.397060394
+        lumimask: 59136970.397060394
+        njets: 1169955.5016775131
+        passNoiseFilter: 58913517.86057854
+        trigger: 54772062.496507645
+        twoBjets: 1250404.3987083435
+    mu_region:
+      events:
+        all: 30020216.0
+        lumimask: 30020216.0
+        njets: 598752.0
+        passNoiseFilter: 29908686.0
+        trigger: 27776777.0
+        twoBjets: 634317.0
+      weights:
+        all: 78553865.78133202
+        lumimask: 78553865.78133202
+        njets: 1564708.6076345444
+        passNoiseFilter: 78261092.09541321
+        trigger: 72712517.51297808
+        twoBjets: 1667407.246105671
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_0J_pt600_2024/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_0J_pt600_2024/picoAOD.chunk1.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_0J_pt600_2024/picoAOD.chunk2.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v5', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', friends=None, output_file='picoaod_datasets_WtoLNu-2Jets_0J_pt600_2024.yml',
+      output_path='output/skimmer', storage_remap=None, years=['2024'], datasets=['WtoLNu-2Jets_0J_pt600'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'C01', 'C02', 'C03', 'C04',
+      'C11', 'C12', 'C13', 'C14', 'C3', 'C4', 'D1', 'D2', 'D01', 'D02', 'D11', 'D12',
+      'F1', 'F2', 'F3', 'G1', 'G2'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    barista:
+      diff: "diff --git a/run_container b/run_container\nindex 56b05b11..56867b3f\
+        \ 100755\n--- a/run_container\n+++ b/run_container\n@@ -35,11 +35,20 @@ add_x509_proxy_flags()\
+        \ {\n     case \"$HOST\" in\n         *cmslpc*|*lxplus*|*falcon*|*rogue*)\n\
+        \             local PROXY=\"${PWD}/proxy/x509_proxy\"\n+            mkdir\
+        \ -p \"${PWD}/proxy\"\n+            # Auto-copy from system proxy if local\
+        \ copy is missing or expired\n+            if [ ! -f \"$PROXY\" ] || ! voms-proxy-info\
+        \ -file \"$PROXY\" -exists -hours 1 2>/dev/null; then\n+                local\
+        \ SYS_PROXY=\"${X509_USER_PROXY:-/tmp/x509up_u$(id -u)}\"\n+             \
+        \   if [ -f \"$SYS_PROXY\" ] && voms-proxy-info -file \"$SYS_PROXY\" -exists\
+        \ -hours 1 2>/dev/null; then\n+                    cp \"$SYS_PROXY\" \"$PROXY\"\
+        \n+                    info \"Copied valid proxy from $SYS_PROXY to $PROXY\"\
+        \n+                else\n+                    warning \"No valid proxy found.\
+        \ Run:\"\n+                    warning \"voms-proxy-init -voms cms -rfc --valid\
+        \ 192:00 -out $PROXY\"\n+                fi\n+            fi\n           \
+        \  if [ -f \"$PROXY\" ]; then\n                 FLAGS_REF+=( -B \"$PROXY\"\
+        :\"$PROXY\" --env X509_USER_PROXY=\"$PROXY\" )\n-            else\n-     \
+        \           warning \"Proxy file not found at ${PROXY}. Run manually to create\
+        \ it if needed:\"\n-                warning \"mkdir -p proxy && voms-proxy-init\
+        \ -voms cms -valid 192:00 -out ./proxy/x509_proxy\"\n             fi\n   \
+        \          ;;\n     esac\n@@ -194,7 +203,13 @@ run_coffea() {\n     HOST=$(hostname)\n\
+        \ \n     # 1. Base Flags\n-    local FLAGS=( -B \"$PWD\":/srv --pwd /srv/\
+        \ )\n+    local FLAGS=( --contain -B \"$PWD\":/srv --pwd /srv/\n+        --env\
+        \ XRD_CONNECTIONRETRY=3\n+        --env XRD_REQUESTTIMEOUT=600\n+        --env\
+        \ XRD_STREAMTIMEOUT=300\n+        --env XRD_TIMEOUTRESOLUTION=15\n+      \
+        \  --env XRD_CONNECTIONWINDOW=30\n+    )\n     \n     # LPC-Specific Environment\
+        \ Variable\n     if [[ $HOST == *\"cmslpc\"* ]]; then\ndiff --git a/runner.py\
+        \ b/runner.py\nindex f6b67c16..4b689474 100644\n--- a/runner.py\n+++ b/runner.py\n\
+        @@ -608,7 +608,7 @@ def setup_config_defaults(config_runner, args):\n    \
+        \     'friend_metafile': 'friends',\n         'friend_merge_step': 100_000,\n\
+        \         'write_coffea_output': True,\n-        'uproot_xrootd_retry_delays':\
+        \ [5, 15, 45]\n+        'uproot_xrootd_retry_delays': [5, 15, 30, 60, 120]\n\
+        \     }\n \n     for key, default_value in defaults.items():\n@@ -621,7 +621,7\
+        \ @@ def setup_executor(config_runner, args, client, pool):\n         'schema':\
+        \ config_runner['schema'],\n         'savemetrics': True,\n         'skipbadfiles':\
+        \ config_runner['skipbadfiles'],\n-        'xrootdtimeout': 600\n+       \
+        \ 'xrootdtimeout': 900\n     }\n \n     if args.debug:\ndiff --git a/src/data_formats/root/io.py\
+        \ b/src/data_formats/root/io.py\nindex de1f7974..1d65e018 100644\n--- a/src/data_formats/root/io.py\n\
+        +++ b/src/data_formats/root/io.py\n@@ -19,7 +19,7 @@ A wrapper for ROOT file\
+        \ I/O :func:`uproot.reading.open`, :func:`uproot._dask.das\n \n     .. code-block::\
+        \ python\n \n-        timeout = 180\n+        timeout = 600\n \n .. warning::\n\
+        \     Writers will always overwrite the output file if it exists.\n@@ -32,6\
+        \ +32,7 @@ A wrapper for ROOT file I/O :func:`uproot.reading.open`, :func:`uproot._dask.das\n\
+        \ from __future__ import annotations\n \n import logging\n+import time\n from\
+        \ numbers import Number\n from typing import TYPE_CHECKING, Callable, Generator,\
+        \ Literal, TypedDict, overload\n \n@@ -91,7 +92,7 @@ class _Reader:\n    \
+        \     \"open_files\": False,\n     }\n     _default_options = {\n-       \
+        \ \"timeout\": 180,\n+        \"timeout\": 600,\n     }\n \n     def __init__(self,\
+        \ **options):\n@@ -391,6 +392,44 @@ class TreeReader(_Reader):\n         super().__init__(**options)\n\
+        \         self._filter = branch_filter\n         self._transform = transform\n\
+        +        self._file_cache: dict[str, uproot.ReadOnlyDirectory] = {}\n+\n+\
+        \    def _open_with_retry(self, path, retries=3, delay=5):\n+        \"\"\"\
+        Open a ROOT file with retries for EOS propagation delays.\"\"\"\n+       \
+        \ last_exc = None\n+        for attempt in range(retries):\n+            try:\n\
+        +                return uproot.open(path, **self._open_options)\n+       \
+        \     except FileNotFoundError as e:\n+                last_exc = e\n+   \
+        \             if attempt < retries - 1:\n+                    logging.warning(\n\
+        +                        f\"Failed to open {path} (attempt {attempt + 1}/{retries}),\
+        \ \"\n+                        f\"retrying in {delay}s...\"\n+           \
+        \         )\n+                    time.sleep(delay)\n+                   \
+        \ delay *= 2\n+        raise last_exc\n+\n+    def _get_file(self, path):\n\
+        +        \"\"\"Get a file handle, using cache if available.\"\"\"\n+     \
+        \   key = str(path)\n+        if key in self._file_cache:\n+            return\
+        \ self._file_cache[key]\n+        return self._open_with_retry(path)\n+\n\
+        +    def _open_cache(self, *sources: Chunk):\n+        \"\"\"Open and cache\
+        \ file handles for the given sources.\"\"\"\n+        for source in sources:\n\
+        +            key = str(source.path)\n+            if key not in self._file_cache:\n\
+        +                self._file_cache[key] = self._open_with_retry(source.path)\n\
+        +\n+    def _close_cache(self):\n+        \"\"\"Close all cached file handles.\"\
+        \"\"\n+        for file in self._file_cache.values():\n+            file.close()\n\
+        +        self._file_cache.clear()\n \n     @overload\n     def arrays(\n@@\
+        \ -445,7 +484,9 @@ class TreeReader(_Reader):\n         if self._filter is\
+        \ not None:\n             branches = self._filter(branches)\n         try:\n\
+        -            with uproot.open(source.path, **self._open_options) as file:\n\
+        +            cached = str(source.path) in self._file_cache\n+            file\
+        \ = self._get_file(source.path)\n+            try:\n                 data\
+        \ = file[source.name].arrays(\n                     expressions=branches,\n\
+        \                     entry_start=source.entry_start,\n@@ -463,6 +504,9 @@\
+        \ class TreeReader(_Reader):\n                 if self._transform is not None:\n\
+        \                     data = self._transform(data)\n                 return\
+        \ data\n+            finally:\n+                if not cached:\n+        \
+        \            file.close()\n         except Exception as e:\n             logging.error(f\"\
+        Failed to read {source.path}\", exc_info=e)\n             raise\n@@ -593,10\
+        \ +637,14 @@ class TreeReader(_Reader):\n             chunks = Chunk.balance(step,\
+        \ *sources, common_branches=True)\n         else:\n             raise ValueError(f'Unknown\
+        \ mode \"{mode}\".')\n-        for chunk in chunks:\n-            if not isinstance(chunk,\
+        \ list):\n-                chunk = (chunk,)\n-            yield self.concat(*chunk,\
+        \ **options)\n+        self._open_cache(*sources)\n+        try:\n+      \
+        \      for chunk in chunks:\n+                if not isinstance(chunk, list):\n\
+        +                    chunk = (chunk,)\n+                yield self.concat(*chunk,\
+        \ **options)\n+        finally:\n+            self._close_cache()\n \n   \
+        \  @overload\n     def dask(\ndiff --git a/src/data_formats/root/merge.py\
+        \ b/src/data_formats/root/merge.py\nindex 1ebba82a..0f65e79b 100644\n--- a/src/data_formats/root/merge.py\n\
+        +++ b/src/data_formats/root/merge.py\n@@ -1,5 +1,6 @@\n from __future__ import\
+        \ annotations\n \n+import gc\n from typing import TYPE_CHECKING, Callable\n\
+        \ \n from ...dask_tools.delayed import delayed\n@@ -86,6 +87,8 @@ def merge(\n\
+        \             if transform:\n                 data = transform(data)\n   \
+        \          writer.extend(data)\n+            del data\n+            gc.collect()\n\
+        \     return writer.tree\n \n \ndiff --git a/src/physics/corrections.yml b/src/physics/corrections.yml\n\
+        index a6675023..bf22708e 100644\n--- a/src/physics/corrections.yml\n+++ b/src/physics/corrections.yml\n\
+        @@ -487,9 +487,9 @@\n     jec_campaign: Summer23Prompt23\n     jec_version:\
+        \ V2\n     jer_campaign: Summer23Prompt23\n-    jer_version: RunCv1_JRV1\n\
+        -    #run_tags: not needed \n-  jes_unc:  \n+    jer_version: RunCv1234_JRV1\n\
+        +    #run_tags: not needed\n+  jes_unc:\n     - DUMMY\n   btagSF: '/cvmfs/cms-griddata.cern.ch/cat/metadata/BTV/Run3-23CSep23-Summer23-NanoAODv12/2025-08-20/btagging.json.gz'\n\
+        \   btagWP: #https://btv-wiki.docs.cern.ch/ScaleFactors/Run3Summer23/#ak4-b-tagging\n\
+        @@ -611,8 +611,8 @@\n     file: '/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/Run3-24CDEReprocessingFGHIPrompt-Summer24-NanoAODv15/2025-12-02/jet_jerc.json.gz'\n\
+        \     jec_campaign: Summer24Prompt24\n     jec_version: V2\n-    jer_campaign:\
+        \ Summer24Prompt24\n-    jer_version: RunD_JRV1 ### DUMMY, TO BE UPDATED\n\
+        +    jer_campaign: Summer23BPixPrompt23\n+    jer_version: RunD_JRV1 ### Using\
+        \ 2023BPix JER until Summer24 JER is released\n     #run_tags: not needed\
+        \ in 2024\n   jet_id: '/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/Run3-24CDEReprocessingFGHIPrompt-Summer24-NanoAODv15/2025-12-02/jetid.json.gz'\n\
+        \   jes_unc:  \ndiff --git a/src/physics/objects/jet_corrections.py b/src/physics/objects/jet_corrections.py\n\
+        index 11d79eec..93772568 100644\n--- a/src/physics/objects/jet_corrections.py\n\
+        +++ b/src/physics/objects/jet_corrections.py\n@@ -333,14 +333,19 @@ def apply_jerc_corrections_jsonpog(\n\
+        \     return jet_factory.build(nominal_jet, event.event, seeds=seeds)\n \n\
+        \ \n-def apply_jet_veto_maps( corrections_metadata, jets, event_veto: bool\
+        \ = False ):\n+def apply_jet_veto_maps( corrections_metadata, jets, event_veto:\
+        \ bool = False):\n     '''\n     taken from https://github.com/PocketCoffea/PocketCoffea/blob/main/pocket_coffea/lib/cut_functions.py#L65\n\
+        \     modified to veto jets not events\n     '''\n \n+    if 'jetId' in jets.fields:\n\
+        +        passes_tight_id = ((jets.jetId & 2)==2)\n+    else:\n+        passes_tight_id\
+        \ = jets.passJetId\n+\n     mask_for_VetoMap = (\n-        ((jets.jetId &\
+        \ 2)==2) # Must fulfill tight jetId\n+        passes_tight_id # Must fulfill\
+        \ tight jetId\n         & (abs(jets.eta) < 5.19) # Must be within HCal acceptance\n\
+        \         & ((jets.neEmEF + jets.chEmEF) < 0.9) # Energy fraction not dominated\
+        \ by ECal\n     )\ndiff --git a/src/physics/objects/jetmet_tools/CorrectedJetsFactory.py\
+        \ b/src/physics/objects/jetmet_tools/CorrectedJetsFactory.py\nindex 72318998..02dd5afe\
+        \ 100644\n--- a/src/physics/objects/jetmet_tools/CorrectedJetsFactory.py\n\
+        +++ b/src/physics/objects/jetmet_tools/CorrectedJetsFactory.py\n@@ -73,18\
+        \ +73,27 @@ class _JsonPogJERSF:\n     ``jer_smear`` can index it as ``jersf[:,\
+        \ variation]``.\n     \"\"\"\n \n-    signature = (\"JetEta\",)\n-\n     def\
+        \ __init__(self, corr):\n         self._corr = corr\n+        # Derive signature\
+        \ from the correction's input names (excluding \"systematic\")\n+        _pogname_to_namemap\
+        \ = {\n+            \"JetEta\": \"JetEta\",\n+            \"JetPt\":  \"JetPt\"\
+        ,\n+        }\n+        self.signature = tuple(\n+            _pogname_to_namemap[inp.name]\n\
+        +            for inp in corr.inputs\n+            if inp.name in _pogname_to_namemap\n\
+        +        )\n \n-    def getScaleFactor(self, JetEta, form, lazy_cache):\n\
+        -        eta = numpy.asarray(JetEta, dtype=numpy.float32)\n+    def getScaleFactor(self,\
+        \ form=None, lazy_cache=None, **kwargs):\n+        # kwargs keys correspond\
+        \ to self.signature (e.g. JetEta, or JetEta+JetPt)\n+        arrays = [numpy.asarray(kwargs[k],\
+        \ dtype=numpy.float32) for k in self.signature]\n         stacked = numpy.stack(\n\
+        \             [\n-                self._corr.evaluate(eta, \"nom\").astype(numpy.float32),\n\
+        -                self._corr.evaluate(eta, \"up\").astype(numpy.float32),\n\
+        -                self._corr.evaluate(eta, \"down\").astype(numpy.float32),\n\
+        +                self._corr.evaluate(*arrays, \"nom\").astype(numpy.float32),\n\
+        +                self._corr.evaluate(*arrays, \"up\").astype(numpy.float32),\n\
+        +                self._corr.evaluate(*arrays, \"down\").astype(numpy.float32),\n\
+        \             ],\n             axis=1,\n         )\n"
+      hash: a3bcb466ce49b0e9a52bbb8f7b4aa25f6d5d925d
+    bbreww:
+      diff: "diff --git a/analysis/helpers/object_selection.py b/analysis/helpers/object_selection.py\n\
+        index 31e92b1..3575dd5 100644\n--- a/analysis/helpers/object_selection.py\n\
+        +++ b/analysis/helpers/object_selection.py\n@@ -169,4 +169,7 @@ def apply_bbWW_preselection(events,\
+        \ year,params, isMC):\n     # require exactly one tight electron(muon) with\
+        \ no loose muon(electron)\n     events['e_region'] = (events.e_ntight==1)\
+        \ & (events.mu_ntight==0)\n     events['mu_region'] = (events.mu_ntight==1)\
+        \ & (events.e_ntight==0)\n+\n+    with open(\"debug_files.txt\", \"a\") as\
+        \ f:\n+        f.write(f\"Filenames: {events.metadata['filename']}\\n\")\n\
+        \     return events\ndiff --git a/metadata/skims_v5/GluGluToHHTo2B2VLNu2J.yml\
+        \ b/metadata/skims_v5/GluGluToHHTo2B2VLNu2J.yml\nindex a5ee541..3448e1d 100644\n\
+        --- a/metadata/skims_v5/GluGluToHHTo2B2VLNu2J.yml\n+++ b/metadata/skims_v5/GluGluToHHTo2B2VLNu2J.yml\n\
+        @@ -39,6 +39,17 @@ GluGluToHHTo2B2VLNu2J_kl_0p00:\n       sumw: 8697.810965061188\n\
+        \       sumw2: 647.9717762470245\n       total_events: 133332\n+  '2024':\n\
+        +    nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_Par-c2-0p00-kl-0p00-kt-1p00_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM\n\
+        +    picoAOD:\n+      count: \n+      files:\n+\n+      saved_events: \n+\
+        \      sumw: \n+      sumw2: \n+      total_events: \n+\n   xs: 0.008356\n\
+        \ \n GluGluToHHTo2B2VLNu2J_kl_1p00:\n"
+      hash: 6567e7abc60e9122ca7c4a34b158b88239e8049f
+    date: '2026-03-24 13:08:34'
+  saved_events: 1219736
+  sumw: 281753635.484375
+  sumw2: 3559845761.375
+  sumw2_raw: 3080130885.5727887
+  sumw_raw: 243773174.53819492
+  total_events: 107529966

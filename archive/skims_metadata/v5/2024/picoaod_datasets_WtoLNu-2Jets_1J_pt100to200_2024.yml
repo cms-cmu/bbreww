@@ -1,0 +1,93 @@
+WtoLNu-2Jets_1J_pt100to200_2024:
+  count: 494167270
+  cutflow:
+    e_region:
+      events:
+        all: 88961701.0
+        lumimask: 88961701.0
+        njets: 67004.0
+        passNoiseFilter: 88928711.0
+        trigger: 77101514.0
+        twoBjets: 120737.0
+      weights:
+        all: 204720759568.13574
+        lumimask: 204720759568.13574
+        njets: 155081098.01757812
+        passNoiseFilter: 204643343986.99902
+        trigger: 177624076647.67188
+        twoBjets: 285882147.85839844
+    mu_region:
+      events:
+        all: 108359430.0
+        lumimask: 108359430.0
+        njets: 82598.0
+        passNoiseFilter: 108314039.0
+        trigger: 99595479.0
+        twoBjets: 152003.0
+      weights:
+        all: 249458963490.125
+        lumimask: 249458963490.125
+        njets: 191386280.46484375
+        passNoiseFilter: 249353002828.2744
+        trigger: 229476677339.29395
+        twoBjets: 359742191.4736328
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_1J_pt100to200_2024/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/WtoLNu-2Jets_1J_pt100to200_2024/picoAOD.chunk1.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v5', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', friends='coffea4bees/metadata/friends_HH4b.yml',
+      output_file='picoaod_datasets_WtoLNu-2Jets_1J_pt100to200_2024.yml', output_path='output/skimmer',
+      tmpdir='/uscmst1b_scratch/lpc1/3DayLifetime/akhanal', dashboard_address=None,
+      storage_remap=None, years=['2024'], datasets=['WtoLNu-2Jets_1J_pt100to200'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'C01', 'C02', 'C03', 'C04',
+      'C11', 'C12', 'C13', 'C14', 'C3', 'C4', 'D1', 'D2', 'D01', 'D02', 'D11', 'D12',
+      'F1', 'F2', 'F3', 'G1', 'G2', 'I2', 'I3'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    barista:
+      diff: "diff --git a/runner.py b/runner.py\nindex f6eeed28..49d4831e 100644\n\
+        --- a/runner.py\n+++ b/runner.py\n@@ -448,8 +448,8 @@ def setup_condor_cluster(config_runner,\
+        \ tarball_path):\n     logging.info(\"Creating HTCondor cluster...\")\n  \
+        \   cluster = LPCCondorCluster(**cluster_args)\n \n-    logging.info(f\"Scaling\
+        \ cluster to {config_runner['min_workers']} workers...\")\n-    cluster.scale(config_runner['min_workers'])\n\
+        +    logging.info(f\"Adapting cluster between {config_runner['min_workers']}\
+        \ and {config_runner['max_workers']} workers...\")\n+    cluster.adapt(minimum=config_runner['min_workers'],\
+        \ maximum=config_runner['max_workers'])\n \n     logging.info(\"Creating Dask\
+        \ client...\")\n     client = Client(cluster)\n"
+      hash: 7b780bb35f18e4b8df81bb2cc540c6344d7f79df
+    bbreww:
+      diff: "diff --git a/scripts/analysis_run3.sh b/scripts/analysis_run3.sh\nindex\
+        \ 7f3f992..8cffcab 100644\n--- a/scripts/analysis_run3.sh\n+++ b/scripts/analysis_run3.sh\n\
+        @@ -16,7 +16,7 @@ bash bbreww/scripts/run_processor.sh \\\n     --processor\
+        \ \"bbreww/analysis/processors/hh_bbww_processor.py\" \\\n     --metadata\
+        \ \"bbreww/metadata/skims_v5\" \\\n     --config \"bbreww/analysis/metadata/HHbbWW.yml\"\
+        \ \\\n-    --datasets \"GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic TTToHadronic\
+        \ TTTo2L2Nu WtoLNu-2Jets_0J WtoLNu-2Jets_1J WtoLNu-2Jets_2J TbarWplustoLNu2Q\
+        \ TbarWplusto2L2Nu TWminustoLNu2Q TWminusto2L2Nu\" \\\n+    --datasets \"\
+        GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic TTToHadronic TTTo2L2Nu WtoLNu-2Jets_0J\
+        \ WtoLNu-2Jets_1J WtoLNu-2Jets_2J TbarWplustoLNu2Q TbarWplusto2L2Nu TWminustoLNu2Q\
+        \ TWminusto2L2Nu TBbarQ TbarBQ TBbartoLplusNuBbar TbarBtoLminusNuB\" \\\n\
+        \     --year \"2022_preEE 2022_EE 2023_preBPix 2023_BPix\" \\\n     --output-filename\
+        \ \"output.coffea\" \\\n     --output-subdir \"full_run\" \\\ndiff --git a/skimmer/metadata/HHbbWW.yml\
+        \ b/skimmer/metadata/HHbbWW.yml\nindex 2a5937d..78356b0 100644\n--- a/skimmer/metadata/HHbbWW.yml\n\
+        +++ b/skimmer/metadata/HHbbWW.yml\n@@ -2,8 +2,8 @@ runner:\n   min_workers:\
+        \ 1\n   max_workers: 400\n   chunksize: 50000\n-  picosize: 500000\n-  basketsize:\
+        \ 25000\n+  picosize: 100000\n+  basketsize: 50000\n   class_name: Skimmer\n\
+        \   data_tier: nanoAOD\n   condor_cores: 1\n@@ -19,14 +19,14 @@ runner:\n\
+        \   # rucio_regex_sites: 'T[123]_(US|CH|DE|UK)'\n   allowlist_sites:\n   \
+        \  - T3_US_FNALLPC\n-  #  - T2_US_Nebraska\n+    - T2_US_Nebraska\n   #  -\
+        \ T3_US_NotreDame\n     - T2_US_Caltech\n-  #  - T1_US_FNAL_Disk\n-    - T2_US_MIT\n\
+        -    - T2_US_Purdue\n+    - T1_US_FNAL_Disk\n+  #  - T2_US_MIT\n+  #  - T2_US_Purdue\n\
+        \     - T2_US_Wisconsin\n-    - T2_US_Vanderbilt\n+  #  - T2_US_Vanderbilt\n\
+        \   # blocklist_sites:\n   #   - T2_US_MIT\n   #   - T2_US_Purdue\n"
+      hash: b8251303491e44392bb661125973325fd3a40685
+    date: '2026-04-02 22:27:29'
+  saved_events: 149602
+  sumw: 1124590667681.25
+  sumw2: 8030589085521920.0
+  sumw2_raw: 8030587571172527.0
+  sumw_raw: 1124590518622.5706
+  total_events: 494167270

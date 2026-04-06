@@ -19,10 +19,10 @@ def Hbb_candidate_selection(events):
 
     
     # Define the SR and CR based on H ->> bb candidate mass and delta_R
-    signal_region = elliptical_region(events.Hbb_cand.mass, events.Hbb_cand.dr,
+    signal_region = elliptical_region(events.Hbb_cand.mass, events.HWW_mass,
                                         115, 135, 60, 60 ) # elliptical signal region
     control_region = ((~signal_region)
-                        & elliptical_region(events.Hbb_cand.mass, events.Hbb_cand.dr,
+                        & elliptical_region(events.Hbb_cand.mass, events.HWW_mass,
                                             115, 135, 100, 100)) # sideband TTbar control region
 
     events['region'] = ak.zip({

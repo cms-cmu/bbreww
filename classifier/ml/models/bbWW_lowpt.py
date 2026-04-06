@@ -62,7 +62,7 @@ class HCRArch:
 @dataclass
 class GBNSchedule(MilestoneStep):
     n_batches: int = 64
-    milestones: list[int] = (1, 3, 6, 10, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)
+    milestones: list[int] = (1, 3, 6, 10, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30)
     gamma: float = 0.25
 
     def __post_init__(self):
@@ -218,7 +218,7 @@ class HCRModel(Model):
             [f"nonbJet_{f}" for f in InputBranch.feature_nonbJetCand] +
             [f"lep_{f}" for f in InputBranch.feature_leadingLep] +
             list(InputBranch.feature_ancillary) +
-            [f"regressed_nu_{f}" for f in InputBranch.feature_regressed_nu]
+            list(InputBranch.feature_regressed_nu)
         )
         
         # Wrapper model for SHAP
@@ -340,11 +340,11 @@ class HCRTraining(MultiStageTraining):
                         "input": {
                             k: getattr(InputBranch, k)
                             for k in (
-                            "feature_ancillary", 
-                            "feature_bJetCand",      
-                            "feature_nonbJetCand",   
-                            "feature_leadingLep",   
-                            "feature_MET",   
+                            "feature_ancillary",
+                            "feature_bJetCand",
+                            "feature_nonbJetCand",
+                            "feature_leadingLep",
+                            "feature_regressed_nu",
                             )
                         },
                     },

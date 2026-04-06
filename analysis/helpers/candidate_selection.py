@@ -20,10 +20,10 @@ def Hbb_candidate_selection(events):
     
     # Define the SR and CR based on H ->> bb candidate mass and delta_R
     signal_region = elliptical_region(events.Hbb_cand.mass, events.Hbb_cand.dr,
-                                        115, 1.5, 75, 1.3 ) # elliptical signal region
+                                        115, 135, 60, 60 ) # elliptical signal region
     control_region = ((~signal_region)
                         & elliptical_region(events.Hbb_cand.mass, events.Hbb_cand.dr,
-                                            115, 1.5, 115, 2.0)) # sideband TTbar control region
+                                            115, 135, 100, 100)) # sideband TTbar control region
 
     events['region'] = ak.zip({
         'SR': ak.fill_none(signal_region, False),
@@ -221,27 +221,30 @@ def regressed_nu(events, met_regression: bool = False):
             "z": events.met_regressor.nu_pz,
             "t": np.sqrt((events.met_regressor.nu_px**2 + events.met_regressor.nu_py**2 + events.met_regressor.nu_pz**2)),
         },
-        with_name="LorentzVector",
-        behavior=vector.behavior,
+            with_name="LorentzVector",
+            behavior=vector.behavior,
         )
         events["reg_mW"] =  ak.fill_none((events.reg_nu + events.leading_lep).mass, np.nan) # regressed leptonic W mass
         
         #check how well regressor is selecting jets
-        ml_jet_scores = ak.concatenate(
+        ml_jet_scores_full = ak.concatenate(
             [ak.singletons(0.5 * (events.met_regressor.jet_weight_0 + events.met_regressor.jet_weight_4)),  # jet 0 (avg of two attention heads)
              ak.singletons(0.5 * (events.met_regressor.jet_weight_1 + events.met_regressor.jet_weight_5)),  # jet 1
              ak.singletons(0.5 * (events.met_regressor.jet_weight_2 + events.met_regressor.jet_weight_6)),  # jet 2
              ak.singletons(0.5 * (events.met_regressor.jet_weight_3 + events.met_regressor.jet_weight_7))], # jet 3
             axis=1)
         
+        # ak.local_index to build a per-entry boolean mask and filter axis=1.
+        n_jets = ak.num(events.q_cands_soft)
+        events["q_cands_soft", "ml_jet_scores"] = ml_jet_scores_full[ak.local_index(ml_jet_scores_full, axis=1) < n_jets]
+        
         has_two_jets = ak.num(events.q_cands_soft) >= 2
         valid_nu = ~np.isnan(events.met_regressor.nu_pz)
         mask_all = has_two_jets & valid_nu
         
         # Sort jets by attention weight descending, keep only indices pointing to real jets
-        masked_scores = ak.mask(ml_jet_scores, mask_all)
+        masked_scores = ak.mask(events.q_cands_soft.ml_jet_scores, mask_all)
         sorted_indices = ak.argsort(masked_scores, ascending=False)
-        n_jets = ak.num(events.q_cands_soft)
         sorted_indices = sorted_indices[sorted_indices < n_jets]
         
         # Top 2 jets by attention weight

@@ -17,18 +17,6 @@ def Hbb_candidate_selection(events):
 
     events['Hbb_cand'] = Hbb_cand
 
-    
-    # Define the SR and CR based on H ->> bb candidate mass and delta_R
-    signal_region = elliptical_region(events.Hbb_cand.mass, events.HWW_mass,
-                                        115, 135, 60, 60 ) # elliptical signal region
-    control_region = ((~signal_region)
-                        & elliptical_region(events.Hbb_cand.mass, events.HWW_mass,
-                                            115, 135, 100, 100)) # sideband TTbar control region
-
-    events['region'] = ak.zip({
-        'SR': ak.fill_none(signal_region, False),
-        'CR': ak.fill_none(control_region, False)
-    })
 
     return events
 
@@ -282,6 +270,18 @@ def candidate_selection(events, params, year, run_SvB, run_MET_regression, class
     events = Hww_soft_candidate_selection(events)
     events = ttbar_soft_candidate_selection(events)
     events = regressed_nu(events, run_MET_regression)
+
+    # Define the SR and CR based on H ->> bb candidate mass and HWW_mass using regressed neutrino
+    signal_region = elliptical_region(events.Hbb_cand.mass, events.HWW_mass,
+                                        115, 135, 60, 60 ) # elliptical signal region
+    control_region = ((~signal_region)
+                        & elliptical_region(events.Hbb_cand.mass, events.HWW_mass,
+                                            115, 135, 100, 100)) # sideband TTbar control region
+
+    events['region'] = ak.zip({
+        'SR': ak.fill_none(ak.firsts(signal_region), False),
+        'CR': ak.fill_none(ak.firsts(control_region), False)
+    })
     
     return events
 

@@ -193,14 +193,13 @@ class InputEmbed(nn.Module):
         self.layers.addLayer(self.lepWMassEmbed)
 
 
-    def dataPrep(self, b, nb, l, nu, a, reg_nu=None):
+    def dataPrep(self, b, nb, l, a, reg_nu=None):
         device = b.get_device() if b.get_device() >= 0 else "cpu"
 
         n = b.shape[0]
         b = b.view(n, 5, 2)
         nb = nb.view(n, 5, -1)               # (n, 5, wsl): pt, eta, phi, mass, attn_score
         l = l.view(n, 6, 1)
-        nu = nu.view(n, 2, 1)
         a = a.view(n, self.dA, 1)
 
         # Extract per-jet attention scores (5th feature) before kinematic processing
@@ -213,32 +212,27 @@ class InputEmbed(nn.Module):
 
         a[:, 2, :] = torch.log(torch.clamp(a[:, 2, :], min=1e-6))  # log transform event HT
 
-        # Build regressed neutrino 4-vector and leptonic W from regressed MET
+        # Build leptonic W from regressed neutrino (px, py, pz, E)
         if reg_nu is not None:
-            reg_nu = reg_nu.view(n, 3)
-            # Neutrino 4-vector in PtEtaPhiM (massless)
-            nu_px, nu_py, nu_pz = reg_nu[:, 0], reg_nu[:, 1], reg_nu[:, 2]
-            nu_pt = torch.sqrt(nu_px**2 + nu_py**2)
-            nu_E = torch.sqrt(nu_px**2 + nu_py**2 + nu_pz**2)
-            nu_eta = torch.asinh(nu_pz / (nu_pt + 1e-8))
-            nu_phi = torch.atan2(nu_py, nu_px)
-            reg_nu_4vec = torch.stack([nu_pt, nu_eta, nu_phi, torch.zeros_like(nu_pt)], dim=1).unsqueeze(-1)  # (n, 4, 1) PtEtaPhiM
+            reg_nu = reg_nu.view(n, 4)
+            nu_PxPyPzE = reg_nu  # (n, 4): px, py, pz, E
 
             # Leptonic W = lepton + regressed neutrino (proper 4-vector addition)
             lep_PxPyPzE = PxPyPzE(l[:, :4, 0])  # (n, 4)
-            nu_PxPyPzE = torch.stack([nu_px, nu_py, nu_pz, nu_E], dim=1)  # (n, 4)
             regW_PxPyPzE = lep_PxPyPzE + nu_PxPyPzE
             regW_lep = PtEtaPhiM(regW_PxPyPzE).unsqueeze(-1)  # (n, 4, 1)
 
             # Scalar leptonic W mass
-            lepW_mass = calc_mW(l[:, :4, 0], reg_nu).unsqueeze(-1).unsqueeze(-1)  # (n, 1, 1)
+            lepW_mass = calc_mW(l[:, :4, 0], reg_nu[:, :3]).unsqueeze(-1).unsqueeze(-1)  # (n, 1, 1)
 
             # Leptonic top candidates: b + regressed W_lep (2 candidates, one per b-jet)
             bWlep, bWlepPxPyPzE = addFourVectors(
                 b[:, :, (1, 0)], regW_lep.expand(-1, -1, 2)
             )  # (n, 4, 2)
+
+            reg_nu = reg_nu.unsqueeze(-1)  # (n, 4, 1) for embedding
         else:
-            reg_nu_4vec = torch.zeros(n, 4, 1, device=device)
+            reg_nu = torch.zeros(n, 4, 1, device=device)
             regW_lep = torch.zeros(n, 4, 1, device=device)
             regW_PxPyPzE = torch.zeros(n, 4, device=device)
             lepW_mass = torch.zeros(n, 1, 1, device=device)
@@ -304,8 +298,8 @@ class InputEmbed(nn.Module):
         # non-b jet pair mass and deltaR matrix
         qqMdR = matrixMdR(nb, nb, v1PxPyPzE=nbPxPyPzE, v2PxPyPzE=nbPxPyPzE)
 
-        # Lepton-MET transverse mass (still useful as a feature)
-        lnu_mT = transverse_mass(l, nu)
+        # Lepton-regressed-nu transverse mass
+        lnu_mT = transverse_mass(l, reg_nu)
 
         mask_qqMdR = mask.view(n, 1, self.wsl) | mask.view(n, self.wsl, 1)
 
@@ -327,9 +321,9 @@ class InputEmbed(nn.Module):
         # Derived kinematics (computed before log-transforms)
         mjj_all = qq[:, 3:4, :]
         mbb = bb[:, 3:4, 0:1]
-        dphi_lep_met = calcDeltaPhi(l, nu)
+        dphi_lep_met = calcDeltaPhi(l, reg_nu)
         pt_bb = bb[:, 0:1, 0:1]
-        dphi_bb_met = calcDeltaPhi(bb, nu)
+        dphi_bb_met = calcDeltaPhi(bb, reg_nu)
         derived_kinematics = torch.cat([
             mjj_all.transpose(1, 2),  # (batch, qqsl, 1)
             mbb, lnu_mT, dphi_lep_met, pt_bb, dphi_bb_met,
@@ -355,16 +349,16 @@ class InputEmbed(nn.Module):
                 bbWlepMdR, WlepNBMdR,
                 mask, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep,
                 derived_kinematics, raw_nb, raw_lep,
-                reg_nu_4vec, regW_lep, lepW_mass, nb_attn)
+                reg_nu, regW_lep, lepW_mass, nb_attn)
 
-    def updateMeanStd(self, b, nb, l, nu, a, reg_nu=None):
+    def updateMeanStd(self, b, nb, l, a, reg_nu=None):
         (b, bb, qq, a, nb, l, lnu_mT, bWhad, bWlep, lepQQdR,
          bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR,
          bbWlepMdR, WlepNBMdR,
          mask, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep,
          derived_kinematics, raw_nb, raw_lep,
-         reg_nu_4vec, regW_lep, lepW_mass, nb_attn) = self.dataPrep(
-            b, nb, l, nu, a, reg_nu)
+         reg_nu, regW_lep, lepW_mass, nb_attn) = self.dataPrep(
+            b, nb, l, a, reg_nu)
 
         n = b.shape[0]
         qqsl = self.qqsl
@@ -398,7 +392,7 @@ class InputEmbed(nn.Module):
         self.nonbDiJetEmbed.updateMeanStd(qq)
         self.MdREmbed.updateMeanStd(MdR, mask_MdR)
         self.lepEmbed.updateMeanStd(l)
-        self.regressedNuEmbed.updateMeanStd(reg_nu_4vec)
+        self.regressedNuEmbed.updateMeanStd(reg_nu)
         self.bWhadEmbed.updateMeanStd(bWhad)
         self.bWlepEmbed.updateMeanStd(bWlep)
         self.regWlepEmbed.updateMeanStd(regW_lep)
@@ -454,14 +448,14 @@ class InputEmbed(nn.Module):
         self.regWlepConv.setGhostBatches(nGhostBatches)
         self.derivedConv.setGhostBatches(nGhostBatches)
 
-    def forward(self, b, nb, l, nu, a, reg_nu=None):
+    def forward(self, b, nb, l, a, reg_nu=None):
         (b, bb, qq, a, nb, l, lnu_mT, bWhad, bWlep, lepQQdR,
          bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR,
          bbWlepMdR, WlepNBMdR,
          mask, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep,
          derived_kinematics, raw_nb, raw_lep,
-         reg_nu_4vec, regW_lep, lepW_mass, nb_attn) = self.dataPrep(
-            b, nb, l, nu, a, reg_nu)
+         reg_nu, regW_lep, lepW_mass, nb_attn) = self.dataPrep(
+            b, nb, l, a, reg_nu)
 
         a = self.ancillaryEmbed(a)
         mask_nb = torch.cat([mask, mask[:, list(reversed(range(self.wsl)))]], 1)
@@ -525,7 +519,7 @@ class InputEmbed(nn.Module):
         l = self.lepConv(NonLU(l))
 
         # Regressed neutrino embedding (4-vector: pt, eta, phi, m=0)
-        reg_nu_emb = self.regressedNuEmbed(reg_nu_4vec)
+        reg_nu_emb = self.regressedNuEmbed(reg_nu)
         reg_nu_emb = self.regressedNuConv(NonLU(reg_nu_emb))
 
         # Regressed leptonic W embedding (4-vector: pt, eta, phi, m)
@@ -727,8 +721,8 @@ class HCR_lowpt(nn.Module):
     def output_layers(self):
         return [self.final_linear_layer.index]
 
-    def updateMeanStd(self, b, nb, l, nu, a, reg_nu=None):
-        self.inputEmbed.updateMeanStd(b, nb, l, nu, a, reg_nu)
+    def updateMeanStd(self, b, nb, l, a, reg_nu=None):
+        self.inputEmbed.updateMeanStd(b, nb, l, a, reg_nu)
 
     def initMeanStd(self):
         self.inputEmbed.initMeanStd()
@@ -758,7 +752,7 @@ class HCR_lowpt(nn.Module):
         self.HWWBlock.setGhostBatches(nGhostBatches)
         self.nGhostBatches = nGhostBatches
 
-    def forward(self, b, nb, l, nu, a, reg_nu=None):
+    def forward(self, b, nb, l, a, reg_nu=None):
         self.forwardCalls += 1
         (b, bb, qq, a, nb, l, lnu_mT, bWhad, bWlep, lepQQdR,
          bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR,
@@ -766,7 +760,7 @@ class HCR_lowpt(nn.Module):
          mask_bbn, mask_qq, mask_bWhad, mask_bWlep,
          derived, reg_nu_emb, regW_emb, lepW_mass_emb,
          raw_nb, raw_lep, nb_attn) = self.inputEmbed(
-            b, nb, l, nu, a, reg_nu
+            b, nb, l, a, reg_nu
         )
 
         n = b.shape[0]

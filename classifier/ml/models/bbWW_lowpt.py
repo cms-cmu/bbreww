@@ -87,14 +87,10 @@ class HCRBenchmarks:
 def _HCRInput(batch: BatchType, device: tt.Device, selection: Tensor = None):
     for k, v in batch.items():
         batch[k] = v.to(device, non_blocking=True)
-    inputs = [batch.pop(k) for k in (Input.bJetCand, Input.nonbJetCand, Input.leadingLep, Input.MET, Input.ancillary)]
-    # Optional regressor outputs -- default to None if not present in batch
-    reg_nu = batch.pop(Input.regressed_nu, None)
+    inputs = [batch.pop(k) for k in (Input.bJetCand, Input.nonbJetCand, Input.leadingLep, Input.ancillary, Input.regressed_nu)]
     if selection is not None:
         selection = selection.to(device, non_blocking=True)
         inputs = [i[selection] for i in inputs]
-        if reg_nu is not None: reg_nu = reg_nu[selection]
-    inputs.append(reg_nu)
     return inputs
 
 
@@ -221,8 +217,8 @@ class HCRModel(Model):
             [f"bJet_{f}" for f in InputBranch.feature_bJetCand] +
             [f"nonbJet_{f}" for f in InputBranch.feature_nonbJetCand] +
             [f"lep_{f}" for f in InputBranch.feature_leadingLep] +
-            [f"MET_{f}" for f in InputBranch.feature_MET] +
-            list(InputBranch.feature_ancillary)
+            list(InputBranch.feature_ancillary) +
+            [f"regressed_nu_{f}" for f in InputBranch.feature_regressed_nu]
         )
         
         # Wrapper model for SHAP

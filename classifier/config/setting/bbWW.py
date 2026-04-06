@@ -6,12 +6,11 @@ class InputBranch(GlobalSetting):
     feature_bJetCand: list[str] = ["pt", "eta", "phi", "mass", "btagScore"]  
     feature_nonbJetCand: list[str] = ["pt", "eta", "phi", "mass", "attn_score"]
     feature_leadingLep: list[str] = ["pt", "eta", "phi", "mass", "isE", "isM"]
-    feature_MET: list[str] = ["pt", "phi"]
     feature_ancillary: list[str] = ["HT", "njets", "nsoftjets", "year"]
     feature_genNu: list[str] = ["pt", "eta", "phi"]
     feature_genLepW: list[str] = ["onShell", "genLepWmass"]
     feature_true_nbjet_flat: list[str] = ["0", "1", "2", "3"]
-    feature_regressed_nu: list[str] = ["px", "py", "pz"]
+    feature_regressed_nu: list[str] = ["px", "py", "pz", "E"]
     nbJetCand: int = 2
     nnonbJetCand: int = 4 # nominal: 2, lowpt: 4
 
@@ -26,10 +25,6 @@ class InputBranch(GlobalSetting):
     @classmethod
     def get__feature_leadingLep(cls, var: list[str]):
         return [f"leadingLep_{f}" for f in var]
-
-    @classmethod
-    def get__feature_MET(cls, var: list[str]):
-        return [f"MET_{f}" for f in var]
 
     @classmethod
     def get__feature_ancillary(cls, var: list[str]):
@@ -60,7 +55,6 @@ class Input(GlobalSetting):
     bJetCand: str = "bJetCand"
     nonbJetCand: str = "nonbJetCand" 
     leadingLep: str = "leadingLep"
-    MET: str = "MET"
     ancillary: str = "ancillary"
     genNu: str = "genNu"
     genLepW: str = "genLepW"

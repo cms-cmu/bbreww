@@ -16,7 +16,7 @@ from src.classifier.config.state import Flags
 from src.classifier.config.state.label import MultiClass
 from src.classifier.config.dataset._root import LoadGroupedRoot
 from src.classifier.config.dataset.HCR import _group
-from bbreww.classifier.config.setting.METRegressor import Input, InputBranch, MassRegion
+from bbreww.classifier.config.setting.bbWW import Input, InputBranch, MassRegion
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -112,10 +112,10 @@ class Common(LoadGroupedRoot):
     def _branches(self):
         return self.other_branches().union(
             InputBranch.feature_ancillary,
-            InputBranch.feature_bJetCand,      
-            InputBranch.feature_nonbJetCand,   
-            InputBranch.feature_leadingLep,   
-            InputBranch.feature_MET,   
+            InputBranch.feature_bJetCand,
+            InputBranch.feature_nonbJetCand,
+            InputBranch.feature_leadingLep,
+            InputBranch.feature_regressed_nu,
             self.opts.branch,
         )
 
@@ -150,13 +150,13 @@ class CommonTrain(Common):
             .add(Input.bJetCand, "float32").columns(*InputBranch.feature_bJetCand, target=InputBranch.nbJetCand)
             .add(Input.nonbJetCand, "float32").columns(*InputBranch.feature_nonbJetCand, target=InputBranch.nnonbJetCand, pad_value=-1)
             .add(Input.leadingLep, "float32").columns(*InputBranch.feature_leadingLep)
-            .add(Input.MET, "float32").columns(*InputBranch.feature_MET)
+            .add(Input.regressed_nu, "float32").columns(*InputBranch.feature_regressed_nu)
 
         )
         self.preprocessors.extend(
             [
                 map_selection_to_flag(
-                    **enum_dict(MassRegion)
+                    **{k: v for k, v in enum_dict(MassRegion).items() if k != "ALL"}
                 ).set(name=_Derived.region_index)
             ]
         )
@@ -239,7 +239,7 @@ class CommonEval(Common):
             .add(Input.bJetCand, "float32").columns(*InputBranch.feature_bJetCand, target=InputBranch.nbJetCand)
             .add(Input.nonbJetCand, "float32").columns(*InputBranch.feature_nonbJetCand, target=InputBranch.nnonbJetCand, pad_value=-1)
             .add(Input.leadingLep, "float32").columns(*InputBranch.feature_leadingLep)
-            .add(Input.MET, "float32").columns(*InputBranch.feature_MET)
+            .add(Input.regressed_nu, "float32").columns(*InputBranch.feature_regressed_nu)
 
         )
         # fmt: on
@@ -273,3 +273,63 @@ class CommonEval(Common):
         )
         logging.debug("files:", pretty_repr(_sort_map(self.files)))
         logging.debug("tensor:", pretty_repr(self.to_tensor._columns))
+
+
+class RegressorCommonTrain(CommonTrain):
+    """CommonTrain for METRegressor: loads MET instead of regressed_nu."""
+
+    def __init__(self):
+        from bbreww.classifier.config.setting.METRegressor import (
+            Input as _RInput,
+            InputBranch as _RInputBranch,
+        )
+        super().__init__()
+        (
+            self.to_tensor
+            .remove(Input.regressed_nu)
+            .add(_RInput.MET, "float32").columns(*_RInputBranch.feature_MET)
+        )
+
+    @cached_property
+    def _branches(self):
+        from bbreww.classifier.config.setting.METRegressor import (
+            InputBranch as _RInputBranch,
+        )
+        return self.other_branches().union(
+            _RInputBranch.feature_ancillary,
+            _RInputBranch.feature_bJetCand,
+            _RInputBranch.feature_nonbJetCand,
+            _RInputBranch.feature_leadingLep,
+            _RInputBranch.feature_MET,
+            self.opts.branch,
+        )
+
+
+class RegressorCommonEval(CommonEval):
+    """CommonEval for METRegressor: loads MET instead of regressed_nu."""
+
+    def __init__(self):
+        from bbreww.classifier.config.setting.METRegressor import (
+            Input as _RInput,
+            InputBranch as _RInputBranch,
+        )
+        super().__init__()
+        (
+            self.to_tensor
+            .remove(Input.regressed_nu)
+            .add(_RInput.MET, "float32").columns(*_RInputBranch.feature_MET)
+        )
+
+    @cached_property
+    def _branches(self):
+        from bbreww.classifier.config.setting.METRegressor import (
+            InputBranch as _RInputBranch,
+        )
+        return self.other_branches().union(
+            _RInputBranch.feature_ancillary,
+            _RInputBranch.feature_bJetCand,
+            _RInputBranch.feature_nonbJetCand,
+            _RInputBranch.feature_leadingLep,
+            _RInputBranch.feature_MET,
+            self.opts.branch,
+        )

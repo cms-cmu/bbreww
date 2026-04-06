@@ -29,5 +29,6 @@ runner:
 config:
   #make_spanet_input: *spanet_base
   make_classifier_input: *friend_base
-  fill_hists: false
+  run_MET_regression: true
+  fill_hists: false     
   run_SvB: false

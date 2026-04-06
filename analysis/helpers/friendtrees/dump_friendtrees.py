@@ -16,8 +16,7 @@ def dump_input_friend_classifier(
     bcand: str = "b_cands",
     nonbcand: str = "q_cands_nom",
     lepton: str = "leading_lep",
-    met: str = "MET",
-    genNu: str = "genNu",
+    met: str = "reg_nu",
     weight: str = "weight",
     dump_naming: str = _NAMING,
 ):
@@ -44,6 +43,7 @@ def dump_input_friend_classifier(
                         "eta":  events[nonbcand].eta,
                         "phi":  events[nonbcand].phi,
                         "mass": events[nonbcand].mass,
+                        "attn_score": events[nonbcand].ml_jet_scores, 
                     }
                 ),
                 selection,
@@ -61,11 +61,13 @@ def dump_input_friend_classifier(
                 ),
                 selection,
             ),
-            "MET": padded(
+            "regressed_nu": padded(
                 ak.zip(
                     {
-                        "pt":   events[met].pt,
-                        "phi":  events[met].phi,
+                        "px":   events[met].px,
+                        "py":  events[met].py,
+                        "pz":  events[met].pz,
+                        "E": events[met].energy,
                     }
                 ),
                 selection,

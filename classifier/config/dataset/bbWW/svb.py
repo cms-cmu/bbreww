@@ -37,11 +37,6 @@ def _remove_sr(df: pd.DataFrame):
     """Remove signal region events"""
     return df[~df["SR"]]
 
-
-def _remove_sr(df: pd.DataFrame):
-    """Remove signal region events"""
-    return df
-
 def _norm(df: pd.DataFrame, norms: dict[int, float]):
     return df / (df.sum() / norms.get(df.name, 1.0))
 
@@ -80,7 +75,7 @@ class Train(CommonTrain):
             _group.fullmatch(
                 ("label:signal",),
                 processors=[
-                    lambda: _signal_selection,
+                    lambda: _select_sr,
                     lambda: add_label_index("signal"),
                 ],
                 name="HH signal selection",
@@ -88,7 +83,7 @@ class Train(CommonTrain):
         )
         if "ttbar" in self.mc_processes:
             ttbar_processors = [
-                lambda: _signal_selection,
+                lambda: _select_sr,
                 lambda: add_label_index("ttbar"),
             ]
             # Add prescaling if requested
@@ -114,14 +109,12 @@ class Train(CommonTrain):
                     _group.fullmatch(
                         (f"label:{bkg}",),
                         processors=[
-                            lambda: _signal_selection,
+                            lambda: _select_sr,
                             lambda: add_label_index("other"),
                         ],
                         name="minor background selection",
                     ),
                 )
-        _group.add_year(),
-
         # Optional SR removal
         if self.opts.no_SR:
             ps.append(

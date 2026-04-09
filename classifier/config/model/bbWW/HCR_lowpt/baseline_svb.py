@@ -38,37 +38,15 @@ class Train(HCRTrain):
 
     @staticmethod
     def loss(batch: BatchType):
-        import torch
         import torch.nn.functional as F
 
-        # Classification loss
         logits = batch[Output.hh_raw]
         labels = batch[Input.label]
         weight = batch[Input.weight]
         weight[weight < 0] = 0
 
         cross_entropy = F.cross_entropy(logits, labels, reduction="none")
-        clf_loss = (cross_entropy * weight).sum() / weight.sum()
-
-        # Jet attention loss: supervise WW attention with truth W jet labels
-        true_nbjet = batch[Input.true_nbjet_flat]  # (n, wsl) binary: 1 if true q from W
-        has_true_jets = (true_nbjet.sum(dim=-1) > 0)  # only events with labeled jets
-
-        if has_true_jets.any():
-            ww_weights = batch["ww_weights"]  # (n, heads, 1, wsl)
-            # Average across heads and squeeze: (n, heads, 1, wsl) -> (n, wsl)
-            ww_weights = ww_weights.squeeze(2).mean(dim=1)
-
-            # Normalize truth to a probability distribution
-            target_dist = true_nbjet[has_true_jets]
-            target_dist = target_dist / target_dist.sum(dim=-1, keepdim=True).clamp(min=1)
-
-            # Cross-entropy between attention weights and truth distribution
-            jet_attn_loss = -(target_dist * torch.log(ww_weights[has_true_jets] + 1e-8)).sum(dim=-1).mean()
-        else:
-            jet_attn_loss = torch.tensor(0.0, device=logits.device, requires_grad=True)
-
-        return clf_loss + 0.1 * jet_attn_loss
+        return (cross_entropy * weight).sum() / weight.sum().clamp(min=1e-8)
 
     @property
     def rocs(self):

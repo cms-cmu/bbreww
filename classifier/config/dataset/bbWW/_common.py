@@ -151,6 +151,7 @@ class CommonTrain(Common):
             .add(Input.nonbJetCand, "float32").columns(*InputBranch.feature_nonbJetCand, target=InputBranch.nnonbJetCand, pad_value=-1)
             .add(Input.leadingLep, "float32").columns(*InputBranch.feature_leadingLep)
             .add(Input.regressed_nu, "float32").columns(*InputBranch.feature_regressed_nu)
+            .add(Input.true_nbjet_flat, "float32").columns("true_nbjet_flat", target=4, pad_value=0)
 
         )
         self.preprocessors.extend(
@@ -168,6 +169,7 @@ class CommonTrain(Common):
         return {
             "SR",
             "CR",
+            "true_nbjet_flat",
             Columns.event,
             Columns.weight,
         }

@@ -75,7 +75,7 @@ class Train(CommonTrain):
             _group.fullmatch(
                 ("label:signal",),
                 processors=[
-                    lambda: _select_sr,
+                    lambda: _signal_selection,
                     lambda: add_label_index("signal"),
                 ],
                 name="HH signal selection",
@@ -83,7 +83,7 @@ class Train(CommonTrain):
         )
         if "ttbar" in self.mc_processes:
             ttbar_processors = [
-                lambda: _select_sr,
+                lambda: _signal_selection,
                 lambda: add_label_index("ttbar"),
             ]
             # Add prescaling if requested
@@ -109,7 +109,7 @@ class Train(CommonTrain):
                     _group.fullmatch(
                         (f"label:{bkg}",),
                         processors=[
-                            lambda: _select_sr,
+                            lambda: _signal_selection,
                             lambda: add_label_index("other"),
                         ],
                         name="minor background selection",

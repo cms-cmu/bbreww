@@ -10,7 +10,7 @@ class InputBranch(GlobalSetting):
     feature_true_nbjet_flat: list[str] = ["0", "1", "2", "3"]
     feature_regressed_nu: list[str] = ["px", "py", "pz", "E"]
     nbJetCand: int = 2
-    nnonbJetCand: int = 4 
+    nnonbJetCand: int = 4
 
     @classmethod
     def get__feature_bJetCand(cls, var: list[str]):
@@ -56,6 +56,7 @@ class Output(GlobalSetting):
     hh_prob: str = "hh_prob"
     tt_prob: str = "tt_prob"
     ww_prob: str = "ww_prob"
+    ww_weights: str = "ww_weights"
     
 # create indeces map to different regions
 class MassRegion(IntEnum):

@@ -40,7 +40,7 @@ class HCRArch:
     __skip_save = frozenset(("loss",))
 
     loss: Callable[[BatchType], Tensor] = None
-    n_features: int = 8
+    n_features: int = 16
     attention: bool = True
 
     @classmethod
@@ -62,8 +62,8 @@ class HCRArch:
 @dataclass
 class GBNSchedule(MilestoneStep):
     n_batches: int = 64
-    milestones: list[int] = (1, 3, 6, 10, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30)
-    gamma: float = 0.25
+    milestones: list[int] = (1, 3, 6, 10, 21, 22, 23)
+    gamma: float = 0.5
 
     def __post_init__(self):
         self.milestones = sorted(self.milestones)
@@ -71,7 +71,7 @@ class GBNSchedule(MilestoneStep):
         self.reset()
 
     def get_bs(self):
-        self._last_bs = int(self.n_batches * (self.gamma**self.milestone))
+        self._last_bs = max(1, int(self.n_batches * (self.gamma**self.milestone)))
         return self._last_bs
 
     def get_last_bs(self):
@@ -165,7 +165,7 @@ class HCRModel(Model):
         batch[Output.hh_raw] = hh
         batch[Output.tt_raw] = tt
         batch[Output.ww_raw] = ww
-        batch["ww_weights"] = self._nn._jet_weights  # (n, heads, 1, wsl) per-jet attention weights
+        batch[Output.ww_weights] = self._nn._jet_weights  # (n, heads, 1, wsl) per-jet attention weights
 
         loss = self._loss(batch)
 
@@ -185,7 +185,8 @@ class HCRModel(Model):
                 Output.ww_raw: ww,
                 Output.hh_prob: F.softmax(hh, dim=1),
                 Output.tt_prob: F.softmax(tt, dim=1),
-                Output.ww_prob: F.softmax(ww, dim=1)
+                Output.ww_prob: F.softmax(ww, dim=1),
+                Output.ww_weights: self._nn._jet_weights,
             }
             sumw = to_num(batch[Input.weight].sum())
             if scalar_funcs is None:

@@ -12,7 +12,7 @@ export WFS="bbreww/classifier/config/workflows/HCR_lowpt/svb"
 
 # the first argument can be a port
 if [ -z "$1" ]; then
-    port=10200
+    port=10201
 else
     port=$1
 fi
@@ -33,7 +33,7 @@ fi
     -setting Monitor "address: :${port}"
 
 # evaluate with evaluate.yml and common.yml configs
-./src/pyml.py \
-    template "{model: ${MODEL}, SvB: ${SvB}}" $WFS/evaluate.yml \
-    -from $WFS/common.yml \
-    -setting Monitor "address: :${port}"
+#./src/pyml.py \
+#    template "{model: ${MODEL}, SvB: ${SvB}}" $WFS/evaluate.yml \
+#    -from $WFS/common.yml \
+#    -setting Monitor "address: :${port}"

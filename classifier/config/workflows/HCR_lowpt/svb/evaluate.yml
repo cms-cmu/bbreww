@@ -51,4 +51,4 @@ setting:
   - module: ml.DataLoader
     option:
       - num_workers: 0
-      - batch_eval: 268435456 # 2^28 --> significantly increases GPU memory usage!
+      - batch_eval: 65536 # 2^16 

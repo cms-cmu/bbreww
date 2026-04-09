@@ -1,4 +1,5 @@
 from .bbWW_models import *
+from .bbWW_models import _hadW_mass
 
 class InputEmbed(nn.Module):
     def __init__(
@@ -33,9 +34,9 @@ class InputEmbed(nn.Module):
             )
             self.layers.addLayer(self.ancillaryEmbed)
 
-        # b-jet embedder: (pt, eta, phi, mass, label, pi) -- phi is relative to dijet
+        # b-jet embedder: (pt, eta, phi, mass, btagScore) -- phi is relative to dijet
         self.bJetEmbed = GhostBatchNorm1d(
-            6, features_out=self.dD, phase_symmetric=phase_symmetric,
+            5, features_out=self.dD, phase_symmetric=phase_symmetric,
             conv=True, name="jet embedder",
         )
         self.bJetConv = GhostBatchNorm1d(
@@ -258,9 +259,6 @@ class InputEmbed(nn.Module):
 
         # Detect padded jets BEFORE appending label row
         mask = (nb[:, 0, :] < 0)  # (n, wsl): True for padded jets
-        b = torch.cat(
-            [b, 2 * torch.ones((n, 1, 2), dtype=torch.float, device=device)], 1
-        )
         nb = torch.cat(
             [nb, torch.ones((n, 1, self.wsl), dtype=torch.float, device=device)], 1
         )
@@ -299,7 +297,9 @@ class InputEmbed(nn.Module):
         qqMdR = matrixMdR(nb, nb, v1PxPyPzE=nbPxPyPzE, v2PxPyPzE=nbPxPyPzE)
 
         # Lepton-regressed-nu transverse mass
-        lnu_mT = transverse_mass(l, reg_nu)
+        # reg_nu is (px, py, pz, E) — convert to (pt, eta, phi, M) for transverse_mass
+        reg_nu_polar = PtEtaPhiM(reg_nu.squeeze(-1)).unsqueeze(-1)  # (n, 4, 1)
+        lnu_mT = transverse_mass(l, reg_nu_polar)
 
         mask_qqMdR = mask.view(n, 1, self.wsl) | mask.view(n, self.wsl, 1)
 
@@ -321,9 +321,9 @@ class InputEmbed(nn.Module):
         # Derived kinematics (computed before log-transforms)
         mjj_all = qq[:, 3:4, :]
         mbb = bb[:, 3:4, 0:1]
-        dphi_lep_met = calcDeltaPhi(l, reg_nu)
+        dphi_lep_met = calcDeltaPhi(l, reg_nu_polar)
         pt_bb = bb[:, 0:1, 0:1]
-        dphi_bb_met = calcDeltaPhi(bb, reg_nu)
+        dphi_bb_met = calcDeltaPhi(bb, reg_nu_polar)
         derived_kinematics = torch.cat([
             mjj_all.transpose(1, 2),  # (batch, qqsl, 1)
             mbb, lnu_mT, dphi_lep_met, pt_bb, dphi_bb_met,
@@ -641,7 +641,7 @@ class HCR_lowpt(nn.Module):
         )
 
         self.qv_embed = GhostBatchNorm1d(
-            self.dD * 5, features_out=8, conv=True,
+            self.dD * 5, features_out=self.dD, conv=True,
             name="qv physics relationships projector"
         )
 

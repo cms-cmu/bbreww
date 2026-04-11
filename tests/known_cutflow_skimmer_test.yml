@@ -1,6 +1,6 @@
 GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
   n_events: 39227
-  sum_genweights: 512.0725708007812
+  sum_genweights: 512.072509765625
   cutflow:
     e_region:
       events:
@@ -63,7 +63,7 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         oneEorM: 6.028879978820271
         oneBjet: 5.859949791305201
         twoBjets: 4.084952362244547
-        tau_veto: 4.055791988526286
+        tau_veto: 4.055791988526285
         njets_ak8: 2.947112024133064
         mll_cut: 2.9447182962401
         nominal_4j2b: 1.6294665766489256
@@ -74,31 +74,31 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         SvB_tail_lowpt: 2.9447182962401
     SR:
       events:
-        nominal_4j2b: 6367.0
-        nominal_3j2b: 4399.0
-        lowpt_4j2b: 2980.0
-        lowpt_3j2b: 2357.0
-        SvB_tail: 11704.0
-        SvB_tail_lowpt: 11704.0
+        nominal_4j2b: 3344.0
+        nominal_3j2b: 1570.0
+        lowpt_4j2b: 1871.0
+        lowpt_3j2b: 0.0
+        SvB_tail: 5215.0
+        SvB_tail_lowpt: 5215.0
       weights:
-        nominal_4j2b: 1.7681015289806647
-        nominal_3j2b: 1.2130099125721387
-        lowpt_4j2b: 0.82027094506956
-        lowpt_3j2b: 0.6558059900282647
-        SvB_tail: 3.244178464078489
-        SvB_tail_lowpt: 3.244178464078489
+        nominal_4j2b: 0.9098609242148294
+        nominal_3j2b: 0.4242645747896101
+        lowpt_4j2b: 0.5129931958456623
+        lowpt_3j2b: 0.0
+        SvB_tail: 1.4228541200604918
+        SvB_tail_lowpt: 1.4228541200604918
     CR:
       events:
-        nominal_4j2b: 1451.0
-        nominal_3j2b: 847.0
-        lowpt_4j2b: 599.0
-        lowpt_3j2b: 462.0
-        SvB_tail: 2512.0
-        SvB_tail_lowpt: 2512.0
+        nominal_4j2b: 1633.0
+        nominal_3j2b: 734.0
+        lowpt_4j2b: 875.0
+        lowpt_3j2b: 0.0
+        SvB_tail: 2508.0
+        SvB_tail_lowpt: 2508.0
       weights:
-        nominal_4j2b: 0.40450234393519857
-        nominal_3j2b: 0.2415974036346963
-        lowpt_4j2b: 0.17119539282049515
-        lowpt_3j2b: 0.13714355407728274
-        SvB_tail: 0.7128412908329764
-        SvB_tail_lowpt: 0.7128412908329764
+        nominal_4j2b: 0.47039596235077585
+        nominal_3j2b: 0.20944498798523437
+        lowpt_4j2b: 0.251663265093564
+        lowpt_3j2b: 0.0
+        SvB_tail: 0.7220592274443398
+        SvB_tail_lowpt: 0.7220592274443398

@@ -74,34 +74,34 @@ data__SingleMuon_2022_preEED:
         SvB_tail_lowpt: 280.0
     SR:
       events:
-        nominal_4j2b: 25.0
-        nominal_3j2b: 17.0
-        lowpt_4j2b: 8.0
-        lowpt_3j2b: 14.0
-        SvB_tail: 47.0
-        SvB_tail_lowpt: 47.0
+        nominal_4j2b: 6.0
+        nominal_3j2b: 1.0
+        lowpt_4j2b: 3.0
+        lowpt_3j2b: 0.0
+        SvB_tail: 9.0
+        SvB_tail_lowpt: 9.0
       weights:
-        nominal_4j2b: 25.0
-        nominal_3j2b: 17.0
-        lowpt_4j2b: 8.0
-        lowpt_3j2b: 14.0
-        SvB_tail: 47.0
-        SvB_tail_lowpt: 47.0
+        nominal_4j2b: 6.0
+        nominal_3j2b: 1.0
+        lowpt_4j2b: 3.0
+        lowpt_3j2b: 0.0
+        SvB_tail: 9.0
+        SvB_tail_lowpt: 9.0
     CR:
       events:
-        nominal_4j2b: 29.0
-        nominal_3j2b: 20.0
-        lowpt_4j2b: 9.0
-        lowpt_3j2b: 16.0
-        SvB_tail: 54.0
-        SvB_tail_lowpt: 54.0
+        nominal_4j2b: 18.0
+        nominal_3j2b: 6.0
+        lowpt_4j2b: 7.0
+        lowpt_3j2b: 0.0
+        SvB_tail: 25.0
+        SvB_tail_lowpt: 25.0
       weights:
-        nominal_4j2b: 29.0
-        nominal_3j2b: 20.0
-        lowpt_4j2b: 9.0
-        lowpt_3j2b: 16.0
-        SvB_tail: 54.0
-        SvB_tail_lowpt: 54.0
+        nominal_4j2b: 18.0
+        nominal_3j2b: 6.0
+        lowpt_4j2b: 7.0
+        lowpt_3j2b: 0.0
+        SvB_tail: 25.0
+        SvB_tail_lowpt: 25.0
 data__SingleMuon_2022_preEEC:
   n_events: 1001
   sum_genweights: 1001
@@ -178,31 +178,31 @@ data__SingleMuon_2022_preEEC:
         SvB_tail_lowpt: 260.0
     SR:
       events:
-        nominal_4j2b: 18.0
-        nominal_3j2b: 13.0
-        lowpt_4j2b: 6.0
-        lowpt_3j2b: 11.0
-        SvB_tail: 35.0
-        SvB_tail_lowpt: 35.0
+        nominal_4j2b: 6.0
+        nominal_3j2b: 2.0
+        lowpt_4j2b: 3.0
+        lowpt_3j2b: 0.0
+        SvB_tail: 9.0
+        SvB_tail_lowpt: 9.0
       weights:
-        nominal_4j2b: 18.0
-        nominal_3j2b: 13.0
-        lowpt_4j2b: 6.0
-        lowpt_3j2b: 11.0
-        SvB_tail: 35.0
-        SvB_tail_lowpt: 35.0
+        nominal_4j2b: 6.0
+        nominal_3j2b: 2.0
+        lowpt_4j2b: 3.0
+        lowpt_3j2b: 0.0
+        SvB_tail: 9.0
+        SvB_tail_lowpt: 9.0
     CR:
       events:
-        nominal_4j2b: 26.0
-        nominal_3j2b: 13.0
-        lowpt_4j2b: 9.0
-        lowpt_3j2b: 10.0
-        SvB_tail: 45.0
-        SvB_tail_lowpt: 45.0
+        nominal_4j2b: 7.0
+        nominal_3j2b: 6.0
+        lowpt_4j2b: 8.0
+        lowpt_3j2b: 0.0
+        SvB_tail: 15.0
+        SvB_tail_lowpt: 15.0
       weights:
-        nominal_4j2b: 26.0
-        nominal_3j2b: 13.0
-        lowpt_4j2b: 9.0
-        lowpt_3j2b: 10.0
-        SvB_tail: 45.0
-        SvB_tail_lowpt: 45.0
+        nominal_4j2b: 7.0
+        nominal_3j2b: 6.0
+        lowpt_4j2b: 8.0
+        lowpt_3j2b: 0.0
+        SvB_tail: 15.0
+        SvB_tail_lowpt: 15.0

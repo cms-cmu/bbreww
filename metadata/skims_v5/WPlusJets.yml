@@ -50,7 +50,7 @@ WtoLNu-2Jets_0J_pt100:
       sumw: 5326258306812.0
       sumw2: 8.953833078262333e+17
       total_events: 194059630
-  xs: 0.0
+  xs: 863.6
 WtoLNu-2Jets_0J_pt200:
   '2024':
     nanoAOD: /WtoLNu-2Jets_Bin-PTLNu-200_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v1/NANOAODSIM
@@ -65,7 +65,7 @@ WtoLNu-2Jets_0J_pt200:
       sumw: 289176193652.0
       sumw2: 1517311962349568.0
       total_events: 324115048
-  xs: 0.0
+  xs: 81.81
 WtoLNu-2Jets_0J_pt400:
   '2024':
     nanoAOD: /WtoLNu-2Jets_Bin-PTLNu-400_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM
@@ -80,7 +80,7 @@ WtoLNu-2Jets_0J_pt400:
       sumw: 4178391493.625
       sumw2: 532764343728.0
       total_events: 171972818
-  xs: 0.0
+  xs: 4.453
 WtoLNu-2Jets_0J_pt600:
   '2024':
     nanoAOD: /WtoLNu-2Jets_Bin-PTLNu-600_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v1/NANOAODSIM
@@ -94,7 +94,7 @@ WtoLNu-2Jets_0J_pt600:
       sumw: 281753635.484375
       sumw2: 3559845761.375
       total_events: 107529966
-  xs: 0.0
+  xs: 0.6027
 WtoLNu-2Jets_1J:
   2022_EE:
     nanoAOD: /WtoLNu-2Jets_1J_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM

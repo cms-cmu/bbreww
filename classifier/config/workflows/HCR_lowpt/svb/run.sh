@@ -18,22 +18,22 @@ else
 fi
 
 # train with train.yml and common.yml configs
-./src/pyml.py \
-    template "{model: ${MODEL}, FvT: ${FvT}}" $WFS/train.yml \
-    -from $WFS/common.yml \
-    -setting Monitor "address: :${port}" \
-    -flag debug # use debug flag
+#./src/pyml.py \
+#    template "{model: ${MODEL}, FvT: ${FvT}}" $WFS/train.yml \
+#    -from $WFS/common.yml \
+#    -setting Monitor "address: :${port}" \
+#    -flag debug # use debug flag
 
 # plot the AUC and ROC (use HCR.LossROC for plotting as bbWW.LossROC is still in progress)
-./src/pyml.py analyze \
-    --results ${MODEL}/result.json \
-    -analysis HCR.LossROC \
-    -setting IO "output: ${PLOT}" \
-    -setting IO "report: FvT" \
-    -setting Monitor "address: :${port}"
+#./src/pyml.py analyze \
+#    --results ${MODEL}/result.json \
+#    -analysis HCR.LossROC \
+#    -setting IO "output: ${PLOT}" \
+#    -setting IO "report: FvT" \
+#    -setting Monitor "address: :${port}"
 
 # evaluate with evaluate.yml and common.yml configs
-#./src/pyml.py \
-#    template "{model: ${MODEL}, SvB: ${SvB}}" $WFS/evaluate.yml \
-#    -from $WFS/common.yml \
-#    -setting Monitor "address: :${port}"
+./src/pyml.py \
+    template "{model: ${MODEL}, SvB: ${SvB}}" $WFS/evaluate.yml \
+    -from $WFS/common.yml \
+    -setting Monitor "address: :${port}"

@@ -5,7 +5,7 @@
 main:
   module: evaluate
   option:
-    - --max-evaluators 8 # use 3 workers to evaluate
+    - --max-evaluators 3 # use 3 workers to evaluate
 
 dataset:
   - module: bbWW.svb.Eval
@@ -18,7 +18,7 @@ dataset:
     option:
       - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
       - --max-workers 4 
-      - --mc-processes WplusJets tW
+      - --mc-processes WplusJets tW SingleTop
       - --friends "" bbreww/metadata/classifier/input/minorbkg_friend.json@@classifier_input
   - module: bbWW.svb.DataEval
     option:
@@ -51,4 +51,4 @@ setting:
   - module: ml.DataLoader
     option:
       - num_workers: 0
-      - batch_eval: 65536 # 2^16 
+      - batch_eval: 131072 # 2^17 

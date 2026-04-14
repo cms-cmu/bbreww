@@ -16,7 +16,7 @@ dataset:
     option:
       - --mc-processes ttbar
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
-      - --norm 4 #set TTbar to be 4 times weight of signal
+      - --norm 1 #set TTbar to be x times weight of signal
       # - --ttbar-prescale 10 # this option is to only train on a fraction of events
       - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input # set input friend tree
       - --max-workers 2
@@ -25,7 +25,7 @@ dataset:
     option:
       - --mc-processes WplusJets tW singleTop
       - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
-      - --norm 2
+      - --norm 1
       - --friends "" bbreww/metadata/classifier/input/minorbkg_friend.json@@classifier_input # set input friend tree
       - --max-workers 2
 
@@ -34,7 +34,7 @@ dataset:
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
       - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input # set input friend tree
       - --max-workers 1
-      - --train-bsm
+      # - --train-bsm
 
 model:
   - module: bbWW.HCR_lowpt.baseline_svb.Train # use the baseline bbWW HCR model
@@ -45,10 +45,12 @@ model:
       # --kfold-seed-offsets 0-14 will use seed ("FvT", "random", 0), ... ("FvT", "random", 14) to train 15 models
       - --training FixedStep # setup training schedule
       # FixedStep is defined in config/scheduler
-      - epoch: 30 # setup kwargs for FixedStep
+      - epoch: 15 # setup kwargs for FixedStep
         bs_init: 4096
-        lr_milestones: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+        lr_milestones: [9, 10, 12, 13]
+        lr_scale: 0.25
         lr_init: 0.005
+        weight_decay: 0.0001
 
 setting:
   - module: IO # setup output directory

@@ -40,7 +40,7 @@ class HCRArch:
     __skip_save = frozenset(("loss",))
 
     loss: Callable[[BatchType], Tensor] = None
-    n_features: int = 16
+    n_features: int = 24
     attention: bool = True
 
     @classmethod
@@ -391,7 +391,7 @@ class HCRModelEval(Model):
 
         HH, *_ = self._nn(*_HCRInput(batch, self._device, selection))
         TT_cands = self._nn._last_tt_logits #TTbar candidates scores
-        WW_score = self.nn._WW_logits
+        WW_score = self.nn._jet_weights
         
         HH = F.softmax(HH, dim=1).cpu()
         TT_cands = F.softmax(TT_cands, dim=-1).cpu()
@@ -399,9 +399,11 @@ class HCRModelEval(Model):
         output = {}
         output["tt_b1Whad"] = TT_cands[:, 0]
         output["tt_b2Whad"] = TT_cands[:, 1]
-        output["WW_score1"] = WW_score[:,0]
-        output["WW_score2"] = WW_score[:,1]
-        output["WW_score3"] = WW_score[:,2]
+        jet_scores = WW_score.squeeze(2).squeeze(2).mean(dim=1)  # (batch, 4)
+        output["WW_score1"] = jet_scores[:, 0]
+        output["WW_score2"] = jet_scores[:, 1]
+        output["WW_score3"] = jet_scores[:, 2]
+        output["WW_score4"] = jet_scores[:, 3]
         for i, label in enumerate(self._classes):   
             output[f"p_{label}"] = HH[:, i]
         return selector.pad(map_batch(self._mapping, output))
@@ -424,7 +426,7 @@ class HCREvaluation(Evaluation):
             load_kw = {}
             if self.device.type == "cpu":
                 load_kw["map_location"] = torch.device("cpu")
-            saved = torch.load(f, **load_kw)
+            saved = torch.load(f, weights_only=False, **load_kw)
         self._HCR = HCRModelEval(
             device=self.device,
             saved=saved,

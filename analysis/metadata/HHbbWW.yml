@@ -24,8 +24,8 @@ runner:
 # processor specific flags below
 config:
   dump_signal_phh: false
-  run_SvB: false
+  run_SvB: true
   run_MET_regression: true
   friends:
-    SvB: "bbreww/metadata/classifier/output/result_lowpt.json@@analysis.0.merged"
-    met_regressor: "bbreww/metadata/regressor/output/result.json@@analysis.0.merged"
+    SvB: "bbreww/metadata/classifier/output/result.json@@analysis.0.merged"
+    met_regressor: "bbreww/metadata/regressor/output/result_test.json@@analysis.0.merged"

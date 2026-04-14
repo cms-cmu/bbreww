@@ -277,12 +277,16 @@ def candidate_selection(events, params, year, run_SvB, run_MET_regression, class
     events = regressed_nu(events, run_MET_regression)
 
     # Define the SR and CR based on H ->> bb candidate mass and HWW_mass using regressed neutrino
-    signal_region = elliptical_region(events.Hbb_cand.mass, events.HWW_mass,
-                                        115, 135, 60, 60 ) # elliptical signal region
-    control_region = ((~signal_region)
+    if run_MET_regression:
+       signal_region = elliptical_region(events.Hbb_cand.mass, events.HWW_mass,
+                                         115, 135, 60, 60 ) # elliptical signal region
+       control_region = ((~signal_region)
                         & elliptical_region(events.Hbb_cand.mass, events.HWW_mass,
                                             115, 135, 100, 100)) # sideband TTbar control region
-
+    else:
+        signal_region = ak.ones_like(events.event, dtype = bool)
+        control_region = ~signal_region
+       
     events['region'] = ak.zip({
         'SR': ak.fill_none(ak.firsts(signal_region), False),
         'CR': ak.fill_none(ak.firsts(control_region), False)

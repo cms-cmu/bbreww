@@ -16,7 +16,7 @@ def dump_spanet_h5(
     lepton: str = "leading_lep",
     met: str = "MET",
     genNu: str = "genNu",
-    max_nonbjets: int = 3,
+    max_nonbjets: int = 4,
     weight: str = "weight",
 ):
     meta = events.metadata
@@ -110,17 +110,14 @@ def dump_spanet_h5(
         hbb_b2 = np.full(n_events, -1, dtype=np.int64)
 
     # --- TARGETS: higgs_WW -> q1, q2 from nonb_jets, l always index 0 ---
-    try:
-        isQfromW = nonbjets.isQfromW
-        isQfromW_padded = ak.fill_none(ak.pad_none(isQfromW, max_nonbjets)[:, :max_nonbjets], False)
-        q_indices = ak.to_numpy(
-            ak.fill_none(
-                ak.pad_none(ak.local_index(isQfromW_padded)[isQfromW_padded], 2),
-                -1,
-            )
-        )[:, :2].astype(np.int64)
-    except Exception:
-        q_indices = np.full((n_events, 2), -1, dtype=np.int64)
+    isQfromW = nonbjets.isQfromW
+    isQfromW_padded = ak.fill_none(ak.pad_none(isQfromW, max_nonbjets)[:, :max_nonbjets], False)
+    q_indices = ak.to_numpy(
+        ak.fill_none(
+            ak.pad_none(ak.local_index(isQfromW_padded)[isQfromW_padded], 2),
+            -1,
+        )
+    )[:, :2].astype(np.int64)
 
     hww_l = np.zeros(n_events, dtype=np.int64)  # lepton always index 0
 

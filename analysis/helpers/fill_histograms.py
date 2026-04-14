@@ -38,7 +38,8 @@ def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = 
     # Wlnu Candidate and reconstructed neutrino pz
     #
     fill += Lepton.plot_leptonMeT( ("Wlnu", R"$W_{lnu}$"), "Wlnu_cand", skip=["n"], bins={"mass": (120, 0, 200)})
-    fill += hist.add("nu_pz1",   (40, 0, 200, ("Wlnu_cand.pz_1", r'recontructed MET pz 1 (GeV)')))
+    fill += hist.add("nu_pz1",   (80, -200, 200, ("diff", r'recontructed MET pz 1 (GeV)')),
+                     diff= lambda events: (events.Wlnu_cand.pz_1 - events.Wlnu_cand.pz_2))
     fill += hist.add("nu_pz2",   (40, 0, 200, ("Wlnu_cand.pz_2", r'recontructed MET pz 2 (GeV)')))
     
     #
@@ -48,21 +49,6 @@ def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = 
     fill += Muon.plot( ("Muon", R"$Muon$"), "sel_muon", skip=["n"], )
 
     #
-    #  From before
-    #
-    #fill += hist.add("bjets_genjets_dr",   (30, -0.5, 5, ("bjets_genjets_dr", r'$\Delta$ R between b-candidates (genjets)')))
-    #fill += hist.add("bjets_genjets_mass", (50, -0.5, 250, ("bjets_genjets_mass", "H-> bb candidate (genjets) mass[GeV]")))
-
-
-    #fill += hist.add("genjets_mbb_vs_bb_dr",
-    #                (50, 0, 250, ('bjets_genjets_mass', 'H->bb Candidate (genjets) Mass [GeV]')),
-    #                (50, 0, 5, ('bjets_genjets_dr', r'$\Delta R$ between b-candidates (genjets)')))
-
-    #fill += hist.add("genW_mass_vs_subl_jet_pt",
-    #            (50, 0, 250, ('gen_hadW.mass', 'W->qq gen mass [GeV]')),
-    #            (50, 0, 250, ('true_ak4_2', r'W->qq subleading jet $p_T$')))
-
-        #
     # Signal vs Backgrounds classifier scores hists
     if SvB:
         fill += SvBHists(("SvB", "SvB Classifier"), "SvB")
@@ -80,11 +66,11 @@ def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = 
                           (30, 0, 150, ('reg_mW', R"Regressed leptonic W mass [GeV]")))
         fill += hist.add("reg_nu_pt_res",
                         (40, -100, 100, ("nu_pt_res", R"(True - Regressed) $\nu p_T$ [GeV]")),
-                        nu_pt_res=lambda events: events.genNu_pt - events.reg_nu.pt
+                        nu_pt_res=lambda events: ak.fill_none(ak.mask(events.genNu_pt - events.reg_nu.pt, events.HWW_mass > 150.0), np.nan)
                         )
         fill += hist.add("reg_nu_pz_res",
                         (60, -200, 200, ("nu_pz_res", R"(True - Regressed) $\nu |p_z|$")),
-                        nu_pz_res= lambda events: events.genNu_pz - events.reg_nu.pz
+                        nu_pz_res= lambda events: ak.fill_none(ak.mask(events.genNu_pz - events.reg_nu.pz, events.HWW_mass > 150.0), np.nan)
                         )
         fill += hist.add("reg_nu_eta_res",
                         (50, -5, 5, ("nu_eta_res", R"(True - Regressed) $\nu \eta$")),

@@ -1,6 +1,4 @@
 runner:
-  chunksize: 10000
-  maxchunks: 50
   skipbadfiles: False
   workers: 8
   worker_memory: 12GB

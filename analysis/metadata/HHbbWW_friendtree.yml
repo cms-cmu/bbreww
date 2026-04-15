@@ -2,8 +2,8 @@ runner:
   max_workers: 400 
   skipbadfiles: False
   workers: 6
-  friend_merge_step: 100000
-  worker_memory: 10GB
+  friend_merge_step: 10000
+  worker_memory: 12GB
   data_tier: picoAOD
   condor_cores: 1
   #friend_base: &friend_base root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/

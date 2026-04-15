@@ -1,7 +1,9 @@
 runner:
+  chunksize: 10000
+  maxchunks: 50
   skipbadfiles: False
   workers: 8
-  worker_memory: 8GB
+  worker_memory: 12GB
   data_tier: picoAOD
   condor_cores: 1
   condor_transfer_input_files:
@@ -24,8 +26,8 @@ runner:
 # processor specific flags below
 config:
   dump_signal_phh: false
-  run_SvB: true
+  run_SvB: false
   run_MET_regression: true
   friends:
     SvB: "bbreww/metadata/classifier/output/result.json@@analysis.0.merged"
-    met_regressor: "bbreww/metadata/regressor/output/result_test.json@@analysis.0.merged"
+    met_regressor: "bbreww/metadata/regressor/output/result.json@@analysis.0.merged"

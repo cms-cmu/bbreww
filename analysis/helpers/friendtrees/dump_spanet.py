@@ -112,10 +112,14 @@ def dump_spanet_h5(
     # --- TARGETS: higgs_WW -> q1, q2 from nonb_jets, l always index 0 ---
     isQfromW = nonbjets.isQfromW
     isQfromW_padded = ak.fill_none(ak.pad_none(isQfromW, max_nonbjets)[:, :max_nonbjets], False)
+    local_idx_q = ak.local_index(isQfromW_padded, axis=1)
+    matched_q = local_idx_q[isQfromW_padded][:, :2]  # truncate to 2 (FSR can produce >2 matches)
     q_indices = ak.to_numpy(
-        ak.fill_none(
-            ak.pad_none(ak.local_index(isQfromW_padded)[isQfromW_padded], 2),
-            -1,
+        ak.to_regular(
+            ak.fill_none(
+                ak.pad_none(matched_q, 2),
+                -1,
+            )
         )
     )[:, :2].astype(np.int64)
 

@@ -18,7 +18,7 @@ dataset:
     option:
       - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
       - --max-workers 4 
-      - --mc-processes WplusJets tW SingleTop
+      - --mc-processes WplusJets tW singleTop
       - --friends "" bbreww/metadata/classifier/input/minorbkg_friend.json@@classifier_input
   - module: bbWW.svb.DataEval
     option:

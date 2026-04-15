@@ -34,6 +34,13 @@ def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = 
                      mqq= lambda events: ak.fill_none((events.sel_qq_l + events.sel_qq_sl).mass, np.nan)
                      )
 
+    fill += hist.add("mbb_vs_qpt",
+                    (50, 0, 250, ('Hbb_cand.mass', 'H->bb Candidate Mass [GeV]')),
+                     (30, 0, 150, ('qpt', r'$leading non-bjet pT$')),
+                     qpt= lambda events: ak.fill_none(events.q_cands_soft[:,0].pt, np.nan)
+                     )
+
+
     #
     # Wlnu Candidate and reconstructed neutrino pz
     #
@@ -150,9 +157,9 @@ def fill_histograms_nominal(
     fill += hist.add("misclass_p_onshell", (20, 0, 1.1, ("misclass_p_onshell", "p(on-shell)"))) # misclassified & gen_lepW < 20
     fill += hist.add("misclass_sigma_pz_on", (100, 0, 300, ("misclass_sigma_pz_on", "on-shell uncertainty"))) # misclassified & gen_lepW < 20
 
-    fill += Chi2Hists(("chi2_hadWs",      "chi2 hadWs"),         "chi2_hadWs")
-    fill += Chi2Hists(("chi2_hadW",       "chi2 hadW"),          "chi2_hadW")
-    fill += Chi2Hists(("chi2_tt",         "chi2 tt"),            "chi2_tt")
+    # fill += Chi2Hists(("chi2_hadWs",      "chi2 hadWs"),         "chi2_hadWs")
+    # fill += Chi2Hists(("chi2_hadW",       "chi2 hadW"),          "chi2_hadW")
+    # fill += Chi2Hists(("chi2_tt",         "chi2 tt"),            "chi2_tt")
 
     #
     # Wqq Candidate
@@ -220,24 +227,24 @@ def fill_histograms(
     fill += hist.add("misclass_p_onshell", (10, 0, 1.1, ("misclass_p_onshell", "p(on-shell)"))) # misclassified & gen_lepW < 20
     fill += hist.add("misclass_sigma_pz_on", (50, 0, 100, ("misclass_sigma_pz_on", "on-shell uncertainty"))) # misclassified & gen_lepW < 20
 
-    fill += Chi2Hists(("chi2_hadWs", "chi2 hadWs"), "chi2_hadWs",
-                      skip=["tot_4j", "Hww_mass", "Wqq_mass",]
-                      )
+    # fill += Chi2Hists(("chi2_hadWs", "chi2 hadWs"), "chi2_hadWs",
+    #                   skip=["tot_4j", "Hww_mass", "Wqq_mass",]
+    #                   )
 
-    fill += Chi2Hists(("chi2_hadW",  "chi2 hadW"),  "chi2_hadW",
-                      skip=["tot_4j", "Hww_mass", "Wqq_mass",]
-                      )
+    # fill += Chi2Hists(("chi2_hadW",  "chi2 hadW"),  "chi2_hadW",
+    #                   skip=["tot_4j", "Hww_mass", "Wqq_mass",]
+    #                   )
 
-    fill += Chi2Hists(("chi2_hadWs_soft", "chi2 hadWs soft"),    "chi2_hadWs_soft")
-    fill += Chi2Hists(("chi2_hadW_soft",  "chi2 hadW soft"),     "chi2_hadW_soft")
-    fill += Chi2Hists(("chi2_tt_soft",    "chi2 tt soft"),       "chi2_tt_soft")
+    # fill += Chi2Hists(("chi2_hadWs_soft", "chi2 hadWs soft"),    "chi2_hadWs_soft")
+    # fill += Chi2Hists(("chi2_hadW_soft",  "chi2 hadW soft"),     "chi2_hadW_soft")
+    # fill += Chi2Hists(("chi2_tt_soft",    "chi2 tt soft"),       "chi2_tt_soft")
 
     #
     #  HWW Candidate
     #
     fill += LorentzVector.plot_pair( ("HWW_soft", R"$H_{WW}$ (soft)"), "Hww_cand_soft", skip=["n","lead","subl","st"], bins={"mass": (100, 100, 400)}, )
 
-    fill += TTbarHists( ("tt_soft", R"$t\bar{t}$"), "tt_soft_minChi2" )
+    # fill += TTbarHists( ("tt_soft", R"$t\bar{t}$"), "tt_soft_minChi2" )
 
     # fill histograms
     fill(events, hist)

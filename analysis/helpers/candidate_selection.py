@@ -284,7 +284,7 @@ def candidate_selection(events, params, year, run_SvB, run_MET_regression, class
                         & elliptical_region(events.Hbb_cand.mass, events.HWW_mass,
                                             115, 135, 100, 100)) # sideband TTbar control region
     else:
-        signal_region = ak.ones_like(events.event, dtype = bool)
+        signal_region = ak.singletons(ak.ones_like(events.event, dtype = bool))
         control_region = ~signal_region
        
     events['region'] = ak.zip({

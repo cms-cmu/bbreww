@@ -40,7 +40,7 @@ class HCRArch:
     __skip_save = frozenset(("loss",))
 
     loss: Callable[[BatchType], Tensor] = None
-    n_features: int = 24
+    n_features: int = 16
     attention: bool = True
 
     @classmethod
@@ -203,8 +203,45 @@ class HCRModel(Model):
         for k in scalars:
             scalars[k] /= weight
 
-        return {"scalars": scalars, 
+        # Binned Asimov significance from the accumulated ROC histograms.
+        # Each ROC's __TP / __FP store per-bin weighted signal / background yields
+        # (weights = batch[Input.weight]). For the "Signal vs Background" ROC
+        # (pos=signal, neg=~signal) this gives Z_A for signal vs everything-else.
+        # Must run BEFORE to_json(), which calls .roc() and resets the accumulators.
+        asimov = {}
+        for roc in rocs:
+            tp_buf = getattr(roc, "_FixedThresholdROC__TP", None)
+            fp_buf = getattr(roc, "_FixedThresholdROC__FP", None)
+            if tp_buf is None or fp_buf is None:
+                continue  # ROC never saw any events
+            tp, _ = tp_buf.hist()
+            fp, _ = fp_buf.hist()
+            s = tp.detach().to(dtype=torch.float64, device="cpu")
+            b = fp.detach().to(dtype=torch.float64, device="cpu")
+            mask = b > 1e-6                      # drop empty / ultra-low-stat bins
+            if not bool(mask.any()):
+                continue
+            s_m, b_m = s[mask], b[mask]
+            z_sq = torch.sum(2.0 * ((s_m + b_m) * torch.log1p(s_m / b_m) - s_m))
+            z_a = float(torch.sqrt(torch.clamp(z_sq, min=0.0)).item())
+            z_naive = float(torch.sqrt(torch.sum(s_m ** 2 / b_m)).item())
+            s_tot = float(s_m.sum().item())
+            b_tot = float(b_m.sum().item())
+            asimov[roc._name] = {
+                "Z_A": z_a,
+                "S_over_sqrtB": z_naive,
+                "S_total": s_tot,
+                "B_total": b_tot,
+            }
+            logging.info(
+                f"  Z_A[{roc._name}] = {z_a:.4f}   "
+                f"S/sqrt(B) = {z_naive:.4f}   "
+                f"(S={s_tot:.3g}, B={b_tot:.3g})"
+            )
+
+        return {"scalars": scalars,
                 "roc": [r.to_json() for r in rocs],
+                "asimov": asimov,
                 "shap": self._shap_results
                 }
 

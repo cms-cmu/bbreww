@@ -1,0 +1,55 @@
+processes:
+  signal:
+    GluGluToHHTo2B2VLNu2J_kl_1p00:
+      label: ggHH_kl_1_kt_1_13p6TeV_hbbhww
+      process: 0
+  background:
+    tt:
+      label: 'tt'
+      process: 1
+    wjets:
+      label: 'wjets'
+      process: 2
+    singletop:
+      label: 'singletop'
+      process: 3
+
+bin:
+  - &y2022  'y2022'
+  - &y2023  'y2023'
+
+# https://twiki.cern.ch/twiki/bin/view/CMS/TWikiLUM (Run3 values, placeholder — update with official values)
+uncertainty:
+  lumi_13p6TeV_correlated:
+    type: 'lnN'
+    years:
+      *y2022: 1.014
+      *y2023: 1.014
+
+  lumi_13p6TeV_2022:
+    type: 'lnN'
+    years:
+      *y2022: 1.010
+
+  lumi_13p6TeV_2023:
+    type: 'lnN'
+    years:
+      *y2023: 1.010
+
+  BR_hbb:
+    type: 'lnN'
+    years:
+      *y2022: [0.9748, 1.0248]
+      *y2023: [0.9748, 1.0248]
+
+  BR_hww:
+    type: 'lnN'
+    years:
+      *y2022: [0.9844, 1.0156]
+      *y2023: [0.9844, 1.0156]
+
+  pdf_Higgs_ggHH:
+    type: 'lnN'
+    years:
+      *y2022: 1.030
+      *y2023: 1.030

@@ -645,19 +645,38 @@ class HCR_lowpt(nn.Module):
             name="qv physics relationships projector"
         )
 
-        # Single-jet attention bias modules
-        self.jet_dR_embed = GhostBatchNorm1d(
-            1, features_out=self.dD, conv=True, name="jet deltaR embedder"
+        # Pair-level WW-attention bias modules (one bias per qq dijet hypothesis)
+        self.pair_mjj_embed = GhostBatchNorm1d(
+            1, features_out=self.dD, conv=True, name="pair mjj embedder"
         )
-        self.jet_mjj_embed = GhostBatchNorm1d(
-            1, features_out=self.dD, conv=True, name="jet dijet mass embedder"
+        self.pair_dRjj_embed = GhostBatchNorm1d(
+            1, features_out=self.dD, conv=True, name="pair dR(j,j) embedder"
         )
-        self.jet_attn_embed = GhostBatchNorm1d(
-            1, features_out=self.dD, conv=True, name="external jet attn score embedder"
+        self.pair_dRlepqq_embed = GhostBatchNorm1d(
+            1, features_out=self.dD, conv=True, name="pair dR(lep, qq) embedder"
         )
-        self.qv_combine = GhostBatchNorm1d(
-            3 * self.dD, features_out=self.dD, conv=True, name="qv combine deltaR+mjj+attn"
+        self.pair_attn_embed = GhostBatchNorm1d(
+            1, features_out=self.dD, conv=True,
+            name="pair external attn product embedder"
         )
+        self.qv_combine_pair = GhostBatchNorm1d(
+            4 * self.dD, features_out=self.dD, conv=True,
+            name="pair qv combine mjj+dRjj+dRlepqq+attn"
+        )
+
+        # Fixed pair indices for C(4,2) = 6 qq pairs: (0,1),(0,2),(0,3),(1,2),(1,3),(2,3)
+        self.register_buffer(
+            "_pair_i", torch.tensor([0, 0, 0, 1, 1, 2], dtype=torch.long), persistent=False
+        )
+        self.register_buffer(
+            "_pair_j", torch.tensor([1, 2, 3, 2, 3, 3], dtype=torch.long), persistent=False
+        )
+        # Jet-pair incidence for marginalizing pair weights back to per-jet scores
+        _incidence = torch.zeros(self.inputEmbed.wsl, self.inputEmbed.qqsl)
+        for _p, (_i, _j) in enumerate(zip([0, 0, 0, 1, 1, 2], [1, 2, 3, 2, 3, 3])):
+            _incidence[_i, _p] = 1.0
+            _incidence[_j, _p] = 1.0
+        self.register_buffer("_jet_pair_incidence", _incidence, persistent=False)
 
         # Hadronic W mass from attention-selected jets
         self.hadW_mass_embed = GhostBatchNorm1d(
@@ -688,14 +707,27 @@ class HCR_lowpt(nn.Module):
         )
         self.layers.addLayer(self.out_tt, [self.select_tt])
 
-        # H->WW block: 2-layer MLP with residual, full interaction between
-        # hadronic W (from attention) and leptonic W (regressed) + both masses
-        # Learns conditional patterns like off-shell lepW + on-shell hadW = signal
         self.HWWBlock = HiggsBlock(
             self.dD, n_inputs=4, phase_symmetric=self.phase_symmetric,
         )
 
-        self.final_linear_layer = linear(in_channels=16, out_channels=self.nC)
+        self.final_mass_head = nn.Sequential(
+            GhostBatchNorm1d(
+                2 * self.dD, features_out=self.dD,
+                phase_symmetric=self.phase_symmetric, conv=True,
+                name="joint mass fc1",
+            ),
+            NonLUModule(),
+            GhostBatchNorm1d(
+                self.dD, features_out=self.dD,
+                phase_symmetric=self.phase_symmetric, conv=True,
+                name="joint mass fc2",
+            ),
+            NonLUModule(),
+        )
+
+        # Final classifier sees 16 pooled features + dD joint-mass features
+        self.final_linear_layer = linear(in_channels=16 + self.dD, out_channels=self.nC)
         self.layers.addLayer(self.final_linear_layer)
 
         self.HH_final_embed = GhostBatchNorm1d(
@@ -703,15 +735,20 @@ class HCR_lowpt(nn.Module):
         )
         self.layers.addLayer(self.HH_final_embed, [self.inputEmbed.bJetConv, self.select_WW])
 
+        # Note: final_linear_layer is applied outside this Sequential, after
+        # attention-pooling this and concatenating with the joint-mass feature.
+        # Outputs (n, 16, 32) so the attention pool can re-weight positions.
         self.out = nn.Sequential(
             GhostBatchNorm1d(
                 self.dD, features_out=16, conv=True, bias=False,
                 name="final event score"
             ),
             NonLUModule(),
-            nn.AdaptiveAvgPool1d(1),
-            nn.Flatten(),
-            self.final_linear_layer
+        )
+
+        self.out_pool_attn = GhostBatchNorm1d(
+            16, features_out=1, conv=True,
+            name="final event position attention"
         )
         self.forwardCalls = 0
 
@@ -744,12 +781,16 @@ class HCR_lowpt(nn.Module):
         self.out_tt.setGhostBatches(nGhostBatches)
         self.HH_final_embed.setGhostBatches(nGhostBatches)
         self.out[0].setGhostBatches(nGhostBatches)
-        self.jet_dR_embed.setGhostBatches(nGhostBatches)
-        self.jet_mjj_embed.setGhostBatches(nGhostBatches)
-        self.jet_attn_embed.setGhostBatches(nGhostBatches)
-        self.qv_combine.setGhostBatches(nGhostBatches)
+        self.out_pool_attn.setGhostBatches(nGhostBatches)
+        self.pair_mjj_embed.setGhostBatches(nGhostBatches)
+        self.pair_dRjj_embed.setGhostBatches(nGhostBatches)
+        self.pair_dRlepqq_embed.setGhostBatches(nGhostBatches)
+        self.pair_attn_embed.setGhostBatches(nGhostBatches)
+        self.qv_combine_pair.setGhostBatches(nGhostBatches)
         self.hadW_mass_embed.setGhostBatches(nGhostBatches)
         self.HWWBlock.setGhostBatches(nGhostBatches)
+        self.final_mass_head[0].setGhostBatches(nGhostBatches)
+        self.final_mass_head[2].setGhostBatches(nGhostBatches)
         self.nGhostBatches = nGhostBatches
 
     def forward(self, b, nb, l, a, reg_nu=None):
@@ -843,12 +884,6 @@ class HCR_lowpt(nn.Module):
         # bWhad: indices [0:qqsl] use b0, [qqsl:2*qqsl] use b1
         # bWlep: index 0 uses b1, index 1 uses b0
         mask_tt = torch.zeros(n, n_bWhad, n_bWlep, dtype=torch.bool, device=self.device)
-        mask_tt[:, :qqsl, 0] = True       # b0 hadronic × b1 leptonic -> wait, bWlep[0] = b1+W, so b0 had x b1 lep is VALID
-        # bWlep order is (b1+W, b0+W) from dataPrep: b[:, :, (1, 0)]
-        # So bWlep[0] has b1, bWlep[1] has b0
-        # bWhad[0:qqsl] has b0, bWhad[qqsl:] has b1
-        # Invalid: b0_had x b0_lep = bWhad[0:qqsl] x bWlep[1]
-        #          b1_had x b1_lep = bWhad[qqsl:]  x bWlep[0]
         mask_tt[:, :qqsl, 1] = True   # b0 hadronic × b0 leptonic (invalid)
         mask_tt[:, qqsl:, 0] = True   # b1 hadronic × b1 leptonic (invalid)
 
@@ -865,40 +900,68 @@ class HCR_lowpt(nn.Module):
         self._last_tt_logits = TT_logits.detach()
 
         # ============================================================
-        # Single-jet WW attention: regressed leptonic W queries individual jets
+        # WW attention: regressed leptonic W queries the 6 qq dijet hypotheses.
+        # Values are the ResNet-refined dijet embeddings, so the output is a
+        # true W_had candidate (not a single-jet mixture). hadW_mass is now
+        # a differentiable soft-selected dijet mass driven by the attention.
         # ============================================================
-        nb_jets = nb[:, :, :wsl]  # (n, dD, 4)
-        jet_mask = mask_bbn.view(n, wsl)
+        qq_pairs = qq[:, :, :qqsl]                         # (n, dD, 6) dijet values
+        pair_mask = mask_qq.view(n, 1, qqsl)               # (n, 1, 6) pair padded iff any jet padded
 
-        # Physics-aware attention bias
-        nb_raw_4 = raw_nb.view(n, 4, -1)[:, :, :wsl]
-        lep_raw_6 = raw_lep.view(n, 6, 1)
-        lepNBdR = calcDeltaR(lep_raw_6, nb_raw_4)
-        jet_dR = self.jet_dR_embed(lepNBdR, jet_mask)
+        # Per-pair raw physics quantities (from un-log-transformed jet 4-vectors)
+        raw_nb_4 = raw_nb.view(n, 4, -1)[:, :, :wsl]       # (n, 4, 4)
+        j1_raw = raw_nb_4[:, :, self._pair_i]              # (n, 4, 6)
+        j2_raw = raw_nb_4[:, :, self._pair_j]              # (n, 4, 6)
+        pair_mjj  = diObjectMass(PxPyPzE(j1_raw), PxPyPzE(j2_raw))  # (n, 1, 6)
+        pair_dRjj = calcDeltaR(j1_raw, j2_raw)                       # (n, 1, 6)
 
-        jet_mjj = compute_mjj(raw_nb, wsl)
-        jet_mjj = self.jet_mjj_embed(jet_mjj, jet_mask)
+        # Per-pair angular separation from the lepton (already computed in dataPrep)
+        pair_dRlepqq = lepQQdR.view(n, 1, qqsl)                      # (n, 1, 6)
 
-        # External attention scores as per-jet bias (packed in nonbJetCand)
-        ext_attn = nb_attn.view(n, 1, wsl)
-        jet_attn = self.jet_attn_embed(ext_attn, jet_mask)
+        # Per-pair external METRegressor-attention prior: product of constituent scores.
+        # Used only as a bias (no supervision) so the network can ignore/override it.
+        pair_attn = (nb_attn[:, self._pair_i] * nb_attn[:, self._pair_j]).view(n, 1, qqsl)
 
-        jet_qv = self.qv_combine(torch.cat([jet_dR, jet_mjj, jet_attn], dim=1), jet_mask)
+        # Embed and combine per-pair biases into the attention qv term
+        pair_mjj_e     = self.pair_mjj_embed(pair_mjj, pair_mask)
+        pair_dRjj_e    = self.pair_dRjj_embed(pair_dRjj, pair_mask)
+        pair_dRlepqq_e = self.pair_dRlepqq_embed(pair_dRlepqq, pair_mask)
+        pair_attn_e    = self.pair_attn_embed(pair_attn, pair_mask)
+        pair_qv = self.qv_combine_pair(
+            torch.cat([pair_mjj_e, pair_dRjj_e, pair_dRlepqq_e, pair_attn_e], dim=1),
+            pair_mask,
+        )                                                   # (n, dD, 6)
 
         WW, WW0, WW_weights = self.attention_WW(
-            regW_emb,                 # q: (n, dD, 1) regressed leptonic W
-            nb_jets,                  # v: (n, dD, wsl=4) individual jets
-            jet_mask.unsqueeze(1),    # mask: (n, 1, wsl)
-            regW0,                    # q0: residual
-            jet_qv,                   # qv: physics-aware bias
-            scalars,                  # 6 lepQQdR + 1 lnu_mT = 7
-            self.debug
+            regW_emb,               # q: (n, dD, 1) regressed leptonic W
+            qq_pairs,               # v: (n, dD, 6) dijet hypotheses
+            pair_mask,              # mask: (n, 1, 6)
+            regW0,                  # q0: residual
+            pair_qv,                # per-pair physics bias
+            scalars,                # 6 lepQQdR + 1 lnu_mT
+            self.debug,
         )
-        self._jet_weights = WW_weights.detach()
 
-        # Hadronic W mass from attention-selected jets
-        hadW_mass = _hadW_mass(raw_nb, WW_weights.detach())
+        # Average pair attention weights across heads; zero masked (padded) pairs.
+        # Gradients flow through these weights into hadW_mass — W-selection is now
+        # fully differentiable.
+        pair_w = WW_weights.squeeze(2).mean(dim=1)                   # (n, 6)
+        pair_w = pair_w.masked_fill(pair_mask.squeeze(1), 0.0)
+
+        # Soft-selected hadronic W mass: sum_p w_p * mjj_p
+        hadW_mass = (pair_w * pair_mjj.squeeze(1)).sum(dim=1, keepdim=True).unsqueeze(-1)
         hadW_mass_emb = self.hadW_mass_embed(hadW_mass)
+
+        # Per-jet marginal weights (for diagnostics / eval compatibility):
+        # jet_i score = sum over pairs p containing jet i of pair_w[p]
+        jet_marg = torch.matmul(pair_w, self._jet_pair_incidence.t())  # (n, 4)
+        self._pair_weights = pair_w.detach()
+        self._jet_weights = (
+            jet_marg.view(n, 1, 1, wsl)
+                    .expand(-1, self.attention_WW.h, 1, wsl)
+                    .contiguous()
+                    .detach()
+        )
 
         # ============================================================
         # H->WW block: full interaction between hadronic and leptonic W
@@ -925,8 +988,25 @@ class HCR_lowpt(nn.Module):
         ], dim=-1)
         HH_final = self.HH_final_embed(HH)
 
-        HH_logits = torch.cat([HH_final, TT_sel], dim=-1)
-        HH_logits = self.out(HH_logits)
+        HH_logits_pre = torch.cat([HH_final, TT_sel], dim=-1)    # (n, dD, 32)
+        x = self.out(HH_logits_pre)                              # (n, 16, 32)
+
+        # Attention-pool across the 32 positions (vs. uniform AdaptiveAvgPool).
+        # The model learns which positions carry the discriminating signal
+        # (HWW, WW, bb) vs. which are near-redundant (individual qqMdR cells).
+        attn_logits = self.out_pool_attn(x)                      # (n, 1, 32)
+        pool_attn = F.softmax(attn_logits, dim=2)                # (n, 1, 32)
+        pooled = (x * pool_attn).sum(dim=2)                      # (n, 16)
+        self._pool_attn = pool_attn.detach().squeeze(1)          # (n, 32) diagnostic
+
+        # Direct (non-pooled) joint-mass feature: lets the classifier read the
+        # (m_hadW, m_lepW) correlation without averaging with 31 other positions.
+        mass_joint_in = torch.cat([hadW_mass_emb, lepW_mass_emb], dim=1)  # (n, 2*dD, 1)
+        mass_feat = self.final_mass_head(mass_joint_in).squeeze(-1)        # (n, dD)
+
+        HH_logits = self.final_linear_layer(
+            torch.cat([pooled, mass_feat], dim=1)                # (n, 16 + dD)
+        )
 
         return HH_logits, TT_final, WW
 

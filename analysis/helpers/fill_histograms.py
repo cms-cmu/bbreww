@@ -16,7 +16,10 @@ def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = 
     fill += hist.add("njets", (10, -0.5, 9.5, ("njets", "jet multiplicity")))
     fill += hist.add("btag_sf", (50, 0.5, 1.5, ("btag_sf", "b-tagging SF")))
     fill += hist.add("lepnu_deta", (50, -3, 3, ("Wlnu_cand.deta", "delta_eta between lepton and neutrino")))
+    fill += hist.add("mqq_res", (60, -200, 200, ("mqq_res", "(true - regressed) W -> qq mass [GeV]")),
+                     mqq_res= lambda events: ak.fill_none(ak.mask(events.gen_hadW.mass - (events.sel_qq_l + events.sel_qq_sl).mass, events.HWW_mass > 150.0), np.nan))
 
+    
     ## W-qq quark vs. gluon selection candidates
     fill += hist.add("qvgScore", (50, 0, 1.0, ("q_cands_soft.btagPNetQvG", "ak4 jets quark vs. gluon score")))
     fill += Jet.plot_pair( ("Wqq_soft", R"$W_{qq}$"), "q_cands_soft", bins={"mass": (120, 0, 200)}, )
@@ -72,13 +75,13 @@ def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = 
         fill += hist.add("reg_mW",
                           (30, 0, 150, ('reg_mW', R"Regressed leptonic W mass [GeV]")))
         fill += hist.add("reg_nu_pt_res",
-                        (40, -100, 100, ("nu_pt_res", R"(True - Regressed) $\nu p_T$ [GeV]")),
-                        nu_pt_res=lambda events: ak.fill_none(ak.mask(events.genNu_pt - events.reg_nu.pt, events.HWW_mass > 150.0), np.nan)
-                        )
+                         (40, -100, 100, ("nu_pt_res", R"(True - Regressed) $\nu p_T$ [GeV]")),
+                         nu_pt_res=lambda events: events.genNu_pt -events.reg_nu.pt
+                         )
         fill += hist.add("reg_nu_pz_res",
-                        (60, -200, 200, ("nu_pz_res", R"(True - Regressed) $\nu |p_z|$")),
-                        nu_pz_res= lambda events: ak.fill_none(ak.mask(events.genNu_pz - events.reg_nu.pz, events.HWW_mass > 150.0), np.nan)
-                        )
+                         (60, -200, 200, ("nu_pz_res", R"(True - Regressed) $\nu |p_z|$")),
+                         nu_pz_res=lambda events: events.genNu_pz -events.reg_nu.pz
+                         )
         fill += hist.add("reg_nu_eta_res",
                         (50, -5, 5, ("nu_eta_res", R"(True - Regressed) $\nu \eta$")),
                         nu_eta_res=lambda events: events.genNu_eta -events.reg_nu.eta
@@ -116,7 +119,7 @@ def fill_histograms_nominal(
     histCuts: list = ['preselection'],
     channel_list: list = ['hadronic_W','leptonic_W'],
     flavor_list: list = ['e', 'mu'],
-    #region_list: list = ['SR', 'CR'],
+    region_list: list = ['SR', 'CR'],
     run_SvB: bool = False,
     run_MET_regression: bool = False,
 ):
@@ -129,9 +132,9 @@ def fill_histograms_nominal(
     hist = Collection(
         process=[processName],
         year=[year],
-        channel=channel_list,
+        # channel=channel_list,
         flavor = flavor_list,
-        #region = region_list,
+        region = region_list,
         **dict((s, ...) for s in histCuts)
     )
 
@@ -190,7 +193,7 @@ def fill_histograms(
     histCuts: list = ['preselection'],
     channel_list: list = ['hadronic_W','leptonic_W'],
     flavor_list: list = ['e', 'mu'],
-    #region_list: list = ['SR', 'CR'],
+    region_list: list = ['SR', 'CR'],
     run_SvB: bool = False,
     run_MET_regression: bool = False,
 ):
@@ -203,9 +206,9 @@ def fill_histograms(
     hist = Collection(
         process=[processName],
         year=[year],
-        channel=channel_list,
+        # channel=channel_list,
         flavor = flavor_list,
-        #region = region_list,
+        region = region_list,
         **dict((s, ...) for s in histCuts)
     )
 

@@ -243,6 +243,7 @@ def regressed_nu(events, met_regression: bool = False):
         # Top 2 jets by attention weight
         events['sel_qq_l']  = events.q_cands_soft[sorted_indices[:, 0:1]]
         events['sel_qq_sl'] = events.q_cands_soft[sorted_indices[:, 1:2]]
+
         events['HWW_mass'] = ak.fill_none((events.sel_qq_l + events.sel_qq_sl + events.leading_lep + events.reg_nu).mass, np.nan)        
 
     return events

@@ -23,8 +23,8 @@ runner:
 
 # processor specific flags below
 config:
-  dump_signal_phh: false
-  run_SvB: false
+  dump_signal_phh: true
+  run_SvB: true
   run_MET_regression: true
   friends:
     SvB: "bbreww/metadata/classifier/output/result.json@@analysis.0.merged"

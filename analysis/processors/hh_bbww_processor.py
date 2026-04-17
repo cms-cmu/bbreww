@@ -1,5 +1,6 @@
 import warnings
 import logging
+import uuid
 
 import numpy as np
 import awkward as ak
@@ -287,7 +288,7 @@ class analysis(processor.ProcessorABC):
         # selected_events = chi_sq(selected_events) # chi square selection and calculation
         # selected_events = chi_sq_cut(selected_events) # add chi square cuts booleans
 
-        #add regions separated by chi square calculation
+        #add W/W* regions based on gen info
         add_to_selection(
             'leptonic_W',
             #(ak.firsts(selected_events.sr_boolean) == 0), # using chi square
@@ -330,10 +331,10 @@ class analysis(processor.ProcessorABC):
         if self.make_classifier_input is not None:
             from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_input_friend_regressor, dump_input_friend_classifier
             friends["friends"] = ( friends["friends"]
-                | dump_input_friend_classifier(
+                | dump_input_friend_regressor(
                     selected_events[selected_events.nominal_4j2b | selected_events.lowpt_4j2b], # selected_events[selected_events.nominal_4j2b]
                     self.make_classifier_input,
-                    "classifier_input",
+                    "regressor_input_4nb",
                     full_selection, # nominal_selection
                     nonbcand = "q_cands_soft",
                     weight = "weight",
@@ -361,9 +362,11 @@ class analysis(processor.ProcessorABC):
         #######
 
         if not shift_name:
-             # Dump signal SvB.phh for quantile rebinning
-            if 'GluGlu' in self.dataset and self.dump_signal_phh and self.run_SvB:
-                output_path = f"root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/quantiles/phh_hist_{self.dataset}.pkl"
+             # Dump SvB.phh for quantile rebinning — per-chunk file to avoid
+             # collisions across chunks/eras. Merge at post-processing time.
+            if self.dump_signal_phh and self.run_SvB:
+                chunk_id = uuid.uuid4().hex[:8]
+                output_path = f"root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/quantiles/phh_hist_{self.dataset}__{self.year}_{chunk_id}.pkl"
                 dump_phh_to_pickle(selected_events, self.dataset, output_path)
       
             output['events_processed'] = {}
@@ -386,20 +389,20 @@ class analysis(processor.ProcessorABC):
                 histCuts=['preselection',
                         'lowpt_4j2b', 'incl_3j2b', 'SvB_tail_lowpt'
                         ],
-                channel_list=['hadronic_W', 'leptonic_W'],
+                #channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
                 #region_list=['SR', 'CR'],
                 run_SvB = self.run_SvB,
                 run_MET_regression = self.run_MET_regression
             )
-            
+
             hists_4j2b = fill_histograms_nominal(
                 selected_events[selected_events.nominal_4j2b],
                 processName=self.processName,
                 year=self.year_label,
                 is_mc=self.is_mc,
                 histCuts=['nominal_4j2b', 'SvB_tail'],
-                channel_list=['hadronic_W', 'leptonic_W'],
+                #channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
                 #region_list=['SR', 'CR'],
                 run_SvB = self.run_SvB,

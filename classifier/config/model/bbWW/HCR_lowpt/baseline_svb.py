@@ -51,26 +51,53 @@ class Train(HCRTrain):
     @property
     def rocs(self):
         from src.classifier.ml.benchmarks.multiclass import ROC
-        
+
         return [
-            # this ROC is for plotting ROC and AUC of signal vs background
+            # Signal vs all background (score = p_signal).
+            # Z_A on this = total sensitivity vs everything else.
             ROC(
                 name="Signal vs Background",
                 selection=_roc_signal_selection("signal"),
                 bins=ROC_BIN,
-                pos=("signal",),  # Signal class
+                pos=("signal",),
             ),
+
+            # Signal vs ttbar only (score = linear_differ(p_signal, p_ttbar)).
+            # Z_A here = sensitivity against the dominant background. If this is
+            # much worse than Z_A[Signal vs Others], ttbar is the bottleneck.
+            ROC(
+                name="Signal vs TTbar",
+                selection=_roc_signal_selection("signal"),
+                bins=ROC_BIN,
+                pos=("signal",),
+                neg=("ttbar",),
+                score="differ",
+            ),
+
+            # Signal vs minor-bkg only (score = linear_differ(p_signal, p_other)).
+            # Z_A here = sensitivity against WJets/tW/singleTop aggregate.
+            ROC(
+                name="Signal vs Others",
+                selection=_roc_signal_selection("signal"),
+                bins=ROC_BIN,
+                pos=("signal",),
+                neg=("other",),
+                score="differ",
+            ),
+
+            # Legacy diagnostic ROCs (not sensitivity-relevant — left for backward
+            # compat with existing plotting code).
             ROC(
                 name="TTbar vs Others",
                 selection=_roc_signal_selection("signal"),
                 bins=ROC_BIN,
-                pos=("ttbar",), 
+                pos=("ttbar",),
             ),
             ROC(
                 name="Minor backgrounds vs others",
                 selection=_roc_signal_selection("signal"),
                 bins=ROC_BIN,
-                pos=("other",), 
+                pos=("other",),
             ),
         ]
 

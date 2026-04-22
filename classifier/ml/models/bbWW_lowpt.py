@@ -40,7 +40,7 @@ class HCRArch:
     __skip_save = frozenset(("loss",))
 
     loss: Callable[[BatchType], Tensor] = None
-    n_features: int = 16
+    n_features: int = 12
     attention: bool = True
 
     @classmethod

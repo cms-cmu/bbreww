@@ -16,7 +16,7 @@ dataset:
     option:
       - --mc-processes ttbar
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
-      - --norm 32 #set TTbar to be x times weight of signal
+      - --norm 4 #set TTbar to be x times weight of signal
       # - --ttbar-prescale 10 # this option is to only train on a fraction of events
       - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input # set input friend tree
       - --max-workers 2
@@ -24,8 +24,8 @@ dataset:
   - module: bbWW.svb.Background
     option:
       - --mc-processes WplusJets tW singleTop
-      - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
-      - --norm 4
+      - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_vsss
+      - --norm 2
       - --friends "" bbreww/metadata/classifier/input/minorbkg_friend.json@@classifier_input # set input friend tree
       - --max-workers 2
 
@@ -47,8 +47,8 @@ model:
       # FixedStep is defined in config/scheduler
       - epoch: 15 # setup kwargs for FixedStep
         bs_init: 4096
-        lr_milestones: [8, 10, 12]
-        lr_scale: 0.3
+        lr_milestones: [8, 9, 10, 12, 13]
+        lr_scale: 0.25
         lr_init: 0.005
         weight_decay: 0.0001
 

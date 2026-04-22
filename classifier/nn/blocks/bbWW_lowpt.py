@@ -735,20 +735,16 @@ class HCR_lowpt(nn.Module):
         )
         self.layers.addLayer(self.HH_final_embed, [self.inputEmbed.bJetConv, self.select_WW])
 
-        # Note: final_linear_layer is applied outside this Sequential, after
-        # attention-pooling this and concatenating with the joint-mass feature.
-        # Outputs (n, 16, 32) so the attention pool can re-weight positions.
+        # Produces (n, 16) pooled event features. final_linear_layer is applied
+        # outside this Sequential, after concatenating with the joint-mass feature.
         self.out = nn.Sequential(
             GhostBatchNorm1d(
                 self.dD, features_out=16, conv=True, bias=False,
                 name="final event score"
             ),
             NonLUModule(),
-        )
-
-        self.out_pool_attn = GhostBatchNorm1d(
-            16, features_out=1, conv=True,
-            name="final event position attention"
+            nn.AdaptiveAvgPool1d(1),
+            nn.Flatten(),
         )
         self.forwardCalls = 0
 
@@ -781,7 +777,6 @@ class HCR_lowpt(nn.Module):
         self.out_tt.setGhostBatches(nGhostBatches)
         self.HH_final_embed.setGhostBatches(nGhostBatches)
         self.out[0].setGhostBatches(nGhostBatches)
-        self.out_pool_attn.setGhostBatches(nGhostBatches)
         self.pair_mjj_embed.setGhostBatches(nGhostBatches)
         self.pair_dRjj_embed.setGhostBatches(nGhostBatches)
         self.pair_dRlepqq_embed.setGhostBatches(nGhostBatches)
@@ -989,15 +984,7 @@ class HCR_lowpt(nn.Module):
         HH_final = self.HH_final_embed(HH)
 
         HH_logits_pre = torch.cat([HH_final, TT_sel], dim=-1)    # (n, dD, 32)
-        x = self.out(HH_logits_pre)                              # (n, 16, 32)
-
-        # Attention-pool across the 32 positions (vs. uniform AdaptiveAvgPool).
-        # The model learns which positions carry the discriminating signal
-        # (HWW, WW, bb) vs. which are near-redundant (individual qqMdR cells).
-        attn_logits = self.out_pool_attn(x)                      # (n, 1, 32)
-        pool_attn = F.softmax(attn_logits, dim=2)                # (n, 1, 32)
-        pooled = (x * pool_attn).sum(dim=2)                      # (n, 16)
-        self._pool_attn = pool_attn.detach().squeeze(1)          # (n, 32) diagnostic
+        pooled = self.out(HH_logits_pre)                         # (n, 16)
 
         # Direct (non-pooled) joint-mass feature: lets the classifier read the
         # (m_hadW, m_lepW) correlation without averaging with 31 other positions.

@@ -18,7 +18,7 @@ class RECModelMetadata(TypedDict):
 
 class _RECKFoldModel:
     def __init__(self, model: str, splitter: Splitter, **_):
-        from bbreww.classifier.nn.blocks.bbWW_models import HCR
+        from bbreww.classifier.nn.blocks.bbWW_models import bbWWBase
 
         self.splitter = splitter
         with fsspec.open(model, "rb") as f:
@@ -27,7 +27,7 @@ class _RECKFoldModel:
 
         self._classes: list[str] = states["label"]
         self._reindex: list[int] = None
-        self._model = HCR(
+        self._model = bbWWBase(
             dijetFeatures=states["arch"]["n_features"],
             ancillaryFeatures=self.ancillary,
             nClasses=len(self._classes),
@@ -48,7 +48,7 @@ class _RECKFoldModel:
                 self._reindex = [self._classes.index(c) for c in value]
         else:
             raise ValueError(
-                f"HCR evaluation: classes mismatch, unknown classes: {set(value) - set(self._classes)}"
+                f"bbWWBase evaluation: classes mismatch, unknown classes: {set(value) - set(self._classes)}"
             )
 
     @property
@@ -76,7 +76,7 @@ class RECEnsemble:
             for k in ("ancillary",):
                 if getattr(self, k) != getattr(model, k):
                     raise ValueError(
-                        f"HCR evaluation: {k} mismatch, expected {getattr(self, k)} got {getattr(model, k)}"
+                        f"bbWWBase evaluation: {k} mismatch, expected {getattr(self, k)} got {getattr(model, k)}"
                     )
             model.classes = self.classes
 

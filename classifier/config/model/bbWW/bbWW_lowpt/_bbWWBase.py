@@ -28,7 +28,7 @@ def roc_nominal_selection(batch: BatchType):
     }
 
 
-class HCRTrain(KFoldTrain):
+class bbWWBaseTrain(KFoldTrain):
     model: str
     loss: Callable[[BatchType], Tensor]
     rocs: Iterable[ROC] = ()
@@ -38,7 +38,7 @@ class HCRTrain(KFoldTrain):
         "--architecture",
         type=parse.mapping,
         default="",
-        help=f"HCR architecture {parse.EMBED}",
+        help=f"bbWWBase architecture {parse.EMBED}",
     )
     argparser.add_argument(
         "--ghost-batch",
@@ -62,25 +62,25 @@ class HCRTrain(KFoldTrain):
     )
 
     def initializer(self, splitter: Splitter, **kwargs):
-        from bbreww.classifier.ml.models.bbWWHCR import (
+        from bbreww.classifier.ml.models.bbWW_lowpt import (
             GBNSchedule,
-            HCRArch,
-            HCRBenchmarks,
-            HCRTraining,
+            bbWWBaseArch,
+            bbWWBaseBenchmarks,
+            bbWWBaseTraining,
         )
 
-        arch = HCRArch(**({"loss": self.loss} | self.opts.architecture))
+        arch = bbWWBaseArch(**({"loss": self.loss} | self.opts.architecture))
         gbn = GBNSchedule(**self.opts.ghost_batch)
         training = parse.instance(self.opts.training, _SCHEDULER)
         finetuning = parse.instance(self.opts.finetuning, _SCHEDULER)
 
-        return HCRTraining(
+        return bbWWBaseTraining(
             arch=arch,
             ghost_batch=gbn,
             cross_validation=splitter,
             training_schedule=training,
             finetuning_schedule=finetuning,
-            benchmarks=HCRBenchmarks(
+            benchmarks=bbWWBaseBenchmarks(
                 rocs=self.rocs,
             ),
             model=self.model,
@@ -88,14 +88,14 @@ class HCRTrain(KFoldTrain):
         )
 
 
-class HCREval(KFoldEval):
+class bbWWBaseEval(KFoldEval):
     model: str
     output_definition: Callable[[BatchType], BatchType]
 
     def initializer(self, model, splitter, **kwargs):
-        from bbreww.classifier.ml.models.bbWWHCR import HCREvaluation
+        from bbreww.classifier.ml.models.bbWW_lowpt import bbWWBaseEvaluation
 
-        return HCREvaluation(
+        return bbWWBaseEvaluation(
             saved_model=model,
             cross_validation=splitter,
             output_definition=self.output_definition,

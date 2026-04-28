@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 from src.classifier.config.state.label import MultiClass
 from src.classifier.task import ArgParser
-from bbreww.classifier.config.model.bbWW.HCR_lowpt._HCR import ROC_BIN, HCREval, HCRTrain
+from bbreww.classifier.config.model.bbWW.bbWW_lowpt._bbWWBase import ROC_BIN, bbWWBaseEval, bbWWBaseTrain
 from bbreww.classifier.config.setting.bbWW import Input, Output
 
 if TYPE_CHECKING:
@@ -32,7 +32,7 @@ class _roc_signal_selection:
         return torch.isin(label, label.new_tensor(MultiClass.indices(*_BKG, self.sig)))
 
 
-class Train(HCRTrain):
+class Train(bbWWBaseTrain):
     argparser = ArgParser(description="Train bbWW Model")
     model = "svb"
 
@@ -102,7 +102,7 @@ class Train(HCRTrain):
         ]
 
 
-class Eval(HCREval):
+class Eval(bbWWBaseEval):
     model = "svb"
 
     @staticmethod

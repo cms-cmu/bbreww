@@ -29,3 +29,4 @@ config:
   friends:
     SvB: "bbreww/metadata/classifier/output/result.json@@analysis.0.merged"
     met_regressor: "bbreww/metadata/regressor/output/result.json@@analysis.0.merged"
+    met_regressor_3jet: "bbreww/metadata/regressor/output/result_3jet.json@@analysis.0.merged"

@@ -176,12 +176,12 @@ class analysis(processor.ProcessorABC):
             for k in self.friends:
                 if k.startswith("SvB"):
                     events[k] = self.friends[k].arrays(target) # load svb score friendtrees
-                    
+
         if self.run_MET_regression:
             for k in self.friends:
                 if k.startswith("met_regressor"):
                     events[k] = self.friends[k].arrays(target) # load MET regression outputs
-            
+
         if self.apply_dvtt:
             for k in self.friends:
                 if k.startswith("DvTT"):
@@ -289,19 +289,23 @@ class analysis(processor.ProcessorABC):
         # selected_events = chi_sq_cut(selected_events) # add chi square cuts booleans
 
         #add W/W* regions based on gen info
+        reg_p_onshell = ak.where(selected_events.incl_3j2b,
+                                 selected_events.met_regressor_3jet["p_onshell"],
+                                 selected_events.met_regressor["p_onshell"]) if self.run_MET_regression else None
         add_to_selection(
             'leptonic_W',
             #(ak.firsts(selected_events.sr_boolean) == 0), # using chi square
-            (ak.fill_none(ak.mask(selected_events.isLepW == 1, selected_events.isLepW >= 0),np.nan)) if self.is_mc else ak.ones_like(selected_events.event),
+            #(ak.fill_none(ak.mask(selected_events.isLepW == 1, selected_events.isLepW >= 0),np.nan)) if self.is_mc else ak.ones_like(selected_events.event),
+            ak.fill_none(reg_p_onshell > 0.55, False) if self.run_MET_regression else ak.ones_like(selected_events.event),
             selection,
             selection_list['preselection']
         )
-        
+
         # hadronic_W = ak.zeros_like(presel_mask,dtype=bool)
         add_to_selection(
             'hadronic_W',
             #ak.firsts(selected_events.sr_boolean) == 1, # using chi square
-            (ak.fill_none(ak.mask(selected_events.isLepW == 0, selected_events.isLepW >= 0), np.nan)) if self.is_mc else ak.ones_like(selected_events.event),
+            ak.fill_none(reg_p_onshell <= 0.55, False) if self.run_MET_regression else ak.ones_like(selected_events.event),
             selection,
             selection_list['preselection']
         )
@@ -322,6 +326,7 @@ class analysis(processor.ProcessorABC):
         
         # different selections to use for creating friendtrees
         nominal_selection = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
+        incl_3j2b_selection = selection.all(*selection_list['incl_3j2b']) & selection.all(*selection_list['preselection']) # 3j2b selection
         lowpt_selection = selection.all(*selection_list['lowpt_4j2b']) & selection.all(*selection_list['preselection']) # lowpt selection
         full_selection = ((selection.all(*selection_list['lowpt_4j2b']) | selection.all(*selection_list['nominal_4j2b']))
                           & selection.all(*selection_list['preselection'])) # lowpt + nominal selection
@@ -332,10 +337,10 @@ class analysis(processor.ProcessorABC):
             from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_input_friend_regressor, dump_input_friend_classifier
             friends["friends"] = ( friends["friends"]
                 | dump_input_friend_regressor(
-                    selected_events[selected_events.nominal_4j2b | selected_events.lowpt_4j2b], # selected_events[selected_events.nominal_4j2b]
+                    selected_events[selected_events.incl_3j2b], # selected_events[selected_events.nominal_4j2b]
                     self.make_classifier_input,
-                    "regressor_input_4nb",
-                    full_selection, # nominal_selection
+                    "regressor_input_1nb",
+                    incl_3j2b_selection,
                     nonbcand = "q_cands_soft",
                     weight = "weight",
                 )
@@ -389,9 +394,9 @@ class analysis(processor.ProcessorABC):
                 histCuts=['preselection',
                         'lowpt_4j2b', 'incl_3j2b', 'SvB_tail_lowpt'
                         ],
-                #channel_list=['hadronic_W', 'leptonic_W'],
+                channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
-                #region_list=['SR', 'CR'],
+                region_list=['SR', 'CR'],
                 run_SvB = self.run_SvB,
                 run_MET_regression = self.run_MET_regression
             )
@@ -402,9 +407,9 @@ class analysis(processor.ProcessorABC):
                 year=self.year_label,
                 is_mc=self.is_mc,
                 histCuts=['nominal_4j2b', 'SvB_tail'],
-                #channel_list=['hadronic_W', 'leptonic_W'],
+                channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
-                #region_list=['SR', 'CR'],
+                region_list=['SR', 'CR'],
                 run_SvB = self.run_SvB,
                 run_MET_regression = self.run_MET_regression
                 )

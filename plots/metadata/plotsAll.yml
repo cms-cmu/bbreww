@@ -31,6 +31,13 @@ stack:
                 edgecolor: k
                 label: tW
         
+        tb:
+                process: [TBbarQ, TbarBQ, TBbartoLplusNuBbar, TbarBtoLminusNuB]
+                tag: tb
+                fillcolor: "#FFA500ff"
+                edgecolor: k
+                label: tb
+
         TTbar:
                 process: [TTToHadronic, TTToSemiLeptonic, TTTo2L2Nu]
                 tag: ttbar

@@ -1,18 +1,18 @@
 # change these vars #
 export LPCUSER="akhanal"
 export CERNUSER="a/akhanal"
-export BASE="root://cmseos.fnal.gov//store/user/${LPCUSER}/HHbbWW_classifier_lowpt"
-export MODEL="${BASE}/classifier/HCR/SvB/"
+export BASE="root://cmseos.fnal.gov//store/user/${LPCUSER}/HHbbWW_classifier_v1"
+export MODEL="${BASE}/classifier/bbWWBase/SvB/"
 export FvT="${BASE}/friend/FvT/"
 export SvB="${BASE}/friend/SvB/"
-export PLOT="root://eosuser.cern.ch//eos/user/${CERNUSER}/HHbbWW_classifier_lowpt/"
+export PLOT="root://eosuser.cern.ch//eos/user/${CERNUSER}/HHbbWW_classifier_v1/"
 export CLASSIFIER_CONFIG_PATHS="bbreww" 
 #####################
-export WFS="bbreww/classifier/config/workflows/HCR_lowpt/svb"
+export WFS="bbreww/classifier/config/workflows/bbWWBase/svb"
 
 # the first argument can be a port
 if [ -z "$1" ]; then
-    port=10201
+    port=10200
 else
     port=$1
 fi
@@ -24,13 +24,13 @@ fi
     -setting Monitor "address: :${port}" \
     -flag debug # use debug flag
 
-# plot the AUC and ROC (use HCR.LossROC for plotting as bbWW.LossROC is still in progress)
-#./src/pyml.py analyze \
-#    --results ${MODEL}/result.json \
-#    -analysis HCR.LossROC \
-#    -setting IO "output: ${PLOT}" \
-#    -setting IO "report: FvT" \
-#    -setting Monitor "address: :${port}"
+# plot the AUC and ROC (use bbWWBase.LossROC for plotting as bbWW.LossROC is still in progress)
+./src/pyml.py analyze \
+    --results ${MODEL}/result.json \
+    -analysis bbWWBase.LossROC \
+    -setting IO "output: ${PLOT}" \
+    -setting IO "report: FvT" \
+    -setting Monitor "address: :${port}"
 
 # evaluate with evaluate.yml and common.yml configs
 ./src/pyml.py \

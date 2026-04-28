@@ -30,7 +30,7 @@ dataset:
 
 
 model:
-  - module: bbWW.HCR_lowpt.baseline_svb.Eval
+  - module: bbWW.bbWW_lowpt.baseline_svb.Eval
     option:
       - --models
       - Final # choose name of the model to evaluate, for now only Final is available
@@ -51,4 +51,4 @@ setting:
   - module: ml.DataLoader
     option:
       - num_workers: 0
-      - batch_eval: 1048576 # 2^20
+      - batch_eval: 262144 # 2^19

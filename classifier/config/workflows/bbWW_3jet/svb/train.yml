@@ -1,0 +1,54 @@
+# template:
+# - model: path to model
+#
+# when run with
+#   template/-template "model: path/to/model" path/to/this/file.yml
+# the {model} will be replaced by path/to/model
+
+main:
+  module: train
+  option:
+    - --max-loaders 2
+    - --max-trainers 3
+
+dataset:
+  - module: bbWW.svb.Background
+    option:
+      - --mc-processes ttbar
+      - --metadata bbreww/metadata/classifier/datasets/datasets_v5
+      - --norm 32
+      - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input
+      - --max-workers 2
+
+  - module: bbWW.svb.Background
+    option:
+      - --mc-processes WplusJets tW singleTop
+      - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
+      - --norm 4
+      - --friends "" bbreww/metadata/classifier/input/minorbkg_friend.json@@classifier_input
+      - --max-workers 2
+
+  - module: bbWW.svb.Signal
+    option:
+      - --metadata bbreww/metadata/classifier/datasets/datasets_v5
+      - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input
+      - --max-workers 1
+
+model:
+  - module: bbWW.bbWW_3jet.baseline_svb_3jet.Train # 3-jet region classifier
+    option:
+      - --kfolds 3
+      - --kfold-seed FvT random
+      - --kfold-seed-offsets 0
+      - --training FixedStep
+      - epoch: 15
+        bs_init: 4096
+        lr_milestones: [8, 10, 12]
+        lr_scale: 0.3
+        lr_init: 0.005
+        weight_decay: 0.0001
+
+setting:
+  - module: IO
+    option:
+      - output: "{model}"

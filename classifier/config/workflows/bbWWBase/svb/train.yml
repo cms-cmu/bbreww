@@ -8,36 +8,32 @@
 main:
   module: train # run training task
   option:
-    - --max-loaders 2
-    - --max-trainers 3
+    - --max-loaders 2 # use 2 workers to load dataset
+    - --max-trainers 3 # use 3 workers to train
 
 dataset:
   - module: bbWW.svb.Background
     option:
       - --mc-processes ttbar
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
-      - --norm 32 #set TTbar to be x times weight of signal
-      # - --ttbar-prescale 10 # this option is to only train on a fraction of events
-      - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input # set input friend tree
-      - --max-workers 2
-
+      - --norm 4 #set TTbar to be 4 times weight of signal
+      - --friends "" bbreww/metadata/classifier/input/output_friend_nom.json@@classifier_input_nom # set input friend tree
+    
   - module: bbWW.svb.Background
     option:
-      - --mc-processes WplusJets tW singleTop
+      - --mc-processes WplusJets tW
       - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
-      - --norm 4
-      - --friends "" bbreww/metadata/classifier/input/minorbkg_friend.json@@classifier_input # set input friend tree
-      - --max-workers 2
+      - --norm 2
+      - --friends "" bbreww/metadata/classifier/input/minorbkg_friend_nom.json@@classifier_input_nom # set input friend tree
 
   - module: bbWW.svb.Signal
     option:
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
-      - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input # set input friend tree
-      - --max-workers 1
-      # - --train-bsm
+      - --friends "" bbreww/metadata/classifier/input/output_friend_nom.json@@classifier_input_nom # set input friend tree
+      #- --train-bsm
 
 model:
-  - module: bbWW.HCR_lowpt.baseline_svb.Train # use the baseline bbWW HCR model
+  - module: bbWW.bbWWBase.baseline_svb.Train # use the baseline bbWW bbWWBase model
     option:
       - --kfolds 3 # use 3-fold
       - --kfold-seed FvT random # setup base seed to be ("FvT", "random")
@@ -45,12 +41,8 @@ model:
       # --kfold-seed-offsets 0-14 will use seed ("FvT", "random", 0), ... ("FvT", "random", 14) to train 15 models
       - --training FixedStep # setup training schedule
       # FixedStep is defined in config/scheduler
-      - epoch: 15 # setup kwargs for FixedStep
-        bs_init: 4096
-        lr_milestones: [8, 10, 12]
-        lr_scale: 0.3
-        lr_init: 0.005
-        weight_decay: 0.0001
+      - epoch: 20 # setup kwargs for FixedStep
+        bs_init: 2048 # equivalent to use FixedStep(epoch=20, bs_init=1024)
 
 setting:
   - module: IO # setup output directory

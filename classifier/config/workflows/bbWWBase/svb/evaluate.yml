@@ -30,7 +30,7 @@ dataset:
 
 
 model:
-  - module: bbWW.HCR.baseline_svb.Eval
+  - module: bbWW.bbWWBase.baseline_svb.Eval
     option:
       - --models
       - Final # choose name of the model to evaluate, for now only Final is available

@@ -5,31 +5,32 @@
 main:
   module: evaluate
   option:
-    - --max-evaluators 3 # use 3 workers to evaluate
+    - --max-evaluators 2 # use 3 workers to evaluate
 
 dataset:
-  - module: bbWW.regressor.Eval
+  - module: bbWW.svb.Eval
     option:
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
-      - --max-workers 4
-      - --mc-processes GluGluToHHTo2B2VLNu2J ttbar
-      - --train-bsm # include kl = [0, 1, 2.45, 5] signal samples
-      - --friends "" bbreww/metadata/regressor/input/regressor_friend_4nb.json@@regressor_input_4nb
-  - module: bbWW.regressor.Eval
+      - --max-workers 4 
+      - --mc-processes GluGluToHHTo2B2VLNu2J ttbar 
+      - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input
+  - module: bbWW.svb.Eval
     option:
       - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
-      - --max-workers 4
+      - --max-workers 4 
       - --mc-processes WplusJets tW singleTop
-      - --friends "" bbreww/metadata/regressor/input/minorbkg_friend_regressor.json@@regressor_input_4nb
-  - module: bbWW.regressor.DataEval
+      - --friends "" bbreww/metadata/classifier/input/minorbkg_friend.json@@classifier_input
+  - module: bbWW.svb.DataEval
     option:
+      - --no-SR # remove SR
       - --data-source detector # loads data
       - --metadata bbreww/metadata/classifier/datasets/datasets_data_v5 # choose dataset
       - --max-workers 4
-      - --friends "" bbreww/metadata/regressor/input/data_friend_regressor.json@@regressor_input_4nb
+      - --friends "" bbreww/metadata/classifier/input/data_friend.json@@classifier_input # set input friend tree
+
 
 model:
-  - module: bbWW.METRegressor.baseline.Eval
+  - module: bbWW.bbWW_lowpt.baseline_svb.Eval
     option:
       - --models
       - Final # choose name of the model to evaluate, for now only Final is available
@@ -38,7 +39,7 @@ model:
 analysis:
   - module: kfold.Merge # merge different k-folds
     option:
-      - --name met_regressor # set the name of friend tree
+      - --name svb # set the name of friend tree
       - --step 100000 # set the step to read ROOT files
       - --workers 5
       - --clean # remove the original files
@@ -50,3 +51,4 @@ setting:
   - module: ml.DataLoader
     option:
       - num_workers: 0
+      - batch_eval: 262144 # 2^19

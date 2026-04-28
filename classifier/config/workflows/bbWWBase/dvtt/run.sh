@@ -2,13 +2,13 @@
 export LPCUSER="akhanal"
 export CERNUSER="a/akhanal"
 export BASE="root://cmseos.fnal.gov//store/user/${LPCUSER}/HHbbWW_classifier_v1"
-export MODEL="${BASE}/classifier/HCR/dvtt/"
+export MODEL="${BASE}/classifier/bbWWBase/dvtt/"
 export DvTT="${BASE}/friend/DvTT/"
 export PLOT="root://eosuser.cern.ch//eos/user/${CERNUSER}/HHbbWW_classifier_v1/DvTT/"
 #####################
 
 export CLASSIFIER_CONFIG_PATHS="bbreww" 
-export WFS="bbreww/classifier/config/workflows/HCR/dvtt"
+export WFS="bbreww/classifier/config/workflows/bbWWBase/dvtt"
 
 # the first argument can be a port
 if [ -z "$1" ]; then
@@ -27,7 +27,7 @@ fi
 # plot the AUC and ROC
 #./src/pyml.py analyze \
 #    --results ${MODEL}/result.json \
-#    -analysis HCR.LossROC \
+#    -analysis bbWWBase.LossROC \
 #    -setting IO "output: ${PLOT}" \
 #    -setting IO "report: FvT" \
 #    -setting Monitor "address: :${port}"

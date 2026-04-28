@@ -1,0 +1,21 @@
+setting:
+  - module: ml.DataLoader
+    option:
+      - batch_skim: 524288 # 2^19
+      - optimize_sliceable_dataset: true
+  - module: ROOT
+    option:
+      - friend_allow_missing: false
+  - module: cms.CollisionData
+    option:
+      - eras:
+          2022_preEE: [C, D]
+          2022_EE: [E, F, G]
+          2023_preBPix: [C01, C02, C03, C04, C11, C12, C13, C14]
+          2023_BPix: [D01, D02, D11, D12]
+  - module: bbWW.InputBranch
+    option:
+      - feature_ancillary: ["njets", "nsoftjets", "HT", "year"]
+      # 3-jet region: exactly 1 surviving non-b jet (the soft W daughter
+      # drops below threshold in this topology)
+      - nnonbJetCand: 1

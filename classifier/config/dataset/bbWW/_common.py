@@ -288,6 +288,12 @@ class RegressorCommonTrain(CommonTrain):
         super().__init__()
         (
             self.to_tensor
+            .remove(Input.nonbJetCand)        # drop common version (expects attn_score)
+            .add(_RInput.nonbJetCand, "float32").columns(
+                *_RInputBranch.feature_nonbJetCand,
+                target=_RInputBranch.nnonbJetCand,
+                pad_value=-1,
+            )
             .remove(Input.regressed_nu)
             .add(_RInput.MET, "float32").columns(*_RInputBranch.feature_MET)
         )
@@ -318,6 +324,12 @@ class RegressorCommonEval(CommonEval):
         super().__init__()
         (
             self.to_tensor
+            .remove(Input.nonbJetCand)        # drop common version (expects attn_score)
+            .add(_RInput.nonbJetCand, "float32").columns(
+                *_RInputBranch.feature_nonbJetCand,
+                target=_RInputBranch.nnonbJetCand,
+                pad_value=-1,
+            )
             .remove(Input.regressed_nu)
             .add(_RInput.MET, "float32").columns(*_RInputBranch.feature_MET)
         )

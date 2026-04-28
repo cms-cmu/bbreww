@@ -205,34 +205,38 @@ def ttbar_soft_candidate_selection(events):
 
 def regressed_nu(events, met_regression: bool = False):
     if met_regression:
-        px, py, pz = events.met_regressor.nu_px, events.met_regressor.nu_py, events.met_regressor.nu_pz
-        pt = np.sqrt(px**2 + py**2)
+        is_3jet = events.incl_3j2b
+        def _pick(field):
+            return ak.where(is_3jet, events.met_regressor_3jet[field], events.met_regressor[field])
+        nu_px = _pick("nu_px")
+        nu_py = _pick("nu_py")
+        nu_pz = _pick("nu_pz")
         events["reg_nu"] = ak.zip({
-            "pt": pt,
-            "eta": np.arcsinh(pz / pt),
-            "phi": np.arctan2(py, px),
-            "mass": ak.zeros_like(pt),
+            "x": nu_px,
+            "y": nu_py,
+            "z": nu_pz,
+            "t": np.sqrt((nu_px**2 + nu_py**2 + nu_pz**2)),
             "charge": ak.zeros_like(pt, dtype=int),
         },
         with_name="PtEtaPhiMCandidate",
         behavior=vector.behavior,
         )
         events["reg_mW"] =  ak.fill_none((events.reg_nu + events.leading_lep).mass, np.nan) # regressed leptonic W mass
-        
+
         #check how well regressor is selecting jets
         ml_jet_scores_full = ak.concatenate(
-            [ak.singletons(0.5 * (events.met_regressor.jet_weight_0 + events.met_regressor.jet_weight_4)),  # jet 0 (avg of two attention heads)
-             ak.singletons(0.5 * (events.met_regressor.jet_weight_1 + events.met_regressor.jet_weight_5)),  # jet 1
-             ak.singletons(0.5 * (events.met_regressor.jet_weight_2 + events.met_regressor.jet_weight_6)),  # jet 2
-             ak.singletons(0.5 * (events.met_regressor.jet_weight_3 + events.met_regressor.jet_weight_7))], # jet 3
+            [ak.singletons(0.5 * (_pick("jet_weight_0") + _pick("jet_weight_4"))),  # jet 0 (avg of two attention heads)
+             ak.singletons(0.5 * (_pick("jet_weight_1") + _pick("jet_weight_5"))),  # jet 1
+             ak.singletons(0.5 * (_pick("jet_weight_2") + _pick("jet_weight_6"))),  # jet 2
+             ak.singletons(0.5 * (_pick("jet_weight_3") + _pick("jet_weight_7")))], # jet 3
             axis=1)
-        
+
         # ak.local_index to build a per-entry boolean mask and filter axis=1.
         n_jets = ak.num(events.q_cands_soft)
         events["q_cands_soft", "ml_jet_scores"] = ml_jet_scores_full[ak.local_index(ml_jet_scores_full, axis=1) < n_jets]
-        
+
         has_two_jets = ak.num(events.q_cands_soft) >= 2
-        valid_nu = ~np.isnan(events.met_regressor.nu_pz)
+        valid_nu = ~np.isnan(nu_pz)
         mask_all = has_two_jets & valid_nu
         
         # Sort jets by attention weight descending, keep only indices pointing to real jets
@@ -244,7 +248,16 @@ def regressed_nu(events, met_regression: bool = False):
         events['sel_qq_l']  = events.q_cands_soft[sorted_indices[:, 0:1]]
         events['sel_qq_sl'] = events.q_cands_soft[sorted_indices[:, 1:2]]
 
-        events['HWW_mass'] = ak.fill_none((events.sel_qq_l + events.sel_qq_sl + events.leading_lep + events.reg_nu).mass, np.nan)        
+        events['HWW_mass'] = ak.fill_none((events.sel_qq_l + events.sel_qq_sl + events.leading_lep + events.reg_nu).mass, np.nan)
+
+        # mlvq mass for 3jet events: single non-b jet + lepton + regressed neutrino
+        has_one_jet = ak.num(events.q_cands_soft) >= 1
+        mlvq_mask = has_one_jet & valid_nu
+        masked_scores_1j = ak.mask(events.q_cands_soft.ml_jet_scores, mlvq_mask)
+        sorted_indices_1j = ak.argsort(masked_scores_1j, ascending=False)
+        sorted_indices_1j = sorted_indices_1j[sorted_indices_1j < n_jets]
+        events['sel_q_mlvq'] = events.q_cands_soft[sorted_indices_1j[:, 0:1]]
+        events['mlvq_mass'] = ak.fill_none((events.sel_q_mlvq + events.leading_lep + events.reg_nu).mass, np.nan)
 
     return events
 
@@ -287,10 +300,16 @@ def candidate_selection(events, params, year, run_SvB, run_MET_regression, class
     else:
         signal_region = ak.singletons(ak.ones_like(events.event, dtype = bool))
         control_region = ~signal_region
-       
+
+    sr_flat = ak.fill_none(ak.firsts(signal_region), False)
+    cr_flat = ak.fill_none(ak.firsts(control_region), False)
+
+    # decouple 3j2b from SR/CR: force both True so 3jet events aren't dropped
+    sr_flat = ak.where(events.incl_3j2b, True, sr_flat)
+
     events['region'] = ak.zip({
-        'SR': ak.fill_none(ak.firsts(signal_region), False),
-        'CR': ak.fill_none(ak.firsts(control_region), False)
+        'SR': sr_flat,
+        'CR': cr_flat
     })
     
     return events

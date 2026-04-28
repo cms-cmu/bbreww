@@ -132,7 +132,7 @@ def fill_histograms_nominal(
     hist = Collection(
         process=[processName],
         year=[year],
-        # channel=channel_list,
+        channel=channel_list,
         flavor = flavor_list,
         region = region_list,
         **dict((s, ...) for s in histCuts)
@@ -206,7 +206,7 @@ def fill_histograms(
     hist = Collection(
         process=[processName],
         year=[year],
-        # channel=channel_list,
+        channel=channel_list,
         flavor = flavor_list,
         region = region_list,
         **dict((s, ...) for s in histCuts)
@@ -248,6 +248,12 @@ def fill_histograms(
     fill += LorentzVector.plot_pair( ("HWW_soft", R"$H_{WW}$ (soft)"), "Hww_cand_soft", skip=["n","lead","subl","st"], bins={"mass": (100, 100, 400)}, )
 
     # fill += TTbarHists( ("tt_soft", R"$t\bar{t}$"), "tt_soft_minChi2" )
+
+    if run_MET_regression:
+        fill += hist.add("mlvq_mass", (50, 0, 250, ("mlvq_mass", R"$m_{l\nu q}$ [GeV]")))
+        fill += hist.add("mbb_vs_mlvq",
+                         (50, 0, 250, ('Hbb_cand.mass', 'H->bb Candidate Mass [GeV]')),
+                         (50, 0, 250, ('mlvq_mass', R'$m_{l\nu q}$ [GeV]')))
 
     # fill histograms
     fill(events, hist)

@@ -546,16 +546,16 @@ class InputEmbed(nn.Module):
                 raw_nb, raw_lep, nb_attn)
 
 
-class HCR_lowpt(nn.Module):
+class bbWW_lowpt(nn.Module):
     def __init__(
         self,
         dijetFeatures,
         ancillaryFeatures,
         device="cuda",
         nClasses=1,
-        architecture="HCR",
+        architecture="bbWWBase",
     ):
-        super(HCR_lowpt, self).__init__()
+        super(bbWW_lowpt, self).__init__()
         self.debug = False
         self.dA = len(ancillaryFeatures)
         self.dD = dijetFeatures

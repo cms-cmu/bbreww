@@ -1873,16 +1873,16 @@ class InputEmbed(nn.Module):
         return b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR, mask_bbMdR, mask_qqMdR, mask_bbn, mask_bWhad, mask_bWlep
 
 
-class HCR(nn.Module):
+class bbWWBase(nn.Module):
     def __init__(
         self,
         dijetFeatures,
         ancillaryFeatures,
         device="cuda",
         nClasses=1,
-        architecture="HCR",
+        architecture="bbWWBase",
     ):
-        super(HCR, self).__init__()
+        super(bbWWBase, self).__init__()
         self.debug = False
         self.dA = len(ancillaryFeatures)
         self.dD = dijetFeatures  # dimension of embeded   dijet feature space
@@ -2205,7 +2205,7 @@ class GCN(nn.Module):
         ancillaryFeatures,
         device="cuda",
         nClasses=1,
-        architecture="HCR",
+        architecture="bbWWBase",
     ):
         super(GCN, self).__init__()
         self.debug = False

@@ -26,7 +26,7 @@ dataset:
       - --friends "" bbreww/metadata/classifier/output_friend.json@@classifier_input # set input friend tree
 
 model:
-  - module: bbWW.base.baseline_dvtt.Train # use the baseline bbWW HCR model
+  - module: bbWW.base.baseline_dvtt.Train # use the baseline bbWW bbWWBase model
     option:
       - --kfolds 3 # use 3-fold
       - --kfold-seed FvT random # setup base seed to be ("FvT", "random")

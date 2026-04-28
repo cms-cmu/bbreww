@@ -144,6 +144,8 @@ def dump_input_friend_regressor(
                         "eta":  events[nonbcand].eta,
                         "phi":  events[nonbcand].phi,
                         "mass": events[nonbcand].mass,
+                        "btagScore": events[nonbcand].btagScore,
+                        "qvg_score": events[nonbcand].btagPNetQvG
                     }
                 ),
                 selection,
@@ -184,7 +186,8 @@ def dump_input_friend_regressor(
                 ak.zip(
                     {
                         "onShell": events["isLepW"],
-                        "genLepWmass": events["gen_lepW_mass"]
+                        "genLepWmass": events["gen_lepW_mass"],
+                        "genHadWmass": events["gen_hadW_mass"]
                     }
                 ),
                 selection,

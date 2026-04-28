@@ -19,18 +19,22 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 # bbreww sample names to merge, keyed by the metadata background label
 MERGE_SAMPLES = {
-    'tt':        ('TTToSemiLeptonic', 'TTTo2L2Nu', 'TTToHadronic'),
-    'wjets':     ('WtoLNu-2Jets_0J', 'WtoLNu-2Jets_1J', 'WtoLNu-2Jets_2J'),
-    'singletop': ('TbarWplustoLNu2Q', 'TbarWplusto2L2Nu',
-                  'TWminustoLNu2Q',   'TWminusto2L2Nu',
-                  'TBbarQ', 'TbarBQ', 'TBbartoLplusNuBbar', 'TbarBtoLminusNuB'),
+    'tt':       ('TTToSemiLeptonic', 'TTTo2L2Nu', 'TTToHadronic'),
+    'wjets':    ('WtoLNu-2Jets_0J', 'WtoLNu-2Jets_1J', 'WtoLNu-2Jets_2J'),
+    'tW':       ('TbarWplustoLNu2Q', 'TbarWplusto2L2Nu',
+                 'TWminustoLNu2Q',   'TWminusto2L2Nu'),
+    'singlet':  ('TBbarQ', 'TbarBQ', 'TBbartoLplusNuBbar', 'TbarBtoLminusNuB'),
 }
 _ALL_MERGE_SAMPLES = {s for samples in MERGE_SAMPLES.values() for s in samples}
 
-def _bin_name(flavor, year):
-    """Compose a combine bin name from (flavor, year). Combine bins cannot
-    start with a digit, hence the 'y' prefix on the year."""
-    return f"{flavor}_y{year}"
+CHANNEL_TAGS = {'hadronic_W': 'hadW', 'leptonic_W': 'lepW'}
+
+
+def _bin_name(channel, flavor, year):
+    """Compose a combine bin name from (channel, flavor, year). Combine bins
+    cannot start with a digit, hence the 'y' prefix on the year."""
+    ch_tag = CHANNEL_TAGS.get(channel, channel)
+    return f"{ch_tag}_{flavor}_y{year}"
 
 
 def create_combine_root_file(file_to_convert,
@@ -38,14 +42,15 @@ def create_combine_root_file(file_to_convert,
                              var,
                              output_dir,
                              systematics_file,
+                             channels,
                              flavors,
                              metadata_file='bbreww/stats_analysis/metadata/bbWW.yml',
                              stat_only=False):
     """Build ROOT shapes file and CombineHarvester datacards for bbWW.
 
-    JSON axes order: [histogram][process][year][flavor]
-    One combine bin is created per (flavor, year) — typical Run3 run gives
-    2 flavors × 2 years = 4 bins.
+    JSON axes order: [histogram][process][year][channel][flavor]
+    One combine bin is created per (channel, flavor, year) — typical Run3 run
+    with 2 channels × 2 flavors × 2 years = 8 bins.
     """
 
     logging.info(f"Reading {metadata_file}")
@@ -65,57 +70,77 @@ def create_combine_root_file(file_to_convert,
     # Years present in the JSON for the first signal process
     first_signal = next(iter(metadata['processes']['signal']))
     years_in_file = list(coffea_hists[var][first_signal].keys())
+
+    # Detect whether channel axis exists in the JSON
+    first_year = years_in_file[0]
+    first_year_data = coffea_hists[var][first_signal][first_year]
+    has_channel_axis = any(k in first_year_data for k in channels)
+
     logging.info(f"Years in file: {years_in_file}")
+    logging.info(f"Channel axis present: {has_channel_axis}")
+    logging.info(f"Channels to use: {channels if has_channel_axis else '(summed)'}")
     logging.info(f"Flavors to use:  {flavors}")
 
     root_hists = {}      # bin_name → {process → TH1F or {variation → TH1F}}
     mcSysts = []
     bin_names = []
 
+    channel_loop = channels if has_channel_axis else [None]
+
     for iyear in years_in_file:
-        for iflavor in flavors:
-            bname = _bin_name(iflavor, iyear)
-            bin_names.append(bname)
-            root_hists[bname] = {}
+        for ichannel in channel_loop:
+            for iflavor in flavors:
+                bname = _bin_name(ichannel, iflavor, iyear) if ichannel else f"{iflavor}_y{iyear}"
+                bin_names.append(bname)
+                root_hists[bname] = {}
 
-            for iprocess in coffea_hists[var].keys():
-                try:
-                    leaf = coffea_hists[var][iprocess][iyear][iflavor]
-                except KeyError:
-                    logging.warning(f"Missing leaf for {iprocess}/{iyear}/{iflavor}")
-                    continue
+                for iprocess in coffea_hists[var].keys():
+                    try:
+                        if has_channel_axis:
+                            leaf = coffea_hists[var][iprocess][iyear][ichannel][iflavor]
+                        else:
+                            leaf = coffea_hists[var][iprocess][iyear][iflavor]
+                    except KeyError:
+                        logging.warning(f"Missing leaf for {iprocess}/{iyear}/{ichannel}/{iflavor}")
+                        continue
 
-                if iprocess in _ALL_MERGE_SAMPLES:
-                    root_hists[bname][iprocess] = json_to_TH1(
-                        leaf, f'{iprocess}_{bname}', rebin)
-                elif iprocess in metadata['processes']['signal']:
-                    root_hists[bname][iprocess] = {
-                        'nominal': json_to_TH1(leaf, f'{iprocess}_{bname}', rebin)
-                    }
-                else:
-                    logging.debug(f"Skipping {iprocess} (not signal/known background)")
-
-            if systematics_file:
-                for iprocess in metadata['processes']['signal']:
-                    root_hists[bname][iprocess] = {}
-                    if stat_only:
-                        root_hists[bname][iprocess]['nominal'] = json_to_TH1(
-                            coffea_hists_syst[var][iprocess][iyear]['nominal'][iflavor],
-                            f'{iprocess}_nominal_{bname}', rebin)
+                    if iprocess in _ALL_MERGE_SAMPLES:
+                        root_hists[bname][iprocess] = json_to_TH1(
+                            leaf, f'{iprocess}_{bname}', rebin)
+                    elif iprocess in metadata['processes']['signal']:
+                        root_hists[bname][iprocess] = {
+                            'nominal': json_to_TH1(leaf, f'{iprocess}_{bname}', rebin)
+                        }
                     else:
-                        for ivar in coffea_hists_syst[var][iprocess][iyear].keys():
-                            namevar = ivar.replace('_Up', 'Up').replace('_Down', 'Down')
-                            for stat in ['hfstats1', 'hfstats2', 'lfstats1', 'lfstats2']:
-                                if stat in namevar:
-                                    year_tag = iyear.replace('_', '')
-                                    namevar = namevar.replace(stat, f'{stat}_{year_tag}')
-                                    break
-                            tmpvar = namevar.replace('Up', '').replace('Down', '')
-                            if tmpvar not in mcSysts and 'nominal' not in tmpvar:
-                                mcSysts.append(tmpvar)
-                            root_hists[bname][iprocess][namevar] = json_to_TH1(
-                                coffea_hists_syst[var][iprocess][iyear][ivar][iflavor],
-                                f'{iprocess}_{ivar}_{bname}', rebin)
+                        logging.debug(f"Skipping {iprocess} (not signal/known background)")
+
+                if systematics_file:
+                    for iprocess in metadata['processes']['signal']:
+                        root_hists[bname][iprocess] = {}
+                        if stat_only:
+                            if has_channel_axis:
+                                leaf_syst = coffea_hists_syst[var][iprocess][iyear]['nominal'][ichannel][iflavor]
+                            else:
+                                leaf_syst = coffea_hists_syst[var][iprocess][iyear]['nominal'][iflavor]
+                            root_hists[bname][iprocess]['nominal'] = json_to_TH1(
+                                leaf_syst, f'{iprocess}_nominal_{bname}', rebin)
+                        else:
+                            for ivar in coffea_hists_syst[var][iprocess][iyear].keys():
+                                namevar = ivar.replace('_Up', 'Up').replace('_Down', 'Down')
+                                for stat in ['hfstats1', 'hfstats2', 'lfstats1', 'lfstats2']:
+                                    if stat in namevar:
+                                        year_tag = iyear.replace('_', '')
+                                        namevar = namevar.replace(stat, f'{stat}_{year_tag}')
+                                        break
+                                tmpvar = namevar.replace('Up', '').replace('Down', '')
+                                if tmpvar not in mcSysts and 'nominal' not in tmpvar:
+                                    mcSysts.append(tmpvar)
+                                if has_channel_axis:
+                                    leaf_syst = coffea_hists_syst[var][iprocess][iyear][ivar][ichannel][iflavor]
+                                else:
+                                    leaf_syst = coffea_hists_syst[var][iprocess][iyear][ivar][iflavor]
+                                root_hists[bname][iprocess][namevar] = json_to_TH1(
+                                    leaf_syst, f'{iprocess}_{ivar}_{bname}', rebin)
 
     # Symmetrise one-sided signal shape systematics
     for bname in root_hists.keys():
@@ -251,6 +276,7 @@ def create_combine_root_file(file_to_convert,
         if stat_only:
             cb.cp().backgrounds().ExtractShapes(output, '$BIN/$PROCESS', '')
             cb.cp().signals().ExtractShapes(output, '$BIN/$PROCESS', '')
+            cb.cp().SetAutoMCStats(cb, 5, 1, 1)
         else:
             btagSysts, psfsrSysts, othersSysts = [], [], []
             for nuisance in mcSysts:
@@ -294,7 +320,7 @@ def create_combine_root_file(file_to_convert,
                 output, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
             cb.cp().signals().ExtractShapes(
                 output, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
-            cb.cp().SetAutoMCStats(cb, 0, 1, 1)
+            cb.cp().SetAutoMCStats(cb, 5, 1, 1)
 
         cb.PrintAll()
         cb.WriteDatacard(f"{output_dir}/datacard_{ibin}.txt",
@@ -319,9 +345,12 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--metadata', dest='metadata',
                         default='bbreww/stats_analysis/metadata/bbWW.yml',
                         help="Metadata yaml with processes, bins, uncertainties")
+    parser.add_argument('--channels', dest='channels', nargs='+',
+                        default=['hadronic_W', 'leptonic_W'],
+                        help='Channel axis values to use (one bin per channel × flavor × year).')
     parser.add_argument('--flavors', dest='flavors', nargs='+',
                         default=['e', 'mu'],
-                        help='Lepton flavor axis values to use (one bin per flavor × year).')
+                        help='Lepton flavor axis values to use.')
     parser.add_argument('--stat_only', dest='stat_only', action="store_true",
                         default=False, help="Create stat-only inputs (no shape systematics)")
     args = parser.parse_args()
@@ -336,6 +365,7 @@ if __name__ == '__main__':
         args.variable,
         args.output_dir,
         args.systematics_file,
+        args.channels,
         args.flavors,
         metadata_file=args.metadata,
         stat_only=args.stat_only,

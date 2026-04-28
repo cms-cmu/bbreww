@@ -10,9 +10,12 @@ processes:
     wjets:
       label: 'wjets'
       process: 2
-    singletop:
-      label: 'singletop'
+    tW:
+      label: 'tW'
       process: 3
+    singlet:
+      label: 'singlet'
+      process: 4
 
 bin:
   - &y2022  'y2022'

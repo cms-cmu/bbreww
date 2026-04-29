@@ -336,10 +336,10 @@ class analysis(processor.ProcessorABC):
         if self.make_classifier_input is not None:
             from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_input_friend_regressor, dump_input_friend_classifier
             friends["friends"] = ( friends["friends"]
-                | dump_input_friend_regressor(
+                | dump_input_friend_classifier(
                     selected_events[selected_events.incl_3j2b], # selected_events[selected_events.nominal_4j2b]
                     self.make_classifier_input,
-                    "regressor_input_1nb",
+                    "classifier_input_3j2b",
                     incl_3j2b_selection,
                     nonbcand = "q_cands_soft",
                     weight = "weight",

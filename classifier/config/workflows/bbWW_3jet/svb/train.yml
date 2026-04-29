@@ -17,7 +17,7 @@ dataset:
       - --mc-processes ttbar
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
       - --norm 32
-      - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input
+      - --friends "" bbreww/metadata/classifier/input/output_friend_3jet.json@@classifier_input_3j2b
       - --max-workers 2
 
   - module: bbWW.svb.Background
@@ -25,13 +25,13 @@ dataset:
       - --mc-processes WplusJets tW singleTop
       - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
       - --norm 4
-      - --friends "" bbreww/metadata/classifier/input/minorbkg_friend.json@@classifier_input
+      - --friends "" bbreww/metadata/classifier/input/minorbkg_friend_3jet.json@@classifier_input_3j2b
       - --max-workers 2
 
   - module: bbWW.svb.Signal
     option:
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
-      - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input
+      - --friends "" bbreww/metadata/classifier/input/output_friend_3jet.json@@classifier_input_3j2b
       - --max-workers 1
 
 model:

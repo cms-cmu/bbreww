@@ -16,12 +16,12 @@ sum_axes: "region"
 
 # ── nominal 4j2b category ─────────────────────────────────────────────────────
 nominal_collection:  "hists_4j2b"
-nominal_histos:      "SvB.phh"
-nominal_variable:    "SvB.phh"
+nominal_histos:      "SvB.phh_variable_nominal"
+nominal_variable:    "SvB.phh_variable_nominal"
 nominal_select_axes: "nominal_4j2b=True"
 
 # ── lowpt 4j2b category ───────────────────────────────────────────────────────
 lowpt_collection:    "hists"
-lowpt_histos:        "SvB.phh"
-lowpt_variable:      "SvB.phh"
+lowpt_histos:        "SvB.phh_variable_lowpt"
+lowpt_variable:      "SvB.phh_variable_lowpt"
 lowpt_select_axes:   "lowpt_4j2b=True"

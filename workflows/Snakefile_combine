@@ -45,10 +45,11 @@ DCARDS = f"{OUT}/datacards/bbWW"
 SIGNALLABEL = "ggHH_kl_1_kt_1_13p6TeV_hbbhww"
 
 def _sum_flag():
-    return f"--sum {config['sum_axes']}" if config["sum_axes"].strip() else ""
+    val = config.get("sum_axes") or ""
+    return f"--sum {val}" if val.strip() else ""
 
 def _select_flag(key):
-    val = config[key]
+    val = config.get(key) or ""
     return f"--select {val}" if val.strip() else ""
 
 # ── targets ───────────────────────────────────────────────────────────────────

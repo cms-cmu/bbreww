@@ -29,8 +29,9 @@ runner:
 config:
   #make_spanet_input: *spanet_base
   make_classifier_input: *friend_base
-  run_MET_regression: false
+  run_MET_regression: true
   friends:
     met_regressor: "bbreww/metadata/regressor/output/result.json@@analysis.0.merged"
+    met_regressor_3jet: "bbreww/metadata/regressor/output/result_3jet.json@@analysis.0.merged"
   fill_hists: false     
   run_SvB: false

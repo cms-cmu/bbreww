@@ -115,7 +115,7 @@ JID_MERGE=$(sbatch --parsable \
     --output="${LOG_DIR}/bbww_merge_%j.out" \
     --error="${LOG_DIR}/bbww_merge_%j.out" \
     --dependency="afterany:${DEP}" \
-    --wrap="$MERGE_WRAP")
+    --wrap="bash -c $(printf '%q' "$MERGE_WRAP")")
 echo "Submitted merge               — job ${JID_MERGE} (depends on all chunks)"
 
 # ---------------------------------------------------------------------------

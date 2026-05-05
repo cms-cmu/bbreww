@@ -58,7 +58,7 @@ COMMON="python runner.py \
     --luminosities bbreww/metadata/luminosities_bbWW.yml \
     --friends none \
     -op ${OUTPUT_DIR}/ \
-    #--condor"
+    --condor"
 
 ALL_ERAS="2022_preEE 2022_EE 2023_preBPix 2023_BPix"
 CHUNK1_DS="GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic"

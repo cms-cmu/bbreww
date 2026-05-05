@@ -223,6 +223,7 @@ class analysis(processor.ProcessorABC):
         selection.add('nom_njets3',  events.nom_njets3) # exact 3 jets region
         selection.add('lowpt_njets4', ~selection.all('nom_njets4') & (events.has_4_presel_jets) )
         selection.add('lowpt_njets3', ~(selection.all('nom_njets4')) & (events.has_exactly_3_presel_jets) )
+        selection.add('incl_njets3', selection.all('nom_njets3') | selection.all('lowpt_njets3'))
         # veto events with jets affected by EE water leak (2022) and hole in Pixel L3/L4 (2023)
         jet_veto_maps = (ak.all(events.Jet.jet_veto_maps,axis=1) if '202' in self.year
                          else ak.ones_like(events.run,dtype=bool))
@@ -233,7 +234,7 @@ class analysis(processor.ProcessorABC):
         }
         selection_list['nominal_4j2b'] = selection_list['preselection'] + ['nom_njets4']
         selection_list['lowpt_4j2b'] = selection_list['preselection'] + ['lowpt_njets4']
-        selection_list['incl_3j2b'] = selection_list['preselection'] + ['nom_njets3'] + ['lowpt_njets3']
+        selection_list['incl_3j2b'] = selection_list['preselection'] + ['incl_njets3']
         
         events['preselection'] = selection.all(*selection_list['preselection'])
         events['nominal_4j2b'] = selection.all(*selection_list['nominal_4j2b'])
@@ -283,6 +284,15 @@ class analysis(processor.ProcessorABC):
         selected_events = events[events.preselection]
         del events
 
+        # merge 3jet SvB scores so downstream code uses the right friend per event
+        if self.run_SvB and "SvB_3jet" in ak.fields(selected_events):
+            _svb_fields = ['ptt', 'phh', 'poth', 'tt_b1Whad', 'tt_b2Whad', 'hh_vs_tt', 'hh_vs_oth', 'tt_vs_oth']
+            selected_events["SvB"] = ak.zip({
+                _f: ak.where(selected_events.incl_3j2b, selected_events.SvB_3jet[_f], selected_events.SvB[_f])
+                for _f in _svb_fields
+            })
+            print(selected_events.SvB.phh[selected_events.incl_3j2b])
+
         selected_events = candidate_selection(selected_events, self.params, self.year, self.run_SvB,
                                               self.run_MET_regression, self.classifier_SvB) # select HH->bbWW candidates
         # selected_events = chi_sq(selected_events) # chi square selection and calculation
@@ -314,13 +324,6 @@ class analysis(processor.ProcessorABC):
         'hadronic_W': selection.all('hadronic_W')[selection.all(*selection_list['preselection'])],
         'leptonic_W': selection.all('leptonic_W')[selection.all(*selection_list['preselection'])]
         })
-
-        # tail of SvB distribution
-        selected_events['SvB_tail'] = ((selected_events.nominal_4j2b) & (selected_events.SvB.phh > 0.6)
-                                       if (self.run_SvB) else ak.ones_like(selected_events.MET.pt, dtype= bool))
-
-        selected_events['SvB_tail_lowpt'] = ((selected_events.lowpt_4j2b) & (selected_events.SvB.phh > 0.6)
-                                       if (self.run_SvB) else ak.ones_like(selected_events.MET.pt, dtype= bool))
         
         selected_events = gen_studies(selected_events, self.is_mc, run_MET_regression = self.run_MET_regression) # gen particle studies for MC
         
@@ -336,10 +339,10 @@ class analysis(processor.ProcessorABC):
         if self.make_classifier_input is not None:
             from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_input_friend_regressor, dump_input_friend_classifier
             friends["friends"] = ( friends["friends"]
-                | dump_input_friend_classifier(
+                | dump_input_friend_regressor(
                     selected_events[selected_events.incl_3j2b], # selected_events[selected_events.nominal_4j2b]
                     self.make_classifier_input,
-                    "classifier_input_3j2b",
+                    "regressor_input_1nb",
                     incl_3j2b_selection,
                     nonbcand = "q_cands_soft",
                     weight = "weight",
@@ -380,7 +383,7 @@ class analysis(processor.ProcessorABC):
                 'sum_genweights': np.sum(selected_events.genWeight) if self.is_mc else self.n_events,
             }
             # add cuts for different regions
-            cutflow_list = ['nominal_4j2b', 'lowpt_4j2b', 'incl_3j2b', 'SvB_tail', 'SvB_tail_lowpt']
+            cutflow_list = ['nominal_4j2b', 'lowpt_4j2b', 'incl_3j2b']
             for cuts in cutflow_list:
                 cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True, fill_flavour = True)
             cutflow.add_output(output['events_processed'], self.dataset)
@@ -392,11 +395,11 @@ class analysis(processor.ProcessorABC):
                 year=self.year_label,
                 is_mc=self.is_mc,
                 histCuts=['preselection',
-                        'lowpt_4j2b', 'incl_3j2b', 'SvB_tail_lowpt'
+                        'lowpt_4j2b', 'incl_3j2b'
                         ],
                 channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
-                region_list=['SR', 'CR'],
+                #region_list=['SR', 'CR'],
                 run_SvB = self.run_SvB,
                 run_MET_regression = self.run_MET_regression
             )
@@ -406,10 +409,10 @@ class analysis(processor.ProcessorABC):
                 processName=self.processName,
                 year=self.year_label,
                 is_mc=self.is_mc,
-                histCuts=['nominal_4j2b', 'SvB_tail'],
+                histCuts=['nominal_4j2b'],
                 channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
-                region_list=['SR', 'CR'],
+                #region_list=['SR', 'CR'],
                 run_SvB = self.run_SvB,
                 run_MET_regression = self.run_MET_regression
                 )

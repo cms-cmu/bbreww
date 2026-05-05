@@ -48,9 +48,9 @@ class InputEmbed3jet(nn.Module):
             self.dD, phase_symmetric=phase_symmetric, conv=True, name="jet convolution",
         )
 
-        # single non-b jet embedder: (pt, eta, phi, mass, attn_score from METRegressor) + pad label row
+        # single non-b jet embedder: (pt, eta, phi, mass).
         self.nonbJetEmbed = GhostBatchNorm1d(
-            5, features_out=self.dD, phase_symmetric=phase_symmetric,
+            4, features_out=self.dD, phase_symmetric=phase_symmetric,
             conv=True, name="nonb jet embedder",
         )
         self.nonbJetConv = GhostBatchNorm1d(
@@ -210,14 +210,17 @@ class InputEmbed3jet(nn.Module):
         l = l.view(n, 6, 1)
         a = a.view(n, self.dA, 1)
 
-        # External attention score from METRegressor on the single jet (feature 5)
-        nb_attn = nb[:, 4, :].clone()          # (n, 1)
+        # Drop the regressor attn_score (feature 5): degenerate at 1.0 with wsl=1.
         nb = nb[:, :4, :]                      # (n, 4, 1): pt, eta, phi, mass
 
         raw_nb = nb.reshape(n, -1).clone()     # (n, 4) flat
         raw_lep = l.squeeze(-1).clone()        # (n, 6)
 
-        a[:, 2, :] = torch.log(torch.clamp(a[:, 2, :], min=1e-6))  # log(HT)
+        # log(HT): look up HT's position dynamically since the ancillary
+        # feature list is configured per-workflow (e.g. "njets" is dropped in
+        # the 3-jet region because it's constant by selection).
+        ht_idx = self.ancillaryFeatures.index("HT")
+        a[:, ht_idx, :] = torch.log(torch.clamp(a[:, ht_idx, :], min=1e-6))
 
         # Leptonic W from regressed neutrino
         if reg_nu is not None:
@@ -258,12 +261,8 @@ class InputEmbed3jet(nn.Module):
         bbPxPyPzE = bbPxPyPzE.unsqueeze(2)
 
         # Padded-jet mask: nb pt < 0 signals a missing jet (shouldn't happen in
-        # 3-jet selection by construction, but kept for robustness).
+        # 3-jet selection by construction, but kept for downstream MdR masking).
         mask = (nb[:, 0, :] < 0)  # (n, 1)
-        nb = torch.cat(
-            [nb, torch.ones((n, 1, self.wsl), dtype=torch.float, device=device)], 1
-        )
-        nb[:, -1, :][mask] = -1
 
         bPxPyPzE = PxPyPzE(b)
         nbPxPyPzE = PxPyPzE(nb)
@@ -332,14 +331,14 @@ class InputEmbed3jet(nn.Module):
                 bbMdR, bbnMdR, bWhadMdR, bWlepMdR, bbWlepMdR, WlepNBMdR,
                 mask, mask_bbMdR, mask_bWhad, mask_bWlep,
                 derived_kinematics, raw_nb, raw_lep,
-                reg_nu, regW_lep, lepW_mass, mbb_scalar, nb_attn)
+                reg_nu, regW_lep, lepW_mass, mbb_scalar)
 
     def updateMeanStd(self, b, nb, l, a, reg_nu=None):
         (b, bb, a, nb, l, lnu_mT, bWhad, bWlep,
          bbMdR, bbnMdR, bWhadMdR, bWlepMdR, bbWlepMdR, WlepNBMdR,
          mask, mask_bbMdR, mask_bWhad, mask_bWlep,
          derived_kinematics, raw_nb, raw_lep,
-         reg_nu, regW_lep, lepW_mass, mbb_scalar, nb_attn) = self.dataPrep(
+         reg_nu, regW_lep, lepW_mass, mbb_scalar) = self.dataPrep(
             b, nb, l, a, reg_nu)
 
         n = b.shape[0]
@@ -427,7 +426,7 @@ class InputEmbed3jet(nn.Module):
          bbMdR, bbnMdR, bWhadMdR, bWlepMdR, bbWlepMdR, WlepNBMdR,
          mask, mask_bbMdR, mask_bWhad, mask_bWlep,
          derived_kinematics, raw_nb, raw_lep,
-         reg_nu, regW_lep, lepW_mass, mbb_scalar, nb_attn) = self.dataPrep(
+         reg_nu, regW_lep, lepW_mass, mbb_scalar) = self.dataPrep(
             b, nb, l, a, reg_nu)
 
         n = b.shape[0]
@@ -505,7 +504,7 @@ class InputEmbed3jet(nn.Module):
                 bbMdR, bbnMdR, bWhadMdR, bWlepMdR, bbWlepMdR, WlepNBMdR,
                 mask_bbn_flat, mask_bWhad, mask_bWlep,
                 derived_emb, reg_nu_emb, regW_emb, lepW_mass_emb, bb_mass_emb,
-                raw_nb, raw_lep, nb_attn)
+                raw_nb, raw_lep)
 
 
 class bbWW_3jet(nn.Module):
@@ -687,7 +686,7 @@ class bbWW_3jet(nn.Module):
          bbMdR, bbnMdR, bWhadMdR, bWlepMdR, bbWlepMdR, WlepNBMdR,
          mask_bbn, mask_bWhad, mask_bWlep,
          derived, reg_nu_emb, regW_emb, lepW_mass_emb, bb_mass_emb,
-         raw_nb, raw_lep, nb_attn) = self.inputEmbed(b, nb, l, a, reg_nu)
+         raw_nb, raw_lep) = self.inputEmbed(b, nb, l, a, reg_nu)
 
         n = b.shape[0]
         bsl = self.inputEmbed.bsl
@@ -760,13 +759,14 @@ class bbWW_3jet(nn.Module):
         TT_final = self.out_tt(TT_sel)
         self._last_tt_logits = TT_logits.detach()
 
-        # Per-jet "attention weights" output: degenerate in 3-jet (single nb),
-        # so propagate the METRegressor prior as a per-jet score. Shape
-        # (n, heads, 1, wsl=1) matches the lowpt convention.
+        # Per-jet "attention weights" output: in 3-jet (single nb) any per-jet
+        # attention weight collapses to 1.0 by construction, so emit a constant
+        # 1.0 tensor of shape (n, heads, 1, wsl=1) to preserve the lowpt-shaped
+        # WW_score1 eval column without pretending it carries information.
         heads = self.attention_tt.h
-        self._jet_weights = (
-            nb_attn.view(n, 1, 1, 1).expand(-1, heads, 1, 1).contiguous().detach()
-        )
+        self._jet_weights = torch.ones(
+            n, heads, 1, 1, device=self.device, dtype=bb.dtype,
+        ).detach()
 
         # ============================================================
         # H->WW block: (regW_emb, nb_emb, WlepNB_MdR, lepW_mass_emb)

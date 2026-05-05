@@ -15,7 +15,9 @@ setting:
           2023_BPix: [D01, D02, D11, D12]
   - module: bbWW.InputBranch
     option:
-      - feature_ancillary: ["njets", "nsoftjets", "HT", "year"]
+      # njets is constant (==3) by selection in this region, so it would have
+      # zero variance and produce NaN in GhostBatchNorm. Drop it.
+      - feature_ancillary: ["nsoftjets", "HT", "year"]
       # 3-jet region: exactly 1 surviving non-b jet (the soft W daughter
       # drops below threshold in this topology)
       - nnonbJetCand: 1

@@ -16,7 +16,7 @@ dataset:
     option:
       - --mc-processes ttbar
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
-      - --norm 32
+      - --norm 4
       - --friends "" bbreww/metadata/classifier/input/output_friend_3jet.json@@classifier_input_3j2b
       - --max-workers 2
 
@@ -24,8 +24,8 @@ dataset:
     option:
       - --mc-processes WplusJets tW singleTop
       - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
-      - --norm 4
-      - --friends "" bbreww/metadata/classifier/input/minorbkg_friend_3jet.json@@classifier_input_3j2b
+      - --norm 2
+      - --friends "" bbreww/metadata/classifier/input/output_friend_3jet.json@@classifier_input_3j2b
       - --max-workers 2
 
   - module: bbWW.svb.Signal
@@ -41,12 +41,12 @@ model:
       - --kfold-seed FvT random
       - --kfold-seed-offsets 0
       - --training FixedStep
-      - epoch: 15
-        bs_init: 4096
-        lr_milestones: [8, 10, 12]
+      - epoch: 20
+        bs_init: 2048
+        lr_milestones: [12, 14, 16]
         lr_scale: 0.3
-        lr_init: 0.005
-        weight_decay: 0.0001
+        lr_init: 0.001
+        weight_decay: 0.001
 
 setting:
   - module: IO

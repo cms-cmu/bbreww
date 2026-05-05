@@ -35,8 +35,9 @@ LOCAL_RESULT_JSON_DIR="bbreww/metadata/classifier/output/"
 RUN_TRAIN_ANALYZE="bbreww/scripts/norm_scan/run_train_analyze.sh"
 RUN_EVALUATE="bbreww/scripts/norm_scan/run_evaluate.sh"
 
-# State file used to pass a prefetched train+analyze job id between combos.
+# State files used to pass prefetched job ids between combos.
 PREFETCH_FILE="${OUT_BASE}/.prefetch_train_analyze_jid"
+PREFETCH_EVAL_FILE="${OUT_BASE}/.prefetch_evaluate_jid"
 
 mkdir -p "$OUT_BASE"
 
@@ -177,6 +178,89 @@ submit_classifier_step() {
     echo "$out" | awk '/^Submitted batch job/ {print $4}' | tail -1
 }
 
+# Submit the next combo's train+analyze in the background (does NOT wait).
+# Args: $1 = current combo's norm_tt, $2 = current combo's norm_minor.
+# Reads NEXT_COMBO_NORMS env var; uses PREFETCH_FILE to stash the JID for combo N+1.
+prefetch_next_train_analyze() {
+    local cur_n_tt="$1"
+    local cur_n_minor="$2"
+
+    [[ -z "${NEXT_COMBO_NORMS:-}" ]] && return 0
+    [[ -f "$PREFETCH_FILE" ]] && return 0  # already prefetched
+
+    local next_n_tt next_n_minor
+    read -r next_n_tt next_n_minor <<< "$NEXT_COMBO_NORMS"
+    local next_combo_dir="${OUT_BASE}/tt${next_n_tt}_minor${next_n_minor}"
+    local next_M="${next_combo_dir}/.done"
+    mkdir -p "$next_combo_dir" "$next_M"
+
+    if [[ -f "${next_M}/01_train_analyze" ]]; then
+        log "[prefetch] Next combo (${next_n_tt}, ${next_n_minor}) already has train+analyze marker; skipping prefetch"
+        return 0
+    fi
+
+    log "[prefetch] Setting norms for next combo (${next_n_tt}, ${next_n_minor}) and launching train+analyze in background..."
+    set_norms "$next_n_tt" "$next_n_minor"
+    local pre_jid
+    pre_jid=$(submit_classifier_step "$RUN_TRAIN_ANALYZE" "${next_combo_dir}/train_analyze_submit.log")
+    if [[ -n "$pre_jid" ]] && [[ "$pre_jid" =~ ^[0-9]+$ ]]; then
+        echo "$pre_jid" > "$PREFETCH_FILE"
+        log "[prefetch] Submitted train+analyze for next combo: job ${pre_jid}"
+    else
+        log "[prefetch] WARNING: could not parse prefetch job id; next combo will train fresh"
+    fi
+    # IMPORTANT: do NOT restore train.yml to current combo's norms here. The slurm job
+    # we just submitted reads train.yml at RUNTIME (when it actually starts on the node),
+    # not at submission time. If we revert, the queued job would read the wrong norms.
+    # Safe to leave train.yml at next combo's norms because combo N's remaining steps
+    # (5-9) don't touch train.yml. Combo N+1's set_norms() at the start will re-confirm.
+}
+
+# Wait for the prefetched train+analyze (if any) to finish, then submit evaluate
+# for combo N+1 in the background. Saves the evaluate JID so combo N+1's step 2
+# can wait on it instead of submitting fresh.
+prefetch_next_evaluate() {
+    [[ -z "${NEXT_COMBO_NORMS:-}" ]] && return 0
+    [[ -f "$PREFETCH_EVAL_FILE" ]] && return 0  # already prefetched
+    [[ ! -f "$PREFETCH_FILE" ]] && {
+        log "[prefetch-eval] No prefetched train+analyze JID found; skipping evaluate prefetch"
+        return 0
+    }
+
+    local next_n_tt next_n_minor
+    read -r next_n_tt next_n_minor <<< "$NEXT_COMBO_NORMS"
+    local next_combo_dir="${OUT_BASE}/tt${next_n_tt}_minor${next_n_minor}"
+    local next_M="${next_combo_dir}/.done"
+    mkdir -p "$next_combo_dir" "$next_M"
+
+    if [[ -f "${next_M}/02_evaluate" ]]; then
+        log "[prefetch-eval] Next combo (${next_n_tt}, ${next_n_minor}) already has evaluate marker; skipping"
+        return 0
+    fi
+
+    local train_jid
+    train_jid=$(cat "$PREFETCH_FILE")
+    log "[prefetch-eval] Waiting for prefetched train+analyze (job ${train_jid}) before submitting evaluate..."
+    wait_for_jobs "$train_jid" "prefetched train+analyze" || {
+        log "[prefetch-eval] WARNING: train+analyze ${train_jid} wait failed; next combo will evaluate fresh"
+        return 0
+    }
+
+    # Train+analyze is done; mark it for combo N+1 and remove the JID file.
+    touch "${next_M}/01_train_analyze"
+    rm -f "$PREFETCH_FILE"
+
+    log "[prefetch-eval] Submitting evaluate for next combo (${next_n_tt}, ${next_n_minor})..."
+    local eval_jid
+    eval_jid=$(submit_classifier_step "$RUN_EVALUATE" "${next_combo_dir}/evaluate_submit.log")
+    if [[ -n "$eval_jid" ]] && [[ "$eval_jid" =~ ^[0-9]+$ ]]; then
+        echo "$eval_jid" > "$PREFETCH_EVAL_FILE"
+        log "[prefetch-eval] Submitted evaluate for next combo: job ${eval_jid}"
+    else
+        log "[prefetch-eval] WARNING: could not parse evaluate job id; next combo will evaluate fresh"
+    fi
+}
+
 # ---------------------------------------------------------------------------
 # Per-combo pipeline (8 numbered steps)
 # ---------------------------------------------------------------------------
@@ -238,12 +322,25 @@ run_combo() {
     if [[ -f "${M}/02_evaluate" ]]; then
         log "[2/9] Skipping evaluate (already done)"
     else
-        log "[2/9] Submitting evaluate..."
-        local ev_jid
-        ev_jid=$(submit_classifier_step "$RUN_EVALUATE" "${combo_dir}/evaluate_submit.log")
+        local ev_jid=""
+        # Was an evaluate JID prefetched for this combo at the previous combo's step 8b?
+        if [[ -f "$PREFETCH_EVAL_FILE" ]]; then
+            ev_jid=$(cat "$PREFETCH_EVAL_FILE")
+            rm -f "$PREFETCH_EVAL_FILE"
+            if [[ "$ev_jid" =~ ^[0-9]+$ ]]; then
+                log "[2/9] Found prefetched evaluate job ${ev_jid}; will wait on it instead of resubmitting"
+            else
+                log "[2/9] Prefetch eval file had garbage; submitting fresh evaluate"
+                ev_jid=""
+            fi
+        fi
         if [[ -z "$ev_jid" ]]; then
-            log "ERROR: could not parse evaluate job id; aborting combo"
-            return 1
+            log "[2/9] Submitting evaluate..."
+            ev_jid=$(submit_classifier_step "$RUN_EVALUATE" "${combo_dir}/evaluate_submit.log")
+            if [[ -z "$ev_jid" ]]; then
+                log "ERROR: could not parse evaluate job id; aborting combo"
+                return 1
+            fi
         fi
         wait_for_jobs "$ev_jid" "evaluate" || return 1
         touch "${M}/02_evaluate"
@@ -258,6 +355,12 @@ run_combo() {
         cp "${LOCAL_RESULT_JSON_DIR}/result.json" "${combo_dir}/result.json"
         touch "${M}/03_xrdcp_result"
     fi
+
+    # 3b. PREFETCH next combo's train+analyze (does NOT block).
+    # Safe here: combo N's evaluate is done, so ${MODEL}/SvB/ is no longer needed by combo N.
+    # The processor reads only local result.json + EOS friend trees at ${SvB}/,
+    # neither of which train+analyze touches.
+    prefetch_next_train_analyze "$n_tt" "$n_minor"
 
     # 4. Pre-pass quantiles cleanup
     if [[ -f "${M}/04_cleanup_pre" ]]; then
@@ -328,38 +431,11 @@ run_combo() {
         touch "${M}/08_processor_pass2"
     fi
 
-    # 8b. PREFETCH next combo's train+analyze (does NOT block).
-    # Safe now: combo N's processor is done reading EOS friend trees, so combo N+1
-    # can clobber ${MODEL}/SvB/ via training without affecting combo N.
-    # NOTE: combo N+1's *evaluate* must NOT run yet (would clobber friend trees combo N
-    # is about to use for combine — actually combine doesn't read friend trees, so it's
-    # safe; but next combo's evaluate also must wait until next combo's training is done,
-    # which is naturally enforced by sequential 01→02 dependency).
-    if [[ -n "${NEXT_COMBO_NORMS:-}" ]] && [[ ! -f "$PREFETCH_FILE" ]]; then
-        local next_n_tt next_n_minor
-        read -r next_n_tt next_n_minor <<< "$NEXT_COMBO_NORMS"
-        local next_combo_dir="${OUT_BASE}/tt${next_n_tt}_minor${next_n_minor}"
-        local next_M="${next_combo_dir}/.done"
-        mkdir -p "$next_combo_dir" "$next_M"
-
-        # Skip prefetch if next combo already has the marker (resume case)
-        if [[ -f "${next_M}/01_train_analyze" ]]; then
-            log "[prefetch] Next combo (${next_n_tt}, ${next_n_minor}) already has train+analyze marker; skipping prefetch"
-        else
-            log "[prefetch] Setting norms for next combo (${next_n_tt}, ${next_n_minor}) and launching train+analyze in background..."
-            set_norms "$next_n_tt" "$next_n_minor"
-            local pre_jid
-            pre_jid=$(submit_classifier_step "$RUN_TRAIN_ANALYZE" "${next_combo_dir}/train_analyze_submit.log")
-            if [[ -n "$pre_jid" ]] && [[ "$pre_jid" =~ ^[0-9]+$ ]]; then
-                echo "$pre_jid" > "$PREFETCH_FILE"
-                log "[prefetch] Submitted train+analyze for next combo: job ${pre_jid}"
-            else
-                log "[prefetch] WARNING: could not parse prefetch job id; next combo will train fresh"
-            fi
-            # Restore norms back to current combo (mostly cosmetic; train.yml is no longer read this combo)
-            set_norms "$n_tt" "$n_minor"
-        fi
-    fi
+    # 8b. PREFETCH next combo's evaluate (does NOT block).
+    # Safe here: combo N's processor pass 2 is done reading ${SvB}/, so combo N+1's evaluate
+    # can overwrite the friend trees there. Combine (step 9) reads only output_merged.coffea,
+    # not ${SvB}/, so it's unaffected.
+    prefetch_next_evaluate
 
     # 9. Combine via snakemake
     if [[ -f "${M}/09_combine" ]]; then

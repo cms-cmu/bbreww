@@ -298,7 +298,7 @@ def candidate_selection(events, params, year, run_SvB, run_MET_regression, class
                         & elliptical_region(events.Hbb_cand.mass, events.HWW_mass,
                                             115, 135, 100, 100)) # sideband TTbar control 4jet region
        signal_region_3jet = elliptical_region(events.Hbb_cand.mass, events.mlvq_mass,
-                                         115, 135, 60, 60 ) # elliptical signal region 3jet region
+                                         120, 120, 60, 60 ) # elliptical signal region 3jet region
     else:
         signal_region_4jet = ak.singletons(ak.ones_like(events.event, dtype = bool))
         control_region_4jet = ~signal_region_4jet

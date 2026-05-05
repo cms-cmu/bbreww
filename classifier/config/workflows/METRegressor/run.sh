@@ -32,10 +32,10 @@ fi
 #     -setting Monitor "address: :${port}"
 
 # evaluate 4-jet region (default) with evaluate.yml and common.yml configs
-./src/pyml.py \
-    template "{model: ${MODEL}, SvB: ${MET_FRIEND}}" $WFS/evaluate.yml \
-    -from $WFS/common.yml \
-    -setting Monitor "address: :${port}"
+#./src/pyml.py \
+#    template "{model: ${MODEL}, SvB: ${MET_FRIEND}}" $WFS/evaluate.yml \
+#    -from $WFS/common.yml \
+#    -setting Monitor "address: :${port}"
 
 # evaluate 3-jet region with evaluate_3jet.yml; outputs go to a separate
 # friend-tree directory (MET_FRIEND_3JET) to avoid overwriting 4-jet outputs

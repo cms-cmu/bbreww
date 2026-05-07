@@ -16,7 +16,7 @@ dataset:
     option:
       - --mc-processes ttbar
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
-      - --norm 4
+      - --norm 16
       - --friends "" bbreww/metadata/classifier/input/output_friend_3jet.json@@classifier_input_3j2b
       - --max-workers 2
 
@@ -24,7 +24,7 @@ dataset:
     option:
       - --mc-processes WplusJets tW singleTop
       - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
-      - --norm 2
+      - --norm 1
       - --friends "" bbreww/metadata/classifier/input/output_friend_3jet.json@@classifier_input_3j2b
       - --max-workers 2
 

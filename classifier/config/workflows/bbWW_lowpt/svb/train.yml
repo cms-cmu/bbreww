@@ -16,7 +16,7 @@ dataset:
     option:
       - --mc-processes ttbar
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
-      - --norm 1 #set TTbar to be x times weight of signal
+      - --norm 16 #set TTbar to be x times weight of signal
       # - --ttbar-prescale 10 # this option is to only train on a fraction of events
       - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input # set input friend tree
       - --max-workers 2

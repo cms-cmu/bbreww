@@ -293,24 +293,18 @@ def candidate_selection(events, params, year, run_SvB, run_MET_regression, class
     # Define the SR and CR based on H ->> bb candidate mass and HWW_mass using regressed neutrino
     if run_MET_regression:
        signal_region_4jet = elliptical_region(events.Hbb_cand.mass, events.HWW_mass,
-                                         115, 135, 60, 60 ) # elliptical signal 4jet region
-       control_region_4jet = ((~signal_region_4jet)
-                        & elliptical_region(events.Hbb_cand.mass, events.HWW_mass,
-                                            115, 135, 100, 100)) # sideband TTbar control 4jet region
+                                         115, 135, 100, 100 ) # elliptical signal 4jet region
        signal_region_3jet = elliptical_region(events.Hbb_cand.mass, events.mlvq_mass,
                                          120, 117, 62, 62 ) # elliptical signal region 3jet region
     else:
         signal_region_4jet = ak.singletons(ak.ones_like(events.event, dtype = bool))
-        control_region_4jet = ~signal_region_4jet
         signal_region_3jet = ak.singletons(ak.ones_like(events.event, dtype = bool))
 
     sr_flat = ak.fill_none(ak.firsts(signal_region_4jet), False)
-    cr_flat = ak.fill_none(ak.firsts(control_region_4jet), False)
     sr_flat_3jet = ak.fill_none(ak.firsts(signal_region_3jet), False)
 
-    # decouple 3j2b from SR/CR: force both True so 3jet events aren't dropped
     sr_flat = ak.where(events.incl_3j2b, sr_flat_3jet, sr_flat)
-    cr_flat = ak.where(events.incl_3j2b, ~sr_flat_3jet, cr_flat)
+    cr_flat = ak.where(events.incl_3j2b, ~sr_flat_3jet, ~sr_flat)
 
     events['region'] = ak.zip({
         'SR': sr_flat,

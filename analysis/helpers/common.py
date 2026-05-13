@@ -42,22 +42,40 @@ def elliptical_region(x, y, center_x, center_y, width, height):
 
     return result <= 1
 
-def dump_phh_to_pickle(selected_events, dataset, output_path):
+def dump_phh_to_pickle(selected_events, dataset, output_path, year=None):
     """Dump signal SvB.phh data to a pickle file for quantile rebinning.
+
+    Also saves per-event fit-channel (channel, flavor) so quantile regression
+    can validate bin populations at the actual fit granularity
+    (channel, flavor, year).
 
     Supports writing to EOS by first writing to a local temp file,
     then copying to the remote destination.
     """
+    # Per-event channel/flavor as string arrays (small, easy to filter on)
+    ch_hadW = ak.to_numpy(selected_events.channel.hadronic_W)
+    ch_lepW = ak.to_numpy(selected_events.channel.leptonic_W)
+    channel = np.where(ch_hadW, 'hadW', np.where(ch_lepW, 'lepW', 'none'))
+
+    fl_e  = ak.to_numpy(selected_events.flavor.e)
+    fl_mu = ak.to_numpy(selected_events.flavor.mu)
+    flavor = np.where(fl_e, 'e', np.where(fl_mu, 'mu', 'none'))
+
+    def _region_block(region_mask):
+        m = ak.to_numpy(region_mask)
+        return {
+            'phh':     ak.to_numpy(selected_events.SvB.phh[region_mask]),
+            'weight':  ak.to_numpy(selected_events.weight[region_mask]),
+            'channel': channel[m],
+            'flavor':  flavor[m],
+        }
+
     phh_data = {
         'dataset': dataset,
-        'nominal_4j2b': {
-            'phh': ak.to_numpy(selected_events.SvB.phh[selected_events.nominal_4j2b & selected_events.region.SR]),
-            'weight': ak.to_numpy(selected_events.weight[selected_events.nominal_4j2b & selected_events.region.SR]),
-        },
-        'lowpt_4j2b': {
-            'phh': ak.to_numpy(selected_events.SvB.phh[selected_events.lowpt_4j2b & selected_events.region.SR]),
-            'weight': ak.to_numpy(selected_events.weight[selected_events.lowpt_4j2b & selected_events.region.SR]),
-        },
+        'year':    year,
+        'nominal_4j2b': _region_block(selected_events.nominal_4j2b & selected_events.region.SR),
+        'lowpt_4j2b':   _region_block(selected_events.lowpt_4j2b   & selected_events.region.SR),
+        'incl_3j2b':    _region_block(selected_events.incl_3j2b    & selected_events.region.SR),
     }
 
     eos_path = EOS(output_path)

@@ -119,7 +119,7 @@ def fill_histograms_nominal(
     histCuts: list = ['preselection'],
     channel_list: list = ['hadronic_W','leptonic_W'],
     flavor_list: list = ['e', 'mu'],
-    #region_list: list = ['SR', 'CR'],
+    region_list: list = ['SR', 'CR'],
     run_SvB: bool = False,
     run_MET_regression: bool = False,
 ):
@@ -134,7 +134,7 @@ def fill_histograms_nominal(
         year=[year],
         channel=channel_list,
         flavor = flavor_list,
-        #region = region_list,
+        region = region_list,
         **dict((s, ...) for s in histCuts)
     )
 
@@ -193,7 +193,7 @@ def fill_histograms(
     histCuts: list = ['preselection'],
     channel_list: list = ['hadronic_W','leptonic_W'],
     flavor_list: list = ['e', 'mu'],
-    #region_list: list = ['SR', 'CR'],
+    region_list: list = ['SR', 'CR'],
     run_SvB: bool = False,
     run_MET_regression: bool = False,
 ):
@@ -208,7 +208,7 @@ def fill_histograms(
         year=[year],
         channel=channel_list,
         flavor = flavor_list,
-        #region = region_list,
+        region = region_list,
         **dict((s, ...) for s in histCuts)
     )
 

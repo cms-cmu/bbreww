@@ -3,7 +3,7 @@ setting:
     option:
       #- num_workers: 4
       - batch_skim: 393216 # 3 * 2^17
-      - batch_eval: 2097152 # 2^21
+      - batch_eval: 393216 # 3 * 2^17
       - optimize_sliceable_dataset: true
   - module: ROOT
     option:

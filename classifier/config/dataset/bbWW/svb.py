@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 def _common_selection(df: pd.DataFrame):
     """Common selection for both signal and control regions"""
 
-    return df["CR"] | df["SR"]
+    return df["SR"] | df["CR"]
 
 def _data_selection(df: pd.DataFrame):
     """Data selection excluding signal region events"""
@@ -27,7 +27,7 @@ def _signal_selection(df: pd.DataFrame):
 
 def _select_sr(df: pd.DataFrame):
     """Select signal region events"""
-    return df[df["SR"]]
+    return df["SR"]
 
 def _select_cr(df: pd.DataFrame):
     """Select control region events"""

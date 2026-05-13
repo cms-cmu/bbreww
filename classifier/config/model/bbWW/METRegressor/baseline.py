@@ -192,27 +192,15 @@ class Train(METRegressorTrain):
         # ---- Loss 3: backbone (classifier only) ----
         logit_onshell = batch["logit_onshell"][valid]
 
-        true_nbjet = batch[Input.true_nbjet_flat][valid]  # (n, wsl) binary: 1 if true q from W
-        has_true_jets = (true_nbjet.sum(dim=-1) > 0) # only compute loss on events with labeled jets
-        
-        ww_weights = batch["ww_weights"][valid]      # (n, h*wsl) from forward pass
-        wsl = ww_weights.shape[1] // 2
-        ww_weights = ww_weights.view(-1, 2, wsl).mean(dim=1)  # (n, wsl)
-
         if has_label.sum() > 0 and weight[has_label].sum() > 0:
             clf_loss = F.binary_cross_entropy_with_logits(
                 logit_onshell[has_label], isLepW[has_label].clamp(0.0, 1.0),
                 weight=weight[has_label], reduction="sum"
             ) / weight[has_label].sum()
-
-            target_dist = true_nbjet / true_nbjet.sum(dim=-1, keepdim=True).clamp(min=1)
-            jet_attn_loss = -(target_dist[has_true_jets] * torch.log(ww_weights[has_true_jets] + 1e-8)).sum(dim=-1).mean()
-            
         else:
             clf_loss = torch.tensor(0.0, device=pred_on.device, requires_grad=True)
-            jet_attn_loss = torch.tensor(0.0, device=pred_on.device, requires_grad=True)
 
-        return clf_loss + 0.3 * jet_attn_loss, loss_onshell, loss_offshell
+        return clf_loss, loss_onshell, loss_offshell
 
 
 class Eval(METRegressorEval):

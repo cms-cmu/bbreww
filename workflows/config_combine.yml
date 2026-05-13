@@ -11,17 +11,26 @@ input_coffea: "output/full_run/output_merged.coffea"
 # Common settings
 rebin: 1
 
-# Axis collapsing at the convert step (applied to both categories)
-sum_axes: "region"
+# Per-category axis collapsing/selection at the convert step.
+# Use *_sum_axes to collapse axes (e.g. region) and *_select_axes to pick values.
 
-# ── nominal 4j2b category ─────────────────────────────────────────────────────
+# ── nominal 4j2b category — sum SR + CR ───────────────────────────────────────
 nominal_collection:  "hists_4j2b"
 nominal_histos:      "SvB.phh_variable_nominal"
 nominal_variable:    "SvB.phh_variable_nominal"
+nominal_sum_axes:    "region"
 nominal_select_axes: "nominal_4j2b=True"
 
-# ── lowpt 4j2b category ───────────────────────────────────────────────────────
+# ── lowpt 4j2b category — sum SR + CR ─────────────────────────────────────────
 lowpt_collection:    "hists"
 lowpt_histos:        "SvB.phh_variable_lowpt"
 lowpt_variable:      "SvB.phh_variable_lowpt"
+lowpt_sum_axes:      "region"
 lowpt_select_axes:   "lowpt_4j2b=True"
+
+# ── inclusive 3j2b category — SR only ─────────────────────────────────────────
+incl3j2b_collection:    "hists"
+incl3j2b_histos:        "SvB.phh_variable_3j2b"
+incl3j2b_variable:      "SvB.phh_variable_3j2b"
+incl3j2b_sum_axes:      ""
+incl3j2b_select_axes:   "incl_3j2b=True region=SR"

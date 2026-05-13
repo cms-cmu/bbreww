@@ -24,19 +24,27 @@ config.setdefault("input_coffea",  "output/full_run/output_merged.coffea")
 config.setdefault("channel",  "hadronic_W")   # channel axis value
 config.setdefault("flavor",   "mu")           # flavor axis value
 config.setdefault("rebin",    1)
-config.setdefault("sum_axes", "region")       # space-separated axes to sum (collapse)
 
 # nominal 4j2b category
 config.setdefault("nominal_collection",   "hists_4j2b")
 config.setdefault("nominal_histos",       "SvB.phh_variable_nominal")
 config.setdefault("nominal_variable",     "SvB.phh_variable_nominal")
+config.setdefault("nominal_sum_axes",     "region")
 config.setdefault("nominal_select_axes",  "nominal_4j2b=True")
 
 # lowpt 4j2b category
 config.setdefault("lowpt_collection",     "hists")
 config.setdefault("lowpt_histos",         "SvB.phh_variable_lowpt")
 config.setdefault("lowpt_variable",       "SvB.phh_variable_lowpt")
+config.setdefault("lowpt_sum_axes",       "region")
 config.setdefault("lowpt_select_axes",    "lowpt_4j2b=True")
+
+# inclusive 3j2b category
+config.setdefault("incl3j2b_collection",   "hists")
+config.setdefault("incl3j2b_histos",       "SvB.phh_variable_3j2b")
+config.setdefault("incl3j2b_variable",     "SvB.phh_variable_3j2b")
+config.setdefault("incl3j2b_sum_axes",     "")
+config.setdefault("incl3j2b_select_axes",  "incl_3j2b=True region=SR")
 
 OUT    = config["output_path"]
 DCARDS = f"{OUT}/datacards/bbWW"
@@ -44,8 +52,8 @@ DCARDS = f"{OUT}/datacards/bbWW"
 # ── signal label ──────────────────────────────────────────────────────────────
 SIGNALLABEL = "ggHH_kl_1_kt_1_13p6TeV_hbbhww"
 
-def _sum_flag():
-    val = config.get("sum_axes") or ""
+def _sum_flag(key):
+    val = config.get(key) or ""
     return f"--sum {val}" if val.strip() else ""
 
 def _select_flag(key):
@@ -67,7 +75,7 @@ rule convert_coffea_to_json_nominal:
     log:
         f"{OUT}/logs/convert_coffea_to_json_nominal.log"
     params:
-        sum_flag    = _sum_flag(),
+        sum_flag    = _sum_flag('nominal_sum_axes'),
         select_flag = _select_flag('nominal_select_axes'),
     shell:
         """
@@ -95,7 +103,7 @@ rule convert_coffea_to_json_lowpt:
     log:
         f"{OUT}/logs/convert_coffea_to_json_lowpt.log"
     params:
-        sum_flag    = _sum_flag(),
+        sum_flag    = _sum_flag('lowpt_sum_axes'),
         select_flag = _select_flag('lowpt_select_axes'),
     shell:
         """
@@ -114,15 +122,45 @@ rule convert_coffea_to_json_lowpt:
         """
 
 
+# ── Step 1c: coffea → JSON for inclusive 3j2b  [coffea container] ────────────
+rule convert_coffea_to_json_incl3j2b:
+    input:
+        config["input_coffea"]
+    output:
+        f"{OUT}/histAll_incl3j2b.json"
+    log:
+        f"{OUT}/logs/convert_coffea_to_json_incl3j2b.log"
+    params:
+        sum_flag    = _sum_flag('incl3j2b_sum_axes'),
+        select_flag = _select_flag('incl3j2b_select_axes'),
+    shell:
+        """
+        mkdir -p $(dirname {log})
+        rm -f {output}
+        echo "[$(date)] Starting convert_coffea_to_json_incl3j2b" > {log}
+        {config[coffea_wrapper]} python src/tools/convert_coffea_to_json.py \
+            -i {input} \
+            -o {output} \
+            --collection {config[incl3j2b_collection]} \
+            --histos {config[incl3j2b_histos]} \
+            {params.sum_flag} \
+            {params.select_flag} \
+            2>&1 | tee -a {log}
+        echo "[$(date)] Completed convert_coffea_to_json_incl3j2b" >> {log}
+        """
+
+
 # ── Step 2: JSON → ROOT shapes + per-year datacards  [combine container] ──────
 rule make_combine_inputs:
     input:
-        nominal = f"{OUT}/histAll_nominal.json",
-        lowpt   = f"{OUT}/histAll_lowpt.json",
+        nominal   = f"{OUT}/histAll_nominal.json",
+        lowpt     = f"{OUT}/histAll_lowpt.json",
+        incl3j2b  = f"{OUT}/histAll_incl3j2b.json",
     output:
-        nominal_card = f"{DCARDS}/datacard_nominal.txt",
-        lowpt_card   = f"{DCARDS}/datacard_lowpt.txt",
-        combined     = f"{DCARDS}/datacard_combined.txt",
+        nominal_card  = f"{DCARDS}/datacard_nominal.txt",
+        lowpt_card    = f"{DCARDS}/datacard_lowpt.txt",
+        incl3j2b_card = f"{DCARDS}/datacard_incl3j2b.txt",
+        combined      = f"{DCARDS}/datacard_combined.txt",
     log:
         f"{OUT}/logs/make_combine_inputs.log"
     shell:
@@ -151,6 +189,17 @@ rule make_combine_inputs:
                 --stat_only \
             2>&1 | tee -a {log}
 
+        echo "[$(date)] Starting make_combine_inputs (incl3j2b)" >> {log}
+        {config[combine_wrapper]} \
+            python3 bbreww/stats_analysis/make_combine_inputs.py \
+                --var {config[incl3j2b_variable]} \
+                -f {input.incl3j2b} \
+                -o {DCARDS}/incl3j2b \
+                --rebin {config[rebin]} \
+                --metadata bbreww/stats_analysis/metadata/bbWW.yml \
+                --stat_only \
+            2>&1 | tee -a {log}
+
         echo "[$(date)] Building per-category and combined datacards" >> {log}
         {config[combine_wrapper]} "cd {DCARDS} && \
             nominal_args=\\$(for f in nominal/datacard_*.txt; do \
@@ -159,9 +208,13 @@ rule make_combine_inputs:
             lowpt_args=\\$(for f in lowpt/datacard_*.txt; do \
                 bn=\\$(basename \\$f .txt | sed 's/^datacard_/lowpt_/'); \
                 echo -n \\\"\\$bn=\\$f \\\"; done) && \
-            combineCards.py \\$nominal_args > datacard_nominal.txt && \
-            combineCards.py \\$lowpt_args   > datacard_lowpt.txt && \
-            combineCards.py \\$nominal_args \\$lowpt_args > datacard_combined.txt" \
+            incl3j2b_args=\\$(for f in incl3j2b/datacard_*.txt; do \
+                bn=\\$(basename \\$f .txt | sed 's/^datacard_/incl3j2b_/'); \
+                echo -n \\\"\\$bn=\\$f \\\"; done) && \
+            combineCards.py \\$nominal_args  > datacard_nominal.txt  && \
+            combineCards.py \\$lowpt_args    > datacard_lowpt.txt    && \
+            combineCards.py \\$incl3j2b_args > datacard_incl3j2b.txt && \
+            combineCards.py \\$nominal_args \\$lowpt_args \\$incl3j2b_args > datacard_combined.txt" \
             2>&1 | tee -a {log}
 
         echo "[$(date)] Completed make_combine_inputs" >> {log}
@@ -201,6 +254,7 @@ rule summary:
     input:
         nominal  = f"{DCARDS}/limits_nominal.txt",
         lowpt    = f"{DCARDS}/limits_lowpt.txt",
+        incl3j2b = f"{DCARDS}/limits_incl3j2b.txt",
         combined = f"{DCARDS}/limits_combined.txt",
     output:
         f"{OUT}/summary.txt"
@@ -210,7 +264,7 @@ rule summary:
         echo "============================================================"
         echo " bbWW expected 95% CL upper limits on r (signal strength) "
         echo "============================================================"
-        for cat in nominal lowpt combined; do
+        for cat in nominal lowpt incl3j2b combined; do
             echo
             echo "--- $cat ---"
             grep -E "Expected" {DCARDS}/limits_${{cat}}.txt || echo "  (no limits found)"

@@ -49,6 +49,19 @@ done
 OUTPUT_DIR="${OUTPUT_BASE}/full_run"
 mkdir -p "$OUTPUT_DIR"
 
+# Remove any pre-existing chunk outputs so a fresh run doesn't pick up
+# stale histograms with different binning. (output_merged.coffea is left
+# alone — only the per-chunk files are wiped.)
+echo "Cleaning pre-existing chunk outputs in ${OUTPUT_DIR}..."
+rm -f "${OUTPUT_DIR}"/output_chunk1_2022_preEE.coffea \
+      "${OUTPUT_DIR}"/output_chunk1_2022_EE.coffea \
+      "${OUTPUT_DIR}"/output_chunk1_2023_preBPix.coffea \
+      "${OUTPUT_DIR}"/output_chunk1_2023_BPix.coffea \
+      "${OUTPUT_DIR}"/output_chunk2.coffea \
+      "${OUTPUT_DIR}"/output_chunk3.coffea \
+      "${OUTPUT_DIR}"/output_chunk4.coffea \
+      "${OUTPUT_DIR}"/output_chunk5.coffea
+
 # Shared runner.py flags (no -d / -y; set per chunk below)
 COMMON="python runner.py \
     -p bbreww/analysis/processors/hh_bbww_processor.py \

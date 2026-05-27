@@ -151,7 +151,17 @@ def add_sf_top_pt(pname, apply_reweight, events, weights, list_weight_names):
 
 ### might move this to src
 def apply_met_corrections_after_jec(events, jets):
+    import numpy as np
     from coffea.jetmet_tools import CorrectedMETFactory
+
+    met = events.PuppiMET if 'PuppiMET' in events.fields else events.MET
+
+    # NanoAODv15 replaced MetUnclustEnUpDeltaX/Y with ptUnclusteredUp/Down + phiUnclusteredUp/Down.
+    # Compute the deltas that CorrectedMETFactory expects: dx = x_up - x_nom, dy = y_up - y_nom
+    if 'MetUnclustEnUpDeltaX' not in met.fields and 'ptUnclusteredUp' in met.fields:
+        met['MetUnclustEnUpDeltaX'] = met.ptUnclusteredUp * np.cos(met.phiUnclusteredUp) - met.pt * np.cos(met.phi)
+        met['MetUnclustEnUpDeltaY'] = met.ptUnclusteredUp * np.sin(met.phiUnclusteredUp) - met.pt * np.sin(met.phi)
+
     jec_name_map = {
         'JetPt': 'pt',
         'JetMass': 'mass',
@@ -168,6 +178,7 @@ def apply_met_corrections_after_jec(events, jets):
         'UnClusteredEnergyDeltaY': 'MetUnclustEnUpDeltaY',
     }
 
+    # TEMP hack: CorrectedMETFactory assumes up and down are symmetric, but nanov15 provides up and down separately
     met_factory = CorrectedMETFactory(jec_name_map)
-    met_variations = met_factory.build(events.MET, jets, {})
+    met_variations = met_factory.build(events.MET, jets)
     return met_variations

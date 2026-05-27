@@ -9,7 +9,7 @@ from src.classifier.config.setting.df import Columns
 from src.classifier.config.setting.cms import CollisionData
 from bbreww.classifier.config.dataset.bbWW._common import CommonEval, CommonTrain
 from bbreww.classifier.config.dataset.bbWW import _picoAOD
-from bbreww.classifier.config.setting.bbWW import Input, InputBranch
+from bbreww.classifier.config.setting.METRegressor import Input, InputBranch
 
 
 if TYPE_CHECKING:
@@ -52,10 +52,11 @@ class Train(CommonTrain):
             self.to_tensor
             .add(Input.genNu, "float32").columns(*InputBranch.feature_genNu)
             .add(Input.genLepW, "float32").columns(*InputBranch.feature_genLepW)
+            .add(Input.true_nbjet_flat, "float32").columns("true_nbjet_flat", target=4, pad_value=0)
         )
 
     def other_branches(self):
-        return (super().other_branches() - {"SR", "CR"}) | set(InputBranch.feature_genNu) | set(InputBranch.feature_genLepW)
+        return (super().other_branches() - {"SR", "CR"}) | set(InputBranch.feature_genNu) | set(InputBranch.feature_genLepW) | {"true_nbjet_flat"}
 
     def preprocess_by_group(self):
         from src.classifier.df.tools import add_label_index, prescale

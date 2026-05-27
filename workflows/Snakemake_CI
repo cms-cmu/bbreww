@@ -1,11 +1,11 @@
 config = {
     "default_dir": "CI_output",
-    "analysis_container": "/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cmu/barista:latest",
+    "analysis_container": "/cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-dask-almalinux9:2025.12.0-py3.12",
 }
 
 rule all:
     input: 
-        f"{config['default_dir']}/analysis_test_cutflows/test_cutflow.yml",
+        f"{config['default_dir']}/analysis_test_cutflows_data/test_cutflow_data.yml",
         f"{config['default_dir']}/analysis_test_cutflows_mc/test_cutflow.yml",
         f"{config['default_dir']}/skimmer_analysis_test_cutflows/test_cutflow.yml",
 

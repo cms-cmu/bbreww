@@ -34,8 +34,8 @@ model:
       - --kfold-seed-offsets 0 # use seed ("FvT", "random", 0)
       - --training FixedStep # setup training schedule
       - epoch: 50
-        bs_init: 16384
-        lr_init: 1.4e-2
+        bs_init: 10240
+        lr_init: 1.4e-2 # dummy
 
 setting:
   - module: IO # setup output directory

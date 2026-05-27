@@ -32,161 +32,149 @@ class InputEmbed(nn.Module):
                 name="ancillary embedder",
             )
             self.layers.addLayer(self.ancillaryEmbed)
-            # self.ancillaryConv  = GhostBatchNorm1d(self.dD, phase_symmetric=phase_symmetric, conv=True, name='Ancillary Convolution')
-            # self.layers.addLayer(self.ancillaryConv, [self.ancillaryEmbed])
-        ## to do section
-        # embed inputs to dijetResNetBlock in target feature space
-        self.bJetEmbed = GhostBatchNorm1d(
-            6,
-            features_out=self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
-            name="jet embedder",
-        )  # phi is relative to dijet
 
-        self.bJetConv = GhostBatchNorm1d(
-            self.dD, 
-            phase_symmetric=phase_symmetric, 
-            conv=True, 
-            name="jet convolution"
+        # b-jet embedder: (pt, eta, phi, mass, label, pi) -- phi is relative to dijet
+        self.bJetEmbed = GhostBatchNorm1d(
+            6, features_out=self.dD, phase_symmetric=phase_symmetric,
+            conv=True, name="jet embedder",
         )
+        self.bJetConv = GhostBatchNorm1d(
+            self.dD, phase_symmetric=phase_symmetric, conv=True, name="jet convolution"
+        )
+
+        # non-b jet embedder: (pt, eta, phi, label, pi)
         self.nonbJetEmbed = GhostBatchNorm1d(
-            5,
-            features_out=self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
-            name="attention jet embedder",
-        ) 
+            5, features_out=self.dD, phase_symmetric=phase_symmetric,
+            conv=True, name="attention jet embedder",
+        )
         self.nonbJetConv = GhostBatchNorm1d(
-            self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
+            self.dD, phase_symmetric=phase_symmetric, conv=True,
             name="attention jet convolution",
         )
+
+        # lepton embedder
         self.lepEmbed = GhostBatchNorm1d(
-            6,
-            features_out=self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
-            name="lepton embedder",
+            6, features_out=self.dD, phase_symmetric=phase_symmetric,
+            conv=True, name="lepton embedder",
         )
         self.lepConv = GhostBatchNorm1d(
-            self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
+            self.dD, phase_symmetric=phase_symmetric, conv=True,
             name="lepton convolution",
         )
-        self.nuEmbed = GhostBatchNorm1d(
-            2,
-            features_out=self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
-            name="MET embedder",
+
+        # Regressed neutrino 4-vector (pt, eta, phi, E) embedder
+        self.regressedNuEmbed = GhostBatchNorm1d(
+            4, features_out=self.dD, phase_symmetric=phase_symmetric,
+            conv=True, name="regressed neutrino embedder",
         )
-        self.nuConv = GhostBatchNorm1d(
-            self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
-            name="MET convolution",
+        self.regressedNuConv = GhostBatchNorm1d(
+            self.dD, phase_symmetric=phase_symmetric, conv=True,
+            name="regressed neutrino convolution",
         )
+
+        # Hadronic top candidates: b + W->qq
         self.bWhadEmbed = GhostBatchNorm1d(
-            4,
-            features_out = self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
-            name="hadronic top embedder",
+            4, features_out=self.dD, phase_symmetric=phase_symmetric,
+            conv=True, name="hadronic top embedder",
         )
         self.bWhadConv = GhostBatchNorm1d(
-            self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
+            self.dD, phase_symmetric=phase_symmetric, conv=True,
             name="hadronic top convolution",
         )
+
+        # Leptonic top candidates: b + regressed W_lep
         self.bWlepEmbed = GhostBatchNorm1d(
-            4,
-            features_out = self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
-            name="leptonic top embedder",
+            4, features_out=self.dD, phase_symmetric=phase_symmetric,
+            conv=True, name="leptonic top embedder",
         )
         self.bWlepConv = GhostBatchNorm1d(
-            self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
+            self.dD, phase_symmetric=phase_symmetric, conv=True,
             name="leptonic top convolution",
         )
-        self.MdRttEmbed = GhostBatchNorm1d(
-            2,
-            features_out = self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
-            name="ttbar relationship embedder",
-        )
-        self.MdRttConv = GhostBatchNorm1d(
-            self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
-            name="ttbar relationship convolution",
-        )
+
+        # MdR relationship matrices (mass + deltaR)
         self.MdREmbed = GhostBatchNorm1d(
-            2,
-            features_out=self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
-            name="M(a,b), dR(a,b) embedder",
+            2, features_out=self.dD, phase_symmetric=phase_symmetric,
+            conv=True, name="M(a,b), dR(a,b) embedder",
         )
         self.MdRConv = GhostBatchNorm1d(
-            self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
+            self.dD, phase_symmetric=phase_symmetric, conv=True,
             name="M(a,b), dR(a,b) convolution",
         )
 
-        self.bsl, self.wsl = 2, 3
+        # TT relationship matrices (top candidates MdR)
+        self.MdRttEmbed = GhostBatchNorm1d(
+            2, features_out=self.dD, phase_symmetric=phase_symmetric,
+            conv=True, name="ttbar relationship embedder",
+        )
+        self.MdRttConv = GhostBatchNorm1d(
+            self.dD, phase_symmetric=phase_symmetric, conv=True,
+            name="ttbar relationship convolution",
+        )
+
+        # Jet counts and combinatorics
+        self.bsl, self.wsl = 2, 4
+        self.qqsl = self.wsl * (self.wsl - 1) // 2  # C(4,2) = 6
 
         self.register_buffer('mask_bb_same', torch.zeros((1, self.bsl, self.bsl), dtype=torch.bool))
         for i in range(self.bsl):
-            self.mask_bb_same[:, i, i] = (
-                1  # mask diagonal, don't want mass, dR of jet with itself. (we do want duplicates for i,j and j,i because query and value are treated differently in attention block)
-            )
+            self.mask_bb_same[:, i, i] = 1
 
+        # Dijet embedders
         self.bbDiJetEmbed = GhostBatchNorm1d(
-            4,
-            features_out=self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
-            name="dijet embedder",
-        )  # phi is relative do dijet
-
+            4, features_out=self.dD, phase_symmetric=phase_symmetric,
+            conv=True, name="dijet embedder",
+        )
         self.nonbDiJetEmbed = GhostBatchNorm1d(
-            4,
-            features_out=self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
-            name="W dijet embedder",
+            4, features_out=self.dD, phase_symmetric=phase_symmetric,
+            conv=True, name="W dijet embedder",
         )
         self.bbDiJetConv = GhostBatchNorm1d(
-            self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
+            self.dD, phase_symmetric=phase_symmetric, conv=True,
             name="dijet convolution",
         )
         self.nonbDiJetConv = GhostBatchNorm1d(
-            self.dD,
-            phase_symmetric=phase_symmetric,
-            conv=True,
+            self.dD, phase_symmetric=phase_symmetric, conv=True,
             name="W dijet convolution",
         )
 
+        # Regressed leptonic W 4-vector (pt, eta, phi, m)
+        self.regWlepEmbed = GhostBatchNorm1d(
+            4, features_out=self.dD, phase_symmetric=phase_symmetric,
+            conv=True, name="regressed leptonic W embedder",
+        )
+        self.regWlepConv = GhostBatchNorm1d(
+            self.dD, phase_symmetric=phase_symmetric, conv=True,
+            name="regressed leptonic W convolution",
+        )
+
+        # Derived kinematics: qqsl dijet masses + mbb + lnu_mT + dphi_lep_met + pt_bb + dphi_bb_met
+        self.derivedEmbed = GhostBatchNorm1d(
+            5 + self.qqsl, features_out=self.dD, phase_symmetric=phase_symmetric,
+            conv=True, name="derived kinematics embedder",
+        )
+        self.derivedConv = GhostBatchNorm1d(
+            self.dD, phase_symmetric=phase_symmetric, conv=True,
+            name="derived kinematics convolution",
+        )
+
+        # Leptonic W mass scalar
+        self.lepWMassEmbed = GhostBatchNorm1d(
+            1, features_out=self.dD, phase_symmetric=phase_symmetric,
+            conv=True, name="leptonic W mass embedder",
+        )
+
+        # Register all layers
         self.layers.addLayer(self.bJetEmbed)
         self.layers.addLayer(self.bbDiJetEmbed)
         self.layers.addLayer(self.nonbJetEmbed)
         self.layers.addLayer(self.nonbDiJetEmbed)
         self.layers.addLayer(self.MdREmbed)
         self.layers.addLayer(self.lepEmbed)
-        self.layers.addLayer(self.nuEmbed)
+        self.layers.addLayer(self.regressedNuEmbed)
         self.layers.addLayer(self.bWhadEmbed)
         self.layers.addLayer(self.bWlepEmbed)
+        self.layers.addLayer(self.regWlepEmbed)
 
         self.layers.addLayer(self.bJetConv, [self.bJetEmbed])
         self.layers.addLayer(self.bbDiJetConv, [self.bbDiJetEmbed])
@@ -194,168 +182,215 @@ class InputEmbed(nn.Module):
         self.layers.addLayer(self.MdRConv, [self.MdREmbed])
         self.layers.addLayer(self.nonbJetConv, [self.nonbJetEmbed])
         self.layers.addLayer(self.lepConv, [self.lepEmbed])
-        self.layers.addLayer(self.nuConv, [self.nuEmbed])
+        self.layers.addLayer(self.regressedNuConv, [self.regressedNuEmbed])
         self.layers.addLayer(self.bWhadConv, [self.bWhadEmbed])
         self.layers.addLayer(self.bWlepConv, [self.bWlepEmbed])
+        self.layers.addLayer(self.regWlepConv, [self.regWlepEmbed])
         self.layers.addLayer(self.MdRttEmbed)
         self.layers.addLayer(self.MdRttConv, [self.MdRttEmbed])
+        self.layers.addLayer(self.derivedEmbed)
+        self.layers.addLayer(self.derivedConv, [self.derivedEmbed])
+        self.layers.addLayer(self.lepWMassEmbed)
 
 
-    def dataPrep(self, b, nb, l, nu, a):  # , device='cuda'):
+    def dataPrep(self, b, nb, l, nu, a, reg_nu=None):
         device = b.get_device() if b.get_device() >= 0 else "cpu"
-        # # if device=='cpu': # prevent overwritting data from dataloader when doing operations directly from RAM rather than copying to VRAM
-        # j = j.clone()
-        # o = o.clone()
-        # a = a.clone()
 
         n = b.shape[0]
         b = b.view(n, 5, 2)
-        nb = nb.view(n, 4, -1)
+        nb = nb.view(n, 5, -1)               # (n, 5, wsl): pt, eta, phi, mass, attn_score
         l = l.view(n, 6, 1)
         nu = nu.view(n, 2, 1)
         a = a.view(n, self.dA, 1)
 
-        a[:, 2, :] = torch.log(a[:, 2, :])  # log transform event HT
+        # Extract per-jet attention scores (5th feature) before kinematic processing
+        nb_attn = nb[:, 4, :].clone()          # (n, wsl) per-jet attention scores
+        nb = nb[:, :4, :]                      # (n, 4, wsl): pt, eta, phi, mass only
 
-        #reconstruct leptonic W by solving MET pz with W mass constraint
-        W_lep1, W_lep2, off_shell_score, _, _ = get_lepW(l[:, :4], nu)
-        W_lep = torch.cat([W_lep1, W_lep2], dim=2)
-        
-        #a = torch.cat([a, off_shell_score.view(n, 1, 1)], dim=1)
+        # Save raw kinematics before any transforms (needed for attention bias + hadW_mass)
+        raw_nb = nb.reshape(n, -1).clone()     # (n, 4*wsl) flat
+        raw_lep = l.squeeze(-1).clone()        # (n, 6)
 
-        ## bb: H->bb dijet candidates, qq: W->qq dijet candidates"
-        bb, bbPxPyPzE = addFourVectors(
-            b[:, :, (0)], b[:, :, (1)]
-        )
+        a[:, 2, :] = torch.log(torch.clamp(a[:, 2, :], min=1e-6))  # log transform event HT
 
+        # Build regressed neutrino 4-vector and leptonic W from regressed MET
+        if reg_nu is not None:
+            reg_nu = reg_nu.view(n, 3)
+            # Neutrino 4-vector in PtEtaPhiM (massless)
+            nu_px, nu_py, nu_pz = reg_nu[:, 0], reg_nu[:, 1], reg_nu[:, 2]
+            nu_pt = torch.sqrt(nu_px**2 + nu_py**2)
+            nu_E = torch.sqrt(nu_px**2 + nu_py**2 + nu_pz**2)
+            nu_eta = torch.asinh(nu_pz / (nu_pt + 1e-8))
+            nu_phi = torch.atan2(nu_py, nu_px)
+            reg_nu_4vec = torch.stack([nu_pt, nu_eta, nu_phi, torch.zeros_like(nu_pt)], dim=1).unsqueeze(-1)  # (n, 4, 1) PtEtaPhiM
+
+            # Leptonic W = lepton + regressed neutrino (proper 4-vector addition)
+            lep_PxPyPzE = PxPyPzE(l[:, :4, 0])  # (n, 4)
+            nu_PxPyPzE = torch.stack([nu_px, nu_py, nu_pz, nu_E], dim=1)  # (n, 4)
+            regW_PxPyPzE = lep_PxPyPzE + nu_PxPyPzE
+            regW_lep = PtEtaPhiM(regW_PxPyPzE).unsqueeze(-1)  # (n, 4, 1)
+
+            # Scalar leptonic W mass
+            lepW_mass = calc_mW(l[:, :4, 0], reg_nu).unsqueeze(-1).unsqueeze(-1)  # (n, 1, 1)
+
+            # Leptonic top candidates: b + regressed W_lep (2 candidates, one per b-jet)
+            bWlep, bWlepPxPyPzE = addFourVectors(
+                b[:, :, (1, 0)], regW_lep.expand(-1, -1, 2)
+            )  # (n, 4, 2)
+        else:
+            reg_nu_4vec = torch.zeros(n, 4, 1, device=device)
+            regW_lep = torch.zeros(n, 4, 1, device=device)
+            regW_PxPyPzE = torch.zeros(n, 4, device=device)
+            lepW_mass = torch.zeros(n, 1, 1, device=device)
+            bWlep = torch.zeros(n, 4, 2, device=device)
+            bWlepPxPyPzE = torch.zeros(n, 4, 2, device=device)
+
+        ## bb: H->bb dijet candidates
+        bb, bbPxPyPzE = addFourVectors(b[:, :, (0)], b[:, :, (1)])
+
+        # C(4,2) = 6 dijet candidates from 4 non-b jets
         qq, qqPxPyPzE = addFourVectors(
-            nb[:, :, (0, 0, 1)], nb[:, :, (1, 2, 2)]
+            nb[:, :, (0, 0, 0, 1, 1, 2)], nb[:, :, (1, 2, 3, 2, 3, 3)]
         )
 
-        ## top reconstruction
+        ## Hadronic top: 2 b-jets x qqsl dijet candidates = 2*6 = 12 candidates
         bWhad, bWhadPxPyPzE = addFourVectors(
             b[:, :, (0, 1)].unsqueeze(3),  # [batch, 4, 2, 1]
-            qq.unsqueeze(2)                # [batch, 4, 1, 3]
-        )
-        bWlep, bWlepPxPyPzE = addFourVectors(
-            b[:, :, (1, 1, 0, 0)],
-            W_lep[:, :, (0, 1, 0, 1)] 
+            qq.unsqueeze(2)                # [batch, 4, 1, qqsl]
         )
 
-        bb = bb.unsqueeze(2) # add a dimension to calculating MdR matrix symmetrically later
+        bb = bb.unsqueeze(2)  # add dim for MdR matrix calculation
         bbPxPyPzE = bbPxPyPzE.unsqueeze(2)
 
-        mask, bbMdR, qqMdR, bbnMdR, mask_bbMdR, mask_qqMdR, mask_bbn = None, None, None, None, None, None, None
+        # Detect padded jets BEFORE appending label row
+        mask = (nb[:, 0, :] < 0)  # (n, wsl): True for padded jets
         b = torch.cat(
             [b, 2 * torch.ones((n, 1, 2), dtype=torch.float, device=device)], 1
-        )  # label bJets with 2 (-1 for mask, 0 for not preselected, 1 for preselected jet)
+        )
         nb = torch.cat(
-            [nb, torch.ones((n, 1, 3), dtype=torch.float, device=device)], 1
-        ) 
-        mask = (nb[:, 3, :] == -1)
+            [nb, torch.ones((n, 1, self.wsl), dtype=torch.float, device=device)], 1
+        )
+        nb[:, -1, :][mask] = -1
+
+        # C(4,2) = 6 dijet mask
         mask_qq = torch.stack([
-            mask[:, 0] | mask[:, 1],  # qq[0] = nb[0] + nb[1]
-            mask[:, 0] | mask[:, 2],  # qq[1] = nb[0] + nb[2]
-            mask[:, 1] | mask[:, 2],  # qq[2] = nb[1] + nb[2]
-        ], dim=1) # mask for di-jet candidates involving padded entries
+            mask[:, 0] | mask[:, 1],
+            mask[:, 0] | mask[:, 2],
+            mask[:, 0] | mask[:, 3],
+            mask[:, 1] | mask[:, 2],
+            mask[:, 1] | mask[:, 3],
+            mask[:, 2] | mask[:, 3],
+        ], dim=1)
 
         bPxPyPzE = PxPyPzE(b)
         nbPxPyPzE = PxPyPzE(nb)
         lPxPyPzE = PxPyPzE(l)
+        regWPxPyPzE = regW_PxPyPzE.unsqueeze(-1)  # (n, 4, 1)
 
-        # For b-jets: compute matrix of dijet masses and opening angles between other jets
-        n = bb.shape[0]
+        # ---- MdR matrices ----
+        # b-jet pair
         bbMdR = matrixMdR(b, b, v1PxPyPzE=bPxPyPzE, v2PxPyPzE=bPxPyPzE)
         mask_bbMdR = self.mask_bb_same.expand(n, self.bsl, self.bsl)
 
-        # compute matrix of trijet masses and opening angles between b-dijets and non-bjets
+        # bb-dijet vs individual non-b jets
         bbnMdR = matrixMdR(bb, nb, v1PxPyPzE=bbPxPyPzE, v2PxPyPzE=nbPxPyPzE)
-     
-        # compute matrix of quadjet masses and opening angles between b-dijets and qq-dijets
+
+        # bb-dijet vs qq-dijets
         bbqqMdR = matrixMdR(bb, qq, v1PxPyPzE=bbPxPyPzE, v2PxPyPzE=qqPxPyPzE)
 
         lepQQdR = calcDeltaR(l, qq)
         mask_bbn = mask.view(n, 1, self.wsl)
 
-        # For nonb-jets: compute matrix of dijet masses and opening angles between other jets
-        n = qq.shape[0]
+        # non-b jet pair mass and deltaR matrix
         qqMdR = matrixMdR(nb, nb, v1PxPyPzE=nbPxPyPzE, v2PxPyPzE=nbPxPyPzE)
 
-        # For lepton and MET, compute transverse mass
+        # Lepton-MET transverse mass (still useful as a feature)
         lnu_mT = transverse_mass(l, nu)
 
-        mask_qqMdR = mask.view(n, 1, self.wsl) | mask.view(
-            n, self.wsl, 1
-        )  # mask of 2d matrix of nonb-jets (i,j) is True if mask[i] | mask[j]
+        mask_qqMdR = mask.view(n, 1, self.wsl) | mask.view(n, self.wsl, 1)
 
-        # compute matrix of masses and opening angles between b-jets and W candidates (top)
+        # b-jet vs W candidates (hadronic top)
         bWhadMdR = matrixMdR(b, qq, v1PxPyPzE=bPxPyPzE, v2PxPyPzE=qqPxPyPzE)
-        mask_bWhad = mask_qq.repeat_interleave(self.bsl, dim=1)  # shape: (n, 6)
+        mask_bWhad = mask_qq.repeat_interleave(self.bsl, dim=1)  # (n, 2*qqsl)
 
-        bWlepMdR = matrixMdR(b, l.unsqueeze(2), v1PxPyPzE=bPxPyPzE, v2PxPyPzE=lPxPyPzE) # l needs an extra dimension for concat later
-        bWlepMdR = bWlepMdR[:, :, (1, 1, 0, 0), :]  # Expand from 2 to 4 candidates
-        mask_bWlep = torch.zeros(n, self.bsl * 2, dtype=torch.bool, device=device) # nothing to mask 
+        # b-jet vs regressed leptonic W (leptonic top): (n, 2, bsl, 1)
+        bWlepMdR = matrixMdR(b, regW_lep, v1PxPyPzE=bPxPyPzE, v2PxPyPzE=regWPxPyPzE)
+        bWlepMdR = bWlepMdR[:, :, (1, 0), :]  # reorder: b1+W, b0+W -> match bWlep order
+        mask_bWlep = torch.zeros(n, self.bsl, dtype=torch.bool, device=device)
 
+        # regressed W_lep vs bb-dijet (HH topology)
+        bbWlepMdR = matrixMdR(bb, regW_lep, v1PxPyPzE=bbPxPyPzE, v2PxPyPzE=regWPxPyPzE)  # (n, 2, 1, 1)
+
+        # regressed W_lep vs individual non-b jets (angular correlations)
+        WlepNBMdR = matrixMdR(regW_lep, nb, v1PxPyPzE=regWPxPyPzE, v2PxPyPzE=nbPxPyPzE)  # (n, 2, 1, wsl)
+
+        # Derived kinematics (computed before log-transforms)
+        mjj_all = qq[:, 3:4, :]
+        mbb = bb[:, 3:4, 0:1]
+        dphi_lep_met = calcDeltaPhi(l, nu)
+        pt_bb = bb[:, 0:1, 0:1]
+        dphi_bb_met = calcDeltaPhi(bb, nu)
+        derived_kinematics = torch.cat([
+            mjj_all.transpose(1, 2),  # (batch, qqsl, 1)
+            mbb, lnu_mT, dphi_lep_met, pt_bb, dphi_bb_met,
+        ], dim=1)  # (batch, 5+qqsl, 1)
+
+        # Log transforms
         nb[:, (0, 3), :] = torch.log(1 + nb[:, (0, 3), :])
-        nb[isinf(nb)] = -1  # isinf not supported by ONNX
+        nb[isinf(nb)] = -1
 
         b[:, (0, 3), :] = torch.log(1 + b[:, (0, 3), :])
         bb[:, (0, 3), :] = torch.log(1 + bb[:, (0, 3), :])
         qq[:, (0, 3), :] = torch.log(1 + qq[:, (0, 3), :])
 
-        b = torch.cat([b, b[:, :, (1,0)]] , 2) # create permutation invariance by augmenting opposite order of same jets
-        nb = torch.cat([nb, nb[:, :, (2,1,0)]] , 2)
+        # Permutation invariance augmentation
+        b = torch.cat([b, b[:, :, (1,0)]], 2)
+        nb = torch.cat([nb, nb[:, :, (3,2,1,0)]], 2)
 
-        # only keep relative angular information so that learned features are invariant under global phi rotations and eta/phi flips
-        b[:, 2:3, :] = calcDeltaPhi(bb, b[:, :, :]) # replace jet phi with deltaPhi between dijet and jet
+        # Replace absolute phi with relative phi to bb-dijet
+        b[:, 2:3, :] = calcDeltaPhi(bb, b[:, :, :])
 
-        return b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR, mask, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep
+        return (b, bb, qq, a, nb, l, lnu_mT, bWhad, bWlep, lepQQdR,
+                bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR,
+                bbWlepMdR, WlepNBMdR,
+                mask, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep,
+                derived_kinematics, raw_nb, raw_lep,
+                reg_nu_4vec, regW_lep, lepW_mass, nb_attn)
 
-    def updateMeanStd(self,  b, nb, l, nu, a):
-        (b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR, 
-        mask, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep) = self.dataPrep(
-                                                                        b, nb, l, nu, a)
+    def updateMeanStd(self, b, nb, l, nu, a, reg_nu=None):
+        (b, bb, qq, a, nb, l, lnu_mT, bWhad, bWlep, lepQQdR,
+         bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR,
+         bbWlepMdR, WlepNBMdR,
+         mask, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep,
+         derived_kinematics, raw_nb, raw_lep,
+         reg_nu_4vec, regW_lep, lepW_mass, nb_attn) = self.dataPrep(
+            b, nb, l, nu, a, reg_nu)
 
-        n, self.bsl, self.wsl = b.shape[0], b.shape[2] // 2, nb.shape[2] // 2 # need to half the third dimension because we repeated all the jets
-        MdR = torch.cat(
-            (
-                bbMdR.view(n, 2, -1),
-                qqMdR.view(n, 2, -1),
-                bbnMdR.view(n, 2, -1),
-                bbqqMdR.view(n, 2, -1)
-            ),
-            dim=2,
-        )
-        mask_MdR = torch.cat(
-            (
-                mask_bbMdR.view(n, -1),
-                mask_qqMdR.view(n, -1),
-                mask_bbn.view(n, -1),
-                mask_qq.view(n, -1) # mask_qq works for bbqqMdR
-            ),
-            dim=1,
-        )
-        
-        MdRtt = torch.cat(
-            (
-                bWhadMdR.view(n, 2, -1),
-                bWlepMdR.view(n, 2, -1),
-            ),
-            dim=2,
-        )
+        n = b.shape[0]
+        qqsl = self.qqsl
+        MdR = torch.cat((
+            bbMdR.view(n, 2, -1),
+            qqMdR.view(n, 2, -1),
+            bbnMdR.view(n, 2, -1),
+            bbqqMdR.view(n, 2, -1),
+            bbWlepMdR.view(n, 2, -1),
+            WlepNBMdR.view(n, 2, -1),
+        ), dim=2)
+        mask_MdR = torch.cat((
+            mask_bbMdR.view(n, -1),
+            mask_qqMdR.view(n, -1),
+            mask_bbn.view(n, -1),
+            mask_qq.view(n, -1),
+            torch.zeros(n, 1, dtype=torch.bool, device=b.device),  # bbWlep: no mask
+            mask_bbn.view(n, -1),  # WlepNB: same mask as bbn
+        ), dim=1)
 
-        mask_MdRtt = torch.cat(
-            (
-                mask_bWhad,  # (n, 6)
-                mask_bWlep.view(n, -1)  # (n, 2)
-            ),
-            dim=1
-        )  # Result: (n, 8)
+        MdRtt = torch.cat((bWhadMdR.view(n, 2, -1), bWlepMdR.view(n, 2, -1)), dim=2)
+        mask_MdRtt = torch.cat((mask_bWhad, mask_bWlep.view(n, -1)), dim=1)
 
+        bWhad = bWhad.view(n, 4, -1)
+        bWlep = bWlep.view(n, 4, -1)
 
-        bWhad = bWhad.view(n, 4, -1)  # (n, 4, 2, 3) -> (n, 4, 6)
-        bWlep = bWlep.view(n, 4, -1)  # (n, 4, 2, 1) -> (n, 4, 2)
-        
         self.ancillaryEmbed.updateMeanStd(a)
         self.bJetEmbed.updateMeanStd(b)
         self.bbDiJetEmbed.updateMeanStd(bb)
@@ -363,10 +398,13 @@ class InputEmbed(nn.Module):
         self.nonbDiJetEmbed.updateMeanStd(qq)
         self.MdREmbed.updateMeanStd(MdR, mask_MdR)
         self.lepEmbed.updateMeanStd(l)
-        self.nuEmbed.updateMeanStd(nu)
-        self.bWlepEmbed.updateMeanStd(bWlep)
+        self.regressedNuEmbed.updateMeanStd(reg_nu_4vec)
         self.bWhadEmbed.updateMeanStd(bWhad)
+        self.bWlepEmbed.updateMeanStd(bWlep)
+        self.regWlepEmbed.updateMeanStd(regW_lep)
         self.MdRttEmbed.updateMeanStd(MdRtt, mask_MdRtt)
+        self.derivedEmbed.updateMeanStd(derived_kinematics)
+        self.lepWMassEmbed.updateMeanStd(lepW_mass)
 
     def initMeanStd(self):
         self.ancillaryEmbed.initMeanStd()
@@ -377,9 +415,12 @@ class InputEmbed(nn.Module):
         self.MdREmbed.initMeanStd()
         self.MdRttEmbed.initMeanStd()
         self.lepEmbed.initMeanStd()
-        self.nuEmbed.initMeanStd()
+        self.regressedNuEmbed.initMeanStd()
         self.bWhadEmbed.initMeanStd()
         self.bWlepEmbed.initMeanStd()
+        self.regWlepEmbed.initMeanStd()
+        self.derivedEmbed.initMeanStd()
+        self.lepWMassEmbed.initMeanStd()
 
     def setGhostBatches(self, nGhostBatches, subset=False):
         self.ancillaryEmbed.setGhostBatches(nGhostBatches)
@@ -390,9 +431,12 @@ class InputEmbed(nn.Module):
         self.MdREmbed.setGhostBatches(nGhostBatches)
         self.MdRttEmbed.setGhostBatches(nGhostBatches)
         self.lepEmbed.setGhostBatches(nGhostBatches)
-        self.nuEmbed.setGhostBatches(nGhostBatches)
+        self.regressedNuEmbed.setGhostBatches(nGhostBatches)
         self.bWhadEmbed.setGhostBatches(nGhostBatches)
         self.bWlepEmbed.setGhostBatches(nGhostBatches)
+        self.regWlepEmbed.setGhostBatches(nGhostBatches)
+        self.derivedEmbed.setGhostBatches(nGhostBatches)
+        self.lepWMassEmbed.setGhostBatches(nGhostBatches)
 
         if subset:
             return
@@ -404,77 +448,73 @@ class InputEmbed(nn.Module):
         self.MdRConv.setGhostBatches(nGhostBatches)
         self.MdRttConv.setGhostBatches(nGhostBatches)
         self.lepConv.setGhostBatches(nGhostBatches)
-        self.nuConv.setGhostBatches(nGhostBatches)
+        self.regressedNuConv.setGhostBatches(nGhostBatches)
         self.bWhadConv.setGhostBatches(nGhostBatches)
         self.bWlepConv.setGhostBatches(nGhostBatches)
+        self.regWlepConv.setGhostBatches(nGhostBatches)
+        self.derivedConv.setGhostBatches(nGhostBatches)
 
-    def forward(self, b, nb, l, nu, a):
-        (b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR, 
-        mask, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep) = self.dataPrep(b, nb, l, nu, a)
+    def forward(self, b, nb, l, nu, a, reg_nu=None):
+        (b, bb, qq, a, nb, l, lnu_mT, bWhad, bWlep, lepQQdR,
+         bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR,
+         bbWlepMdR, WlepNBMdR,
+         mask, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep,
+         derived_kinematics, raw_nb, raw_lep,
+         reg_nu_4vec, regW_lep, lepW_mass, nb_attn) = self.dataPrep(
+            b, nb, l, nu, a, reg_nu)
 
         a = self.ancillaryEmbed(a)
-        # a = self.ancillaryConv(NonLU(a))
-        mask_nb =  torch.cat([mask, mask[:, [2,1,0]]], 1) # augment mask from 2 to 4, matching pattern for jets
+        mask_nb = torch.cat([mask, mask[:, list(reversed(range(self.wsl)))]], 1)
         nb = self.nonbJetEmbed(nb, mask_nb)
         qq = self.nonbDiJetEmbed(qq)
         nb = nb + a
         nb = self.nonbJetConv(NonLU(nb), mask_nb)
-        # print('o after conv a\n',o[0])
-        # o = o+o0
 
         n = bb.shape[0]
+        qqsl = self.qqsl
 
-        # bbMdR is (n, 3, bsl, wsl)
-        # flatten the matrices for passing through convolution
-        bbMdR = bbMdR.view(n, 2, self.bsl*self.bsl)
-        qqMdR = qqMdR.view(n, 2, self.wsl*self.wsl)
-        bbnMdR = bbnMdR.view(n, 2, self.wsl)
-        bbqqMdR = bbqqMdR.view(n, 2, self.wsl)        
-        mask_bbMdR = mask_bbMdR.view(n, -1)
-        mask_qqMdR = mask_qqMdR.view(n, -1)
-        mask_bbn = mask_bbn.view(n, -1)
-        MdR = torch.cat((bbMdR, qqMdR, bbnMdR, bbqqMdR), dim=2)
-        mask_MdR = torch.cat((mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq), dim=1) # Higgs masses and dijets information
-        # MdPhi is (n, 3, osl*osl + dsl*osl)
+        # Flatten and embed MdR matrices (including new regW relationships)
+        bbMdR_flat = bbMdR.view(n, 2, self.bsl * self.bsl)
+        qqMdR_flat = qqMdR.view(n, 2, self.wsl * self.wsl)
+        bbnMdR_flat = bbnMdR.view(n, 2, self.wsl)
+        bbqqMdR_flat = bbqqMdR.view(n, 2, qqsl)
+        bbWlepMdR_flat = bbWlepMdR.view(n, 2, -1)       # (n, 2, 1)
+        WlepNBMdR_flat = WlepNBMdR.view(n, 2, self.wsl)  # (n, 2, wsl)
+
+        mask_bbMdR_flat = mask_bbMdR.view(n, -1)
+        mask_qqMdR_flat = mask_qqMdR.view(n, -1)
+        mask_bbn_flat = mask_bbn.view(n, -1)
+        mask_bbWlep = torch.zeros(n, 1, dtype=torch.bool, device=b.device)
+        mask_WlepNB = mask.clone()
+
+        MdR = torch.cat((bbMdR_flat, qqMdR_flat, bbnMdR_flat, bbqqMdR_flat, bbWlepMdR_flat, WlepNBMdR_flat), dim=2)
+        mask_MdR = torch.cat((mask_bbMdR_flat, mask_qqMdR_flat, mask_bbn_flat, mask_qq, mask_bbWlep, mask_WlepNB), dim=1)
         MdR = self.MdREmbed(MdR, mask_MdR)
         MdR = self.MdRConv(NonLU(MdR), mask_MdR)
 
-        # get back original shape (equivalent to unflatten)
-        bbMdR = MdR[:, :, : self.bsl * self.bsl].view(
-            n, self.dD, self.bsl, self.bsl
-        )
-        qqMdR = MdR[:, :, self.bsl * self.bsl : self.bsl * self.bsl + self.wsl * self.wsl ].view(
-            n, self.dD, self.wsl, self.wsl
-        )
-        bbnMdR = MdR[:, :, self.bsl * self.bsl + self.wsl * self.wsl : self.bsl * self.bsl + self.wsl * self.wsl + self.wsl].view(
-            n, self.dD, 1, self.wsl
-        )
-        bbqqMdR = MdR[:, :,  self.bsl * self.bsl + self.wsl * self.wsl + self.wsl :].view(
-            n, self.dD, 1, self.wsl
-        )
+        # Unflatten
+        off = 0
+        n_bb = self.bsl * self.bsl
+        bbMdR = MdR[:, :, off:off + n_bb].view(n, self.dD, self.bsl, self.bsl); off += n_bb
+        n_qq = self.wsl * self.wsl
+        qqMdR = MdR[:, :, off:off + n_qq].view(n, self.dD, self.wsl, self.wsl); off += n_qq
+        bbnMdR = MdR[:, :, off:off + self.wsl].view(n, self.dD, 1, self.wsl); off += self.wsl
+        bbqqMdR = MdR[:, :, off:off + qqsl].view(n, self.dD, 1, qqsl); off += qqsl
+        bbWlepMdR = MdR[:, :, off:off + 1].view(n, self.dD, 1, 1); off += 1
+        WlepNBMdR = MdR[:, :, off:].view(n, self.dD, 1, self.wsl)
 
-        
+        # TT relationship matrices (bWhad + bWlep)
         bWhadMdR = bWhadMdR.view(n, 2, -1)
         bWlepMdR = bWlepMdR.view(n, 2, -1)
         MdRtt = torch.cat((bWhadMdR, bWlepMdR), dim=2)
-        mask_MdRtt = torch.cat(
-            (
-                mask_bWhad,
-                mask_bWlep.view(n, -1)
-            ),
-            dim=1
-        )
-
+        mask_MdRtt = torch.cat((mask_bWhad, mask_bWlep.view(n, -1)), dim=1)
         MdRtt = self.MdRttEmbed(MdRtt, mask_MdRtt)
         MdRtt = self.MdRttConv(NonLU(MdRtt), mask_MdRtt)
 
-        bWhadMdR = MdRtt[:, :, :self.bsl* self.wsl].view(
-            n, self.dD, self.bsl, self.wsl
-        )
-        bWlepMdR = MdRtt[:, :, self.bsl*self.wsl:].view(
-            n, self.dD, self.bsl * 2, 1
-        )
+        bWhadMdR = MdRtt[:, :, :self.bsl * qqsl].view(n, self.dD, self.bsl, qqsl)
+        bWlepMdR = MdRtt[:, :, self.bsl * qqsl:].view(n, self.dD, self.bsl, 1)
 
+        # Embed physics objects
         b = self.bJetEmbed(b)
         bb = self.bbDiJetEmbed(bb)
         b = b + a
@@ -482,18 +522,36 @@ class InputEmbed(nn.Module):
         bb = self.bbDiJetConv(NonLU(bb))
 
         l = self.lepEmbed(l)
-        nu = self.nuEmbed(nu)
         l = self.lepConv(NonLU(l))
-        nu = self.nuConv(NonLU(nu))
 
-        # top reconstruction
+        # Regressed neutrino embedding (4-vector: pt, eta, phi, m=0)
+        reg_nu_emb = self.regressedNuEmbed(reg_nu_4vec)
+        reg_nu_emb = self.regressedNuConv(NonLU(reg_nu_emb))
+
+        # Regressed leptonic W embedding (4-vector: pt, eta, phi, m)
+        regW_emb = self.regWlepEmbed(regW_lep)
+        regW_emb = self.regWlepConv(NonLU(regW_emb))
+
+        # Top reconstruction embeddings
         bWhad = self.bWhadEmbed(bWhad.view(n, 4, -1), mask_bWhad)
-        bWlep = self.bWlepEmbed(bWlep.view(n, 4, -1))
         bWhad = self.bWhadConv(NonLU(bWhad), mask_bWhad)
+        bWlep = self.bWlepEmbed(bWlep.view(n, 4, -1))  # b + regressed W_lep (2 candidates)
         bWlep = self.bWlepConv(NonLU(bWlep))
 
-        return b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep
-    
+        # Derived kinematics
+        derived = self.derivedEmbed(derived_kinematics)
+        derived = self.derivedConv(NonLU(derived))
+
+        lepW_mass_emb = self.lepWMassEmbed(lepW_mass)
+
+        return (b, bb, qq, a, nb, l, lnu_mT, bWhad, bWlep, lepQQdR,
+                bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR,
+                bbWlepMdR, WlepNBMdR,
+                mask_bbn, mask_qq, mask_bWhad, mask_bWlep,
+                derived, reg_nu_emb, regW_emb, lepW_mass_emb,
+                raw_nb, raw_lep, nb_attn)
+
+
 class HCR_lowpt(nn.Module):
     def __init__(
         self,
@@ -506,12 +564,9 @@ class HCR_lowpt(nn.Module):
         super(HCR_lowpt, self).__init__()
         self.debug = False
         self.dA = len(ancillaryFeatures)
-        self.dD = dijetFeatures  # dimension of embeded   dijet feature space
+        self.dD = dijetFeatures
         self.device = device
-        self.name = (
-            architecture
-            + "_%d" % (dijetFeatures)
-        )
+        self.name = architecture + "_%d" % (dijetFeatures)
         self.nC = nClasses
         self.store = None
         self.storeData = {}
@@ -521,7 +576,6 @@ class HCR_lowpt(nn.Module):
 
         self.layers = layerOrganizer()
 
-        # this module handles input shifting scaling and learns the optimal scale and shift for the appropriate inputs
         self.inputEmbed = InputEmbed(
             self.dD,
             ancillaryFeatures,
@@ -530,150 +584,141 @@ class HCR_lowpt(nn.Module):
             phase_symmetric=self.phase_symmetric,
         )
 
-        # Stride=3 Kernel=3 reinforce dijet features, in parallel update jet features for next reinforce layer
-        # |1|2|1,2|3|4|3,4|1|3|1,3|2|4|2,4|1|4|1,4|2|3|2,3|
-        #     |1,2|   |3,4|   |1,3|   |2,4|   |1,4|   |2,3|
+        # ResNet blocks for feature refinement
         self.bbDiJetResNetBlock = ResNetBlock(
-            self.dD,
-            prefix="",
-            nLayers=2,
-            phase_symmetric=self.phase_symmetric,
-            device=self.device,
+            self.dD, prefix="", nLayers=2,
+            phase_symmetric=self.phase_symmetric, device=self.device,
             layers=self.layers,
             inputLayers=[self.inputEmbed.bJetConv, self.inputEmbed.bbDiJetConv],
         )
         self.nonbDiJetResNetBlock = ResNetBlock(
-            self.dD,
-            prefix="",
-            nLayers=2,
-            phase_symmetric=self.phase_symmetric,
-            device=self.device,
+            self.dD, prefix="", nLayers=2,
+            phase_symmetric=self.phase_symmetric, device=self.device,
             layers=self.layers,
             inputLayers=[self.inputEmbed.nonbJetConv, self.inputEmbed.nonbDiJetConv],
         )
+        # Leptonic W ResNet: reinforces regressed W embedding using lepton and regressed nu
         self.lepWResNetBlock = ResNetBlock(
-            self.dD,
-            prefix="leptonic W",
-            nLayers=2,
-            phase_symmetric=self.phase_symmetric,
-            device=self.device,
+            self.dD, prefix="leptonic W", nLayers=2,
+            phase_symmetric=self.phase_symmetric, device=self.device,
             layers=self.layers,
-            inputLayers=[self.inputEmbed.lepConv, self.inputEmbed.nuConv],
+            inputLayers=[self.inputEmbed.lepConv, self.inputEmbed.regressedNuConv],
         )
         self.bWhadResNetBlock = ResNetBlock(
-            self.dD,
-            prefix="hadronic top",
-            nLayers=2,
-            phase_symmetric=self.phase_symmetric,
-            device=self.device,
+            self.dD, prefix="hadronic top", nLayers=2,
+            phase_symmetric=self.phase_symmetric, device=self.device,
             layers=self.layers,
             inputLayers=[self.inputEmbed.bWhadConv, self.inputEmbed.bJetConv, self.inputEmbed.nonbDiJetConv],
         )
         self.bWlepResNetBlock = ResNetBlock(
-            self.dD,
-            prefix="leptonic top",
-            nLayers=2,
-            phase_symmetric=self.phase_symmetric,
-            device=self.device,
+            self.dD, prefix="leptonic top", nLayers=2,
+            phase_symmetric=self.phase_symmetric, device=self.device,
             layers=self.layers,
-            inputLayers=[self.inputEmbed.bWlepConv, self.inputEmbed.bJetConv, self.inputEmbed.lepConv],
+            inputLayers=[self.inputEmbed.bWlepConv, self.inputEmbed.bJetConv, self.inputEmbed.regWlepConv],
         )
 
+        # Single-jet WW attention: regressed leptonic W queries individual non-b jets
+        qqsl = self.inputEmbed.qqsl
+        wsl = self.inputEmbed.wsl
+        bsl = self.inputEmbed.bsl
         self.attention_WW = MinimalAttention(
-            self.dD,
-            heads=2,
-            phase_symmetric=self.phase_symmetric,
-            scalar_dim = 4,
+            self.dD, heads=2, phase_symmetric=self.phase_symmetric,
+            scalar_dim=qqsl + 1,  # 6 lepQQdR + 1 lnu_mT = 7
             layers=self.layers,
-            inputLayers=[self.lepWResNetBlock.conv[-1], self.nonbDiJetResNetBlock.reinforce[-1]],
+            inputLayers=[self.lepWResNetBlock.conv[-1], self.inputEmbed.nonbJetConv],
             device=self.device,
         )
         self.layers.addLayer(self.attention_WW, self.attention_WW.inputLayers)
 
+        # TT attention: hadronic tops query leptonic tops
+        # All 6 qq pairs used -> 2*6=12 hadronic x 2 leptonic = 24 pairings
         self.attention_tt = MinimalAttention(
-            self.dD,
-            heads=2,
-            phase_symmetric=self.phase_symmetric,
+            self.dD, heads=2, phase_symmetric=self.phase_symmetric,
+            scalar_dim=qqsl + 1,  # 6 lepQQdR + 1 lnu_mT = 7
             layers=self.layers,
-            scalar_dim = 4,
             inputLayers=[self.bWhadResNetBlock.conv[-1], self.bWlepResNetBlock.conv[-1]],
             device=self.device,
         )
         self.layers.addLayer(self.attention_tt, self.attention_tt.inputLayers)
 
         self.scalars_embed = GhostBatchNorm1d(
-            4, 
-            features_out=self.dD,
-            conv=True, 
+            qqsl + 1, features_out=self.dD, conv=True,
             name="scalar physics relationships embed"
         )
 
         self.qv_embed = GhostBatchNorm1d(
-            self.dD*5,  # Input: full feature dim (40)
-            features_out=8,  # Output: heads * head_dim = 2 * 4
-            conv=True,
+            self.dD * 5, features_out=8, conv=True,
             name="qv physics relationships projector"
         )
 
+        # Single-jet attention bias modules
+        self.jet_dR_embed = GhostBatchNorm1d(
+            1, features_out=self.dD, conv=True, name="jet deltaR embedder"
+        )
+        self.jet_mjj_embed = GhostBatchNorm1d(
+            1, features_out=self.dD, conv=True, name="jet dijet mass embedder"
+        )
+        self.jet_attn_embed = GhostBatchNorm1d(
+            1, features_out=self.dD, conv=True, name="external jet attn score embedder"
+        )
+        self.qv_combine = GhostBatchNorm1d(
+            3 * self.dD, features_out=self.dD, conv=True, name="qv combine deltaR+mjj+attn"
+        )
+
+        # Hadronic W mass from attention-selected jets
+        self.hadW_mass_embed = GhostBatchNorm1d(
+            1, features_out=self.dD, conv=True, name="hadronic W mass embedder"
+        )
+
         self.select_tt = GhostBatchNorm1d(
-            self.dD,
-            features_out=1,  # Single score per candidate
-            conv=True,
-            bias=False,  # No bias because softmax is translation invariant
+            self.dD, features_out=1, conv=True, bias=False,
             name="TT pairing selector"
         )
         self.layers.addLayer(self.select_tt, [self.attention_tt])
 
         self.select_WW = GhostBatchNorm1d(
-            self.dD,
-            features_out=1,  # Single score per candidate
-            conv=True,
-            bias=False,  # No bias because softmax is translation invariant
-            name="non-bjet pairing selector"
+            self.dD, features_out=1, conv=True, bias=False,
+            name="non-bjet selector"
         )
         self.layers.addLayer(self.select_WW, [self.attention_WW])
 
         self.none_WW_score = GhostBatchNorm1d(
-            self.dD,
-            features_out=1,
-            conv=True,
+            self.dD, features_out=1, conv=True,
             name="WW rejection scorer"
         )
         self.layers.addLayer(self.none_WW_score, [self.attention_WW])
 
         self.out_tt = GhostBatchNorm1d(
-            self.dD,
-            features_out=self.nC,  # final tt bar score
-            conv=True,
-            bias=True,
+            self.dD, features_out=self.nC, conv=True, bias=True,
             name="TT bar score"
         )
-        self.layers.addLayer(self.out_tt, [self.select_tt]) 
+        self.layers.addLayer(self.out_tt, [self.select_tt])
+
+        # H->WW block: 2-layer MLP with residual, full interaction between
+        # hadronic W (from attention) and leptonic W (regressed) + both masses
+        # Learns conditional patterns like off-shell lepW + on-shell hadW = signal
+        self.HWWBlock = HiggsBlock(
+            self.dD, n_inputs=4, phase_symmetric=self.phase_symmetric,
+        )
 
         self.final_linear_layer = linear(in_channels=16, out_channels=self.nC)
         self.layers.addLayer(self.final_linear_layer)
 
         self.HH_final_embed = GhostBatchNorm1d(
-            self.dD,
-            features_out=self.dD, 
-            conv=True,
-            name="HH final embed"
+            self.dD, features_out=self.dD, conv=True, name="HH final embed"
         )
         self.layers.addLayer(self.HH_final_embed, [self.inputEmbed.bJetConv, self.select_WW])
 
         self.out = nn.Sequential(
             GhostBatchNorm1d(
-                self.dD, 
-                features_out=16, 
-                conv=True, 
-                bias=False,
+                self.dD, features_out=16, conv=True, bias=False,
                 name="final event score"
             ),
             NonLUModule(),
             nn.AdaptiveAvgPool1d(1),
             nn.Flatten(),
             self.final_linear_layer
-        ) 
+        )
         self.forwardCalls = 0
 
     def embedding_layers(self):
@@ -682,8 +727,8 @@ class HCR_lowpt(nn.Module):
     def output_layers(self):
         return [self.final_linear_layer.index]
 
-    def updateMeanStd(self,  b, nb, l, nu, a):
-        self.inputEmbed.updateMeanStd( b, nb, l, nu, a)
+    def updateMeanStd(self, b, nb, l, nu, a, reg_nu=None):
+        self.inputEmbed.updateMeanStd(b, nb, l, nu, a, reg_nu)
 
     def initMeanStd(self):
         self.inputEmbed.initMeanStd()
@@ -705,23 +750,31 @@ class HCR_lowpt(nn.Module):
         self.out_tt.setGhostBatches(nGhostBatches)
         self.HH_final_embed.setGhostBatches(nGhostBatches)
         self.out[0].setGhostBatches(nGhostBatches)
+        self.jet_dR_embed.setGhostBatches(nGhostBatches)
+        self.jet_mjj_embed.setGhostBatches(nGhostBatches)
+        self.jet_attn_embed.setGhostBatches(nGhostBatches)
+        self.qv_combine.setGhostBatches(nGhostBatches)
+        self.hadW_mass_embed.setGhostBatches(nGhostBatches)
+        self.HWWBlock.setGhostBatches(nGhostBatches)
         self.nGhostBatches = nGhostBatches
 
-
-    def forward(self, b, nb, l, nu, a):
+    def forward(self, b, nb, l, nu, a, reg_nu=None):
         self.forwardCalls += 1
-        # print('\n-------------------------------\n')
-        (b, bb, qq, a, nb , l, nu, lnu_mT, bWhad, bWlep, lepQQdR, bbMdR, qqMdR, bbnMdR, bbqqMdR, 
-        bWhadMdR, bWlepMdR, mask_bbMdR, mask_qqMdR, mask_bbn, mask_qq, mask_bWhad, mask_bWlep)  = self.inputEmbed(
-            b, nb, l, nu, a
-        )  # format inputs to array of objects and apply scalers and GBNs
-        # print('o after inputEmbed\n',o[0])
-        n = b.shape[0]
-        #
-        # Build up dijet pixels with jet pixels and initial dijet pixels
-        #
+        (b, bb, qq, a, nb, l, lnu_mT, bWhad, bWlep, lepQQdR,
+         bbMdR, qqMdR, bbnMdR, bbqqMdR, bWhadMdR, bWlepMdR,
+         bbWlepMdR, WlepNBMdR,
+         mask_bbn, mask_qq, mask_bWhad, mask_bWlep,
+         derived, reg_nu_emb, regW_emb, lepW_mass_emb,
+         raw_nb, raw_lep, nb_attn) = self.inputEmbed(
+            b, nb, l, nu, a, reg_nu
+        )
 
-        # Embed the jet 4-vectors and dijet ancillary features into the target feature space
+        n = b.shape[0]
+        wsl = self.inputEmbed.wsl     # 4
+        qqsl = self.inputEmbed.qqsl   # 6
+        bsl = self.inputEmbed.bsl     # 2
+
+        # Save pre-activation copies for residual connections
         b0 = b.clone()
         bb0 = bb.clone()
         nb0 = nb.clone()
@@ -729,111 +782,156 @@ class HCR_lowpt(nn.Module):
         l0 = l.clone()
         bWhad0 = bWhad.clone()
         bWlep0 = bWlep.clone()
+        regW0 = regW_emb.clone()
 
         b = NonLU(b)
         bb = NonLU(bb)
         nb = NonLU(nb)
         qq = NonLU(qq)
         l = NonLU(l)
-        nu = NonLU(nu)
         lnu_mT = NonLU(lnu_mT)
         bWhad = NonLU(bWhad)
         bWlep = NonLU(bWlep)
+        regW_emb = NonLU(regW_emb)
 
-        # bb: H -> bb candidates, qq: W -> qq candidates 
+        # ResNet blocks: refine features
         bb, bb0 = self.bbDiJetResNetBlock(b, bb, b0, bb0, debug=self.debug)
         qq, qq0 = self.nonbDiJetResNetBlock(nb, qq, nb0, qq0, debug=self.debug)
 
-        # Create unified W candidate with all information available
-        lep_W = l + nu  # can add them because inputs have been embedded
-        lep_W0 = lep_W.clone()
-        lep_W = NonLU(lep_W)
+        # Leptonic W: refine regressed W embedding using lepton and regressed nu context
+        regW_emb, regW0 = self.lepWResNetBlock(l, regW_emb, l0, regW0, debug=self.debug)
 
         bWhad, bWhad0 = self.bWhadResNetBlock(
-            qq.repeat_interleave(2, dim=2), 
-            bWhad, 
-            qq0.repeat_interleave(2, dim=2), 
-            bWhad0, 
+            qq.repeat_interleave(2, dim=2),
+            bWhad,
+            qq0.repeat_interleave(2, dim=2),
+            bWhad0,
             debug=self.debug)
-        bWlep, bWlep0 = self.bWlepResNetBlock(l, bWlep, l0, bWlep0, debug=self.debug)
+        # Leptonic top: b + regressed W_lep, reinforced with regressed W context
+        bWlep, bWlep0 = self.bWlepResNetBlock(regW_emb, bWlep, regW0, bWlep0, debug=self.debug)
 
         bbMdR = NonLU(bbMdR)
         qqMdR = NonLU(qqMdR)
         bbnMdR = NonLU(bbnMdR)
         bbqqMdR = NonLU(bbqqMdR)
-        scalars = torch.cat([lepQQdR, lnu_mT], dim= -1).squeeze(1) # remove middle dimension for attention mechanism broadcasting
 
-        # create 6x4 features for attention mechanism
-        bWhad_exp = bWhadMdR.reshape(n, -1, 6).repeat_interleave(4, dim=2)  # (n, d, 24)
-        bWlep_exp = bWlepMdR.squeeze(-1).repeat(1, 1, 6)  # (n, d, 24)
+        # ============================================================
+        # TT attention: all 6 qq pairs, 2*6=12 hadronic x 2 leptonic = 24 pairings
+        # ============================================================
+        scalars = torch.cat([lepQQdR, lnu_mT], dim=-1).squeeze(1)
 
-        # there are two non-bjets for each bb-dijet, so take average of two
-        bbn_flat = bbnMdR.squeeze(2)  # (n, d, 3)
-        bbn_w0 = torch.cat([bbn_flat[:, :, 0:1], bbn_flat[:, :, 1:2]], dim=1)  # (n, 2d, 1) - W0 uses nb0+nb1
-        bbn_w1 = torch.cat([bbn_flat[:, :, 0:1], bbn_flat[:, :, 2:3]], dim=1)  # (n, 2d, 1) - W1 uses nb0+nb2
-        bbn_w2 = torch.cat([bbn_flat[:, :, 1:2], bbn_flat[:, :, 2:3]], dim=1)  # (n, 2d, 1) - W2 uses nb1+nb2
+        n_bWhad = bsl * qqsl     # 12
+        n_bWlep = bsl            # 2 (one per b-jet)
+        n_tt = n_bWhad * n_bWlep # 24
 
-        bbn_exp = torch.cat([bbn_w0, bbn_w1, bbn_w2], dim=2)  # (n, 2d, 3)
-        bbn_exp = bbn_exp.repeat_interleave(4, dim=2).repeat(1, 1, 2)  # (n, 2d, 24)
-        bbqq_exp = bbqqMdR.squeeze(2)  # (n, d, 3) - one per W candidate
-        bbqq_exp = bbqq_exp.repeat_interleave(4, dim=2).repeat(1, 1, 2)  # (n, d, 24)
+        bWhad_exp = bWhadMdR.reshape(n, -1, n_bWhad).repeat_interleave(n_bWlep, dim=2)
+        bWlep_exp = bWlepMdR.squeeze(-1).repeat(1, 1, n_bWhad)  # (n, dD, 24)
 
-        
-        # Concatenate all relationship features
-        qv_tt = torch.cat([bWhad_exp, bWlep_exp, bbn_exp, bbqq_exp], dim=1)  # (n, 3*d, 12)
+        # Map each qq pair to its constituent non-b jets for bbn relationship
+        bbn_flat = bbnMdR.squeeze(2)  # (n, dD, wsl=4)
+        qq_idx = []
+        for i in range(wsl):
+            for j in range(i + 1, wsl):
+                qq_idx.append((i, j))
+        bbn_qq = torch.cat([
+            torch.cat([bbn_flat[:, :, i:i+1], bbn_flat[:, :, j:j+1]], dim=1)
+            for i, j in qq_idx
+        ], dim=2)  # (n, 2*dD, qqsl=6)
+        bbn_exp = bbn_qq.repeat_interleave(n_bWlep, dim=2).repeat(1, 1, bsl)  # (n, 2*dD, 24)
+
+        bbqq_exp = bbqqMdR.squeeze(2)  # (n, dD, qqsl=6)
+        bbqq_exp = bbqq_exp.repeat_interleave(n_bWlep, dim=2).repeat(1, 1, bsl)  # (n, dD, 24)
+
+        qv_tt = torch.cat([bWhad_exp, bWlep_exp, bbn_exp, bbqq_exp], dim=1)
         qv_tt = self.qv_embed(qv_tt)
 
-        # block invalid pairings (same b-jet in both tops) with a mask
-        mask_tt = torch.zeros(n, 6, 4, dtype=torch.bool, device=self.device)
-        mask_tt[:, 0:3, 2:4] = True  # b0 hadronic × b0 leptonic (invalid)
-        mask_tt[:, 3:6, 0:2] = True  # b1 hadronic × b1 leptonic (invalid)
+        # Mask: prevent same b-jet in both hadronic and leptonic top
+        # bWhad: indices [0:qqsl] use b0, [qqsl:2*qqsl] use b1
+        # bWlep: index 0 uses b1, index 1 uses b0
+        mask_tt = torch.zeros(n, n_bWhad, n_bWlep, dtype=torch.bool, device=self.device)
+        mask_tt[:, :qqsl, 0] = True       # b0 hadronic × b1 leptonic -> wait, bWlep[0] = b1+W, so b0 had x b1 lep is VALID
+        # bWlep order is (b1+W, b0+W) from dataPrep: b[:, :, (1, 0)]
+        # So bWlep[0] has b1, bWlep[1] has b0
+        # bWhad[0:qqsl] has b0, bWhad[qqsl:] has b1
+        # Invalid: b0_had x b0_lep = bWhad[0:qqsl] x bWlep[1]
+        #          b1_had x b1_lep = bWhad[qqsl:]  x bWlep[0]
+        mask_tt[:, :qqsl, 1] = True   # b0 hadronic × b0 leptonic (invalid)
+        mask_tt[:, qqsl:, 0] = True   # b1 hadronic × b1 leptonic (invalid)
 
         TT, TT0, TT_weights = self.attention_tt(
-            bWhad,    # queries: hadronic top candidate
-            bWlep,    # values: leptonic top candidate
-            mask_tt,  # masks out invalid pairings with the same b-jet
-            bWhad0,   # residual for hadronic top
-            qv_tt,    # physics relationships (delta R and mass between b-jets and nonb-jets)
-            scalars,  # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))
-            debug=self.debug
+            bWhad, bWlep, mask_tt, bWhad0, qv_tt, scalars, debug=self.debug
         )
 
         # TTbar pairing selection
-        TT_logits = self.select_tt(TT)  # Shape: (n, 6, 1)
-        TT_logits = TT_logits.view(n, 6)  # Shape: (n, 6)
-        TT_score = F.softmax(TT_logits, dim=-1)  # Shape: (n, 6)
-
+        TT_logits = self.select_tt(TT)
+        TT_logits = TT_logits.view(n, n_bWhad)
+        TT_score = F.softmax(TT_logits, dim=-1)
         TT_sel = torch.matmul(TT, TT_score.unsqueeze(-1))
-        TT_final = self.out_tt(TT_sel)  # Shape: (n, nC)
-        #TT_final = TT_logits.squeeze(-1)
-        self._last_tt_logits = TT_logits.detach() # save TTbar candidates scores
+        TT_final = self.out_tt(TT_sel)
+        self._last_tt_logits = TT_logits.detach()
+
+        # ============================================================
+        # Single-jet WW attention: regressed leptonic W queries individual jets
+        # ============================================================
+        nb_jets = nb[:, :, :wsl]  # (n, dD, 4)
+        jet_mask = mask_bbn.view(n, wsl)
+
+        # Physics-aware attention bias
+        nb_raw_4 = raw_nb.view(n, 4, -1)[:, :, :wsl]
+        lep_raw_6 = raw_lep.view(n, 6, 1)
+        lepNBdR = calcDeltaR(lep_raw_6, nb_raw_4)
+        jet_dR = self.jet_dR_embed(lepNBdR, jet_mask)
+
+        jet_mjj = compute_mjj(raw_nb, wsl)
+        jet_mjj = self.jet_mjj_embed(jet_mjj, jet_mask)
+
+        # External attention scores as per-jet bias (packed in nonbJetCand)
+        ext_attn = nb_attn.view(n, 1, wsl)
+        jet_attn = self.jet_attn_embed(ext_attn, jet_mask)
+
+        jet_qv = self.qv_combine(torch.cat([jet_dR, jet_mjj, jet_attn], dim=1), jet_mask)
 
         WW, WW0, WW_weights = self.attention_WW(
-            lep_W.expand(-1, -1, 3),    # queries: leptonic W candidate
-            qq,           # values: hadronic W candidate (non-bjet dijets) 
-            mask_qq.unsqueeze(1).expand(-1, 3, -1),  # mask invalid dijets for all queries
-            lep_W0.expand(-1, -1, 3), # residual for leptonic W
-            qqMdR,
-            scalars,       # scalar physics relationships (dR (lep, qq) and transverse_mass(lep, nu))
+            regW_emb,                 # q: (n, dD, 1) regressed leptonic W
+            nb_jets,                  # v: (n, dD, wsl=4) individual jets
+            jet_mask.unsqueeze(1),    # mask: (n, 1, wsl)
+            regW0,                    # q0: residual
+            jet_qv,                   # qv: physics-aware bias
+            scalars,                  # 6 lepQQdR + 1 lnu_mT = 7
             self.debug
         )
-        WW_logits = self.select_WW(WW)  # Shape: (n, 3, 1)
-        WW_logits = F.softmax(WW_logits.view(n, 3), dim=-1)
-        self._WW_logits = WW_logits.detach()
-        WW = torch.matmul(WW, WW_logits.unsqueeze(-1))
+        self._jet_weights = WW_weights.detach()
 
-        scalars = self.scalars_embed(scalars.unsqueeze(-1)) # match second dimensions before concatenating
+        # Hadronic W mass from attention-selected jets
+        hadW_mass = _hadW_mass(raw_nb, WW_weights.detach())
+        hadW_mass_emb = self.hadW_mass_embed(hadW_mass)
+
+        # ============================================================
+        # H->WW block: full interaction between hadronic and leptonic W
+        # ============================================================
+        # main=regW_emb (residual connection), context=WW, hadW_mass, lepW_mass
+        HWW = self.HWWBlock(regW_emb, WW, hadW_mass_emb, lepW_mass_emb)  # (n, dD, 1)
+
+        # ============================================================
+        # Final HH concatenation (convolution over all features)
+        # HWW output replaces raw individual W features -- it already encodes their interactions
+        # ============================================================
+        scalars_emb = self.scalars_embed(scalars.unsqueeze(-1))
         HH = torch.cat([
-            bb,                           # (n, dD, 1)
-            WW,                           # (n, dD, 1)
-            bbMdR[:, :, 0, 1:2],          # (n, dD, 1) 
-            bbnMdR.squeeze(2),            # (n, dD, wsl) - squeeze out dimension 2
-            qqMdR.view(n, self.dD, -1),   # (n, dD, wsl*wsl) - flatten last two dims
-            scalars
-        ], dim=-1) # Result shape: (n, features, 4)
+            bb,                           # (n, dD, 1) -- H->bb
+            HWW,                          # (n, dD, 1) -- H->WW (learned W-W interactions)
+            WW,                           # (n, dD, 1) -- raw hadronic W from attention
+            bbMdR[:, :, 0, 1:2],          # (n, dD, 1) -- bb mass/dR
+            bbnMdR.squeeze(2),            # (n, dD, wsl=4)
+            qqMdR.view(n, self.dD, -1),   # (n, dD, wsl*wsl=16)
+            scalars_emb,                  # (n, dD, 1)
+            derived,                      # (n, dD, 1) -- derived kinematics
+            bbWlepMdR.squeeze(2),         # (n, dD, 1) -- bb vs regW MdR
+            WlepNBMdR.squeeze(2),         # (n, dD, wsl=4) -- regW vs non-b jets MdR
+        ], dim=-1)
         HH_final = self.HH_final_embed(HH)
 
-        HH_logits = torch.cat([HH_final, TT_sel], dim=-1) # combine HH and H-> WW scores
+        HH_logits = torch.cat([HH_final, TT_sel], dim=-1)
         HH_logits = self.out(HH_logits)
 
         return HH_logits, TT_final, WW
@@ -844,6 +942,5 @@ class HCR_lowpt(nn.Module):
         self.inputEmbed.storeData = self.storeData
 
     def writeStore(self):
-        # print(self.storeData)
         print(self.store)
         np.save(self.store, self.storeData)

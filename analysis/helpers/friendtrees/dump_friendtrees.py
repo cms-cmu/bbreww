@@ -7,8 +7,108 @@ from src.friendtrees.dump_friend import dump_friend, _build_cutflow
 
 _NAMING = "{path1}/{name}_{uuid}_{start}_{stop}_{path0}"
 
-## function to dump classifier (and regressor) inputs into root files
-def dump_input_friend(
+## function to dump classifier inputs into root files
+def dump_input_friend_classifier(
+    events: ak.Array,
+    output: PathLike,
+    name: str,
+    *selections: ak.Array,
+    bcand: str = "b_cands",
+    nonbcand: str = "q_cands_nom",
+    lepton: str = "leading_lep",
+    met: str = "reg_nu",
+    weight: str = "weight",
+    dump_naming: str = _NAMING,
+):
+    selection = _build_cutflow(*selections)
+    padded = akext.pad.selected()
+    data = ak.Array(
+        {
+            "bJetCand": padded(
+                ak.zip(
+                    {
+                        "pt": events[bcand].pt,
+                        "eta": events[bcand].eta,
+                        "phi": events[bcand].phi,
+                        "mass": events[bcand].mass,
+                        "btagScore": events[bcand].btagScore
+                    }
+                ),
+                selection,
+            ),
+            "nonbJetCand": padded(
+                ak.zip(
+                    {
+                        "pt":   events[nonbcand].pt,
+                        "eta":  events[nonbcand].eta,
+                        "phi":  events[nonbcand].phi,
+                        "mass": events[nonbcand].mass,
+                        "attn_score": events[nonbcand].ml_jet_scores, 
+                    }
+                ),
+                selection,
+            ),
+            "leadingLep": padded(
+                ak.zip(
+                    {
+                        "pt":   events[lepton].pt,
+                        "eta":  events[lepton].eta,
+                        "phi":  events[lepton].phi,
+                        "mass": events[lepton].mass,
+                        "isE" : events.flavor.e,
+                        "isM" : events.flavor.mu,
+                    }
+                ),
+                selection,
+            ),
+            "regressed_nu": padded(
+                ak.zip(
+                    {
+                        "px":   events[met].px,
+                        "py":  events[met].py,
+                        "pz":  events[met].pz,
+                        "E": events[met].energy,
+                    }
+                ),
+                selection,
+            ),
+        }
+        | akext.to_numpy(
+            padded(
+                events["region"][
+                    [
+                        "SR",
+                        "CR",
+                    ]
+                ],
+                selection,
+            )
+        )
+        | akext.to_numpy(
+            padded(
+                events[
+                    [
+                        "njets",
+                        "nsoftjets",
+                        "HT",
+                    ]
+                ],
+                selection,
+            )
+        )
+        | {"true_nbjet_flat": padded(events[nonbcand].isQfromW, selection)}
+        | {"weight": padded(events[weight], selection)}
+        | {"year": padded(ak.full_like(events.HT, (events.metadata['year']).split('_', 1)[0]), selection)}
+    )
+    return dump_friend(
+        events=events,
+        output=output,
+        name=name,
+        data=data,
+        dump_naming=dump_naming,
+    )
+
+def dump_input_friend_regressor(
     events: ak.Array,
     output: PathLike,
     name: str,
@@ -108,13 +208,14 @@ def dump_input_friend(
                         "njets",
                         "nsoftjets",
                         "HT",
-		    ]	
-		],
+                    ]
+                ],
                 selection,
             )
-	)
+        )
+        | {"true_nbjet_flat": padded(events[nonbcand].isQfromW, selection)}
         | {"weight": padded(events[weight], selection)}
-        | {"year" : padded(ak.full_like(events.HT, (events.metadata['year']).split('_', 1)[0]), selection)}
+        | {"year": padded(ak.full_like(events.HT, (events.metadata['year']).split('_', 1)[0]), selection)}
     )
     return dump_friend(
         events=events,

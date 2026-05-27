@@ -1,0 +1,201 @@
+TbarWplusto2L2Nu_2024:
+  count: 15000000
+  cutflow:
+    e_region:
+      events:
+        all: 3222573.0
+        lumimask: 3222573.0
+        njets: 507526.0
+        passNoiseFilter: 3220998.0
+        trigger: 2714491.0
+        twoBjets: 653419.0
+      weights:
+        all: 12264494.758101225
+        lumimask: 12264494.758101225
+        njets: 1931504.3638362885
+        passNoiseFilter: 12258500.386967182
+        trigger: 10330775.331407785
+        twoBjets: 2486758.2045452595
+    mu_region:
+      events:
+        all: 4126230.0
+        lumimask: 4126230.0
+        njets: 699966.0
+        passNoiseFilter: 4124151.0
+        trigger: 3809309.0
+        twoBjets: 906231.0
+      weights:
+        all: 15703661.484122753
+        lumimask: 15703661.484122753
+        njets: 2663951.815267563
+        passNoiseFilter: 15695748.914225817
+        trigger: 14497521.698904753
+        twoBjets: 3448955.629232168
+  files:
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/TbarWplusto2L2Nu_2024/picoAOD.chunk0.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/TbarWplusto2L2Nu_2024/picoAOD.chunk1.root
+  - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/TbarWplusto2L2Nu_2024/picoAOD.chunk2.root
+  missing: {}
+  reproducible:
+    args: Namespace(processor='bbreww/skimmer/processors/skimmer_bbWW.py', configs='bbreww/skimmer/metadata/HHbbWW.yml',
+      metadata='bbreww/metadata/skims_v5', triggers='bbreww/metadata/triggers_bbWW.yml',
+      luminosities='bbreww/metadata/luminosities_bbWW.yml', friends=None, output_file='picoaod_datasets_TbarWplusto2L2Nu_2024.yml',
+      output_path='output/skimmer', storage_remap=None, years=['2024'], datasets=['TbarWplusto2L2Nu'],
+      era=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'C01', 'C02', 'C03', 'C04',
+      'C11', 'C12', 'C13', 'C14', 'C3', 'C4', 'D1', 'D2', 'D01', 'D02', 'D11', 'D12',
+      'F1', 'F2', 'F3', 'G1', 'G2'], skimming=True, test=False, systematics=None,
+      run_dask=True, condor=True, debug=False, check_input_files=False, githash='',
+      gitdiff='')
+    barista:
+      diff: "diff --git a/run_container b/run_container\nindex 56b05b11..56867b3f\
+        \ 100755\n--- a/run_container\n+++ b/run_container\n@@ -35,11 +35,20 @@ add_x509_proxy_flags()\
+        \ {\n     case \"$HOST\" in\n         *cmslpc*|*lxplus*|*falcon*|*rogue*)\n\
+        \             local PROXY=\"${PWD}/proxy/x509_proxy\"\n+            mkdir\
+        \ -p \"${PWD}/proxy\"\n+            # Auto-copy from system proxy if local\
+        \ copy is missing or expired\n+            if [ ! -f \"$PROXY\" ] || ! voms-proxy-info\
+        \ -file \"$PROXY\" -exists -hours 1 2>/dev/null; then\n+                local\
+        \ SYS_PROXY=\"${X509_USER_PROXY:-/tmp/x509up_u$(id -u)}\"\n+             \
+        \   if [ -f \"$SYS_PROXY\" ] && voms-proxy-info -file \"$SYS_PROXY\" -exists\
+        \ -hours 1 2>/dev/null; then\n+                    cp \"$SYS_PROXY\" \"$PROXY\"\
+        \n+                    info \"Copied valid proxy from $SYS_PROXY to $PROXY\"\
+        \n+                else\n+                    warning \"No valid proxy found.\
+        \ Run:\"\n+                    warning \"voms-proxy-init -voms cms -rfc --valid\
+        \ 192:00 -out $PROXY\"\n+                fi\n+            fi\n           \
+        \  if [ -f \"$PROXY\" ]; then\n                 FLAGS_REF+=( -B \"$PROXY\"\
+        :\"$PROXY\" --env X509_USER_PROXY=\"$PROXY\" )\n-            else\n-     \
+        \           warning \"Proxy file not found at ${PROXY}. Run manually to create\
+        \ it if needed:\"\n-                warning \"mkdir -p proxy && voms-proxy-init\
+        \ -voms cms -valid 192:00 -out ./proxy/x509_proxy\"\n             fi\n   \
+        \          ;;\n     esac\n@@ -194,7 +203,13 @@ run_coffea() {\n     HOST=$(hostname)\n\
+        \ \n     # 1. Base Flags\n-    local FLAGS=( -B \"$PWD\":/srv --pwd /srv/\
+        \ )\n+    local FLAGS=( --contain -B \"$PWD\":/srv --pwd /srv/\n+        --env\
+        \ XRD_CONNECTIONRETRY=3\n+        --env XRD_REQUESTTIMEOUT=600\n+        --env\
+        \ XRD_STREAMTIMEOUT=300\n+        --env XRD_TIMEOUTRESOLUTION=15\n+      \
+        \  --env XRD_CONNECTIONWINDOW=30\n+    )\n     \n     # LPC-Specific Environment\
+        \ Variable\n     if [[ $HOST == *\"cmslpc\"* ]]; then\ndiff --git a/runner.py\
+        \ b/runner.py\nindex f6b67c16..4b689474 100644\n--- a/runner.py\n+++ b/runner.py\n\
+        @@ -608,7 +608,7 @@ def setup_config_defaults(config_runner, args):\n    \
+        \     'friend_metafile': 'friends',\n         'friend_merge_step': 100_000,\n\
+        \         'write_coffea_output': True,\n-        'uproot_xrootd_retry_delays':\
+        \ [5, 15, 45]\n+        'uproot_xrootd_retry_delays': [5, 15, 30, 60, 120]\n\
+        \     }\n \n     for key, default_value in defaults.items():\n@@ -621,7 +621,7\
+        \ @@ def setup_executor(config_runner, args, client, pool):\n         'schema':\
+        \ config_runner['schema'],\n         'savemetrics': True,\n         'skipbadfiles':\
+        \ config_runner['skipbadfiles'],\n-        'xrootdtimeout': 600\n+       \
+        \ 'xrootdtimeout': 900\n     }\n \n     if args.debug:\ndiff --git a/src/data_formats/root/io.py\
+        \ b/src/data_formats/root/io.py\nindex de1f7974..727122db 100644\n--- a/src/data_formats/root/io.py\n\
+        +++ b/src/data_formats/root/io.py\n@@ -19,7 +19,7 @@ A wrapper for ROOT file\
+        \ I/O :func:`uproot.reading.open`, :func:`uproot._dask.das\n \n     .. code-block::\
+        \ python\n \n-        timeout = 180\n+        timeout = 600\n \n .. warning::\n\
+        \     Writers will always overwrite the output file if it exists.\n@@ -91,7\
+        \ +91,7 @@ class _Reader:\n         \"open_files\": False,\n     }\n     _default_options\
+        \ = {\n-        \"timeout\": 180,\n+        \"timeout\": 600,\n     }\n \n\
+        \     def __init__(self, **options):\ndiff --git a/src/physics/corrections.yml\
+        \ b/src/physics/corrections.yml\nindex a6675023..bf22708e 100644\n--- a/src/physics/corrections.yml\n\
+        +++ b/src/physics/corrections.yml\n@@ -487,9 +487,9 @@\n     jec_campaign:\
+        \ Summer23Prompt23\n     jec_version: V2\n     jer_campaign: Summer23Prompt23\n\
+        -    jer_version: RunCv1_JRV1\n-    #run_tags: not needed \n-  jes_unc:  \n\
+        +    jer_version: RunCv1234_JRV1\n+    #run_tags: not needed\n+  jes_unc:\n\
+        \     - DUMMY\n   btagSF: '/cvmfs/cms-griddata.cern.ch/cat/metadata/BTV/Run3-23CSep23-Summer23-NanoAODv12/2025-08-20/btagging.json.gz'\n\
+        \   btagWP: #https://btv-wiki.docs.cern.ch/ScaleFactors/Run3Summer23/#ak4-b-tagging\n\
+        @@ -611,8 +611,8 @@\n     file: '/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/Run3-24CDEReprocessingFGHIPrompt-Summer24-NanoAODv15/2025-12-02/jet_jerc.json.gz'\n\
+        \     jec_campaign: Summer24Prompt24\n     jec_version: V2\n-    jer_campaign:\
+        \ Summer24Prompt24\n-    jer_version: RunD_JRV1 ### DUMMY, TO BE UPDATED\n\
+        +    jer_campaign: Summer23BPixPrompt23\n+    jer_version: RunD_JRV1 ### Using\
+        \ 2023BPix JER until Summer24 JER is released\n     #run_tags: not needed\
+        \ in 2024\n   jet_id: '/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/Run3-24CDEReprocessingFGHIPrompt-Summer24-NanoAODv15/2025-12-02/jetid.json.gz'\n\
+        \   jes_unc:  \ndiff --git a/src/physics/objects/jet_corrections.py b/src/physics/objects/jet_corrections.py\n\
+        index 11d79eec..93772568 100644\n--- a/src/physics/objects/jet_corrections.py\n\
+        +++ b/src/physics/objects/jet_corrections.py\n@@ -333,14 +333,19 @@ def apply_jerc_corrections_jsonpog(\n\
+        \     return jet_factory.build(nominal_jet, event.event, seeds=seeds)\n \n\
+        \ \n-def apply_jet_veto_maps( corrections_metadata, jets, event_veto: bool\
+        \ = False ):\n+def apply_jet_veto_maps( corrections_metadata, jets, event_veto:\
+        \ bool = False):\n     '''\n     taken from https://github.com/PocketCoffea/PocketCoffea/blob/main/pocket_coffea/lib/cut_functions.py#L65\n\
+        \     modified to veto jets not events\n     '''\n \n+    if 'jetId' in jets.fields:\n\
+        +        passes_tight_id = ((jets.jetId & 2)==2)\n+    else:\n+        passes_tight_id\
+        \ = jets.passJetId\n+\n     mask_for_VetoMap = (\n-        ((jets.jetId &\
+        \ 2)==2) # Must fulfill tight jetId\n+        passes_tight_id # Must fulfill\
+        \ tight jetId\n         & (abs(jets.eta) < 5.19) # Must be within HCal acceptance\n\
+        \         & ((jets.neEmEF + jets.chEmEF) < 0.9) # Energy fraction not dominated\
+        \ by ECal\n     )\ndiff --git a/src/physics/objects/jetmet_tools/CorrectedJetsFactory.py\
+        \ b/src/physics/objects/jetmet_tools/CorrectedJetsFactory.py\nindex 72318998..02dd5afe\
+        \ 100644\n--- a/src/physics/objects/jetmet_tools/CorrectedJetsFactory.py\n\
+        +++ b/src/physics/objects/jetmet_tools/CorrectedJetsFactory.py\n@@ -73,18\
+        \ +73,27 @@ class _JsonPogJERSF:\n     ``jer_smear`` can index it as ``jersf[:,\
+        \ variation]``.\n     \"\"\"\n \n-    signature = (\"JetEta\",)\n-\n     def\
+        \ __init__(self, corr):\n         self._corr = corr\n+        # Derive signature\
+        \ from the correction's input names (excluding \"systematic\")\n+        _pogname_to_namemap\
+        \ = {\n+            \"JetEta\": \"JetEta\",\n+            \"JetPt\":  \"JetPt\"\
+        ,\n+        }\n+        self.signature = tuple(\n+            _pogname_to_namemap[inp.name]\n\
+        +            for inp in corr.inputs\n+            if inp.name in _pogname_to_namemap\n\
+        +        )\n \n-    def getScaleFactor(self, JetEta, form, lazy_cache):\n\
+        -        eta = numpy.asarray(JetEta, dtype=numpy.float32)\n+    def getScaleFactor(self,\
+        \ form=None, lazy_cache=None, **kwargs):\n+        # kwargs keys correspond\
+        \ to self.signature (e.g. JetEta, or JetEta+JetPt)\n+        arrays = [numpy.asarray(kwargs[k],\
+        \ dtype=numpy.float32) for k in self.signature]\n         stacked = numpy.stack(\n\
+        \             [\n-                self._corr.evaluate(eta, \"nom\").astype(numpy.float32),\n\
+        -                self._corr.evaluate(eta, \"up\").astype(numpy.float32),\n\
+        -                self._corr.evaluate(eta, \"down\").astype(numpy.float32),\n\
+        +                self._corr.evaluate(*arrays, \"nom\").astype(numpy.float32),\n\
+        +                self._corr.evaluate(*arrays, \"up\").astype(numpy.float32),\n\
+        +                self._corr.evaluate(*arrays, \"down\").astype(numpy.float32),\n\
+        \             ],\n             axis=1,\n         )\n"
+      hash: a3bcb466ce49b0e9a52bbb8f7b4aa25f6d5d925d
+    bbreww:
+      diff: "diff --git a/analysis/helpers/gen_process.py b/analysis/helpers/gen_process.py\n\
+        index a80a3ac..f19fa88 100644\n--- a/analysis/helpers/gen_process.py\n+++\
+        \ b/analysis/helpers/gen_process.py\n@@ -30,7 +30,7 @@ def add_gen_info(events,\
+        \ is_mc):\n         is_from_W = (get_ancestor_id(gen, 24) == 24)\n       \
+        \  parent_top_index = top_parent_indices[is_light_quark & is_from_W]\n   \
+        \      parent_top_index = ak.fill_none(ak.firsts(parent_top_index), -999)\n\
+        -\n+        \n         # find b-jets from hadronically decaying top\n    \
+        \     b_parent_top_idx = top_parent_indices[is_genb]\n         is_b_from_had_top\
+        \ = ak.any(b_parent_top_idx == parent_top_index, axis=-1)\ndiff --git a/analysis/metadata/HHbbWW.yml\
+        \ b/analysis/metadata/HHbbWW.yml\nindex 425a652..201b5d0 100644\n--- a/analysis/metadata/HHbbWW.yml\n\
+        +++ b/analysis/metadata/HHbbWW.yml\n@@ -1,4 +1,6 @@\n runner:\n+  chunksize:\
+        \ 10000\n+  maxchunks: 100\n   skipbadfiles: False\n   workers: 8\n   worker_memory:\
+        \ 8GB\n@@ -25,7 +27,7 @@ runner:\n config:\n   dump_signal_phh: false\n  \
+        \ run_SvB: false\n-  run_MET_regression: false\n+  run_MET_regression: True\n\
+        \   friends:\n     SvB: \"bbreww/metadata/classifier/output/result_lowpt.json@@analysis.0.merged\"\
+        \n     met_regressor: \"bbreww/metadata/regressor/output/result.json@@analysis.0.merged\"\
+        \ndiff --git a/classifier/config/workflows/METRegressor/common.yml b/classifier/config/workflows/METRegressor/common.yml\n\
+        index d4f38d2..e67d313 100644\n--- a/classifier/config/workflows/METRegressor/common.yml\n\
+        +++ b/classifier/config/workflows/METRegressor/common.yml\n@@ -13,9 +13,9\
+        \ @@ setting:\n     option:\n       - eras:\n           2022_preEE: [C, D]\n\
+        -          2022_EE: [E, F, G]\n-          2023_preBPix: [A, B, C, D]\n-  \
+        \        2023_BPix: [D, E]\n+          #2022_EE: [E, F, G]\n+          #2023_preBPix:\
+        \ [A, B, C, D]\n+          #2023_BPix: [D, E]\n   - module: bbWW.InputBranch\n\
+        \     option:\n       - feature_ancillary: [\"njets\", \"nsoftjets\", \"HT\"\
+        , \"year\"]\ndiff --git a/classifier/config/workflows/METRegressor/train.yml\
+        \ b/classifier/config/workflows/METRegressor/train.yml\nindex 879d9ed..01887c7\
+        \ 100644\n--- a/classifier/config/workflows/METRegressor/train.yml\n+++ b/classifier/config/workflows/METRegressor/train.yml\n\
+        @@ -34,7 +34,7 @@ model:\n       - --kfold-seed-offsets 0 # use seed (\"FvT\"\
+        , \"random\", 0)\n       - --training FixedStep # setup training schedule\n\
+        \       - epoch: 50\n-        bs_init: 16384\n+        bs_init: 0\n      \
+        \   lr_init: 1.4e-2\n \n setting:\ndiff --git a/scripts/analysis_run3.sh b/scripts/analysis_run3.sh\n\
+        index 7f3f992..720cb5a 100644\n--- a/scripts/analysis_run3.sh\n+++ b/scripts/analysis_run3.sh\n\
+        @@ -16,11 +16,10 @@ bash bbreww/scripts/run_processor.sh \\\n     --processor\
+        \ \"bbreww/analysis/processors/hh_bbww_processor.py\" \\\n     --metadata\
+        \ \"bbreww/metadata/skims_v5\" \\\n     --config \"bbreww/analysis/metadata/HHbbWW.yml\"\
+        \ \\\n-    --datasets \"GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic TTToHadronic\
+        \ TTTo2L2Nu WtoLNu-2Jets_0J WtoLNu-2Jets_1J WtoLNu-2Jets_2J TbarWplustoLNu2Q\
+        \ TbarWplusto2L2Nu TWminustoLNu2Q TWminusto2L2Nu\" \\\n+    --datasets \"\
+        GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic TTToHadronic TTTo2L2Nu\" \\\
+        \n     --year \"2022_preEE 2022_EE 2023_preBPix 2023_BPix\" \\\n     --output-filename\
+        \ \"output.coffea\" \\\n     --output-subdir \"full_run\" \\\n     --no-test\
+        \ \\\n     --no-proxy \\\n-    --condor\n #    data__EGamma data__SingleMuon\
+        \ TTToSemiLeptonic TTToHadronic TTTo2L2Nu WtoLNu-2Jets_0J WtoLNu-2Jets_1J\
+        \ WtoLNu-2Jets_2J TbarWplustoLNu2Q TbarWplusto2L2Nu TWminustoLNu2Q TWminusto2L2Nu\
+        \ TBbarQ TbarBQ TBbartoLplusNuBbar TbarBtoLminusNuB\" \\\ndiff --git a/skimmer/metadata/HHbbWW.yml\
+        \ b/skimmer/metadata/HHbbWW.yml\nindex 5f63870..4993c83 100644\n--- a/skimmer/metadata/HHbbWW.yml\n\
+        +++ b/skimmer/metadata/HHbbWW.yml\n@@ -8,7 +8,7 @@ runner:\n   class_name:\
+        \ Skimmer\n   data_tier: nanoAOD\n   condor_cores: 1\n-  worker_memory: 10GB\n\
+        +  worker_memory: 12GB\n   analysis_base_path: \n     - bbreww\n   condor_transfer_input_files:\n"
+      hash: 3fdb54d219c3dc1fb016c917806d6a67bedee220
+    date: '2026-03-20 09:23:04'
+  saved_events: 1207492
+  sumw: 57087276.25
+  sumw2: 217278880.0234375
+  sumw2_raw: 217278831.03749895
+  sumw_raw: 57087278.5178998
+  total_events: 15000000

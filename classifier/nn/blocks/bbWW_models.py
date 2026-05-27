@@ -468,6 +468,101 @@ def diObjectMass(v1PxPyPzE, v2PxPyPzE):
     # precision issues can in rare cases causes a negative value in above ReLU argument. Replace these with zero using ReLU before sqrt
     return M
 
+def calc_mW(lep, nu):
+    """Compute leptonic W mass from lepton (polar) and neutrino (Cartesian).
+
+    Args:
+        lep: (n, 4) lepton [pt, eta, phi, mass]
+        nu: (n, 3) neutrino [px, py, pz]
+    Returns:
+        (n,) leptonic W mass
+    """
+    lep_px = lep[:, 0] * torch.cos(lep[:, 2])
+    lep_py = lep[:, 0] * torch.sin(lep[:, 2])
+    lep_pz = lep[:, 0] * torch.sinh(lep[:, 1])
+    lep_E = torch.sqrt(lep_px**2 + lep_py**2 + lep_pz**2 + lep[:, 3]**2)
+    nu_E = torch.sqrt(nu[:, 0]**2 + nu[:, 1]**2 + nu[:, 2]**2)
+
+    mW_sq = (lep_E + nu_E)**2 - (lep_px + nu[:, 0])**2 \
+            - (lep_py + nu[:, 1])**2 - (lep_pz + nu[:, 2])**2
+    mW = torch.sqrt(F.softplus(mW_sq, beta=1.0, threshold=20.0).clamp(min=1.0))
+
+    return mW
+
+
+def _hadW_mass(raw_nb, ww_weights):
+    """Compute hadronic W mass from the two highest-attention non-b jets.
+
+    Args:
+        raw_nb: (n, 4*nj) flat raw non-b jet features [pt, eta, phi, mass] per jet
+        ww_weights: (n, heads, 1, nj) detached attention weights over nj jets
+    Returns:
+        (n, 1, 1) hadronic W candidate mass
+    """
+    n = raw_nb.shape[0]
+    nb = raw_nb.view(n, 4, -1)  # (n, 4, nj)
+    nj = nb.shape[2]
+    if nj < 2:
+        return torch.zeros(n, 1, 1, device=raw_nb.device)
+
+    # Average attention across heads: (n, heads, 1, nj) → (n, nj)
+    attn = ww_weights.squeeze(2).mean(dim=1)  # (n, nj)
+
+    # Zero out attention for padded jets (pt == -1)
+    padded = (nb[:, 0, :] < 0)  # (n, nj)
+    attn = attn.masked_fill(padded, 0.0)
+
+    _, top2 = attn.topk(2, dim=1)  # (n, 2)
+    top2_exp = top2.unsqueeze(1).expand(-1, 4, -1)  # (n, 4, 2)
+    sel_jets = torch.gather(nb, 2, top2_exp)  # (n, 4, 2)
+
+    # Compute PxPyPzE for each selected jet and get dijet mass
+    j1 = PxPyPzE(sel_jets[:, :, 0])  # (n, 4)
+    j2 = PxPyPzE(sel_jets[:, :, 1])  # (n, 4)
+    mass = diObjectMass(j1, j2)  # (n, 1)
+
+    return mass.unsqueeze(-1)  # (n, 1, 1)
+
+
+def compute_mjj(raw_nb, nj):
+    """For each non-b jet, compute min m_jj over its pairings with other jets.
+
+    Args:
+        raw_nb: (n, 4*nj) flat raw non-b jet features [pt, eta, phi, mass] per jet
+        nj: number of jets to consider
+    Returns:
+        (n, 1, nj) per-jet m_jj (large value for padded jets)
+    """
+    n = raw_nb.shape[0]
+    nb = raw_nb.view(n, 4, -1)[:, :, :nj]  # (n, 4, nj)
+    device = raw_nb.device
+
+    # Build all C(nj,2) pair indices
+    idx_i, idx_j = [], []
+    for i in range(nj):
+        for j in range(i + 1, nj):
+            idx_i.append(i)
+            idx_j.append(j)
+
+    # Compute dijet masses for all pairs
+    v1 = PxPyPzE(nb[:, :, idx_i])  # (n, 4, n_pairs)
+    v2 = PxPyPzE(nb[:, :, idx_j])  # (n, 4, n_pairs)
+    mjj = diObjectMass(v1, v2)     # (n, 1, n_pairs)
+
+    # Map pair masses back to individual jets (min mass over pairings)
+    BIG = 999.0
+    per_jet = torch.full((n, 1, nj), BIG, device=device)
+    for p, (i, j) in enumerate(zip(idx_i, idx_j)):
+        per_jet[:, :, i] = torch.min(per_jet[:, :, i], mjj[:, :, p])
+        per_jet[:, :, j] = torch.min(per_jet[:, :, j], mjj[:, :, p])
+
+    # Mask padded jets (pt < 0)
+    padded = (nb[:, 0, :] < 0).unsqueeze(1)  # (n, 1, nj)
+    per_jet = per_jet.masked_fill(padded, BIG)
+
+    return per_jet  # (n, 1, nj)
+
+
 class GhostBatchNorm1d(
     nn.Module
 ):  # https://arxiv.org/pdf/1705.08741v2.pdf has what seem like typos in GBN definition.
@@ -936,6 +1031,46 @@ class lepWReinforceLayer(nn.Module):
         lepW = self.conv(lepW)
         return lepW
 
+class HiggsBlock(nn.Module):
+    """Two-layer MLP with residual for combining Higgs decay products.
+
+    Flattens all inputs along the feature dimension so every input interacts
+    with every other input. Two GBN layers with NonLU enable learning
+    conditional patterns (e.g., off-shell lepW + on-shell hadW = signal).
+    Residual connection from the main input preserves direct information flow.
+    """
+    def __init__(self, dD, n_inputs, phase_symmetric=False):
+        super().__init__()
+        self.dD = dD
+        self.fc1 = GhostBatchNorm1d(
+            dD * n_inputs, features_out=dD,
+            phase_symmetric=phase_symmetric, conv=True,
+            name="Higgs block fc1",
+        )
+        self.fc2 = GhostBatchNorm1d(
+            dD, phase_symmetric=phase_symmetric, conv=True,
+            name="Higgs block fc2",
+        )
+
+    def setGhostBatches(self, nGhostBatches):
+        self.fc1.setGhostBatches(nGhostBatches)
+        self.fc2.setGhostBatches(nGhostBatches)
+
+    def forward(self, main, *context):
+        """
+        Args:
+            main: (n, dD, 1) -- primary input, used for residual connection
+            *context: additional (n, dD, 1) tensors to interact with main
+        Returns:
+            (n, dD, 1) -- refined representation with residual from main
+        """
+        combined = torch.cat([main] + list(context), dim=2)     # (n, dD, n_inputs)
+        flat = combined.reshape(combined.shape[0], -1, 1)       # (n, dD*n_inputs, 1)
+        x = NonLU(self.fc1(flat))                                # (n, dD, 1)
+        x = self.fc2(x) + main                                  # (n, dD, 1) + residual
+        return NonLU(x)
+
+
 class ResNetBlock(nn.Module):
     def __init__(
         self,
@@ -979,7 +1114,6 @@ class ResNetBlock(nn.Module):
                 self.reinforce.append(
                     lepWReinforceLayer(self.d, phase_symmetric=phase_symmetric)
                 )
-                pass
             layers.addLayer(self.reinforce[-1], previousLayers)
 
         self.reinforce = nn.ModuleList(self.reinforce)

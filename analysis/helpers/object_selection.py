@@ -3,6 +3,7 @@ import awkward as ak
 from src.physics.objects.jet_corrections import apply_jet_veto_maps
 from bbreww.analysis.helpers.ids import lepton_preselection, jet_preselection, tau_preselection, ak8_jet_preselection
 from bbreww.analysis.helpers.corrections import get_met_xy_correction
+from src.physics.objects.jet_tools import compute_jet_id
 
 ## this file contains object preselection for MET, electrons, muons, taus, photons, and jets
 
@@ -35,16 +36,20 @@ def tau_selection(events,params):
     return events
 
 def jet_selection(events, params, year):
+    if 'jetId' in events.Jet.fields:
+        events['Jet', 'passJetId']  = (events.Jet.jetId & params.object_preselection.Jet.soft.jetId) == 2
+    else: # nano v15 doesn't have jetId field
+        events['Jet', 'passJetId'] = compute_jet_id(events.Jet, params[year].jet_id, params.object_preselection.Jet.soft.jetId_tag)
+
     # jet veto maps for detector issues
-    if '202' in year:
-        events['Jet', 'jet_veto_maps'] = apply_jet_veto_maps(params[year]['jet_veto_maps'], events.Jet, event_veto = True)
-        # events['Jet'] = events.Jet[events.Jet.jet_veto_maps] uncomment to apply on individual jets
+    events['Jet', 'jet_veto_maps'] = apply_jet_veto_maps(params[year]['jet_veto_maps'], events.Jet, event_veto = True)
+    # events['Jet'] = events.Jet[events.Jet.jet_veto_maps] uncomment to apply on individual jets
 
     events['Jet','isclean'] = (
         ak.all(events.Jet.metric_table(events.Muon[events.Muon.istight]) > 0.4, axis=2)
         & ak.all(events.Jet.metric_table(events.Electron[events.Electron.istight]) > 0.4, axis=2)
     )
-    events['Jet', 'isnominal'], events['Jet', 'issoft'],  events['Jet', 'preselected'] = jet_preselection(events, params)
+    events['Jet', 'isnominal'], events['Jet', 'issoft'],  events['Jet', 'preselected'] = jet_preselection(events, params, year)
 
     j_clean = events.Jet[events.Jet.isclean]
     j_init = j_clean[j_clean.preselected] # initial preselected jets
@@ -56,9 +61,9 @@ def jet_selection(events, params, year):
     events['nsoftjets']= ak.num(j_soft, axis=1)
     events['njets'] = ak.fill_none(ak.num(j_clean[j_clean.isnominal],axis=1),np.nan)
     #events['njets'] = ak.fill_none(ak.num(j_init,axis=1),np.nan) # all jets, including soft
-    events['has_3_presel_jets'] = (ak.num(j_init[j_init.preselected],axis=1)>2)
-    events['has_exactly_3_presel_jets'] = (ak.num(j_init[j_init.preselected],axis=1)==3)
-    events['has_4_presel_jets'] = (ak.num(j_init[j_init.preselected],axis=1)>3)
+    events['has_3_presel_jets'] = (ak.num(j_init, axis=1) > 2)
+    events['has_exactly_3_presel_jets'] = (ak.num(j_init, axis=1) == 3)
+    events['has_4_presel_jets'] = (ak.num(j_init, axis=1) > 3)
 
     events['HT'] = ak.sum(j_init.pt, axis=1) # HT of all jets
     events['HTsoft'] = ak.sum(j_soft.pt, axis=1) # HT of soft jets
@@ -75,7 +80,7 @@ def jet_selection(events, params, year):
     j_candidates_nom = j_candidates[j_candidates.isnominal]
     events['nom_njets4'] = (ak.num(j_candidates_nom, axis=1) > 3)
     events['nom_njets3'] = (ak.num(j_candidates_nom, axis=1) == 3)
-
+    
     j_btagged = j_candidates_nom[getattr(j_candidates_nom,bTag_key) > btag_threshold]
     b_cands = j_btagged[:,:2]
     b_cands = b_cands[ak.argsort(b_cands.pt, axis=1, ascending=False)] #particleNetAK4_B btagPNetB
@@ -98,11 +103,10 @@ def jet_selection(events, params, year):
     #
     j_candidates_soft = j_candidates[j_candidates.issoft]
     events['j_soft'] = j_candidates_soft
-
+    
     q_cands_soft = ak.concatenate([q_cands_nom, j_candidates_soft], axis=1)
     q_cands_soft = q_cands_soft[ak.argsort(q_cands_soft.pt, axis=1, ascending=False)] # pT sort the jets
     events['q_cands_soft_init'] = q_cands_soft
-
 
     return events
 
@@ -155,7 +159,7 @@ def apply_bbWW_preselection(events, year,params, isMC):
 
     #select leading lepton out of electrons/muons. Use ak.singletons to slice entries, not whole events
     events["leptons"] = ak.concatenate([events.sel_muon, events.sel_elec], axis=1)
-    events['leading_lep'] = ak.with_name(ak.firsts(events.leptons), 'PtEtaPhiMLorentzVector') #reapply 4-vector behavior after concatenate
+    events['leading_lep'] = ak.with_name(ak.firsts(events.leptons), 'PtEtaPhiMCandidate') #reapply 4-vector behavior after concatenate
 
     events = tau_selection(events,params)
     events = jet_selection(events,params, year)
@@ -164,4 +168,5 @@ def apply_bbWW_preselection(events, year,params, isMC):
     # require exactly one tight electron(muon) with no loose muon(electron)
     events['e_region'] = (events.e_ntight==1) & (events.mu_ntight==0)
     events['mu_region'] = (events.mu_ntight==1) & (events.e_ntight==0)
+
     return events

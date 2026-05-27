@@ -14,6 +14,7 @@ def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = 
     fill += hist.add("MET_pt", (50, -0.5, 250, ("MET.pt", R"MET $p_T$ [GeV]")))
     fill += hist.add("MET_phi", (50, -4, 4, ("MET.phi", R"MET $Phi$")))
     fill += hist.add("njets", (10, -0.5, 9.5, ("njets", "jet multiplicity")))
+    fill += hist.add("btag_sf", (50, 0.5, 1.5, ("btag_sf", "b-tagging SF")))
     fill += hist.add("lepnu_deta", (50, -3, 3, ("Wlnu_cand.deta", "delta_eta between lepton and neutrino")))
 
     ## W-qq quark vs. gluon selection candidates
@@ -82,7 +83,7 @@ def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = 
                         nu_pt_res=lambda events: events.genNu_pt - events.reg_nu.pt
                         )
         fill += hist.add("reg_nu_pz_res",
-                        (40, -5, 5, ("nu_pz_res", R"(True - Regressed) $\nu |p_z|$")),
+                        (60, -200, 200, ("nu_pz_res", R"(True - Regressed) $\nu |p_z|$")),
                         nu_pz_res= lambda events: events.genNu_pz - events.reg_nu.pz
                         )
         fill += hist.add("reg_nu_eta_res",
@@ -160,7 +161,7 @@ def fill_histograms_nominal(
     fill += hist.add("ml_lead_numer.pt", (50, -0.5, 250, ("q_ml_lead_numer", "pT[GeV]"))) # ML lead correct
     fill += hist.add("ml_sublead_denom.pt", (50, -0.5, 250, ("q_ml_sublead_denom", "pT[GeV]"))) # >= 2 true jets
     fill += hist.add("ml_sublead_numer.pt", (50, -0.5, 250, ("q_ml_sublead_numer", "pT[GeV]"))) # ML sublead correct
-    fill += hist.add("misclass_p_onshell", (10, 0, 1.1, ("misclass_p_onshell", "p(on-shell)"))) # misclassified & gen_lepW < 20
+    fill += hist.add("misclass_p_onshell", (20, 0, 1.1, ("misclass_p_onshell", "p(on-shell)"))) # misclassified & gen_lepW < 20
     fill += hist.add("misclass_sigma_pz_on", (100, 0, 300, ("misclass_sigma_pz_on", "on-shell uncertainty"))) # misclassified & gen_lepW < 20
 
     fill += Chi2Hists(("chi2_hadWs",      "chi2 hadWs"),         "chi2_hadWs")

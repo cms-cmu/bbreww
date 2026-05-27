@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable, Iterable
 
-from bbreww.classifier.config.setting.bbWW import Input
+from bbreww.classifier.config.setting.METRegressor import Input
 from src.classifier.task import ArgParser, parse
 
 from src.classifier.config.model._kfold import KFoldEval, KFoldTrain

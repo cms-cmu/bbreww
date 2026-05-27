@@ -6,7 +6,7 @@ from bbreww.classifier.config.model.bbWW.METRegressor._METRegressor import (
     METRegressorTrain,
     METRegressorEval,
 )
-from bbreww.classifier.config.setting.bbWW import Input
+from bbreww.classifier.config.setting.METRegressor import Input
 from bbreww.classifier.nn.blocks.bbWW_models import get_nu_pz_cartesian
 
 if TYPE_CHECKING:
@@ -39,8 +39,8 @@ class Train(METRegressorTrain):
         cholesky_L_off = batch["cholesky_L_off"]       # (n, 3, 3)
         weight = weight.clamp(min=0)
 
-        # Mask out events with no gen neutrino (filled with -1)
-        valid = (target_ptep[:, 0] >= 0)
+        # Mask out events with no gen neutrino ()
+        valid = (target_ptep[:, 0] > 0)
         target_ptep = target_ptep[valid]
         weight = weight[valid]
         pred_on = pred_on[valid]
@@ -65,7 +65,7 @@ class Train(METRegressorTrain):
         isLepW = genLepW[:, 0]                 # (n,): 1=on-shell, 0=off-shell, -1=unknown
         target_mW = genLepW[:, 1]              # (n,)
         is_on = (isLepW == 1)
-        is_on_regressor = (isLepW == 1) | (isLepW == -1)  # include ttbar (on-shell W, valid genNu)
+        is_on_regressor = ((isLepW == 1) | (isLepW == -1)) # include ttbar;
         is_off = (isLepW == 0)
         has_label = (isLepW >= 0)
 
@@ -127,7 +127,7 @@ class Train(METRegressorTrain):
         # Uses is_on_regressor to include semileptonic ttbar (on-shell W, valid genNu)
         logit_sol_on = batch["pz_hint_on"][valid]  # carries logit_sol from regressor
         if is_on_regressor.sum() > 0 and weight[is_on_regressor].sum() > 0:
-            # Re-solve quadratic with corrected MET to get both pz solutions
+            # Re-solve quadratic with corrected MET at constant mW=80.379
             pz_s1, pz_s2, _, _ = get_nu_pz_cartesian(
                 lep[:, 0], lep[:, 1], lep[:, 2], lep[:, 3],
                 pred_on[:, 0], pred_on[:, 1], mW=80.379,
@@ -174,7 +174,14 @@ class Train(METRegressorTrain):
                 weight=sol_weight, reduction="sum"
             ) / sol_weight.sum()
 
-            loss_onshell = loss_mixture + 2.0 * sol_bce
+            # pT bias correction: penalize systematic underestimation of neutrino pT
+            # Normalize by scale² to keep loss magnitude comparable to NLL (~2-5)
+            pt_pred_on = torch.sqrt(pred_on[is_on_regressor, 0]**2 + pred_on[is_on_regressor, 1]**2 + 1e-8)
+            pt_true_on = t_pt[is_on_regressor]
+            pt_scale = 20.0  # normalization scale in GeV
+            pt_mse = (((pt_pred_on - pt_true_on) / pt_scale)**2 * w_on).sum() / w_on.sum()
+
+            loss_onshell = loss_mixture + 2.0 * sol_bce + 0.5 * pt_mse
         else:
             loss_onshell = torch.tensor(0.0, device=pred_on.device, requires_grad=True)
 
@@ -185,17 +192,27 @@ class Train(METRegressorTrain):
         # ---- Loss 3: backbone (classifier only) ----
         logit_onshell = batch["logit_onshell"][valid]
 
+        true_nbjet = batch[Input.true_nbjet_flat][valid]  # (n, wsl) binary: 1 if true q from W
+        has_true_jets = (true_nbjet.sum(dim=-1) > 0) # only compute loss on events with labeled jets
+        
+        ww_weights = batch["ww_weights"][valid]      # (n, h*wsl) from forward pass
+        wsl = ww_weights.shape[1] // 2
+        ww_weights = ww_weights.view(-1, 2, wsl).mean(dim=1)  # (n, wsl)
+
         if has_label.sum() > 0 and weight[has_label].sum() > 0:
             clf_loss = F.binary_cross_entropy_with_logits(
                 logit_onshell[has_label], isLepW[has_label].clamp(0.0, 1.0),
                 weight=weight[has_label], reduction="sum"
             ) / weight[has_label].sum()
+
+            target_dist = true_nbjet / true_nbjet.sum(dim=-1, keepdim=True).clamp(min=1)
+            jet_attn_loss = -(target_dist[has_true_jets] * torch.log(ww_weights[has_true_jets] + 1e-8)).sum(dim=-1).mean()
+            
         else:
             clf_loss = torch.tensor(0.0, device=pred_on.device, requires_grad=True)
+            jet_attn_loss = torch.tensor(0.0, device=pred_on.device, requires_grad=True)
 
-        loss_backbone = clf_loss
-
-        return loss_backbone, loss_onshell, loss_offshell
+        return clf_loss + 0.3 * jet_attn_loss, loss_onshell, loss_offshell
 
 
 class Eval(METRegressorEval):
@@ -223,11 +240,13 @@ class Eval(METRegressorEval):
             "p_onshell":    batch["p_onshell"],
             "sigma_pz_on":  batch["nu_sigma_pz_on"],
             "sigma_pz_off": batch["nu_sigma_pz_off"],
-            # Per-jet attention weights (2 heads × 3 jets)
+            # Per-jet attention weights (2 heads × 4 jets)
             "jet_weight_0": batch["jet_weight_0"],
             "jet_weight_1": batch["jet_weight_1"],
             "jet_weight_2": batch["jet_weight_2"],
             "jet_weight_3": batch["jet_weight_3"],
             "jet_weight_4": batch["jet_weight_4"],
             "jet_weight_5": batch["jet_weight_5"],
+            "jet_weight_6": batch["jet_weight_6"],
+            "jet_weight_7": batch["jet_weight_7"],
         }

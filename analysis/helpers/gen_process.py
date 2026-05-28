@@ -22,6 +22,7 @@ def add_gen_info(events, is_mc):
 
         ## non-bjets gen matched with W jets decaying to quarks
         gen_qFromW = gen_match(events.GenPart, [1,2,3,4], [24])
+        
         events['gen_bFromH'] = gen_match(events.GenPart, [5], [25])
         
         # find hadronically decaying tops
@@ -35,14 +36,12 @@ def add_gen_info(events, is_mc):
         b_parent_top_idx = top_parent_indices[is_genb]
         is_b_from_had_top = ak.any(b_parent_top_idx == parent_top_index, axis=-1)
         gen_b_from_had_top = gen[is_genb][is_b_from_had_top]
-        #isHadB= ak.any(gen_b_from_had_top.metric_table(events.Jet)< 0.2,axis=1)
-        #is_max_pt = (events.Jet.pt == ak.max(events.Jet[isHadB].pt, axis=1, keepdims=True))
-        #events['Jet', 'isHadB'] = isHadB & is_max_pt
 
         try:
             events['Jet', 'isQfromW']= ak.any(gen_qFromW.metric_table(events.Jet)< 0.2,axis=1)
+            events['Jet', 'isQfromPho']= ak.any(gen_qFromPho.metric_table(events.Jet)< 0.2,axis=1)
             events['Jet', 'isGenFromW'] = ak.sum(events.Jet.isQfromW, axis=1) == 2
-                
+            
             ## flag which W is on shell (only for signal)
             is_lep = ((events.GenPart[events.GenPart.genPartIdxMother].isW) &
                 ((abs(events.GenPart.pdgId) == 11) | (abs(events.GenPart.pdgId) == 13))) # electrons or muons
@@ -204,7 +203,7 @@ def gen_studies(events, is_mc, run_MET_regression):
         gen_W= events.GenPart[events.GenPart.isW]
         gen_b = ak.pad_none(events.gen_bFromH, 2,axis=1)
 
-        if 1==1:
+        try:
             ## non-bjets gen matched with W jets decaying to quarks
             j_sel = events.Jet[events.Jet.isclean]
             j_sel = j_sel[j_sel.preselected]
@@ -259,25 +258,14 @@ def gen_studies(events, is_mc, run_MET_regression):
                 misclass_low_genW = abs(events.reg_mW - 80.0) <= 5.0 
                 events['misclass_p_onshell'] = ak.where(misclass_low_genW, events.met_regressor.p_onshell , np.nan)
                 events['misclass_sigma_pz_on'] = ak.where(misclass_low_genW, events.met_regressor.sigma_pz_on, np.nan)
-        #except:
-        #    logging.info("warning: skipping gen studies of true W jets due to error")
-        #    pass #above sequence will fail for datasets that don't have jets in every event
+        except:
+            logging.info("warning: skipping gen studies of true W jets due to error")
+            pass #above sequence will fail for datasets that don't have jets in every event
 
-        ## met and W mass resolution
-        #events['W_mass_res'] = ak.firsts(gen_W.mass[gen_W.mass < 55.0]) - events.qq_sel_mass
-        #events['genW_mass'] = gen_W.mass[gen_W.mass > 55.0]
-        #####################
-        
         ### study input parameters to chi square
         events['bjets_genjets_mass'] = ak.fill_none((events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen).mass,np.nan)
         events['bjets_genjets_dr'] = ak.fill_none(events.b_cands[:,0].matched_gen.delta_r(events.b_cands[:,1].matched_gen),np.nan)
         #events['bcand_genjets_mass'] = (events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen)
         events['gen_bb'] = ak.fill_none(gen_b[:,0] + gen_b[:,1], np.nan)
-        
-        if 'HH' in events.metadata['dataset']:
-            genjet_from_b =  ak.pad_none(events.b_cands[events.b_cands.isbFromH].matched_gen,2,axis=1)
-            events['genjet_from_b'] = ak.fill_none(genjet_from_b[:,0] + genjet_from_b[:,1], np.nan)
-            recojet_from_b = ak.pad_none(events.b_cands[events.b_cands.isbFromH], 2, axis=1)
-            events['mass_reco_b_gen_match'] = ak.fill_none(recojet_from_b [:,0] + recojet_from_b[:,1], np.nan)
 
     return events

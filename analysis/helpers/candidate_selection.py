@@ -1,3 +1,4 @@
+import logging
 import awkward as ak
 import numpy as np
 from coffea.nanoevents.methods import vector
@@ -128,7 +129,7 @@ def Wqq_soft_candidate_selection(events, year):
     q_cands_soft = events.q_cands_soft_init[ak.argsort(events.q_cands_soft_init.pt, axis=1, ascending=False)]
     q_cands_soft = q_cands_soft[:, :4]
     events['q_cands_soft'] = q_cands_soft
-
+    
     ## pt sorting soft + nominal candidates
     q_cands_pt_sorted = events.q_cands_soft_init[ak.argsort(events.q_cands_soft_init.pt, axis=1, ascending=False)]
     events['q_cands_pt_sorted'] = ak.pad_none(q_cands_pt_sorted[:,:2], 2, axis=1)
@@ -205,12 +206,25 @@ def ttbar_soft_candidate_selection(events):
 
 def regressed_nu(events, met_regression: bool = False):
     if met_regression:
+        # Field name can be present while the sub-record is an EmptyArray
+        # (data samples processed without the 3jet friend tree). Also check
+        # that the sub-record actually has fields so we don't try to index
+        # into an EmptyArray below.
+        has_3jet = (
+            "met_regressor_3jet" in ak.fields(events)
+            and len(ak.fields(events.met_regressor_3jet)) > 0
+        )
         is_3jet = events.incl_3j2b
+
         def _pick(field):
+            if not has_3jet:
+                return events.met_regressor[field]
             return ak.where(is_3jet, events.met_regressor_3jet[field], events.met_regressor[field])
+        
         nu_px = _pick("nu_px")
         nu_py = _pick("nu_py")
         nu_pz = _pick("nu_pz")
+            
         events["reg_nu"] = ak.zip({
             "x": nu_px,
             "y": nu_py,

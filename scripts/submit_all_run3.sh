@@ -9,20 +9,20 @@
 # window runs a small rerun_<name>.sh script that stays in shell history.
 # Rerun scripts are cleaned up automatically after the merge completes.
 #
-# Screen windows:
-#   0: chunk1_2022_preEE  (GluGlu + TTToSemiLeptonic)
-#   1: chunk1_2022_EE
-#   2: chunk1_2023_preBPix
-#   3: chunk1_2023_BPix
-#   4: chunk2             (TTToHadronic + TTTo2L2Nu, all eras)
-#   5: chunk3             (WtoLNu-2Jets, all eras)
-#   6: chunk4             (TbarWplus + TWminus, all eras)
-#   7: chunk5             (TBbar, all eras)
-#   8: merge              (waits for all outputs, then merges)
+# Modes (selected via --mode):
+#   mc   — MC samples only:
+#            chunk1_<era>  (GluGlu + TTToSemiLeptonic, one per era)
+#            chunk2        (TTToHadronic + TTTo2L2Nu, all eras)
+#            chunk3        (WtoLNu-2Jets, all eras)
+#            chunk4        (TbarWplus + TWminus, all eras)
+#            chunk5        (TBbar, all eras)
+#   data — Data samples only:
+#            data_egamma      (data__EGamma, all eras)
+#            data_singlemuon  (data__SingleMuon, all eras)
+#   full — MC + Data
 #
 # Usage:
-#   bash bbreww/scripts/submit_all_run3.sh [--output-base DIR]
-#   Default output base: output/
+#   bash bbreww/scripts/submit_all_run3.sh --mode <mc|data|full> [--output-base DIR]
 #
 # Attach:         screen -r bbww_run3
 # Switch windows: Ctrl-A N / Ctrl-A P   or   Ctrl-A " (list)
@@ -36,31 +36,82 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BARISTA_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
+# Anchor every relative path below to barista root, regardless of where the
+# user invokes this script from.
+cd "$BARISTA_DIR"
+
 OUTPUT_BASE="output"
+OUTPUT_NAME="output_merged.coffea"
 SESSION="bbww_run3"
+MODE=""
+
+usage() {
+    cat <<EOF
+Usage: $0 --mode <mc|data|full> [--output-base DIR] [-op NAME]
+
+Modes:
+  mc    Run MC chunks only (chunk1_<era>, chunk2, chunk3, chunk4, chunk5)
+  data  Run the data chunks only (data_egamma + data_singlemuon, all eras)
+  full  Run MC and Data chunks together
+
+Optional:
+  --output-base DIR    Where to write outputs (default: output)
+  -op NAME             Filename for the final merged coffea
+                       (default: output_merged.coffea). The file is written
+                       to <output-base>/full_run/<NAME>.
+EOF
+}
 
 while [[ $# -gt 0 ]]; do
     case $1 in
         --output-base) OUTPUT_BASE="$2"; shift 2 ;;
-        *) echo "Unknown option: $1"; echo "Usage: $0 [--output-base DIR]"; exit 1 ;;
+        -op)           OUTPUT_NAME="$2"; shift 2 ;;
+        --mode)        MODE="$2"; shift 2 ;;
+        -h|--help)     usage; exit 0 ;;
+        *) echo "Unknown option: $1"; echo; usage; exit 1 ;;
     esac
 done
+
+if [[ -z "$MODE" ]]; then
+    echo "ERROR: --mode is required."
+    echo
+    usage
+    exit 1
+fi
+
+case "$MODE" in
+    mc|data|full) ;;
+    *) echo "ERROR: invalid --mode '$MODE'"; echo; usage; exit 1 ;;
+esac
+
+RUN_MC=false
+RUN_DATA=false
+case "$MODE" in
+    mc)   RUN_MC=true ;;
+    data) RUN_DATA=true ;;
+    full) RUN_MC=true; RUN_DATA=true ;;
+esac
 
 OUTPUT_DIR="${OUTPUT_BASE}/full_run"
 mkdir -p "$OUTPUT_DIR"
 
-# Remove any pre-existing chunk outputs so a fresh run doesn't pick up
-# stale histograms with different binning. (output_merged.coffea is left
-# alone — only the per-chunk files are wiped.)
+# Remove pre-existing chunk outputs so a fresh run doesn't pick up stale
+# histograms with different binning. (output_merged.coffea is left alone.)
 echo "Cleaning pre-existing chunk outputs in ${OUTPUT_DIR}..."
-rm -f "${OUTPUT_DIR}"/output_chunk1_2022_preEE.coffea \
-      "${OUTPUT_DIR}"/output_chunk1_2022_EE.coffea \
-      "${OUTPUT_DIR}"/output_chunk1_2023_preBPix.coffea \
-      "${OUTPUT_DIR}"/output_chunk1_2023_BPix.coffea \
-      "${OUTPUT_DIR}"/output_chunk2.coffea \
-      "${OUTPUT_DIR}"/output_chunk3.coffea \
-      "${OUTPUT_DIR}"/output_chunk4.coffea \
-      "${OUTPUT_DIR}"/output_chunk5.coffea
+if $RUN_MC; then
+    rm -f "${OUTPUT_DIR}"/output_chunk1_2022_preEE.coffea \
+          "${OUTPUT_DIR}"/output_chunk1_2022_EE.coffea \
+          "${OUTPUT_DIR}"/output_chunk1_2023_preBPix.coffea \
+          "${OUTPUT_DIR}"/output_chunk1_2023_BPix.coffea \
+          "${OUTPUT_DIR}"/output_chunk2.coffea \
+          "${OUTPUT_DIR}"/output_chunk3.coffea \
+          "${OUTPUT_DIR}"/output_chunk4.coffea \
+          "${OUTPUT_DIR}"/output_chunk5.coffea
+fi
+if $RUN_DATA; then
+    rm -f "${OUTPUT_DIR}"/output_data_egamma.coffea \
+          "${OUTPUT_DIR}"/output_data_singlemuon.coffea
+fi
 
 # Shared runner.py flags (no -d / -y; set per chunk below)
 COMMON="python runner.py \
@@ -75,6 +126,8 @@ COMMON="python runner.py \
 
 ALL_ERAS="2022_preEE 2022_EE 2023_preBPix 2023_BPix"
 CHUNK1_DS="GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic"
+DATA_EG_DS="data__EGamma"
+DATA_MU_DS="data__SingleMuon"
 
 # Temp dir for rerun scripts — cleaned up after merge
 RERUN_DIR="$(mktemp -d /tmp/bbww_rerun_XXXXXX)"
@@ -91,23 +144,56 @@ write_rerun() {
     echo "$f"
 }
 
-R1_preEE=$(write_rerun "chunk1_2022_preEE"   "${COMMON} -d ${CHUNK1_DS} -y 2022_preEE    -o output_chunk1_2022_preEE.coffea")
-R1_EE=$(write_rerun    "chunk1_2022_EE"      "${COMMON} -d ${CHUNK1_DS} -y 2022_EE        -o output_chunk1_2022_EE.coffea")
-R1_pre=$(write_rerun   "chunk1_2023_preBPix" "${COMMON} -d ${CHUNK1_DS} -y 2023_preBPix  -o output_chunk1_2023_preBPix.coffea")
-R1_B=$(write_rerun     "chunk1_2023_BPix"    "${COMMON} -d ${CHUNK1_DS} -y 2023_BPix      -o output_chunk1_2023_BPix.coffea")
-R2=$(write_rerun       "chunk2"  "${COMMON} -d TTToHadronic TTTo2L2Nu -y ${ALL_ERAS} -o output_chunk2.coffea")
-R3=$(write_rerun       "chunk3"  "${COMMON} -d WtoLNu-2Jets_0J WtoLNu-2Jets_1J WtoLNu-2Jets_2J -y ${ALL_ERAS} -o output_chunk3.coffea")
-R4=$(write_rerun       "chunk4"  "${COMMON} -d TbarWplustoLNu2Q TbarWplusto2L2Nu TWminustoLNu2Q TWminusto2L2Nu -y ${ALL_ERAS} -o output_chunk4.coffea")
-R5=$(write_rerun       "chunk5"  "${COMMON} -d TBbarQ TbarBQ TBbartoLplusNuBbar TbarBtoLminusNuB -y ${ALL_ERAS} -o output_chunk5.coffea")
+# Build the active chunk lists based on --mode.
+declare -a CHUNK_NAMES=()
+declare -a CHUNK_RERUNS=()
+declare -a CHUNK_FILES=()
+
+if $RUN_MC; then
+    R1_preEE=$(write_rerun "chunk1_2022_preEE"   "${COMMON} -d ${CHUNK1_DS} -y 2022_preEE    -o output_chunk1_2022_preEE.coffea")
+    R1_EE=$(write_rerun    "chunk1_2022_EE"      "${COMMON} -d ${CHUNK1_DS} -y 2022_EE        -o output_chunk1_2022_EE.coffea")
+    R1_pre=$(write_rerun   "chunk1_2023_preBPix" "${COMMON} -d ${CHUNK1_DS} -y 2023_preBPix  -o output_chunk1_2023_preBPix.coffea")
+    R1_B=$(write_rerun     "chunk1_2023_BPix"    "${COMMON} -d ${CHUNK1_DS} -y 2023_BPix      -o output_chunk1_2023_BPix.coffea")
+    R2=$(write_rerun       "chunk2"  "${COMMON} -d TTToHadronic TTTo2L2Nu -y ${ALL_ERAS} -o output_chunk2.coffea")
+    R3=$(write_rerun       "chunk3"  "${COMMON} -d WtoLNu-2Jets_0J WtoLNu-2Jets_1J WtoLNu-2Jets_2J -y ${ALL_ERAS} -o output_chunk3.coffea")
+    R4=$(write_rerun       "chunk4"  "${COMMON} -d TbarWplustoLNu2Q TbarWplusto2L2Nu TWminustoLNu2Q TWminusto2L2Nu -y ${ALL_ERAS} -o output_chunk4.coffea")
+    R5=$(write_rerun       "chunk5"  "${COMMON} -d TBbarQ TbarBQ TBbartoLplusNuBbar TbarBtoLminusNuB -y ${ALL_ERAS} -o output_chunk5.coffea")
+
+    CHUNK_NAMES+=("chunk1_2022_preEE" "chunk1_2022_EE" "chunk1_2023_preBPix" "chunk1_2023_BPix" "chunk2" "chunk3" "chunk4" "chunk5")
+    CHUNK_RERUNS+=("$R1_preEE" "$R1_EE" "$R1_pre" "$R1_B" "$R2" "$R3" "$R4" "$R5")
+    CHUNK_FILES+=(
+        "${OUTPUT_DIR}/output_chunk1_2022_preEE.coffea"
+        "${OUTPUT_DIR}/output_chunk1_2022_EE.coffea"
+        "${OUTPUT_DIR}/output_chunk1_2023_preBPix.coffea"
+        "${OUTPUT_DIR}/output_chunk1_2023_BPix.coffea"
+        "${OUTPUT_DIR}/output_chunk2.coffea"
+        "${OUTPUT_DIR}/output_chunk3.coffea"
+        "${OUTPUT_DIR}/output_chunk4.coffea"
+        "${OUTPUT_DIR}/output_chunk5.coffea"
+    )
+fi
+
+if $RUN_DATA; then
+    RD_EG=$(write_rerun "data_egamma"     "${COMMON} -d ${DATA_EG_DS} -y ${ALL_ERAS} -o output_data_egamma.coffea")
+    RD_MU=$(write_rerun "data_singlemuon" "${COMMON} -d ${DATA_MU_DS} -y ${ALL_ERAS} -o output_data_singlemuon.coffea")
+    CHUNK_NAMES+=("data_egamma" "data_singlemuon")
+    CHUNK_RERUNS+=("$RD_EG" "$RD_MU")
+    CHUNK_FILES+=(
+        "${OUTPUT_DIR}/output_data_egamma.coffea"
+        "${OUTPUT_DIR}/output_data_singlemuon.coffea"
+    )
+fi
 
 # ---------------------------------------------------------------------------
 # Helper: open a screen window that runs the chunk's rerun script
 # The rerun script is the first thing in shell history — just hit up-arrow
+# Writes ${RERUN_DIR}/${name}.exit with the exit code so the merge window
+# can detect failures and trigger automatic retries.
 # ---------------------------------------------------------------------------
 window_cmd() {
     local name="$1"
     local rerun="$2"
-    local inner="cd ${BARISTA_DIR} && bash ${rerun}; echo; echo '>>> ${name} exited with code '\$?; exec bash"
+    local inner="cd ${BARISTA_DIR} && bash ${rerun}; rc=\$?; echo \$rc > ${RERUN_DIR}/${name}.exit; echo; echo '>>> ${name} exited with code '\$rc; exec bash"
     screen -S "$SESSION" -X screen -t "$name" bash -c "$inner"
 }
 
@@ -120,52 +206,78 @@ if screen -list | grep -q "\.${SESSION}[[:space:]]"; then
     sleep 1
 fi
 
-# Create session with first window
+# Create session with the FIRST window (whichever chunk that is for this mode)
+FIRST_NAME="${CHUNK_NAMES[0]}"
+FIRST_RERUN="${CHUNK_RERUNS[0]}"
 echo "Creating screen session '${SESSION}'..."
-screen -dmS "$SESSION" -t "chunk1_2022_preEE" bash -c \
-    "cd ${BARISTA_DIR} && bash ${R1_preEE}; echo; echo '>>> chunk1_2022_preEE exited with code '\$?; exec bash"
+screen -dmS "$SESSION" -t "$FIRST_NAME" bash -c \
+    "cd ${BARISTA_DIR} && bash ${FIRST_RERUN}; rc=\$?; echo \$rc > ${RERUN_DIR}/${FIRST_NAME}.exit; echo; echo '>>> ${FIRST_NAME} exited with code '\$rc; exec bash"
 
 sleep 5  # give screen time to initialise
 
-window_cmd "chunk1_2022_EE"      "$R1_EE"
-sleep 5
-window_cmd "chunk1_2023_preBPix" "$R1_pre"
-sleep 5
-window_cmd "chunk1_2023_BPix"    "$R1_B"
-sleep 5
-window_cmd "chunk2"              "$R2"
-sleep 5
-window_cmd "chunk3"              "$R3"
-sleep 5
-window_cmd "chunk4"              "$R4"
-sleep 5
-window_cmd "chunk5"              "$R5"
+# Spawn remaining windows
+for i in $(seq 1 $((${#CHUNK_NAMES[@]} - 1))); do
+    window_cmd "${CHUNK_NAMES[$i]}" "${CHUNK_RERUNS[$i]}"
+    sleep 5
+done
 
 # ---------------------------------------------------------------------------
 # Merge window — waits 30 min, polls every 5 min, merges, then cleans up
 # ---------------------------------------------------------------------------
-EXPECTED_FILES=(
-    "${OUTPUT_DIR}/output_chunk1_2022_preEE.coffea"
-    "${OUTPUT_DIR}/output_chunk1_2022_EE.coffea"
-    "${OUTPUT_DIR}/output_chunk1_2023_preBPix.coffea"
-    "${OUTPUT_DIR}/output_chunk1_2023_BPix.coffea"
-    "${OUTPUT_DIR}/output_chunk2.coffea"
-    "${OUTPUT_DIR}/output_chunk3.coffea"
-    "${OUTPUT_DIR}/output_chunk4.coffea"
-    "${OUTPUT_DIR}/output_chunk5.coffea"
-)
-
 MERGE_SCRIPT="$(mktemp /tmp/bbww_merge_XXXXXX.sh)"
 cat > "$MERGE_SCRIPT" << MERGEEOF
 #!/bin/bash
 cd "${BARISTA_DIR}"
 log() { echo "[\$(date '+%H:%M:%S')] \$*"; }
 
-EXPECTED=(
-$(printf '    "%s"\n' "${EXPECTED_FILES[@]}")
+# Chunk name -> expected coffea output file (parallel arrays since this is bash 4)
+CHUNK_NAMES=(
+$(printf '    "%s"\n' "${CHUNK_NAMES[@]}")
+)
+CHUNK_FILES=(
+$(printf '    "%s"\n' "${CHUNK_FILES[@]}")
 )
 
 RERUN_DIR="${RERUN_DIR}"
+SESSION="${SESSION}"
+BARISTA_DIR="${BARISTA_DIR}"
+
+# Retry budget per chunk (initial attempt counts as #1; we allow up to 3 retries
+# beyond that for a total of 4 attempts).
+MAX_RETRIES=3
+declare -A RETRIES
+for name in "\${CHUNK_NAMES[@]}"; do
+    RETRIES["\$name"]=0
+done
+
+# Re-spawn a chunk window with its rerun script (used to auto-retry on failure).
+# Build a self-contained launcher script so screen doesn't have to parse the
+# inner command line — sidesteps quoting bugs in 'screen -X screen bash -c ...'.
+respawn_chunk() {
+    local name="\$1"
+    local rerun_script="\${RERUN_DIR}/rerun_\${name}.sh"
+    [[ ! -f "\$rerun_script" ]] && { log "ERROR: rerun script missing for \$name"; return 1; }
+    # Wipe exit-code marker so we can detect the new attempt's status
+    rm -f "\${RERUN_DIR}/\${name}.exit"
+
+    local launcher="\${RERUN_DIR}/launch_\${name}_retry\${RETRIES[\$name]}.sh"
+    cat > "\$launcher" <<LAUNCHEOF
+#!/bin/bash
+cd "\${BARISTA_DIR}"
+bash "\${rerun_script}"
+rc=\\\$?
+echo "\\\$rc" > "\${RERUN_DIR}/\${name}.exit"
+echo
+echo ">>> \${name} (retry) exited with code \\\$rc"
+exec bash
+LAUNCHEOF
+    chmod +x "\$launcher"
+
+    if ! screen -S "\$SESSION" -X screen -t "\${name}_retry\${RETRIES[\$name]}" bash "\$launcher"; then
+        log "ERROR: failed to spawn retry window for \$name (screen -X exit non-zero)"
+        return 1
+    fi
+}
 
 log "Rerun commands for all chunks:"
 for rr in "\${RERUN_DIR}"/rerun_*.sh; do
@@ -175,34 +287,69 @@ done
 log "Waiting 30 minutes before polling for output files..."
 sleep 1800
 
-log "Starting to poll for output files (every 5 minutes)..."
+log "Starting to poll for output files / exit codes (every 5 minutes)..."
 while true; do
     missing=()
-    for f in "\${EXPECTED[@]}"; do
-        [[ ! -f "\$f" ]] && missing+=("\$(basename "\$f")")
+    failed_idx=()
+    in_flight=0
+    for i in "\${!CHUNK_NAMES[@]}"; do
+        name="\${CHUNK_NAMES[\$i]}"
+        f="\${CHUNK_FILES[\$i]}"
+        if [[ -f "\$f" ]]; then
+            continue  # success — output exists
+        fi
+        # Output missing — check if the window has finished (exit-code marker present)
+        if [[ -f "\${RERUN_DIR}/\${name}.exit" ]]; then
+            rc=\$(cat "\${RERUN_DIR}/\${name}.exit")
+            if [[ "\$rc" != "0" ]]; then
+                failed_idx+=("\$i")
+            else
+                # Exit 0 but no output file — also treat as failure
+                failed_idx+=("\$i")
+            fi
+        else
+            missing+=("\$(basename "\$f")")
+            in_flight=\$((in_flight + 1))
+        fi
     done
-    if [[ \${#missing[@]} -eq 0 ]]; then
-        log "All files present."
+
+    if [[ \${#missing[@]} -eq 0 && \${#failed_idx[@]} -eq 0 ]]; then
+        log "All chunks succeeded."
         break
     fi
-    log "Still waiting for: \${missing[*]}"
-    for f in "\${missing[@]}"; do
-        name="\${f%.coffea}"   # strip .coffea
-        name="\${name#output_}" # strip output_ prefix
-        log "  bash \${RERUN_DIR}/rerun_\${name}.sh"
+
+    # Auto-retry failed chunks (those whose runner exited but output is missing).
+    for i in "\${failed_idx[@]}"; do
+        name="\${CHUNK_NAMES[\$i]}"
+        if [[ "\${RETRIES[\$name]}" -ge "\$MAX_RETRIES" ]]; then
+            log "GIVING UP on \$name after \${RETRIES[\$name]} retries"
+            continue
+        fi
+        RETRIES["\$name"]=\$((RETRIES["\$name"] + 1))
+        log "Auto-retry \${RETRIES[\$name]}/\$MAX_RETRIES for \$name"
+        respawn_chunk "\$name"
+        in_flight=\$((in_flight + 1))
     done
+
+    # If everything failed permanently, bail out before infinite polling.
+    if [[ \$in_flight -eq 0 && \${#failed_idx[@]} -gt 0 ]]; then
+        log "All remaining chunks have exhausted retries. Aborting before merge."
+        exec bash
+    fi
+
+    log "Still waiting on \$in_flight chunk(s): \${missing[*]:-(retried)}"
     sleep 300
 done
 
 log "Merging..."
 ./run_container python src/tools/merge_coffea_files.py \\
-    -o "${OUTPUT_DIR}/output_merged.coffea" \\
-    -f \${EXPECTED[@]}
+    -o "${OUTPUT_DIR}/${OUTPUT_NAME}" \\
+    -f "\${CHUNK_FILES[@]}"
 
 log "Cleaning up rerun scripts from \${RERUN_DIR}..."
 rm -rf "\${RERUN_DIR}"
 
-log "Done. Merged output: ${OUTPUT_DIR}/output_merged.coffea"
+log "Done. Merged output: ${OUTPUT_DIR}/${OUTPUT_NAME}"
 exec bash
 MERGEEOF
 chmod +x "$MERGE_SCRIPT"
@@ -213,16 +360,12 @@ screen -S "$SESSION" -X screen -t "merge" bash "$MERGE_SCRIPT"
 # Done
 # ---------------------------------------------------------------------------
 echo ""
+echo "Mode: ${MODE}"
 echo "Screen session '${SESSION}' is running with the following windows:"
-echo "  0: chunk1_2022_preEE   — GluGlu + TTToSemiLeptonic (2022_preEE)"
-echo "  1: chunk1_2022_EE      — GluGlu + TTToSemiLeptonic (2022_EE)"
-echo "  2: chunk1_2023_preBPix — GluGlu + TTToSemiLeptonic (2023_preBPix)"
-echo "  3: chunk1_2023_BPix    — GluGlu + TTToSemiLeptonic (2023_BPix)"
-echo "  4: chunk2              — TTToHadronic + TTTo2L2Nu (all eras)"
-echo "  5: chunk3              — WtoLNu-2Jets (all eras)"
-echo "  6: chunk4              — TbarWplus + TWminus (all eras)"
-echo "  7: chunk5              — TBbar (all eras)"
-echo "  8: merge               — waiting 30 min then polling every 5 min"
+for i in "${!CHUNK_NAMES[@]}"; do
+    printf "  %d: %s\n" "$i" "${CHUNK_NAMES[$i]}"
+done
+echo "  ${#CHUNK_NAMES[@]}: merge               — waiting 30 min then polling every 5 min"
 echo ""
 echo "To rerun a failed chunk: go to its window and hit up-arrow"
 echo ""

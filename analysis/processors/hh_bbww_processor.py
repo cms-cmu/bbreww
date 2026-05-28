@@ -134,7 +134,6 @@ class analysis(processor.ProcessorABC):
         target = Chunk.from_coffea_events(events)
 
         # for now, we load 2022 + 2023 corrections from local files and rest from cvmfs (22+23 have jetId fields)
-        print(events.Jet.pt)
         jets = ak.where(
             events.Jet.btagPNetB >= self.params[self.year].btagWP.M,
             apply_jerc_corrections(
@@ -155,6 +154,10 @@ class analysis(processor.ProcessorABC):
                 jet_type="AK4PFPuppi.txt"
             )
         )
+
+        print('Merged fields:', jets.fields)
+        print('Merged has JER?', 'jet_energy_resolution' in jets.fields)
+
         met = apply_met_corrections_after_jec(events, jets)
         print(jets.pt)
         shifts = [({"Jet": jets, "MET":met}, None)]
@@ -224,8 +227,9 @@ class analysis(processor.ProcessorABC):
         selection.add('lowpt_njets4', ~selection.all('nom_njets4') & (events.has_4_presel_jets) )
         selection.add('lowpt_njets3', ~(selection.all('nom_njets4')) & (events.has_exactly_3_presel_jets) )
         selection.add('incl_njets3',
-                      (selection.all('nom_njets3'))
+                      selection.all('nom_njets3')
                       | selection.all('lowpt_njets3'))
+
         # veto events with jets affected by EE water leak (2022) and hole in Pixel L3/L4 (2023)
         jet_veto_maps = (ak.all(events.Jet.jet_veto_maps,axis=1) if '202' in self.year
                          else ak.ones_like(events.run,dtype=bool))
@@ -242,6 +246,7 @@ class analysis(processor.ProcessorABC):
         events['nominal_4j2b'] = selection.all(*selection_list['nominal_4j2b'])
         events['lowpt_4j2b'] = selection.all(*selection_list['lowpt_4j2b'])
         events['incl_3j2b'] = selection.all(*selection_list['incl_3j2b'])
+        events['combined_4j2b'] = selection.all(*selection_list['nominal_4j2b']) | selection.all(*selection_list['lowpt_4j2b'])
 
         events['flavor'] = ak.zip({
             'e':  selection.all('oneE') & selection.all(*selection_list['preselection']),
@@ -301,10 +306,21 @@ class analysis(processor.ProcessorABC):
         # selected_events = chi_sq(selected_events) # chi square selection and calculation
         # selected_events = chi_sq_cut(selected_events) # add chi square cuts booleans
 
-        #add W/W* regions based on gen info
-        reg_p_onshell = ak.where(selected_events.incl_3j2b,
-                                 selected_events.met_regressor_3jet["p_onshell"],
-                                 selected_events.met_regressor["p_onshell"]) if self.run_MET_regression else None
+        #add W/W* regions based on gen info — guard against an EmptyArray
+        # met_regressor_3jet (samples processed without the 3jet friend tree).
+        if self.run_MET_regression:
+            _has_3jet = (
+                "met_regressor_3jet" in ak.fields(selected_events)
+                and len(ak.fields(selected_events.met_regressor_3jet)) > 0
+            )
+            if _has_3jet:
+                reg_p_onshell = ak.where(selected_events.incl_3j2b,
+                                         selected_events.met_regressor_3jet["p_onshell"],
+                                         selected_events.met_regressor["p_onshell"])
+            else:
+                reg_p_onshell = selected_events.met_regressor["p_onshell"]
+        else:
+            reg_p_onshell = None
         add_to_selection(
             'leptonic_W',
             #(ak.firsts(selected_events.sr_boolean) == 0), # using chi square
@@ -342,12 +358,12 @@ class analysis(processor.ProcessorABC):
         if self.make_classifier_input is not None:
             from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_input_friend_regressor, dump_input_friend_classifier
             friends["friends"] = ( friends["friends"]
-                | dump_input_friend_regressor(
-                    selected_events[selected_events.nominal_4j2b], # selected_events[selected_events.nominal_4j2b]
+                | dump_input_friend_classifier(
+                    selected_events[selected_events.incl_3j2b],
                     self.make_classifier_input,
-                    "regressor_input_nom",
-                    nominal_selection,
-                    nonbcand = "q_cands_nom",
+                    "classifier_input_3j2b",
+                    incl_3j2b_selection,
+                    nonbcand = "q_cands_soft",
                     weight = "weight",
                 )
             )
@@ -378,7 +394,7 @@ class analysis(processor.ProcessorABC):
             if self.dump_signal_phh and self.run_SvB:
                 chunk_id = uuid.uuid4().hex[:8]
                 output_path = f"root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/quantiles/phh_hist_{self.dataset}__{self.year}_{chunk_id}.pkl"
-                dump_phh_to_pickle(selected_events, self.dataset, output_path, year=self.year)
+                dump_phh_to_pickle(selected_events, self.dataset, output_path)
       
             output['events_processed'] = {}
             output['events_processed'][self.dataset] = {
@@ -386,7 +402,7 @@ class analysis(processor.ProcessorABC):
                 'sum_genweights': np.sum(selected_events.genWeight) if self.is_mc else self.n_events,
             }
             # add cuts for different regions
-            cutflow_list = ['nominal_4j2b', 'lowpt_4j2b', 'incl_3j2b']
+            cutflow_list = ['nominal_4j2b', 'lowpt_4j2b', 'incl_3j2b', 'combined_4j2b']
             for cuts in cutflow_list:
                 cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True, fill_flavour = True)
             cutflow.add_output(output['events_processed'], self.dataset)
@@ -398,7 +414,7 @@ class analysis(processor.ProcessorABC):
                 year=self.year_label,
                 is_mc=self.is_mc,
                 histCuts=['preselection',
-                        'lowpt_4j2b', 'incl_3j2b'
+                          'lowpt_4j2b', 'incl_3j2b', 'combined_4j2b',
                         ],
                 channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],

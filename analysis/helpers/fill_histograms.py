@@ -2,7 +2,7 @@ from src.hist_tools import Collection, Fill
 from src.hist_tools.object import Elec, Jet, LorentzVector, Muon, Lepton
 import awkward as ak
 import numpy as np
-from bbreww.analysis.helpers.hist_templates import SvBHists, Chi2Hists, TTbarHists, regressionHists
+from bbreww.analysis.helpers.hist_templates import SvBHists, Chi2Hists, TTbarHists, regressionHists, JetHists
 
 def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = False):
 
@@ -16,13 +16,11 @@ def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = 
     fill += hist.add("njets", (10, -0.5, 9.5, ("njets", "jet multiplicity")))
     fill += hist.add("btag_sf", (50, 0.5, 1.5, ("btag_sf", "b-tagging SF")))
     fill += hist.add("lepnu_deta", (50, -3, 3, ("Wlnu_cand.deta", "delta_eta between lepton and neutrino")))
-    fill += hist.add("mqq_res", (60, -200, 200, ("mqq_res", "(true - regressed) W -> qq mass [GeV]")),
-                     mqq_res= lambda events: ak.fill_none(ak.mask(events.gen_hadW.mass - (events.sel_qq_l + events.sel_qq_sl).mass, events.HWW_mass > 150.0), np.nan))
-
     
     ## W-qq quark vs. gluon selection candidates
     fill += hist.add("qvgScore", (50, 0, 1.0, ("q_cands_soft.btagPNetQvG", "ak4 jets quark vs. gluon score")))
     fill += Jet.plot_pair( ("Wqq_soft", R"$W_{qq}$"), "q_cands_soft", bins={"mass": (120, 0, 200)}, )
+
     #
     # Hbb Candidate
     #
@@ -36,13 +34,6 @@ def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = 
                      (30, 0, 150, ('mqq', r'$\Delta R$ between b-candidates')),
                      mqq= lambda events: ak.fill_none((events.sel_qq_l + events.sel_qq_sl).mass, np.nan)
                      )
-
-    fill += hist.add("mbb_vs_qpt",
-                    (50, 0, 250, ('Hbb_cand.mass', 'H->bb Candidate Mass [GeV]')),
-                     (30, 0, 150, ('qpt', r'$leading non-bjet pT$')),
-                     qpt= lambda events: ak.fill_none(events.q_cands_soft[:,0].pt, np.nan)
-                     )
-
 
     #
     # Wlnu Candidate and reconstructed neutrino pz
@@ -58,6 +49,10 @@ def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = 
     fill += Elec.plot( ("Elec", R"$Elec$"), "sel_elec", skip=["n"], )
     fill += Muon.plot( ("Muon", R"$Muon$"), "sel_muon", skip=["n"], )
 
+    ### nominal and soft jets energy fractions ###
+    fill += JetHists(("nom_jets", "non-bjets"), "q_cands_nom",)
+    fill += JetHists(("soft_jets", "non-bjets"), "j_soft",)
+    
     #
     # Signal vs Backgrounds classifier scores hists
     if SvB:
@@ -179,7 +174,7 @@ def fill_histograms_nominal(
     #  TTbar Candidate
     #
     fill += TTbarHists( ("tt", R"$t\bar{t}$"), "tt_sel" )
-
+    
     # fill histograms
     fill(events, hist)
 

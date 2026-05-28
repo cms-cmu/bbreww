@@ -24,160 +24,165 @@ def doPlots(varList, debug=False):
     if args.doTest:
         varList = [("Hbb.mass", "hists"), ("mbb_vs_bb_dr", "hists")]
 
-    #
-    #  Nominal 1D Plots
-    #
-    for v, hist_key in varList:
-        if debug: print(f"plotting 1D ...{v} from {hist_key}")
-        cfg.set_hist_key(hist_key)
+    years = ["2022", "2023"]
 
-        if hist_key == "hists":
-            cut = "lowpt_4j2b"
-        elif hist_key == "hists_4j2b":
-            cut = "nominal_4j2b"
-        
+    for year in years:
+        if debug: print(f"=== plotting year {year} ===")
 
-        vDict = cfg.plotModifiers.get(v, {})
-        if debug: print(v, vDict, vDict.get("2d", False))
-        if vDict.get("2d", False):
-            continue
+        #
+        #  Nominal 1D Plots
+        #
+        for v, hist_key in varList:
+            if debug: print(f"plotting 1D ...{v} from {hist_key}")
+            cfg.set_hist_key(hist_key)
 
-        vDict["ylabel"] = "Entries"
-        vDict["legend"] = True
-        vDict["year"] = "Run3"
-        vDict["yscale"] = "log"
-        vDict["doRatio"] = cfg.plotConfig.get("doRatio", True)
+            if hist_key == "hists":
+                cut = "lowpt_4j2b"
+            elif hist_key == "hists_4j2b":
+                cut = "nominal_4j2b"
 
-        if args.doTest:
-            vDict["write_yaml"] = True
-
-        for flavor in ["e", "mu", sum]:
-        #for channel in ["hadronic_W", "leptonic_W", sum]:
-            for region in ["SR", "CR", sum]:
-
-                if debug: print(f"plotting 1D ...{v}")
-                plot_args  = {}
-                plot_args["var"] = v
-                plot_args["cut"] = cut
-                plot_args["outputFolder"] = args.outputFolder
-                plot_args["axis_opts"] = {"flavor":flavor, "region": region}  #"channel":channel,}
-                plot_args = plot_args | vDict
-                if debug: print(plot_args)
-                try:
-                    fig = makePlot(cfg, **plot_args)
-                except ValueError:
-                    print(f"ValueError: {v} {flavor} {region} {cut}")
-                    pass
-
-                plt.close()
-
-    #
-    #  2D Plots
-    #
-    for v, hist_key in varList:
-        if debug: print(v)
-        cfg.set_hist_key(hist_key)
-
-        vDict = cfg.plotModifiers.get(v, {})
-
-        if not vDict.get("2d", False):
-            continue
-
-        vDict["ylabel"] = "Entries"
-        vDict["doRatio"] = cfg.plotConfig.get("doRatio", True)
-        vDict["legend"] = True
-        vDict["year"] = "Run3"
-
-        if args.doTest:
-            vDict["write_yaml"] = True
-
-        for process in ["HHbbWW","TTbar"]:
-            for flavor in ["e", "mu", sum]:
-                #for channel in ["hadronic_W", "leptonic_W", sum]:
-                for region in ["SR", "CR", sum]:
-
-                    plot_args  = {}
-                    plot_args["var"] = v
-                    plot_args["cut"] = cut
-                    plot_args["axis_opts"] = {"flavor":flavor, "region" :region} #"channel":channel}
-                    plot_args["outputFolder"] = args.outputFolder
-                    plot_args = plot_args | vDict
-
-                    if debug: print("process is ",process)
-                    if debug: print(plot_args)
-
-                    fig = make2DPlot(cfg, process,
-                                     **plot_args)
-                    plt.close()
-
-    #
-    #  Comparison Plots
-    #
-    varListComp = []
-    if args.doTest:
-        varListComp = ["Hbb.mass", "Elec.pt", "Muon.pt"]
-
-        for v in varListComp:
-            if debug: print(v)
 
             vDict = cfg.plotModifiers.get(v, {})
+            if debug: print(v, vDict, vDict.get("2d", False))
+            if vDict.get("2d", False):
+                continue
 
             vDict["ylabel"] = "Entries"
-            vDict["doRatio"] = cfg.plotConfig.get("doRatio", True)
             vDict["legend"] = True
-            vDict["year"] = "Run3"
+            vDict["year"] = year
+            vDict["yscale"] = "log"
+            vDict["doRatio"] = cfg.plotConfig.get("doRatio", True)
 
             if args.doTest:
                 vDict["write_yaml"] = True
 
-            for process in ["HHbbWW", "TTbar"]:
-
-                #
-                # Comp channels
-                #
-                #for channel in ["hadronic_W", "leptonic_W", sum]:
+            for flavor in ["e", "mu", sum]:
+            #for channel in ["hadronic_W", "leptonic_W", sum]:
                 for region in ["SR", "CR", sum]:
 
-                    flavor = sum
-
+                    if debug: print(f"plotting 1D ...{v}")
                     plot_args  = {}
                     plot_args["var"] = v
-                    plot_args["cut"] = ["nominal_4j2b"]
-                    plot_args["hist_key_list"] = ["hists_4j2b"]
-                    plot_args["axis_opts"] = {"flavor":flavor, "region": region} # "channel":channel}
+                    plot_args["cut"] = cut
+                    plot_args["outputFolder"] = args.outputFolder
+                    plot_args["axis_opts"] = {"flavor":flavor, "region": region}  #"channel":channel,}
+                    plot_args = plot_args | vDict
+                    if debug: print(plot_args)
+                    try:
+                        fig = makePlot(cfg, **plot_args)
+                    except ValueError:
+                        print(f"ValueError: {v} {flavor} {region} {cut} {year}")
+                        pass
+
+                    plt.close()
+
+        #
+        #  2D Plots
+        #
+        for v, hist_key in varList:
+            if debug: print(v)
+            cfg.set_hist_key(hist_key)
+
+            vDict = cfg.plotModifiers.get(v, {})
+
+            if not vDict.get("2d", False):
+                continue
+
+            vDict["ylabel"] = "Entries"
+            vDict["doRatio"] = cfg.plotConfig.get("doRatio", True)
+            vDict["legend"] = True
+            vDict["year"] = year
+
+            if args.doTest:
+                vDict["write_yaml"] = True
+
+            for process in ["HHbbWW","TTbar"]:
+                for flavor in ["e", "mu", sum]:
+                    #for channel in ["hadronic_W", "leptonic_W", sum]:
+                    for region in ["SR", "CR", sum]:
+
+                        plot_args  = {}
+                        plot_args["var"] = v
+                        plot_args["cut"] = cut
+                        plot_args["axis_opts"] = {"flavor":flavor, "region" :region} #"channel":channel}
+                        plot_args["outputFolder"] = args.outputFolder
+                        plot_args = plot_args | vDict
+
+                        if debug: print("process is ",process)
+                        if debug: print(plot_args)
+
+                        fig = make2DPlot(cfg, process,
+                                         **plot_args)
+                        plt.close()
+
+        #
+        #  Comparison Plots
+        #
+        varListComp = []
+        if args.doTest:
+            varListComp = ["Hbb.mass", "Elec.pt", "Muon.pt"]
+
+            for v in varListComp:
+                if debug: print(v)
+
+                vDict = cfg.plotModifiers.get(v, {})
+
+                vDict["ylabel"] = "Entries"
+                vDict["doRatio"] = cfg.plotConfig.get("doRatio", True)
+                vDict["legend"] = True
+                vDict["year"] = year
+
+                if args.doTest:
+                    vDict["write_yaml"] = True
+
+                for process in ["HHbbWW", "TTbar"]:
+
+                    #
+                    # Comp channels
+                    #
+                    #for channel in ["hadronic_W", "leptonic_W", sum]:
+                    for region in ["SR", "CR", sum]:
+
+                        flavor = sum
+
+                        plot_args  = {}
+                        plot_args["var"] = v
+                        plot_args["cut"] = ["nominal_4j2b"]
+                        plot_args["hist_key_list"] = ["hists_4j2b"]
+                        plot_args["axis_opts"] = {"flavor":flavor, "region": region} # "channel":channel}
+                        plot_args["outputFolder"] = args.outputFolder
+                        plot_args["process"] = process
+                        plot_args["norm"] = True
+                        plot_args = plot_args | vDict
+
+                        if debug: print("comp Cuts ")
+                        if debug: print(plot_args)
+
+                        fig = makePlot(cfg, **plot_args)
+
+
+                        plt.close()
+
+                    #
+                    # Comp channels
+                    #
+                    plot_args  = {}
+                    plot_args["var"] = v
+                    plot_args["cut"] = "nominal_4j2b"
+                    plot_args["axis_opts"] = {"flavor":sum, "region" : ["SR", "CR"]}#"channel": ["hadronic_W", "leptonic_W", sum]}
                     plot_args["outputFolder"] = args.outputFolder
                     plot_args["process"] = process
                     plot_args["norm"] = True
                     plot_args = plot_args | vDict
 
-                    if debug: print("comp Cuts ")
+                    if debug: print("comp channels")
                     if debug: print(plot_args)
 
-                    fig = makePlot(cfg, **plot_args)
-
+                    fig = makePlot(cfg,
+                                   **plot_args,
+                                   )
 
                     plt.close()
-
-                #
-                # Comp channels
-                #
-                plot_args  = {}
-                plot_args["var"] = v
-                plot_args["cut"] = "nominal_4j2b"
-                plot_args["axis_opts"] = {"flavor":sum, "region" : ["SR", "CR"]}#"channel": ["hadronic_W", "leptonic_W", sum]}
-                plot_args["outputFolder"] = args.outputFolder
-                plot_args["process"] = process
-                plot_args["norm"] = True
-                plot_args = plot_args | vDict
-
-                if debug: print("comp channels")
-                if debug: print(plot_args)
-
-                fig = makePlot(cfg,
-                               **plot_args,
-                               )
-
-                plt.close()
 
 
 if __name__ == '__main__':
@@ -198,7 +203,7 @@ if __name__ == '__main__':
     cfg.axisLabelsDict, cfg.cutListDict = read_axes_and_cuts(cfg.hists, cfg.plotConfig, hist_keys=['hists','hists_4j2b'])
 
     if args.list_of_hists:
-        varList = [(v, 'hists') for v in args.list_of_hists]  # Default to 'hists'
+        varList = [(v, 'hists_4j2b') for v in args.list_of_hists]  # Default to 'hists'
     else:
         varList = []
         for h in cfg.hists[0]['hists'].keys():

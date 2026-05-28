@@ -155,9 +155,6 @@ class analysis(processor.ProcessorABC):
             )
         )
 
-        print('Merged fields:', jets.fields)
-        print('Merged has JER?', 'jet_energy_resolution' in jets.fields)
-
         met = apply_met_corrections_after_jec(events, jets)
         print(jets.pt)
         shifts = [({"Jet": jets, "MET":met}, None)]

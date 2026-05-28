@@ -14,19 +14,19 @@ rebin: 1
 # Per-category axis collapsing/selection at the convert step.
 # Use *_sum_axes to collapse axes (e.g. region) and *_select_axes to pick values.
 
-# ── nominal 4j2b category — sum SR + CR ───────────────────────────────────────
+# ── nominal 4j2b category — SR only ───────────────────────────────────────────
 nominal_collection:  "hists_4j2b"
 nominal_histos:      "SvB.phh_variable_nominal"
 nominal_variable:    "SvB.phh_variable_nominal"
-nominal_sum_axes:    "region"
-nominal_select_axes: "nominal_4j2b=True"
+nominal_sum_axes:    ""
+nominal_select_axes: "nominal_4j2b=True region=SR"
 
-# ── lowpt 4j2b category — sum SR + CR ─────────────────────────────────────────
+# ── lowpt 4j2b category — SR only ─────────────────────────────────────────────
 lowpt_collection:    "hists"
 lowpt_histos:        "SvB.phh_variable_lowpt"
 lowpt_variable:      "SvB.phh_variable_lowpt"
-lowpt_sum_axes:      "region"
-lowpt_select_axes:   "lowpt_4j2b=True"
+lowpt_sum_axes:      ""
+lowpt_select_axes:   "lowpt_4j2b=True region=SR"
 
 # ── inclusive 3j2b category — SR only ─────────────────────────────────────────
 incl3j2b_collection:    "hists"

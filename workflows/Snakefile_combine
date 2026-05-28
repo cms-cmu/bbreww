@@ -64,6 +64,7 @@ def _select_flag(key):
 rule all:
     input:
         f"{OUT}/summary.txt",
+        f"{OUT}/plots/limit_plot.png",
 
 
 # ── Step 1a: coffea → JSON for nominal 4j2b  [coffea container] ──────────────
@@ -226,8 +227,9 @@ rule limits_per_category:
     input:
         f"{DCARDS}/datacard_{{cat}}.txt"
     output:
-        ws  = f"{DCARDS}/datacard_{{cat}}.root",
-        txt = f"{DCARDS}/limits_{{cat}}.txt",
+        ws       = f"{DCARDS}/datacard_{{cat}}.root",
+        txt      = f"{DCARDS}/limits_{{cat}}.txt",
+        hc_root  = f"{DCARDS}/higgsCombine_{{cat}}.AsymptoticLimits.mH120.root",
     log:
         f"{OUT}/logs/limits_{{cat}}.log"
     shell:
@@ -249,7 +251,29 @@ rule limits_per_category:
         """
 
 
-# ── Step 5: summary — extract Brazil bands and print side-by-side ─────────────
+# ── Step 5: collect each category's limit ROOT into JSON ─────────────────────
+# combineTool.py -M CollectLimits emits the {'120.0': {obs, exp0, exp±1, exp±2}}
+# structure that coffea4bees/plots/make_limit_plot.py expects.
+rule collect_limit_json:
+    input:
+        f"{DCARDS}/higgsCombine_{{cat}}.AsymptoticLimits.mH120.root"
+    output:
+        f"{DCARDS}/limits_{{cat}}.json"
+    log:
+        f"{OUT}/logs/collect_limit_json_{{cat}}.log"
+    shell:
+        """
+        mkdir -p $(dirname {log})
+        echo "[$(date)] CollectLimits for {wildcards.cat}" > {log}
+        {config[combine_wrapper]} "cd {DCARDS} && \
+            combineTool.py -M CollectLimits \
+                higgsCombine_{wildcards.cat}.AsymptoticLimits.mH120.root \
+                -o limits_{wildcards.cat}.json" \
+            2>&1 | tee -a {log}
+        """
+
+
+# ── Step 6: summary — extract Brazil bands and print side-by-side ─────────────
 rule summary:
     input:
         nominal  = f"{DCARDS}/limits_nominal.txt",
@@ -272,4 +296,30 @@ rule summary:
         echo
         echo "============================================================"
         }} | tee {output}
+        """
+
+
+# ── Step 7: Brazil-band plot across all categories ──────────────────────────
+rule limit_plot:
+    input:
+        nominal  = f"{DCARDS}/limits_nominal.json",
+        lowpt    = f"{DCARDS}/limits_lowpt.json",
+        incl3j2b = f"{DCARDS}/limits_incl3j2b.json",
+        combined = f"{DCARDS}/limits_combined.json",
+    output:
+        f"{OUT}/plots/limit_plot.png"
+    log:
+        f"{OUT}/logs/limit_plot.log"
+    shell:
+        """
+        mkdir -p $(dirname {output}) $(dirname {log})
+        echo "[$(date)] Building limit plot" > {log}
+        # Labels are single tokens (no internal spaces) so they survive shell
+        # word-splitting regardless of how run_container wraps the call.
+        {config[coffea_wrapper]} python src/plotting/make_limit_plot.py \
+            -i {input.combined} {input.incl3j2b} {input.lowpt} {input.nominal} \
+            -l "combined" "incl_3j2b" "lowpt_4j2b" "nominal_4j2b" \
+            --stat-only \
+            -o {output} \
+            2>&1 | tee -a {log}
         """

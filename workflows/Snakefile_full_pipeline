@@ -1,0 +1,265 @@
+"""
+End-to-end bbWW pipeline. No classifier retraining — runs steps 4-9 of the
+norm_scan flow as a proper Snakemake DAG.
+
+Pipeline:
+  1. cleanup_pre_pass1     — wipe EOS quantiles dir
+  2. processor_pass1       — submit_all_run3.sh into pass1/; produces pass1 merged coffea
+  3. quantile_regression   — derive bin edges from pass1 EOS quantiles
+  4. rebin_hist_templates  — write new edges into hist_templates.py
+  5. cleanup_pre_pass2     — wipe EOS quantiles dir again
+  6. processor_pass2       — submit_all_run3.sh into pass2/; produces pass2 merged coffea
+                             AND copies it to output/full_run/output_merged.coffea
+                             where Snakefile_combine expects it.
+  7. combine               — call Snakefile_combine via --nolock
+
+Each rule's output is a real artifact (coffea file, edges txt, hist_templates
+snapshot) so Snakemake can correctly detect what is missing or out of date.
+No opaque .done marker files — if you delete a coffea/edges file, the DAG
+re-runs everything that depended on it.
+
+Usage (from barista root):
+    ./run_container snakemake \
+        --snakefile bbreww/workflows/Snakefile_full_pipeline \
+        --cores 1
+"""
+
+import os
+
+OUT_BASE       = "output/full_pipeline"
+PASS1_BASE     = f"{OUT_BASE}/pass1"
+PASS2_BASE     = f"{OUT_BASE}/pass2"
+PASS1_COFFEA   = f"{PASS1_BASE}/full_run/output_merged.coffea"
+PASS2_COFFEA   = f"{PASS2_BASE}/full_run/output_merged.coffea"
+QUANTILE_DIR   = f"{OUT_BASE}/quantile_fits"
+COMBINE_COFFEA = "output/full_run/output_merged.coffea"   # path expected by Snakefile_combine
+COMBINE_OUT    = "output/combine"
+HIST_TEMPLATES = "bbreww/analysis/helpers/hist_templates.py"
+HIST_SNAPSHOT  = f"{OUT_BASE}/hist_templates_after_rebin.py"
+SUBMIT_SCRIPT  = "bbreww/scripts/submit_all_run3.sh"
+EOS_QUANTILES  = "root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/quantiles"
+
+REGION_EDGES = {
+    "nominal_4j2b": (f"{QUANTILE_DIR}/bin_edges_nominal_4j2b.txt", "phh_variable_nominal"),
+    "lowpt_4j2b":   (f"{QUANTILE_DIR}/bin_edges_lowpt_4j2b.txt",   "phh_variable_lowpt"),
+    "incl_3j2b":    (f"{QUANTILE_DIR}/bin_edges_incl_3j2b.txt",    "phh_variable_3j2b"),
+}
+
+
+rule all:
+    input:
+        f"{COMBINE_OUT}/summary.txt"
+
+
+# ── 1. cleanup quantiles dir on EOS before pass 1 ────────────────────────────
+# Output is a small log file written AT the time of cleanup, so the DAG can
+# detect a fresh run (delete the log to force a re-cleanup).
+rule cleanup_pre_pass1:
+    output:
+        f"{OUT_BASE}/cleanup_pre_pass1.log"
+    shell:
+        """
+        mkdir -p $(dirname {output})
+        {{
+            echo "[$(date)] Wiping EOS quantiles dir before pass1"
+            xrdfs root://cmseos.fnal.gov ls /store/user/akhanal/HHbbWW/quantiles 2>/dev/null | \
+                while read -r f; do
+                    xrdfs root://cmseos.fnal.gov rm "$f" 2>/dev/null || true
+                done
+            echo "[$(date)] Done"
+        }} | tee {output}
+        """
+
+
+# ── 2. processor pass 1 — writes to pass1/full_run/output_merged.coffea ──────
+rule processor_pass1:
+    input:
+        f"{OUT_BASE}/cleanup_pre_pass1.log"
+    output:
+        coffea = PASS1_COFFEA
+    log:
+        f"{OUT_BASE}/logs/processor_pass1.log"
+    shell:
+        """
+        mkdir -p $(dirname {log}) {PASS1_BASE}
+        echo "[$(date)] Submitting processor pass 1 -> {PASS1_BASE}" | tee {log}
+
+        # submit_all_run3.sh wipes per-chunk files and writes new ones, then
+        # merges into output_merged.coffea inside the given --output-base.
+        bash {SUBMIT_SCRIPT} --output-base {PASS1_BASE} 2>&1 | tee -a {log}
+
+        # The submit script runs detached via screen+condor — poll for the
+        # merged file to appear (30 min wait, 5 min polls).
+        echo "[$(date)] Waiting for {output.coffea} ..." | tee -a {log}
+        sleep 1800
+        while [ ! -f {output.coffea} ]; do
+            echo "[$(date)] still waiting for pass 1 merged output ..." | tee -a {log}
+            sleep 300
+        done
+        echo "[$(date)] pass 1 merged output ready" | tee -a {log}
+        """
+
+
+# ── 3. quantile regression — emits one bin_edges_*.txt per region ────────────
+rule quantile_regression:
+    input:
+        coffea = PASS1_COFFEA
+    output:
+        nominal  = REGION_EDGES["nominal_4j2b"][0],
+        lowpt    = REGION_EDGES["lowpt_4j2b"][0],
+        incl3j2b = REGION_EDGES["incl_3j2b"][0],
+    log:
+        f"{OUT_BASE}/logs/quantile_regression.log"
+    shell:
+        """
+        mkdir -p $(dirname {log}) {QUANTILE_DIR}
+        # Force-regenerate edge files so a partial previous run can't leave
+        # stale outputs that look "fresh enough" to Snakemake.
+        rm -f {output.nominal} {output.lowpt} {output.incl3j2b}
+
+        echo "[$(date)] Running quantile regression on EOS quantiles" > {log}
+        ./run_container "PYTHONPATH=/srv python -m src.math_tools.quantile_regression \
+            --input-dir {EOS_QUANTILES} \
+            -o {QUANTILE_DIR}" 2>&1 | tee -a {log}
+
+        # Sanity check — error out loudly if any expected edge file is missing.
+        for f in {output.nominal} {output.lowpt} {output.incl3j2b}; do
+            [ -s "$f" ] || {{ echo "ERROR: $f was not produced" | tee -a {log}; exit 1; }}
+        done
+        """
+
+
+# ── 4. rebin hist_templates.py — output is a snapshot copy ───────────────────
+# By snapshotting hist_templates.py as the rule's real output, Snakemake's DAG
+# correctly tracks whether hist_templates.py reflects the current edges.
+rule rebin_hist_templates:
+    input:
+        nominal  = REGION_EDGES["nominal_4j2b"][0],
+        lowpt    = REGION_EDGES["lowpt_4j2b"][0],
+        incl3j2b = REGION_EDGES["incl_3j2b"][0],
+    output:
+        snapshot = HIST_SNAPSHOT
+    log:
+        f"{OUT_BASE}/logs/rebin.log"
+    shell:
+        r"""
+        mkdir -p $(dirname {log})
+        echo "[$(date)] Updating hist_templates.py with new bin edges" > {log}
+
+        cp {HIST_TEMPLATES} {HIST_TEMPLATES}.bak
+
+        for pair in "phh_variable_nominal:{input.nominal}" \
+                    "phh_variable_lowpt:{input.lowpt}" \
+                    "phh_variable_3j2b:{input.incl3j2b}"; do
+            var="${{pair%%:*}}"
+            edges_file="${{pair#*:}}"
+            python3 - "$var" "$edges_file" "{HIST_TEMPLATES}" >> {log} 2>&1 <<'PYEOF'
+import re, sys, ast
+var, edges_file, hist_path = sys.argv[1], sys.argv[2], sys.argv[3]
+with open(edges_file) as f:
+    nums = []
+    for line in f:
+        s = line.strip()
+        if not s or s.startswith('#'): continue
+        nums.extend(p.strip() for p in s.split(',') if p.strip())
+floats = [float(x) for x in nums]
+assert floats[0] == 0.0 and floats[-1] == 1.0
+assert all(b > a for a, b in zip(floats, floats[1:]))
+new_list = '[' + ', '.join('%.6f' % x for x in floats) + ']'
+with open(hist_path) as f: src = f.read()
+pat_edges = re.compile(r'(' + re.escape(var) + r'\s*=\s*H\(\s*\(\s*)\[[^\]]*\]', re.MULTILINE)
+pat_uniform = re.compile(r'(' + re.escape(var) + r'\s*=\s*H\(\s*\(\s*)[0-9]+\s*,\s*[0-9.eE+-]+\s*,\s*[0-9.eE+-]+', re.MULTILINE)
+new_src, n = pat_edges.subn(lambda m: m.group(1) + new_list, src, count=1)
+if n == 0:
+    new_src, n = pat_uniform.subn(lambda m: m.group(1) + new_list, src, count=1)
+if n != 1:
+    print('ERROR: pattern matched ' + str(n) + ' times for ' + var, file=sys.stderr); sys.exit(1)
+ast.parse(new_src)
+with open(hist_path, 'w') as f: f.write(new_src)
+print('Updated ' + var + ': ' + str(len(floats)) + ' edges')
+PYEOF
+        done
+
+        # Snapshot hist_templates.py as this rule's real output — Snakemake can
+        # then track whether the source file matches what this rule produced.
+        cp {HIST_TEMPLATES} {output.snapshot}
+        echo "[$(date)] hist_templates.py update complete; snapshot at {output.snapshot}" >> {log}
+        """
+
+
+# ── 5. cleanup quantiles dir on EOS before pass 2 ────────────────────────────
+rule cleanup_pre_pass2:
+    input:
+        HIST_SNAPSHOT
+    output:
+        f"{OUT_BASE}/cleanup_pre_pass2.log"
+    shell:
+        """
+        mkdir -p $(dirname {output})
+        {{
+            echo "[$(date)] Wiping EOS quantiles dir before pass2"
+            xrdfs root://cmseos.fnal.gov ls /store/user/akhanal/HHbbWW/quantiles 2>/dev/null | \
+                while read -r f; do
+                    xrdfs root://cmseos.fnal.gov rm "$f" 2>/dev/null || true
+                done
+            echo "[$(date)] Done"
+        }} | tee {output}
+        """
+
+
+# ── 6. processor pass 2 — writes to pass2/full_run/output_merged.coffea
+#       and copies it to the standard combine input path ─────────────────────
+rule processor_pass2:
+    input:
+        cleanup  = f"{OUT_BASE}/cleanup_pre_pass2.log",
+        snapshot = HIST_SNAPSHOT,
+    output:
+        pass2_coffea   = PASS2_COFFEA,
+        combine_coffea = COMBINE_COFFEA,
+    log:
+        f"{OUT_BASE}/logs/processor_pass2.log"
+    shell:
+        """
+        mkdir -p $(dirname {log}) {PASS2_BASE} $(dirname {output.combine_coffea})
+        echo "[$(date)] Submitting processor pass 2 -> {PASS2_BASE}" | tee {log}
+
+        bash {SUBMIT_SCRIPT} --output-base {PASS2_BASE} 2>&1 | tee -a {log}
+
+        echo "[$(date)] Waiting for {output.pass2_coffea} ..." | tee -a {log}
+        sleep 1800
+        while [ ! -f {output.pass2_coffea} ]; do
+            echo "[$(date)] still waiting for pass 2 merged output ..." | tee -a {log}
+            sleep 300
+        done
+
+        # Snakefile_combine reads from output/full_run/output_merged.coffea.
+        # Symlink the pass2 file so it's transparent which run produced it.
+        ln -sf "$(realpath {output.pass2_coffea})" {output.combine_coffea}
+        echo "[$(date)] pass 2 merged ready; linked to {output.combine_coffea}" | tee -a {log}
+        """
+
+
+# ── 7. combine via Snakefile_combine ─────────────────────────────────────────
+# Input is the pass2-specific coffea so the DAG correctly requires pass2 to
+# run, even if output/full_run/output_merged.coffea already exists from a
+# previous unrelated run. The pass2 coffea path is also passed to the inner
+# Snakefile_combine via --config so it doesn't fall back to the default
+# output/full_run/output_merged.coffea (which might be stale).
+rule combine:
+    input:
+        pass2_coffea = PASS2_COFFEA,
+    output:
+        summary = f"{COMBINE_OUT}/summary.txt",
+    log:
+        f"{OUT_BASE}/logs/combine.log"
+    shell:
+        """
+        mkdir -p $(dirname {log})
+        ./run_container snakemake \
+            --snakefile bbreww/workflows/Snakefile_combine \
+            --configfile bbreww/workflows/config_combine.yml \
+            --config input_coffea={input.pass2_coffea} \
+            --cores 1 --jobs 1 --latency-wait 60 \
+            --nolock \
+            --forceall 2>&1 | tee {log}
+        """

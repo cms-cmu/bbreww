@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 def _common_selection(df: pd.DataFrame):
     """Common selection for both signal and control regions"""
 
-    return df["SR"] | df["CR"]
+    return df["SR"]
 
 def _data_selection(df: pd.DataFrame):
     """Data selection excluding signal region events"""
@@ -209,6 +209,26 @@ class Eval(_picoAOD.Signal, _picoAOD.Background, CommonEval):
     """MC Evaluation for HH→bbWW classifier"""
     ...
 
-class DataEval(_picoAOD.Data, CommonEval): 
+class DataEval(_picoAOD.Data, CommonEval):
     """Data Evaluation for HH→bbWW classifier"""
-    ...
+
+    argparser = ArgParser()
+    argparser.add_argument(
+        "--no-SR",
+        action="store_true",
+        help="remove SR events (blind data to the signal region)",
+    )
+
+    def preprocess_by_group(self):
+        ps = list(super().preprocess_by_group())
+        if self.opts.no_SR:
+            ps.append(
+                _group.fullmatch(
+                    (),
+                    processors=[
+                        lambda: _remove_sr,
+                    ],
+                    name="remove signal region",
+                )
+            )
+        return ps

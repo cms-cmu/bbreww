@@ -206,7 +206,7 @@ class _plot_loss_auc:
         from src.classifier.monitor import Index
 
         resources = INLINE if self._inline else CDN
-        path = IO.report / "bbWWBase" / self.filename.format(group=self._group)
+        path = IO.report / "bbWW" / self.filename.format(group=self._group)
         title = self.title.format(group=self._group)
 
         page = file_html(
@@ -216,7 +216,7 @@ class _plot_loss_auc:
         )
         with fsspec.open(path, "wt") as f:
             f.write(page)
-        Index.add("bbWWBase Benchmark", title, path)
+        Index.add("bbWW Benchmark", title, path)
 
 
 class _list_loss_auc(_plot_loss_auc):

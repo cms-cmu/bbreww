@@ -10,6 +10,32 @@ from src.storage.eos import EOS
 def distance(x1,y1,x2,y2):
     return abs(ak.fill_none(np.sqrt((x2-x1)**2+(y2-y1)**2),np.nan))
 
+
+def where_record_fieldwise(mask, a, b, with_name=None, behavior=None):
+    """Memory-efficient ak.where for two record arrays: merges field-by-field
+    so both inputs aren't fully materialized at once."""
+    fields_a = set(ak.fields(a))
+    fields_b = set(ak.fields(b))
+    common = fields_a & fields_b
+    out = {}
+    for f in common:
+        try:
+            out[f] = ak.where(mask, a[f], b[f])
+        except Exception as e:
+            raise type(e)(f"where_record_fieldwise failed on field {f!r}: {e}") from e
+    for f in fields_a - common:
+        out[f] = a[f]
+    for f in fields_b - common:
+        out[f] = b[f]
+    zip_kwargs = {}
+    if with_name is not None:
+        zip_kwargs["with_name"] = with_name
+    if behavior is not None:
+        zip_kwargs["behavior"] = behavior
+    # zip at the mask's depth (e.g. jet level for a per-jet mask) so the result
+    # is a list-of-records; deeper structure inside fields is left untouched
+    return ak.zip(out, depth_limit=mask.ndim, **zip_kwargs)
+
 def match(a, b, val):
     combinations = a.cross(b, nested=True)
     return (combinations.i0.delta_r(combinations.i1)<val).any()

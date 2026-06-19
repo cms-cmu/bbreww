@@ -24,7 +24,7 @@ def doPlots(varList, debug=False):
     if args.doTest:
         varList = [("Hbb.mass", "hists"), ("mbb_vs_bb_dr", "hists")]
 
-    years = ["2022", "2023"]
+    years = ["2022", "2023", "Run3"]
 
     for year in years:
         if debug: print(f"=== plotting year {year} ===")
@@ -70,8 +70,8 @@ def doPlots(varList, debug=False):
                     if debug: print(plot_args)
                     try:
                         fig = makePlot(cfg, **plot_args)
-                    except ValueError:
-                        print(f"ValueError: {v} {flavor} {region} {cut} {year}")
+                    except ValueError as e:
+                        print(f"ValueError: {v} {flavor} {region} {cut} {year}: {e}")
                         pass
 
                     plt.close()
@@ -202,16 +202,26 @@ if __name__ == '__main__':
     cfg.fileLabels = args.fileLabels
     cfg.axisLabelsDict, cfg.cutListDict = read_axes_and_cuts(cfg.hists, cfg.plotConfig, hist_keys=['hists','hists_4j2b'])
 
+    # --category routes a hist name to the right hist_key:
+    #   nominal -> hists_4j2b (cut: nominal_4j2b)
+    #   lowpt   -> hists      (cut: lowpt_4j2b)
+    if args.category == 'lowpt':
+        only_hist_key = 'hists'
+    else:
+        only_hist_key = 'hists_4j2b'
+
     if args.list_of_hists:
-        varList = [(v, 'hists_4j2b') for v in args.list_of_hists]  # Default to 'hists'
+        varList = [(v, only_hist_key) for v in args.list_of_hists]
     else:
         varList = []
-        for h in cfg.hists[0]['hists'].keys():
-            if not any(skip in h for skip in args.skip_hists):
-                varList.append((h, 'hists'))
-        
-        for h in cfg.hists[0].get('hists_4j2b', {}).keys():
-            if not any(skip in h for skip in args.skip_hists):
-                varList.append((h, 'hists_4j2b'))
+        if args.category in (None, 'lowpt'):
+            for h in cfg.hists[0]['hists'].keys():
+                if not any(skip in h for skip in args.skip_hists):
+                    varList.append((h, 'hists'))
+
+        if args.category in (None, 'nominal'):
+            for h in cfg.hists[0].get('hists_4j2b', {}).keys():
+                if not any(skip in h for skip in args.skip_hists):
+                    varList.append((h, 'hists_4j2b'))
 
     doPlots(varList, debug=args.debug)

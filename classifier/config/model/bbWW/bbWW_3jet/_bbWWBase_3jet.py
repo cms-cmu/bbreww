@@ -59,6 +59,17 @@ class bbWW3jetTrain(KFoldTrain):
         metavar=("CLASS", "KWARGS"),
         help=f"fine-tuning scheduler {parse.EMBED}",
     )
+    argparser.add_argument(
+        "--pretrained",
+        type=str,
+        default="",
+        help="Path to a pretrained bbWW_lowpt checkpoint for warm-start transfer "
+             "learning. Accepts either a kfold result.json (first .pkl found is "
+             "used) or a direct .pkl path. Shape-matching state_dict entries are "
+             "copied; mismatched / 3-jet-only modules retain random init. GBN "
+             "running stats are re-estimated from 3-jet data via the skim stage "
+             "regardless of transfer.",
+    )
 
     def initializer(self, splitter: Splitter, **kwargs):
         from bbreww.classifier.ml.models.bbWW_3jet import (
@@ -83,6 +94,7 @@ class bbWW3jetTrain(KFoldTrain):
                 rocs=self.rocs,
             ),
             model=self.model,
+            pretrained_path=self.opts.pretrained,
             **kwargs,
         )
 

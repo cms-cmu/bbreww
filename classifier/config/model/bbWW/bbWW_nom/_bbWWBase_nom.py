@@ -20,7 +20,6 @@ ROC_BIN = (1000, 0, 1)
 
 
 def roc_nominal_selection(batch: BatchType):
-    import logging
     return {
         "y_pred": batch[Output.hh_prob],
         "y_true": batch[Input.label],
@@ -28,7 +27,7 @@ def roc_nominal_selection(batch: BatchType):
     }
 
 
-class bbWWBaseTrain(KFoldTrain):
+class bbWWNomTrain(KFoldTrain):
     model: str
     loss: Callable[[BatchType], Tensor]
     rocs: Iterable[ROC] = ()
@@ -38,7 +37,7 @@ class bbWWBaseTrain(KFoldTrain):
         "--architecture",
         type=parse.mapping,
         default="",
-        help=f"bbWWBase architecture {parse.EMBED}",
+        help=f"bbWW_nom architecture {parse.EMBED}",
     )
     argparser.add_argument(
         "--ghost-batch",
@@ -62,25 +61,25 @@ class bbWWBaseTrain(KFoldTrain):
     )
 
     def initializer(self, splitter: Splitter, **kwargs):
-        from bbreww.classifier.ml.models.bbWWBase import (
+        from bbreww.classifier.ml.models.bbWW_nom import (
             GBNSchedule,
-            bbWWBaseArch,
-            bbWWBaseBenchmarks,
-            bbWWBaseTraining,
+            bbWWNomArch,
+            bbWWNomBenchmarks,
+            bbWWNomTraining,
         )
 
-        arch = bbWWBaseArch(**({"loss": self.loss} | self.opts.architecture))
+        arch = bbWWNomArch(**({"loss": self.loss} | self.opts.architecture))
         gbn = GBNSchedule(**self.opts.ghost_batch)
         training = parse.instance(self.opts.training, _SCHEDULER)
         finetuning = parse.instance(self.opts.finetuning, _SCHEDULER)
 
-        return bbWWBaseTraining(
+        return bbWWNomTraining(
             arch=arch,
             ghost_batch=gbn,
             cross_validation=splitter,
             training_schedule=training,
             finetuning_schedule=finetuning,
-            benchmarks=bbWWBaseBenchmarks(
+            benchmarks=bbWWNomBenchmarks(
                 rocs=self.rocs,
             ),
             model=self.model,
@@ -88,14 +87,14 @@ class bbWWBaseTrain(KFoldTrain):
         )
 
 
-class bbWWBaseEval(KFoldEval):
+class bbWWNomEval(KFoldEval):
     model: str
     output_definition: Callable[[BatchType], BatchType]
 
     def initializer(self, model, splitter, **kwargs):
-        from bbreww.classifier.ml.models.bbWWBase import bbWWBaseEvaluation
+        from bbreww.classifier.ml.models.bbWW_nom import bbWWNomEvaluation
 
-        return bbWWBaseEvaluation(
+        return bbWWNomEvaluation(
             saved_model=model,
             cross_validation=splitter,
             output_definition=self.output_definition,

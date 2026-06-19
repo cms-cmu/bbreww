@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING
 from src.classifier.config.state.label import MultiClass
 from src.classifier.task import ArgParser
 from bbreww.classifier.config.setting.bbWW import Input, Output
-from bbreww.classifier.config.model.bbWW.bbWWBase._bbWWBase import ROC_BIN, bbWWBaseEval, bbWWBaseTrain
+from bbreww.classifier.config.model.bbWW.bbWW_nom._bbWWBase_nom import ROC_BIN, bbWWNomEval, bbWWNomTrain
 
 if TYPE_CHECKING:
     from src.classifier.ml import BatchType
 
 class _roc_data_selection:
-    
+
     def __call__(self, batch: BatchType):
         selected = self._select(batch)
         return {
@@ -26,7 +26,7 @@ class _roc_data_selection:
         return torch.isin(label, label.new_tensor(MultiClass.indices("ttbar", "data")))
 
 
-class Train(bbWWBaseTrain):
+class Train(bbWWNomTrain):
     argparser = ArgParser(description="Train dvtt")
     model = "dvtt"
 
@@ -45,11 +45,11 @@ class Train(bbWWBaseTrain):
     )
         loss = (cross_entropy * weight).sum() / weight.sum()
         return loss
-        
+
     @property
     def rocs(self):
         from src.classifier.ml.benchmarks.multiclass import ROC
-        
+
         return[
             ROC(
                 name="ttbar vs data",
@@ -60,12 +60,12 @@ class Train(bbWWBaseTrain):
             )
         ]
 
-class Eval(bbWWBaseEval):
+class Eval(bbWWNomEval):
     model = "dvtt"
 
     @staticmethod
     def output_definition(batch: BatchType):
-    
+
         output = {
             "p_ttbar":  batch["p_ttbar"],
             "p_data":   batch["p_data"],

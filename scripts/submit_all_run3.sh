@@ -113,6 +113,32 @@ if $RUN_DATA; then
           "${OUTPUT_DIR}"/output_data_singlemuon.coffea
 fi
 
+# Wipe any stale manual-rerun markers (.<chunk>.manual) left by a previous run,
+# so a fresh submission's auto-retry isn't blocked by a leftover marker.
+rm -f "${OUTPUT_DIR}"/.*.manual 2>/dev/null || true
+
+# Wipe EOS quantiles dir IF dump_signal_phh is enabled in HHbbWW.yml.
+# This prevents quantile regression from picking up pkls written by an
+# earlier run. Path matches the one hardcoded in
+# bbreww/analysis/processors/hh_bbww_processor.py:390.
+if grep -qE '^\s*dump_signal_phh:\s*true' bbreww/analysis/metadata/HHbbWW.yml; then
+    echo "dump_signal_phh=true — wiping EOS quantiles dir..."
+    BEFORE=$(xrdfs root://cmseos.fnal.gov ls /store/user/akhanal/HHbbWW/quantiles 2>/dev/null | wc -l)
+    echo "  files before: ${BEFORE}"
+    mapfile -t TO_DELETE < <(xrdfs root://cmseos.fnal.gov ls /store/user/akhanal/HHbbWW/quantiles 2>/dev/null || true)
+    FAILED=0
+    for f in "${TO_DELETE[@]}"; do
+        if ! xrdfs root://cmseos.fnal.gov rm "$f" 2>/dev/null; then
+            FAILED=$((FAILED + 1))
+        fi
+    done
+    AFTER=$(xrdfs root://cmseos.fnal.gov ls /store/user/akhanal/HHbbWW/quantiles 2>/dev/null | wc -l)
+    echo "  attempted: ${#TO_DELETE[@]}  failed: ${FAILED}  files after: ${AFTER}"
+    if [[ "$AFTER" -ne 0 ]]; then
+        echo "WARNING: ${AFTER} pkl file(s) remain after cleanup (may be from a concurrent processor still running)." >&2
+    fi
+fi
+
 # Shared runner.py flags (no -d / -y; set per chunk below)
 COMMON="python runner.py \
     -p bbreww/analysis/processors/hh_bbww_processor.py \
@@ -279,13 +305,35 @@ LAUNCHEOF
     fi
 }
 
+# Durable, copy-pasteable merge script covering ALL chunks. Written to the output
+# dir so it survives RERUN_DIR cleanup. Lets the user merge after manual reruns.
+# CHUNK_FILES is baked in at generation time as a flat space-separated list.
+MERGE_ALL_SCRIPT="${OUTPUT_DIR}/merge_all.sh"
+write_merge_script() {
+    {
+        echo "#!/bin/bash"
+        echo "# Merge all chunks for this run. Re-run any failed chunk first, then run this."
+        echo "cd \"${BARISTA_DIR}\""
+        echo "./run_container python src/tools/merge_coffea_files.py \\\\"
+        echo "    -o \"${OUTPUT_DIR}/${OUTPUT_NAME}\" \\\\"
+        echo "    -f ${CHUNK_FILES[*]}"
+    } > "\${MERGE_ALL_SCRIPT}"
+    chmod +x "\${MERGE_ALL_SCRIPT}"
+}
+
 log "Rerun commands for all chunks:"
 for rr in "\${RERUN_DIR}"/rerun_*.sh; do
     log "  bash \$rr"
 done
 
-log "Waiting 30 minutes before polling for output files..."
-sleep 1800
+# Retries start after RETRY_DELAY; merging is blocked until MERGE_FLOOR has
+# elapsed from launch (even if all chunks finish sooner).
+LAUNCH_TS=\$(date +%s)
+RETRY_DELAY=900   # 15 min before first poll/retry
+MERGE_FLOOR=1800  # 30 min minimum age before merge is allowed
+
+log "Waiting \$((RETRY_DELAY / 60)) minutes before polling/retrying..."
+sleep \$RETRY_DELAY
 
 log "Starting to poll for output files / exit codes (every 5 minutes)..."
 while true; do
@@ -314,6 +362,13 @@ while true; do
     done
 
     if [[ \${#missing[@]} -eq 0 && \${#failed_idx[@]} -eq 0 ]]; then
+        # All chunks done — but don't merge until MERGE_FLOOR has elapsed.
+        elapsed=\$(( \$(date +%s) - LAUNCH_TS ))
+        if [[ \$elapsed -lt \$MERGE_FLOOR ]]; then
+            remain=\$(( MERGE_FLOOR - elapsed ))
+            log "All chunks succeeded, but holding merge until 30 min floor (\${remain}s remaining)..."
+            sleep \$remain
+        fi
         log "All chunks succeeded."
         break
     fi
@@ -321,8 +376,27 @@ while true; do
     # Auto-retry failed chunks (those whose runner exited but output is missing).
     for i in "\${failed_idx[@]}"; do
         name="\${CHUNK_NAMES[\$i]}"
+        # If a manual rerun is in progress for this chunk (marker present), the
+        # user owns it — treat as in-flight and do NOT auto-retry (avoids two
+        # runners racing to write the same output).
+        manual_marker="${OUTPUT_DIR}/.\${name}.manual"
+        if [[ -f "\$manual_marker" ]]; then
+            log "Manual rerun in progress for \$name (marker \$manual_marker); skipping auto-retry."
+            log "  (If that manual run died, remove the marker to re-enable auto-retry: rm -f \$manual_marker)"
+            in_flight=\$((in_flight + 1))
+            continue
+        fi
         if [[ "\${RETRIES[\$name]}" -ge "\$MAX_RETRIES" ]]; then
             log "GIVING UP on \$name after \${RETRIES[\$name]} retries"
+            log "  To rerun this chunk manually (creates a marker so this script won't also retry it):"
+            log "    touch \"\$manual_marker\" && cd \${BARISTA_DIR} && ./run_container bash \${RERUN_DIR}/rerun_\${name}.sh; rm -f \"\$manual_marker\""
+            log "  (If \${RERUN_DIR} is cleaned up before you retry, run instead:)"
+            rerun_script="\${RERUN_DIR}/rerun_\${name}.sh"
+            if [[ -f "\$rerun_script" ]]; then
+                # Extract the underlying runner.py invocation for a copy-pasteable fallback.
+                cmd=\$(grep -E '^\./run_container ' "\$rerun_script" | head -1)
+                log "    touch \"\$manual_marker\" && cd \${BARISTA_DIR} && \$cmd; rm -f \"\$manual_marker\""
+            fi
             continue
         fi
         RETRIES["\$name"]=\$((RETRIES["\$name"] + 1))
@@ -334,6 +408,13 @@ while true; do
     # If everything failed permanently, bail out before infinite polling.
     if [[ \$in_flight -eq 0 && \${#failed_idx[@]} -gt 0 ]]; then
         log "All remaining chunks have exhausted retries. Aborting before merge."
+        write_merge_script
+        log "A standalone merge script was written to: \${MERGE_ALL_SCRIPT}"
+        log "After you manually rerun the failed chunk(s), merge everything with:"
+        log "    cd \${BARISTA_DIR} && bash \${MERGE_ALL_SCRIPT}"
+        log ""
+        log "Merge command (for copy-paste):"
+        log "    cd \${BARISTA_DIR} && ./run_container python src/tools/merge_coffea_files.py -o \"${OUTPUT_DIR}/${OUTPUT_NAME}\" -f \${CHUNK_FILES[*]}"
         exec bash
     fi
 

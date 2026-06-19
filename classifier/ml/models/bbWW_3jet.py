@@ -239,6 +239,88 @@ class bbWW3jetModel(Model):
             self._nn.setGhostBatches(self.ghost_batch.get_bs(), False)
 
 
+def _resolve_pretrained_pkl(path: str) -> str:
+    """If the path is a kfold result.json, walk it to find the first .pkl
+    reference and return that. Otherwise return the path unchanged.
+
+    The .pkl reference inside the json is typically a bare basename living in
+    the same directory as the json itself (xrootd or local). If so, the
+    directory portion of the json path is prepended so fsspec can resolve it.
+    """
+    if not path.endswith(".json"):
+        return path
+    import json
+    with fsspec.open(path, "r") as f:
+        result = json.load(f)
+
+    def _find_pkl(node):
+        if isinstance(node, str) and node.endswith(".pkl"):
+            return node
+        if isinstance(node, dict):
+            for v in node.values():
+                p = _find_pkl(v)
+                if p is not None:
+                    return p
+        elif isinstance(node, list):
+            for v in node:
+                p = _find_pkl(v)
+                if p is not None:
+                    return p
+        return None
+
+    pkl = _find_pkl(result)
+    if pkl is None:
+        raise ValueError(f"Could not find a .pkl reference in {path}")
+
+    # If the pkl is a bare basename / relative path, resolve against the json's
+    # directory. Treat anything with a URL scheme ("://") or a leading "/" as
+    # already absolute and leave it alone.
+    if "://" not in pkl and not pkl.startswith("/"):
+        json_dir = path.rsplit("/", 1)[0]
+        pkl = f"{json_dir}/{pkl}"
+
+    logging.info(f"Transfer learning: resolved {path} -> {pkl}")
+    return pkl
+
+
+def _load_pretrained_matching(model_nn, checkpoint_path: str):
+    """Warm-start the 3-jet model from a pretrained bbWW_lowpt checkpoint.
+
+    Copies state_dict entries by name + shape match. Modules unique to either
+    model (or with shape mismatches) are skipped. Counts and a sample of
+    skipped keys are logged so the transfer is auditable.
+    """
+    pkl_path = _resolve_pretrained_pkl(checkpoint_path)
+    logging.info(f"Transfer learning: loading pretrained from {pkl_path}")
+    with fsspec.open(pkl_path, "rb") as f:
+        saved = torch.load(f, weights_only=False, map_location="cpu")
+    src_sd = saved["model"]
+    dst_sd = model_nn.state_dict()
+
+    transferred, shape_mismatch, missing = [], [], []
+    for k, v in src_sd.items():
+        if k not in dst_sd:
+            missing.append(k)
+            continue
+        if dst_sd[k].shape != v.shape:
+            shape_mismatch.append((k, tuple(v.shape), tuple(dst_sd[k].shape)))
+            continue
+        dst_sd[k] = v
+        transferred.append(k)
+
+    model_nn.load_state_dict(dst_sd)
+
+    logging.info(
+        f"Transfer learning summary: transferred={len(transferred)}, "
+        f"skipped(missing-in-3jet)={len(missing)}, "
+        f"skipped(shape-mismatch)={len(shape_mismatch)}"
+    )
+    for k, src_shape, dst_shape in shape_mismatch[:8]:
+        logging.info(f"  shape mismatch: {k}: src={src_shape} dst={dst_shape}")
+    if missing:
+        logging.info(f"  first 5 missing keys: {missing[:5]}")
+
+
 class bbWW3jetTraining(MultiStageTraining):
     def __init__(
         self,
@@ -248,6 +330,7 @@ class bbWW3jetTraining(MultiStageTraining):
         training_schedule: Schedule,
         finetuning_schedule: Schedule = None,
         benchmarks: bbWW3jetBenchmarks = None,
+        pretrained_path: str = "",
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -257,6 +340,7 @@ class bbWW3jetTraining(MultiStageTraining):
         self._training = training_schedule
         self._finetuning = finetuning_schedule
         self._benchmarks = benchmarks or bbWW3jetBenchmarks()
+        self._pretrained_path = pretrained_path
         self._model: bbWW3jetModel = None
 
     def stages(self):
@@ -267,6 +351,13 @@ class bbWW3jetTraining(MultiStageTraining):
         )
         self._model.ghost_batch = self._ghost_batch
         self._model.to(self.device)
+
+        # Transfer learning warm-start: load shape-matching weights from a
+        # pretrained bbWW_lowpt checkpoint. Done BEFORE the skim stage so the
+        # GBN running mean/std get re-estimated from 3-jet training data.
+        if self._pretrained_path:
+            _load_pretrained_matching(self._model._nn, self._pretrained_path)
+
         self._splitter.setup(self.dataset)
         skim = _bbWW3jetSkim(self._model._nn, self.device, self._splitter)
         yield TrainingStage(

@@ -245,53 +245,6 @@ class bbWWBaseModel(Model):
                 "shap": self._shap_results
                 }
 
-    ## work in progress feature
-    def _compute_shap_gradient(self, batch):
-        """Compute SHAP using gradients during training"""
-        import shap
-        import numpy as np
-        
-        all_feature_names = (
-            [f"bJet_{f}" for f in InputBranch.feature_bJetCand] +
-            [f"nonbJet_{f}" for f in InputBranch.feature_nonbJetCand] +
-            [f"lep_{f}" for f in InputBranch.feature_leadingLep] +
-            list(InputBranch.feature_ancillary) +
-            list(InputBranch.feature_regressed_nu)
-        )
-        
-        # Wrapper model for SHAP
-        class ConcatenatedModel(torch.nn.Module):
-            def __init__(self, original_model, n_features=[10, 8, 5, 2, 3]):
-                super().__init__()
-                self.model = original_model
-                self.n_features = n_features
-            
-            def forward(self, X):
-                splits = torch.split(X, self.n_features, dim=1)
-                hh, *_ = self.model(*splits)
-                signal_idx = MultiClass.trainable_labels.index("signal")
-                probs = F.softmax(hh, dim=1)[:, signal_idx]
-                return probs.unsqueeze(1)
-        
-        wrapped_model = ConcatenatedModel(self._nn)
-        
-        # Use current batch as test data
-        inputs = _bbWWBaseInput(batch, self._device)
-        test_data = torch.cat(inputs, dim=1)[:500]  # Sample subset
-        
-        # Use subset as background
-        background = test_data[:100]
-        explainer = shap.GradientExplainer(wrapped_model, background)
-        shap_values = explainer.shap_values(test_data)
-        
-        # Aggregate importance
-        importance = {}
-        feature_importance = np.abs(shap_values).mean(axis=0)
-        for i, name in enumerate(all_feature_names):
-            importance[name] = float(feature_importance[i])
-        
-        return importance
-
     def step(self, epoch: int = None):
         if self.ghost_batch is not None and self.ghost_batch.step(epoch):
             self._nn.setGhostBatches(self.ghost_batch.get_bs(), False)

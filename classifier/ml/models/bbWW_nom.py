@@ -14,7 +14,7 @@ from src.classifier.config.setting.ml import SplitterKeys
 from src.classifier.config.state.label import MultiClass
 from torch import Tensor
 
-from bbreww.classifier.nn.blocks.bbWW_models import bbWWBase
+from bbreww.classifier.nn.blocks.bbWW_nom import bbWW_nom
 from bbreww.classifier.config.setting.bbWW import Input, InputBranch, Output
 from src.classifier.algorithm.utils import Selector, map_batch, to_num
 from src.classifier.nn.schedule import MilestoneStep, Schedule
@@ -36,11 +36,11 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class bbWWBaseArch:
+class bbWWNomArch:
     __skip_save = frozenset(("loss",))
 
     loss: Callable[[BatchType], Tensor] = None
-    n_features: int = 8
+    n_features: int = 12
     attention: bool = True
 
     @classmethod
@@ -62,8 +62,8 @@ class bbWWBaseArch:
 @dataclass
 class GBNSchedule(MilestoneStep):
     n_batches: int = 64
-    milestones: list[int] = (1, 3, 6, 10, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)
-    gamma: float = 0.25
+    milestones: list[int] = (1, 3, 6, 10, 21, 22, 23)
+    gamma: float = 0.5
 
     def __post_init__(self):
         self.milestones = sorted(self.milestones)
@@ -71,7 +71,7 @@ class GBNSchedule(MilestoneStep):
         self.reset()
 
     def get_bs(self):
-        self._last_bs = int(self.n_batches * (self.gamma**self.milestone))
+        self._last_bs = max(1, int(self.n_batches * (self.gamma**self.milestone)))
         return self._last_bs
 
     def get_last_bs(self):
@@ -79,25 +79,25 @@ class GBNSchedule(MilestoneStep):
 
 
 @dataclass
-class bbWWBaseBenchmarks:
+class bbWWNomBenchmarks:
     rocs: Iterable[ROC]
     scalars: Iterable[Callable[[BatchType], dict[str, Tensor]]] = None
 
 
-def _bbWWBaseInput(batch: BatchType, device: tt.Device, selection: Tensor = None):
+def _bbWWNomInput(batch: BatchType, device: tt.Device, selection: Tensor = None):
     for k, v in batch.items():
         batch[k] = v.to(device, non_blocking=True)
-    inputs = [batch.pop(k) for k in (Input.bJetCand, Input.nonbJetCand, Input.leadingLep, Input.MET, Input.ancillary)]
+    inputs = [batch.pop(k) for k in (Input.bJetCand, Input.nonbJetCand, Input.leadingLep, Input.ancillary, Input.regressed_nu)]
     if selection is not None:
         selection = selection.to(device, non_blocking=True)
         inputs = [i[selection] for i in inputs]
     return inputs
 
 
-class _bbWWBaseSkim(Skimmer):
+class _bbWWNomSkim(Skimmer):
     def __init__(
         self,
-        nn: bbWWBase,
+        nn: bbWWNom,
         device: tt.Device,
         splitter: Splitter,
     ):
@@ -110,23 +110,23 @@ class _bbWWBaseSkim(Skimmer):
         selections = self._splitter.step(batch)
         if self._nn is not None and selections[SplitterKeys.training].sum() > 0:
             self._nn.updateMeanStd(
-                *_bbWWBaseInput(batch, self._device, selections[SplitterKeys.training])
+                *_bbWWNomInput(batch, self._device, selections[SplitterKeys.training])
             )
         return super().train(batch)
 
 
-class bbWWBaseModel(Model):
+class bbWWNomModel(Model):
     def __init__(
         self,
         device: tt.Device,
-        arch: bbWWBaseArch,
-        benchmarks: bbWWBaseBenchmarks,
+        arch: bbWWNomArch,
+        benchmarks: bbWWNomBenchmarks,
     ):
         self._loss = arch.loss
         self._device = device
         self._gbn = None
         self._arch = arch
-        self._nn = bbWWBase(
+        self._nn = bbWW_nom(
             dijetFeatures=arch.n_features,
             ancillaryFeatures=InputBranch.feature_ancillary,
             device=device,
@@ -161,13 +161,14 @@ class bbWWBaseModel(Model):
         return self._nn
 
     def train(self, batch: BatchType, compute_shap: bool = False) -> Tensor:
-        hh, tt, ww = self._nn(*_bbWWBaseInput(batch, self._device))
+        hh, tt, ww = self._nn(*_bbWWNomInput(batch, self._device))
         batch[Output.hh_raw] = hh
         batch[Output.tt_raw] = tt
         batch[Output.ww_raw] = ww
+        batch[Output.ww_weights] = self._nn._jet_weights  # (n, heads, 1, wsl) per-jet attention weights
 
         loss = self._loss(batch)
-        
+
         return loss
     
     def validate(self, batches: Iterable[BatchType]) -> dict[str]:
@@ -177,14 +178,15 @@ class bbWWBaseModel(Model):
         rocs = [r.copy() for r in self._benchmarks.rocs]
 
         for batch in batches:
-            hh, tt, ww = self._nn(*_bbWWBaseInput(batch, self._device))
+            hh, tt, ww = self._nn(*_bbWWNomInput(batch, self._device))
             batch |= {
                 Output.hh_raw: hh,
                 Output.tt_raw: tt,
                 Output.ww_raw: ww,
                 Output.hh_prob: F.softmax(hh, dim=1),
                 Output.tt_prob: F.softmax(tt, dim=1),
-                Output.ww_prob: F.softmax(ww, dim=1)
+                Output.ww_prob: F.softmax(ww, dim=1),
+                Output.ww_weights: self._nn._jet_weights,
             }
             sumw = to_num(batch[Input.weight].sum())
             if scalar_funcs is None:
@@ -201,72 +203,62 @@ class bbWWBaseModel(Model):
         for k in scalars:
             scalars[k] /= weight
 
-        return {"scalars": scalars, 
+        # Binned Asimov significance from the accumulated ROC histograms.
+        # Each ROC's __TP / __FP store per-bin weighted signal / background yields
+        # (weights = batch[Input.weight]). For the "Signal vs Background" ROC
+        # (pos=signal, neg=~signal) this gives Z_A for signal vs everything-else.
+        # Must run BEFORE to_json(), which calls .roc() and resets the accumulators.
+        asimov = {}
+        for roc in rocs:
+            tp_buf = getattr(roc, "_FixedThresholdROC__TP", None)
+            fp_buf = getattr(roc, "_FixedThresholdROC__FP", None)
+            if tp_buf is None or fp_buf is None:
+                continue  # ROC never saw any events
+            tp, _ = tp_buf.hist()
+            fp, _ = fp_buf.hist()
+            s = tp.detach().to(dtype=torch.float64, device="cpu")
+            b = fp.detach().to(dtype=torch.float64, device="cpu")
+            mask = b > 1e-6                      # drop empty / ultra-low-stat bins
+            if not bool(mask.any()):
+                continue
+            s_m, b_m = s[mask], b[mask]
+            z_sq = torch.sum(2.0 * ((s_m + b_m) * torch.log1p(s_m / b_m) - s_m))
+            z_a = float(torch.sqrt(torch.clamp(z_sq, min=0.0)).item())
+            z_naive = float(torch.sqrt(torch.sum(s_m ** 2 / b_m)).item())
+            s_tot = float(s_m.sum().item())
+            b_tot = float(b_m.sum().item())
+            asimov[roc._name] = {
+                "Z_A": z_a,
+                "S_over_sqrtB": z_naive,
+                "S_total": s_tot,
+                "B_total": b_tot,
+            }
+            logging.info(
+                f"  Z_A[{roc._name}] = {z_a:.4f}   "
+                f"S/sqrt(B) = {z_naive:.4f}   "
+                f"(S={s_tot:.3g}, B={b_tot:.3g})"
+            )
+
+        return {"scalars": scalars,
                 "roc": [r.to_json() for r in rocs],
+                "asimov": asimov,
                 "shap": self._shap_results
                 }
-
-    ## work in progress feature
-    def _compute_shap_gradient(self, batch):
-        """Compute SHAP using gradients during training"""
-        import shap
-        import numpy as np
-        
-        all_feature_names = (
-            [f"bJet_{f}" for f in InputBranch.feature_bJetCand] +
-            [f"nonbJet_{f}" for f in InputBranch.feature_nonbJetCand] +
-            [f"lep_{f}" for f in InputBranch.feature_leadingLep] +
-            [f"MET_{f}" for f in InputBranch.feature_MET] +
-            list(InputBranch.feature_ancillary)
-        )
-        
-        # Wrapper model for SHAP
-        class ConcatenatedModel(torch.nn.Module):
-            def __init__(self, original_model, n_features=[10, 8, 5, 2, 3]):
-                super().__init__()
-                self.model = original_model
-                self.n_features = n_features
-            
-            def forward(self, X):
-                splits = torch.split(X, self.n_features, dim=1)
-                hh, *_ = self.model(*splits)
-                signal_idx = MultiClass.trainable_labels.index("signal")
-                probs = F.softmax(hh, dim=1)[:, signal_idx]
-                return probs.unsqueeze(1)
-        
-        wrapped_model = ConcatenatedModel(self._nn)
-        
-        # Use current batch as test data
-        inputs = _bbWWBaseInput(batch, self._device)
-        test_data = torch.cat(inputs, dim=1)[:500]  # Sample subset
-        
-        # Use subset as background
-        background = test_data[:100]
-        explainer = shap.GradientExplainer(wrapped_model, background)
-        shap_values = explainer.shap_values(test_data)
-        
-        # Aggregate importance
-        importance = {}
-        feature_importance = np.abs(shap_values).mean(axis=0)
-        for i, name in enumerate(all_feature_names):
-            importance[name] = float(feature_importance[i])
-        
-        return importance
 
     def step(self, epoch: int = None):
         if self.ghost_batch is not None and self.ghost_batch.step(epoch):
             self._nn.setGhostBatches(self.ghost_batch.get_bs(), False)
 
 
-class bbWWBaseTraining(MultiStageTraining):
+class bbWWNomTraining(MultiStageTraining):
     def __init__(
         self,
-        arch: bbWWBaseArch,
+        arch: bbWWNomArch,
         ghost_batch: GBNSchedule,
         cross_validation: Splitter,
         training_schedule: Schedule,
         finetuning_schedule: Schedule = None,
-        benchmarks: bbWWBaseBenchmarks = None,
+        benchmarks: bbWWNomBenchmarks = None,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -275,54 +267,54 @@ class bbWWBaseTraining(MultiStageTraining):
         self._splitter = cross_validation
         self._training = training_schedule
         self._finetuning = finetuning_schedule
-        self._benchmarks = benchmarks or bbWWBaseBenchmarks()
-        self._bbWWBase: bbWWBaseModel = None
+        self._benchmarks = benchmarks or bbWWNomBenchmarks()
+        self._bbWWNom: bbWWNomModel = None
 
     def stages(self):
-        self._bbWWBase = bbWWBaseModel(
+        self._bbWWNom = bbWWNomModel(
             device=self.device,
             arch=self._arch,
             benchmarks=self._benchmarks,
         )
-        self._bbWWBase.ghost_batch = self._ghost_batch
-        self._bbWWBase.to(self.device)
+        self._bbWWNom.ghost_batch = self._ghost_batch
+        self._bbWWNom.to(self.device)
         self._splitter.setup(self.dataset)
-        skim = _bbWWBaseSkim(self._bbWWBase._nn, self.device, self._splitter)
+        skim = _bbWWNomSkim(self._bbWWNom._nn, self.device, self._splitter)
         yield TrainingStage(
             name="Initialization",
             model=skim,
             schedule=SkimStep(),
             training=self.dataset,
         )
-        self._bbWWBase.nn.initMeanStd()
+        self._bbWWNom.nn.initMeanStd()
         validation_sets = self._splitter.get()
         training_set = validation_sets[SplitterKeys.training]
         yield BenchmarkStage(
             name="Baseline",
-            model=self._bbWWBase,
+            model=self._bbWWNom,
             validation=validation_sets,
         )
         yield TrainingStage(
             name="Training",
-            model=self._bbWWBase,
+            model=self._bbWWNom,
             schedule=self._training,
             training=training_set,
             validation=validation_sets,
         )
-        self._bbWWBase.ghost_batch = None
+        self._bbWWNom.ghost_batch = None
         if self._finetuning is not None:
-            layers = self._bbWWBase._nn.layers
+            layers = self._bbWWNom._nn.layers
             layers.setLayerRequiresGrad(
-                requires_grad=False, index=self._bbWWBase._nn.embedding_layers()
+                requires_grad=False, index=self._bbWWNom._nn.embedding_layers()
             )
             yield TrainingStage(
                 name="Finetuning",
-                model=self._bbWWBase,
+                model=self._bbWWNom,
                 schedule=self._finetuning,
                 training=training_set,
                 validation=validation_sets,
             )
-            self._bbWWBase.ghost_batch = self._ghost_batch
+            self._bbWWNom.ghost_batch = self._ghost_batch
             layers.setLayerRequiresGrad(requires_grad=True)
         output_stage = OutputStage(name="Final", path=f"{self.name}__{self.uuid}.pkl")
         output_path = output_stage.absolute_path
@@ -331,7 +323,7 @@ class bbWWBaseTraining(MultiStageTraining):
             with fsspec.open(output_path, "wb") as f:
                 torch.save(
                     {
-                        "model": self._bbWWBase.nn.state_dict(),
+                        "model": self._bbWWNom.nn.state_dict(),
                         "metadata": self.metadata,
                         "uuid": self.uuid,
                         "label": MultiClass.trainable_labels,
@@ -339,11 +331,11 @@ class bbWWBaseTraining(MultiStageTraining):
                         "input": {
                             k: getattr(InputBranch, k)
                             for k in (
-                            "feature_ancillary", 
-                            "feature_bJetCand",      
-                            "feature_nonbJetCand",   
-                            "feature_leadingLep",   
-                            "feature_MET",   
+                            "feature_ancillary",
+                            "feature_bJetCand",
+                            "feature_nonbJetCand",
+                            "feature_leadingLep",
+                            "feature_regressed_nu",
                             )
                         },
                     },
@@ -352,7 +344,7 @@ class bbWWBaseTraining(MultiStageTraining):
             yield output_stage
 
 
-class bbWWBaseModelEval(Model):
+class bbWWNomModelEval(Model):
     def __init__(
         self,
         device: tt.Device,
@@ -369,8 +361,8 @@ class bbWWBaseModelEval(Model):
                 raise ValueError(
                     f'Input features "{k}" mismatch: training={saved["input"][k]}, evaluation={getattr(InputBranch, k)}'
                 )
-        self._arch = bbWWBaseArch.load(saved["arch"])
-        self._nn = bbWWBase(
+        self._arch = bbWWNomArch.load(saved["arch"])
+        self._nn = bbWW_nom(
             dijetFeatures=self._arch.n_features,
             ancillaryFeatures=InputBranch.feature_ancillary,
             device=device,
@@ -387,9 +379,9 @@ class bbWWBaseModelEval(Model):
         selection = self._splitter.split(batch)[SplitterKeys.validation]
         selector = Selector(selection)
 
-        HH, *_ = self._nn(*_bbWWBaseInput(batch, self._device, selection))
+        HH, *_ = self._nn(*_bbWWNomInput(batch, self._device, selection))
         TT_cands = self._nn._last_tt_logits #TTbar candidates scores
-        WW_score = self.nn._WW_logits
+        WW_score = self.nn._jet_weights
         
         HH = F.softmax(HH, dim=1).cpu()
         TT_cands = F.softmax(TT_cands, dim=-1).cpu()
@@ -397,12 +389,14 @@ class bbWWBaseModelEval(Model):
         output = {}
         output["tt_b1Whad"] = TT_cands[:, 0]
         output["tt_b2Whad"] = TT_cands[:, 1]
-        output["WW_score"] = WW_score
+        jet_scores = WW_score.squeeze(2).squeeze(2).mean(dim=1)  # (batch, 2)
+        output["WW_score1"] = jet_scores[:, 0]
+        output["WW_score2"] = jet_scores[:, 1]
         for i, label in enumerate(self._classes):   
             output[f"p_{label}"] = HH[:, i]
         return selector.pad(map_batch(self._mapping, output))
 
-class bbWWBaseEvaluation(Evaluation):
+class bbWWNomEvaluation(Evaluation):
     def __init__(
         self,
         saved_model: PathLike,
@@ -420,17 +414,17 @@ class bbWWBaseEvaluation(Evaluation):
             load_kw = {}
             if self.device.type == "cpu":
                 load_kw["map_location"] = torch.device("cpu")
-            saved = torch.load(f, **load_kw)
-        self._bbWWBase = bbWWBaseModelEval(
+            saved = torch.load(f, weights_only=False, **load_kw)
+        self._bbWWNom = bbWWNomModelEval(
             device=self.device,
             saved=saved,
             splitter=self._splitter,
             mapping=self._mapping,
         )
-        self._bbWWBase.to(self.device)
+        self._bbWWNom.to(self.device)
         yield EvaluationStage(
             name="Evaluation",
-            model=self._bbWWBase,
+            model=self._bbWWNom,
             dataset=self.dataset,
             dumper_kwargs={"name": self.name},
         )

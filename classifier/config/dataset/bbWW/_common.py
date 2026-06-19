@@ -223,13 +223,6 @@ class CommonTrain(Common):
 class CommonEval(Common):
     evaluable = True
 
-    argparser = ArgParser()
-    argparser.add_argument(
-        "--no-SR",
-        action="store_true",
-        help="remove SR events from training",
-    )
-
     def __init__(self):
         super().__init__()
 

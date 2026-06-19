@@ -16,7 +16,7 @@ from src.physics.objects.jet_corrections import apply_jerc_corrections, apply_je
 from src.physics.event_weights import add_weights, add_btagweights
 from src.data_formats.root import Chunk
 
-from bbreww.analysis.helpers.common import update_events, add_lepton_sfs, dump_phh_to_pickle
+from bbreww.analysis.helpers.common import update_events, add_lepton_sfs, dump_phh_to_pickle, where_record_fieldwise
 from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
 from bbreww.analysis.helpers.cutflow import cutflow_bbWW
 from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec, add_sf_top_pt
@@ -133,30 +133,33 @@ class analysis(processor.ProcessorABC):
 
         target = Chunk.from_coffea_events(events)
 
-        # for now, we load 2022 + 2023 corrections from local files and rest from cvmfs (22+23 have jetId fields)
-        jets = ak.where(
-            events.Jet.btagPNetB >= self.params[self.year].btagWP.M,
-            apply_jerc_corrections(
-                events,
-                corrections_metadata=self.params[self.year],
-                isMC=self.is_mc,
-                run_systematics=False,
-                dataset=self.dataset,
-                jet_corr_factor=events.Jet.PNetRegPtRawCorr * events.Jet.PNetRegPtRawCorrNeutrino,
-                jet_type="AK4PFPuppiPNetRegressionPlusNeutrino"
-            ),
-            apply_jerc_corrections(
-                events,
-                corrections_metadata=self.params[self.year],
-                isMC=self.is_mc,
-                run_systematics=False,
-                dataset=self.dataset,
-                jet_type="AK4PFPuppi.txt"
-            )
+        jets_pnet = apply_jerc_corrections_jsonpog(
+            events,
+            corrections_metadata=self.params[self.year],
+            isMC=self.is_mc,
+            run_systematics=False,
+            dataset=self.dataset,
+            jet_corr_factor=events.Jet.PNetRegPtRawCorr * events.Jet.PNetRegPtRawCorrNeutrino,
+            jet_type="AK4PFPuppiPNetRegressionPlusNeutrino",
         )
+        jets_puppi = apply_jerc_corrections_jsonpog(
+            events,
+            corrections_metadata=self.params[self.year],
+            isMC=self.is_mc,
+            run_systematics=False,
+            dataset=self.dataset,
+            jet_type="AK4PFPuppi",
+        )
+        jets = where_record_fieldwise(
+            events.Jet.btagPNetB >= self.params[self.year].btagWP.M,
+            jets_pnet,
+            jets_puppi,
+            with_name="Jet",
+            behavior=events.behavior,
+        )
+        del jets_pnet, jets_puppi
 
         met = apply_met_corrections_after_jec(events, jets)
-        print(jets.pt)
         shifts = [({"Jet": jets, "MET":met}, None)]
 
         '''if systematics:
@@ -291,12 +294,10 @@ class analysis(processor.ProcessorABC):
         # merge 3jet SvB scores so downstream code uses the right friend per event
         if self.run_SvB and "SvB_3jet" in ak.fields(selected_events):
             _svb_fields = ['ptt', 'phh', 'poth', 'tt_b1Whad', 'tt_b2Whad', 'hh_vs_tt', 'hh_vs_oth', 'tt_vs_oth']
-            print('before', ak.sum(selected_events.SvB.phh[selected_events.nominal_4j2b], axis=0))
             selected_events["SvB"] = ak.zip({
                 _f: ak.where(selected_events.incl_3j2b, selected_events.SvB_3jet[_f], selected_events.SvB[_f])
                 for _f in _svb_fields
             })
-            print('after', ak.sum(selected_events.SvB.phh[selected_events.nominal_4j2b], axis=0))
 
         selected_events = candidate_selection(selected_events, self.params, self.year, self.run_SvB,
                                               self.run_MET_regression, self.classifier_SvB) # select HH->bbWW candidates
@@ -356,11 +357,11 @@ class analysis(processor.ProcessorABC):
             from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_input_friend_regressor, dump_input_friend_classifier
             friends["friends"] = ( friends["friends"]
                 | dump_input_friend_classifier(
-                    selected_events[selected_events.incl_3j2b],
+                    selected_events[selected_events.nominal_4j2b],
                     self.make_classifier_input,
-                    "classifier_input_3j2b",
-                    incl_3j2b_selection,
-                    nonbcand = "q_cands_soft",
+                    "classifier_input_nom",
+                    nominal_selection,
+                    nonbcand = "q_cands_nom",
                     weight = "weight",
                 )
             )

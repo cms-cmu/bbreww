@@ -32,9 +32,31 @@ CHANNEL_TAGS = {'hadronic_W': 'hadW', 'leptonic_W': 'lepW'}
 
 def _bin_name(channel, flavor, year):
     """Compose a combine bin name from (channel, flavor, year). Combine bins
-    cannot start with a digit, hence the 'y' prefix on the year."""
+    cannot start with a digit, hence the 'y' prefix on the year. When years are
+    merged, `year` is None and the year tag is dropped from the name."""
     ch_tag = CHANNEL_TAGS.get(channel, channel)
+    if year is None:
+        return f"{ch_tag}_{flavor}"
     return f"{ch_tag}_{flavor}_y{year}"
+
+
+def _sum_leaves(leaves):
+    """Sum a list of histogram leaf dicts bin-by-bin (values, variances, and
+    under/overflow). Used to merge years into one template. All leaves must
+    share the same binning (they do: same processor template per region)."""
+    if not leaves:
+        return None
+    out = deepcopy(leaves[0])
+    for key in ('values', 'variances'):
+        out[key] = [float(v) for v in out[key]]
+    for leaf in leaves[1:]:
+        for key in ('values', 'variances'):
+            for i in range(len(out[key])):
+                out[key][i] += leaf[key][i]
+    for key in ('underflow_value', 'underflow_variance',
+                'overflow_value', 'overflow_variance'):
+        out[key] = sum(leaf.get(key, 0.0) for leaf in leaves)
+    return out
 
 
 def create_combine_root_file(file_to_convert,
@@ -45,13 +67,24 @@ def create_combine_root_file(file_to_convert,
                              channels,
                              flavors,
                              metadata_file='bbreww/stats_analysis/metadata/bbWW.yml',
-                             stat_only=False):
+                             stat_only=False,
+                             merge_years=False):
     """Build ROOT shapes file and CombineHarvester datacards for bbWW.
 
     JSON axes order: [histogram][process][year][channel][flavor]
     One combine bin is created per (channel, flavor, year) — typical Run3 run
     with 2 channels × 2 flavors × 2 years = 8 bins.
+
+    If `merge_years` is True, the per-year templates are summed bin-by-bin into
+    a single template per (channel, flavor), halving the number of combine bins
+    and dropping the year tag from the bin name. This is only valid for
+    stat-only inputs: year-specific shape nuisances cannot be applied to a
+    year-summed template, so merge_years requires stat_only=True.
     """
+    if merge_years and not stat_only:
+        raise ValueError(
+            "merge_years=True requires stat_only=True: year-specific shape "
+            "systematics cannot be applied to a year-summed template.")
 
     logging.info(f"Reading {metadata_file}")
     metadata = yaml.safe_load(open(metadata_file, 'r'))
@@ -80,6 +113,7 @@ def create_combine_root_file(file_to_convert,
     logging.info(f"Channel axis present: {has_channel_axis}")
     logging.info(f"Channels to use: {channels if has_channel_axis else '(summed)'}")
     logging.info(f"Flavors to use:  {flavors}")
+    logging.info(f"Merge years: {merge_years}")
 
     root_hists = {}      # bin_name → {process → TH1F or {variation → TH1F}}
     mcSysts = []
@@ -87,21 +121,40 @@ def create_combine_root_file(file_to_convert,
 
     channel_loop = channels if has_channel_axis else [None]
 
-    for iyear in years_in_file:
+    # year_groups: each element is (label_for_bin_name, [years_to_sum]).
+    # Normal mode → one group per year (summed over the single year). Merge mode
+    # → one group labelled None summing all years into a single template.
+    if merge_years:
+        year_groups = [(None, years_in_file)]
+    else:
+        year_groups = [(y, [y]) for y in years_in_file]
+
+    def _get_leaf(iprocess, years, ichannel, iflavor):
+        """Fetch (and, when merging, sum) the leaf dict for a process across the
+        given years. Returns None if no year had a leaf."""
+        leaves = []
+        for yr in years:
+            try:
+                if has_channel_axis:
+                    leaves.append(coffea_hists[var][iprocess][yr][ichannel][iflavor])
+                else:
+                    leaves.append(coffea_hists[var][iprocess][yr][iflavor])
+            except KeyError:
+                logging.warning(
+                    f"Missing leaf for {iprocess}/{yr}/{ichannel}/{iflavor}")
+        return _sum_leaves(leaves) if leaves else None
+
+    for ylabel, ygroup in year_groups:
         for ichannel in channel_loop:
             for iflavor in flavors:
-                bname = _bin_name(ichannel, iflavor, iyear) if ichannel else f"{iflavor}_y{iyear}"
+                bname = (_bin_name(ichannel, iflavor, ylabel) if ichannel
+                         else (f"{iflavor}" if ylabel is None else f"{iflavor}_y{ylabel}"))
                 bin_names.append(bname)
                 root_hists[bname] = {}
 
                 for iprocess in coffea_hists[var].keys():
-                    try:
-                        if has_channel_axis:
-                            leaf = coffea_hists[var][iprocess][iyear][ichannel][iflavor]
-                        else:
-                            leaf = coffea_hists[var][iprocess][iyear][iflavor]
-                    except KeyError:
-                        logging.warning(f"Missing leaf for {iprocess}/{iyear}/{ichannel}/{iflavor}")
+                    leaf = _get_leaf(iprocess, ygroup, ichannel, iflavor)
+                    if leaf is None:
                         continue
 
                     if iprocess in _ALL_MERGE_SAMPLES:
@@ -115,16 +168,31 @@ def create_combine_root_file(file_to_convert,
                         logging.debug(f"Skipping {iprocess} (not signal/known background)")
 
                 if systematics_file:
+                    # syst JSON nesting: [process][year][variation][channel][flavor]
+                    def _get_syst_leaf(iprocess, ivar, years):
+                        leaves = []
+                        for yr in years:
+                            try:
+                                if has_channel_axis:
+                                    leaves.append(coffea_hists_syst[var][iprocess][yr][ivar][ichannel][iflavor])
+                                else:
+                                    leaves.append(coffea_hists_syst[var][iprocess][yr][ivar][iflavor])
+                            except KeyError:
+                                logging.warning(
+                                    f"Missing syst leaf for {iprocess}/{yr}/{ivar}/{ichannel}/{iflavor}")
+                        return _sum_leaves(leaves) if leaves else None
+
                     for iprocess in metadata['processes']['signal']:
                         root_hists[bname][iprocess] = {}
                         if stat_only:
-                            if has_channel_axis:
-                                leaf_syst = coffea_hists_syst[var][iprocess][iyear]['nominal'][ichannel][iflavor]
-                            else:
-                                leaf_syst = coffea_hists_syst[var][iprocess][iyear]['nominal'][iflavor]
+                            # merge_years (if set) is allowed only here (stat_only)
+                            leaf_syst = _get_syst_leaf(iprocess, 'nominal', ygroup)
                             root_hists[bname][iprocess]['nominal'] = json_to_TH1(
                                 leaf_syst, f'{iprocess}_nominal_{bname}', rebin)
                         else:
+                            # non-stat path never runs under merge_years (guarded);
+                            # ygroup is a single year here, use it for the year_tag.
+                            iyear = ygroup[0]
                             for ivar in coffea_hists_syst[var][iprocess][iyear].keys():
                                 namevar = ivar.replace('_Up', 'Up').replace('_Down', 'Down')
                                 for stat in ['hfstats1', 'hfstats2', 'lfstats1', 'lfstats2']:
@@ -135,10 +203,7 @@ def create_combine_root_file(file_to_convert,
                                 tmpvar = namevar.replace('Up', '').replace('Down', '')
                                 if tmpvar not in mcSysts and 'nominal' not in tmpvar:
                                     mcSysts.append(tmpvar)
-                                if has_channel_axis:
-                                    leaf_syst = coffea_hists_syst[var][iprocess][iyear][ivar][ichannel][iflavor]
-                                else:
-                                    leaf_syst = coffea_hists_syst[var][iprocess][iyear][ivar][iflavor]
+                                leaf_syst = _get_syst_leaf(iprocess, ivar, ygroup)
                                 root_hists[bname][iprocess][namevar] = json_to_TH1(
                                     leaf_syst, f'{iprocess}_{ivar}_{bname}', rebin)
 
@@ -276,7 +341,7 @@ def create_combine_root_file(file_to_convert,
         if stat_only:
             cb.cp().backgrounds().ExtractShapes(output, '$BIN/$PROCESS', '')
             cb.cp().signals().ExtractShapes(output, '$BIN/$PROCESS', '')
-            cb.cp().SetAutoMCStats(cb, 5, 1, 1)
+            cb.cp().SetAutoMCStats(cb, 10.5, 1, 1)
         else:
             btagSysts, psfsrSysts, othersSysts = [], [], []
             for nuisance in mcSysts:
@@ -320,7 +385,7 @@ def create_combine_root_file(file_to_convert,
                 output, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
             cb.cp().signals().ExtractShapes(
                 output, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
-            cb.cp().SetAutoMCStats(cb, 5, 1, 1)
+            cb.cp().SetAutoMCStats(cb, 10.5, 1, 1)
 
         cb.PrintAll()
         cb.WriteDatacard(f"{output_dir}/datacard_{ibin}.txt",
@@ -353,6 +418,10 @@ if __name__ == '__main__':
                         help='Lepton flavor axis values to use.')
     parser.add_argument('--stat_only', dest='stat_only', action="store_true",
                         default=False, help="Create stat-only inputs (no shape systematics)")
+    parser.add_argument('--merge_years', dest='merge_years', action="store_true",
+                        default=False,
+                        help="Sum per-year templates into one (channel, flavor) bin, "
+                             "halving the number of combine bins. Requires --stat_only.")
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
@@ -369,4 +438,5 @@ if __name__ == '__main__':
         args.flavors,
         metadata_file=args.metadata,
         stat_only=args.stat_only,
+        merge_years=args.merge_years,
     )

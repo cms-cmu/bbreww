@@ -24,6 +24,10 @@ config.setdefault("input_coffea",  "output/full_run/output_merged.coffea")
 config.setdefault("channel",  "hadronic_W")   # channel axis value
 config.setdefault("flavor",   "mu")           # flavor axis value
 config.setdefault("rebin",    1)
+# Merge 2022+2023 into one template per (channel, flavor), halving the number
+# of combine bins. Stat-only only (year-specific shape systs can't apply to a
+# year-summed template). Override with --config merge_years=true
+config.setdefault("merge_years", False)
 
 # nominal 4j2b category
 config.setdefault("nominal_collection",   "hists_4j2b")
@@ -59,6 +63,13 @@ def _sum_flag(key):
 def _select_flag(key):
     val = config.get(key) or ""
     return f"--select {val}" if val.strip() else ""
+
+# merge_years may arrive as a bool (default) or a string ("true"/"false") from
+# --config merge_years=...; normalise to the make_combine_inputs.py flag string.
+def _is_true(val):
+    return str(val).strip().lower() in ("true", "1", "yes")
+
+MERGE_YEARS_FLAG = "--merge_years" if _is_true(config.get("merge_years")) else ""
 
 # ── targets ───────────────────────────────────────────────────────────────────
 rule all:
@@ -176,7 +187,7 @@ rule make_combine_inputs:
                 -o {DCARDS}/nominal \
                 --rebin {config[rebin]} \
                 --metadata bbreww/stats_analysis/metadata/bbWW.yml \
-                --stat_only \
+                --stat_only {MERGE_YEARS_FLAG} \
             2>&1 | tee -a {log}
 
         echo "[$(date)] Starting make_combine_inputs (lowpt)" >> {log}
@@ -187,7 +198,7 @@ rule make_combine_inputs:
                 -o {DCARDS}/lowpt \
                 --rebin {config[rebin]} \
                 --metadata bbreww/stats_analysis/metadata/bbWW.yml \
-                --stat_only \
+                --stat_only {MERGE_YEARS_FLAG} \
             2>&1 | tee -a {log}
 
         echo "[$(date)] Starting make_combine_inputs (incl3j2b)" >> {log}
@@ -198,7 +209,7 @@ rule make_combine_inputs:
                 -o {DCARDS}/incl3j2b \
                 --rebin {config[rebin]} \
                 --metadata bbreww/stats_analysis/metadata/bbWW.yml \
-                --stat_only \
+                --stat_only {MERGE_YEARS_FLAG} \
             2>&1 | tee -a {log}
 
         echo "[$(date)] Building per-category and combined datacards" >> {log}

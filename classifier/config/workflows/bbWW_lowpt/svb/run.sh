@@ -12,25 +12,25 @@ export WFS="bbreww/classifier/config/workflows/bbWW_lowpt/svb"
 
 # the first argument can be a port
 if [ -z "$1" ]; then
-    port=10201
+    port=10200
 else
     port=$1
 fi
 
 # train with train.yml and common.yml configs
-./src/pyml.py \
-    template "{model: ${MODEL}, FvT: ${FvT}}" $WFS/train.yml \
-    -from $WFS/common.yml \
-    -setting Monitor "address: :${port}" \
-    -flag debug # use debug flag
-
-# plot the AUC and ROC (use bbWWBase.LossROC for plotting as bbWW.LossROC is still in progress)
-./src/pyml.py analyze \
-    --results ${MODEL}/result.json \
-    -analysis bbWWBase.LossROC \
-    -setting IO "output: ${PLOT}" \
-    -setting IO "report: FvT" \
-    -setting Monitor "address: :${port}"
+#./src/pyml.py \
+#    template "{model: ${MODEL}, FvT: ${FvT}}" $WFS/train.yml \
+#    -from $WFS/common.yml \
+#    -setting Monitor "address: :${port}" \
+#    -flag debug # use debug flag
+#
+## plot the AUC and ROC (use bbWWBase.LossROC for plotting as bbWW.LossROC is still in progress)
+#./src/pyml.py analyze \
+#    --results ${MODEL}/result.json \
+#    -analysis bbWWBase.LossROC \
+#    -setting IO "output: ${PLOT}" \
+#    -setting IO "report: FvT" \
+#    -setting Monitor "address: :${port}"
 
 # evaluate with evaluate.yml and common.yml configs
 ./src/pyml.py \

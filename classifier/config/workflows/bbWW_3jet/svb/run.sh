@@ -1,7 +1,7 @@
 # change these vars #
 export LPCUSER="akhanal"
 export CERNUSER="a/akhanal"
-export BASE="root://cmseos.fnal.gov//store/user/${LPCUSER}/HHbbWW_classifier_3jet"
+export BASE="root://cmseos.fnal.gov//store/user/${LPCUSER}/ML/HHbbWW_classifier_3jet"
 export MODEL="${BASE}/classifier/bbWW_3jet/SvB/"
 export FvT="${BASE}/friend/FvT/"
 export SvB="${BASE}/friend/SvB/"

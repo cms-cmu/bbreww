@@ -11,13 +11,13 @@ dataset:
   - module: bbWW.svb.Eval
     option:
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
-      - --max-workers 4 
-      - --mc-processes GluGluToHHTo2B2VLNu2J ttbar 
+      - --max-workers 4
+      - --mc-processes GluGluToHHTo2B2VLNu2J ttbar
       - --friends "" bbreww/metadata/classifier/input/output_friend_nom.json@@classifier_input_nom
   - module: bbWW.svb.Eval
     option:
       - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
-      - --max-workers 4 
+      - --max-workers 4
       - --mc-processes WplusJets tW
       - --friends "" bbreww/metadata/classifier/input/minorbkg_friend_nom.json@@classifier_input_nom
   - module: bbWW.svb.DataEval
@@ -25,12 +25,12 @@ dataset:
       - --no-SR # remove SR
       - --data-source detector # loads data
       - --metadata bbreww/metadata/classifier/datasets/datasets_data_v5 # choose dataset
-      - --max-workers 4 
+      - --max-workers 4
       - --friends "" bbreww/metadata/classifier/input/data_friend_nom.json@@classifier_input_nom # set input friend tree
 
 
 model:
-  - module: bbWW.bbWWBase.baseline_svb.Eval
+  - module: bbWW.bbWW_nom.baseline_svb.Eval
     option:
       - --models
       - Final # choose name of the model to evaluate, for now only Final is available

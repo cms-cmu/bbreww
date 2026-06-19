@@ -18,7 +18,7 @@ dataset:
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
       - --norm 16 #set TTbar to be x times weight of signal
       # - --ttbar-prescale 10 # this option is to only train on a fraction of events
-      - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input # set input friend tree
+      - --friends "" bbreww/metadata/classifier/input/input_friend_4j2b.json@@classifier_input # set input friend tree
       - --max-workers 2
 
   - module: bbWW.svb.Background
@@ -26,13 +26,13 @@ dataset:
       - --mc-processes WplusJets tW singleTop
       - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
       - --norm 1
-      - --friends "" bbreww/metadata/classifier/input/minorbkg_friend.json@@classifier_input # set input friend tree
+      - --friends "" bbreww/metadata/classifier/input/input_friend_4j2b.json@@classifier_input # set input friend tree
       - --max-workers 2
 
   - module: bbWW.svb.Signal
     option:
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
-      - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input # set input friend tree
+      - --friends "" bbreww/metadata/classifier/input/input_friend_4j2b.json@@classifier_input # set input friend tree
       - --max-workers 1
       # - --train-bsm
 

@@ -33,7 +33,7 @@ dataset:
       - --friends "" bbreww/metadata/classifier/input/minorbkg_friend.json@@classifier_input # set input friend tree
 
 model:
-  - module: bbWW.bbWWBase.baseline_dvtt.Train # use the baseline bbWW bbWWBase model
+  - module: bbWW.bbWW_lowpt.baseline_dvtt.Train # use the baseline bbWW bbWWBase model
     option:
       - --kfolds 3 # use 3-fold
       - --kfold-seed FvT random # setup base seed to be ("FvT", "random")

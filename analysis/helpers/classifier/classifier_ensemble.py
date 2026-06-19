@@ -18,7 +18,7 @@ class RECModelMetadata(TypedDict):
 
 class _RECKFoldModel:
     def __init__(self, model: str, splitter: Splitter, **_):
-        from bbreww.classifier.nn.blocks.bbWW_models import bbWWBase
+        from bbreww.classifier.nn.blocks.bbWW_nom import bbWW_nom
 
         self.splitter = splitter
         with fsspec.open(model, "rb") as f:
@@ -27,7 +27,7 @@ class _RECKFoldModel:
 
         self._classes: list[str] = states["label"]
         self._reindex: list[int] = None
-        self._model = bbWWBase(
+        self._model = bbWW_nom(
             dijetFeatures=states["arch"]["n_features"],
             ancillaryFeatures=self.ancillary,
             nClasses=len(self._classes),
@@ -55,8 +55,9 @@ class _RECKFoldModel:
     def eval(self):
         return self
 
-    def __call__(self, b, nb, l, nu, a):
-        hh_logits, tt_logits = self._model(b, nb, l, nu, a)
+    def __call__(self, b, nb, l, a, reg_nu):
+        # bbWW_nom signature: (b, nb, l, a, reg_nu) -> (hh, tt, ww)
+        hh_logits, tt_logits, _ww = self._model(b, nb, l, a, reg_nu)
         if self._reindex is not None:
             hh_logits = hh_logits[:, self._reindex]
         return hh_logits, tt_logits
@@ -92,9 +93,9 @@ class RECEnsemble:
         n = len(events)
         batch: BatchType = {
             Input.bJetCand: torch.zeros(n, 5, 2, dtype=torch.float32),
-            Input.nonbJetCand: torch.zeros(n, 4, 3, dtype=torch.float32),
+            Input.nonbJetCand: torch.zeros(n, 4, 2, dtype=torch.float32),  # bbWW_nom: 2 non-b jets, 4 kinematic features (no ml_jet_score)
             Input.leadingLep: torch.zeros(n, 6, 1, dtype=torch.float32),
-            Input.MET: torch.zeros(n, 2, 1, dtype=torch.float32),
+            Input.regressed_nu: torch.zeros(n, 4, 1, dtype=torch.float32),  # bbWW_nom: regressed neutrino (px, py, pz, E)
             Input.ancillary: torch.zeros(n, len(self.ancillary), dtype=torch.float32),
         }
 
@@ -102,7 +103,7 @@ class RECEnsemble:
         for i, k in enumerate(("pt", "eta", "phi", "mass", "btagScore")):
             b[:, i, :] = torch.tensor(events.b_cands[k])
 
-        nb = batch[Input.nonbJetCand] # non-bjet (nb) features
+        nb = batch[Input.nonbJetCand] # non-bjet (nb) features (no ml_jet_score in bbWW_nom)
         for i, k in enumerate(("pt", "eta", "phi", "mass")):
             # q_cands_nom are nominal analysis jets, for low_pt analysis need q_cands_soft in low_pt selection region
             nb[:, i, :] = torch.tensor(events.q_cands_nom[k])
@@ -115,9 +116,13 @@ class RECEnsemble:
             else:
                 l[:, i, :] = torch.tensor(ak.singletons(events.leading_lep[k]))
 
-        nu = batch[Input.MET]
-        for i, k in enumerate(("pt", "phi",)):
-            nu[:, i, :] = torch.tensor(ak.singletons(events.MET[k]))
+        reg_nu = batch[Input.regressed_nu]
+        # TODO: populate the regressed neutrino (px, py, pz, E) from the bbWW_nom
+        # friend trees once they exist. The source field is not yet defined --
+        # leaving zeros here would produce a degenerate leptonic W, so wire this
+        # to the real branch (e.g. events.regressed_nu[k]) before running eval.
+        for i, k in enumerate(("px", "py", "pz", "E")):
+            reg_nu[:, i, :] = torch.tensor(ak.singletons(events.regressed_nu[k]))
 
         # ancillary features
         a = batch[Input.ancillary]
@@ -139,6 +144,6 @@ class RECEnsemble:
         for model in self.models:
             mask = model.splitter.split(batch)[SplitterKeys.validation] #splitter knows which model to evaluate on which file
             if mask.sum() > 0:
-                hh_logits[mask], tt_logits[mask] = model(b[mask], nb[mask], l[mask], nu[mask], a[mask])
+                hh_logits[mask], tt_logits[mask] = model(b[mask], nb[mask], l[mask], a[mask], reg_nu[mask])
 
         return F.softmax(hh_logits, dim=-1).numpy(), F.softmax(tt_logits, dim=-1).numpy()

@@ -4,6 +4,9 @@ runner:
   worker_memory: 8GB
   data_tier: picoAOD
   condor_cores: 1
+  chunksize: 10000
+  min_workers: 1
+  max_workers: 150
   condor_transfer_input_files:
     - src/
     - bbreww/analysis/
@@ -23,7 +26,7 @@ runner:
 
 # processor specific flags below
 config:
-  dump_signal_phh: true
+  dump_signal_phh: false
   run_SvB: true
   run_MET_regression: true
   friends:

@@ -123,11 +123,9 @@ def ttbar_candidate_selection(events, run_SvB: bool = True):
 def Wqq_soft_candidate_selection(events, year):
     QvG_key = 'btagPNetQvG' if '202' in year else 'particleNetAK4_QvsG' # use particleNET for quark vs. gluon tagging
 
-    #q_cands_soft = events.q_cands_soft_init[ak.argsort(getattr(events.q_cands_soft_init,QvG_key), axis=1, ascending=False)] #particleNetAK4_QvsG btagPNetQvG
-    #q_cands_soft = q_cands_soft[:,:4] #top 4 quark vs gluon non b-jets
-    #q_cands_soft = q_cands_soft[ak.argsort(q_cands_soft.pt, axis=1, ascending=False)] #pt sort the jets
-    q_cands_soft = events.q_cands_soft_init[ak.argsort(events.q_cands_soft_init.pt, axis=1, ascending=False)]
-    q_cands_soft = q_cands_soft[:, :4]
+    q_cands_soft = events.q_cands_soft_init[ak.argsort(getattr(events.q_cands_soft_init,QvG_key), axis=1, ascending=False)] #particleNetAK4_QvsG btagPNetQvG
+    q_cands_soft = q_cands_soft[:,:4] #top 4 quark vs gluon non b-jets
+    q_cands_soft = q_cands_soft[ak.argsort(q_cands_soft.pt, axis=1, ascending=False)] #pt sort the jets
     events['q_cands_soft'] = q_cands_soft
     
     ## pt sorting soft + nominal candidates
@@ -225,12 +223,15 @@ def regressed_nu(events, met_regression: bool = False):
         nu_py = _pick("nu_py")
         nu_pz = _pick("nu_pz")
             
+        nu_pt = np.sqrt(nu_px**2 + nu_py**2)
+        nu_phi = np.arctan2(nu_py, nu_px)
+        nu_eta = np.arcsinh(nu_pz / nu_pt)
         events["reg_nu"] = ak.zip({
-            "x": nu_px,
-            "y": nu_py,
-            "z": nu_pz,
-            "t": np.sqrt((nu_px**2 + nu_py**2 + nu_pz**2)),
-            "charge": ak.zeros_like(pt, dtype=int),
+            "pt": nu_pt,
+            "eta": nu_eta,
+            "phi": nu_phi,
+            "mass": ak.zeros_like(nu_pt),
+            "charge": ak.zeros_like(nu_pt, dtype=int),
         },
         with_name="PtEtaPhiMCandidate",
         behavior=vector.behavior,
@@ -248,7 +249,7 @@ def regressed_nu(events, met_regression: bool = False):
         # ak.local_index to build a per-entry boolean mask and filter axis=1.
         n_jets = ak.num(events.q_cands_soft)
         events["q_cands_soft", "ml_jet_scores"] = ml_jet_scores_full[ak.local_index(ml_jet_scores_full, axis=1) < n_jets]
-
+        
         has_two_jets = ak.num(events.q_cands_soft) >= 2
         valid_nu = ~np.isnan(nu_pz)
         mask_all = has_two_jets & valid_nu

@@ -31,6 +31,6 @@ config:
   run_MET_regression: true
   friends:
     SvB: "bbreww/metadata/classifier/output/result.json@@analysis.0.merged"
-    SvB_3jet: "bbreww/metadata/classifier/output/result_3jet.json@@analysis.0.merged"
+    #SvB_3jet: "bbreww/metadata/classifier/output/result_3jet.json@@analysis.0.merged"
     met_regressor: "bbreww/metadata/regressor/output/result.json@@analysis.0.merged"
     met_regressor_3jet: "bbreww/metadata/regressor/output/result_3jet.json@@analysis.0.merged"

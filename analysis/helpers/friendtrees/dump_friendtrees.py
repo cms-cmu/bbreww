@@ -43,7 +43,7 @@ def dump_input_friend_classifier(
                         "eta":  events[nonbcand].eta,
                         "phi":  events[nonbcand].phi,
                         "mass": events[nonbcand].mass,
-                        "attn_score": events[nonbcand].ml_jet_scores, 
+                        #"attn_score": events[nonbcand].ml_jet_scores, # UNCOMMENT WHEN CREATING FRIENDTREES FOR LOWPT JETS
                     }
                 ),
                 selection,

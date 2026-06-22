@@ -24,7 +24,16 @@ def doPlots(varList, debug=False):
     if args.doTest:
         varList = [("Hbb.mass", "hists"), ("mbb_vs_bb_dr", "hists")]
 
-    years = ["2022", "2023", "Run3"]
+    # Derive the years to plot from the year axis actually present in the
+    # loaded hists, so we never request a year missing from the coffea
+    # (e.g. CI test data is a single year). Falls back to the full Run3 list.
+    years = []
+    for hk in ('hists', 'hists_4j2b'):
+        for y in (cfg.axisLabelsDict.get(hk, {}).get('year') or []):
+            if y is not None and y not in years:
+                years.append(y)
+    if not years:
+        years = ["2022", "2023", "Run3"]
 
     for year in years:
         if debug: print(f"=== plotting year {year} ===")

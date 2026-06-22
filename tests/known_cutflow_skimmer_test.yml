@@ -1,6 +1,6 @@
 GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
   n_events: 39227
-  sum_genweights: 512.072509765625
+  sum_genweights: 506.1623840332031
   cutflow:
     e_region:
       events:
@@ -9,34 +9,30 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         trigger: 16726.0
         jet_veto_mask: 15163.0
         oneEorM: 15163.0
-        oneBjet: 14800.0
-        twoBjets: 10465.0
-        tau_veto: 10397.0
-        njets_ak8: 7232.0
-        mll_cut: 7231.0
-        nominal_4j2b: 3895.0
-        nominal_3j2b: 2665.0
-        lowpt_4j2b: 1848.0
-        lowpt_3j2b: 1488.0
-        SvB_tail: 7231.0
-        SvB_tail_lowpt: 7231.0
+        oneBjet: 14789.0
+        twoBjets: 10381.0
+        tau_veto: 10313.0
+        njets_ak8: 7171.0
+        mll_cut: 7170.0
+        nominal_4j2b: 3858.0
+        lowpt_4j2b: 1758.0
+        incl_3j2b: 1535.0
+        combined_4j2b: 5616.0
       weights:
-        lumimask: 4.283300541196229
-        passNoiseFilter: 4.283300541196229
-        trigger: 4.283300541196229
-        jet_veto_mask: 3.892215990615185
-        oneEorM: 3.892215990615185
-        oneBjet: 3.794868491683119
-        twoBjets: 2.660356420900472
-        tau_veto: 2.6445546430755296
-        njets_ak8: 1.8670269481228612
-        mll_cut: 1.8669166694424917
-        nominal_4j2b: 0.9947760484333645
-        nominal_3j2b: 0.6956292430727944
-        lowpt_4j2b: 0.4837984967278707
-        lowpt_3j2b: 0.3883421242812564
-        SvB_tail: 1.8669166694424917
-        SvB_tail_lowpt: 1.8669166694424917
+        lumimask: 4.269338756511081
+        passNoiseFilter: 4.269338756511081
+        trigger: 4.269338756511081
+        jet_veto_mask: 3.8796575915876677
+        oneEorM: 3.8796575915876677
+        oneBjet: 3.7798539983222477
+        twoBjets: 2.629772981428477
+        tau_veto: 2.6138065599510316
+        njets_ak8: 1.846187840179553
+        mll_cut: 1.8460779322451806
+        nominal_4j2b: 0.9822883727319089
+        lowpt_4j2b: 0.46072528198979923
+        incl_3j2b: 0.39734850731807014
+        combined_4j2b: 1.443013654721708
     mu_region:
       events:
         lumimask: 22501.0
@@ -44,61 +40,49 @@ GluGluToHHTo2B2VLNu2J_kl_1p00_2022_EE:
         trigger: 22501.0
         jet_veto_mask: 20395.0
         oneEorM: 20395.0
-        oneBjet: 19846.0
-        twoBjets: 14002.0
-        tau_veto: 13900.0
-        njets_ak8: 9826.0
-        mll_cut: 9820.0
-        nominal_4j2b: 5422.0
-        nominal_3j2b: 3574.0
-        lowpt_4j2b: 2477.0
-        lowpt_3j2b: 1921.0
-        SvB_tail: 9820.0
-        SvB_tail_lowpt: 9820.0
+        oneBjet: 19833.0
+        twoBjets: 13878.0
+        tau_veto: 13778.0
+        njets_ak8: 9734.0
+        mll_cut: 9728.0
+        nominal_4j2b: 5391.0
+        lowpt_4j2b: 2327.0
+        incl_3j2b: 1982.0
+        combined_4j2b: 7718.0
       weights:
-        lumimask: 6.647775731301673
-        passNoiseFilter: 6.647775731301673
-        trigger: 6.647775731301673
-        jet_veto_mask: 6.028879978820271
-        oneEorM: 6.028879978820271
-        oneBjet: 5.859949791305201
-        twoBjets: 4.084952362244547
-        tau_veto: 4.055791988526285
-        njets_ak8: 2.947112024133064
-        mll_cut: 2.9447182962401
-        nominal_4j2b: 1.6294665766489256
-        nominal_3j2b: 1.0589645265738832
-        lowpt_4j2b: 0.7425050511510922
-        lowpt_3j2b: 0.5727466684400824
-        SvB_tail: 2.9447182962401
-        SvB_tail_lowpt: 2.9447182962401
+        lumimask: 6.624787370394152
+        passNoiseFilter: 6.624787370394152
+        trigger: 6.624787370394152
+        jet_veto_mask: 6.008111613981583
+        oneEorM: 6.008111613981583
+        oneBjet: 5.834497782250417
+        twoBjets: 4.034540547108264
+        tau_veto: 4.006333419545063
+        njets_ak8: 2.9097295930911504
+        mll_cut: 2.9073439126742
+        nominal_4j2b: 1.6106187466454216
+        lowpt_4j2b: 0.7000385242619399
+        incl_3j2b: 0.5870046278194684
+        combined_4j2b: 2.3106572709073614
     SR:
       events:
-        nominal_4j2b: 3344.0
-        nominal_3j2b: 1570.0
-        lowpt_4j2b: 1871.0
-        lowpt_3j2b: 0.0
-        SvB_tail: 5215.0
-        SvB_tail_lowpt: 5215.0
+        nominal_4j2b: 5242.0
+        lowpt_4j2b: 2661.0
+        incl_3j2b: 2142.0
+        combined_4j2b: 7903.0
       weights:
-        nominal_4j2b: 0.9098609242148294
-        nominal_3j2b: 0.4242645747896101
-        lowpt_4j2b: 0.5129931958456623
-        lowpt_3j2b: 0.0
-        SvB_tail: 1.4228541200604918
-        SvB_tail_lowpt: 1.4228541200604918
+        nominal_4j2b: 1.446280381766775
+        lowpt_4j2b: 0.7377820871036889
+        incl_3j2b: 0.5971117799614242
+        combined_4j2b: 2.1840624688704637
     CR:
       events:
-        nominal_4j2b: 1633.0
-        nominal_3j2b: 734.0
-        lowpt_4j2b: 875.0
-        lowpt_3j2b: 0.0
-        SvB_tail: 2508.0
-        SvB_tail_lowpt: 2508.0
+        nominal_4j2b: 4007.0
+        lowpt_4j2b: 1424.0
+        incl_3j2b: 1375.0
+        combined_4j2b: 5431.0
       weights:
-        nominal_4j2b: 0.47039596235077585
-        nominal_3j2b: 0.20944498798523437
-        lowpt_4j2b: 0.251663265093564
-        lowpt_3j2b: 0.0
-        SvB_tail: 0.7220592274443398
-        SvB_tail_lowpt: 0.7220592274443398
+        nominal_4j2b: 1.1466267376105554
+        lowpt_4j2b: 0.4229817191480503
+        incl_3j2b: 0.38724135517611435
+        combined_4j2b: 1.5696084567586057

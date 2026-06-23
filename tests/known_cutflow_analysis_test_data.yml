@@ -15,11 +15,9 @@ data__SingleMuon_2022_preEED:
         njets_ak8: 6.0
         mll_cut: 6.0
         nominal_4j2b: 3.0
-        nominal_3j2b: 3.0
         lowpt_4j2b: 2.0
-        lowpt_3j2b: 1.0
-        SvB_tail: 6.0
-        SvB_tail_lowpt: 6.0
+        incl_3j2b: 1.0
+        combined_4j2b: 5.0
       weights:
         lumimask: 29.0
         passNoiseFilter: 29.0
@@ -32,11 +30,9 @@ data__SingleMuon_2022_preEED:
         njets_ak8: 6.0
         mll_cut: 6.0
         nominal_4j2b: 3.0
-        nominal_3j2b: 3.0
         lowpt_4j2b: 2.0
-        lowpt_3j2b: 1.0
-        SvB_tail: 6.0
-        SvB_tail_lowpt: 6.0
+        incl_3j2b: 1.0
+        combined_4j2b: 5.0
     mu_region:
       events:
         lumimask: 971.0
@@ -44,64 +40,52 @@ data__SingleMuon_2022_preEED:
         trigger: 971.0
         jet_veto_mask: 916.0
         oneEorM: 916.0
-        oneBjet: 721.0
-        twoBjets: 409.0
-        tau_veto: 397.0
-        njets_ak8: 284.0
-        mll_cut: 282.0
+        oneBjet: 723.0
+        twoBjets: 410.0
+        tau_veto: 398.0
+        njets_ak8: 285.0
+        mll_cut: 283.0
         nominal_4j2b: 145.0
-        nominal_3j2b: 101.0
-        lowpt_4j2b: 68.0
-        lowpt_3j2b: 67.0
-        SvB_tail: 280.0
-        SvB_tail_lowpt: 280.0
+        lowpt_4j2b: 69.0
+        incl_3j2b: 67.0
+        combined_4j2b: 214.0
       weights:
         lumimask: 971.0
         passNoiseFilter: 971.0
         trigger: 971.0
         jet_veto_mask: 916.0
         oneEorM: 916.0
-        oneBjet: 721.0
-        twoBjets: 409.0
-        tau_veto: 397.0
-        njets_ak8: 284.0
-        mll_cut: 282.0
+        oneBjet: 723.0
+        twoBjets: 410.0
+        tau_veto: 398.0
+        njets_ak8: 285.0
+        mll_cut: 283.0
         nominal_4j2b: 145.0
-        nominal_3j2b: 101.0
-        lowpt_4j2b: 68.0
-        lowpt_3j2b: 67.0
-        SvB_tail: 280.0
-        SvB_tail_lowpt: 280.0
+        lowpt_4j2b: 69.0
+        incl_3j2b: 67.0
+        combined_4j2b: 214.0
     SR:
       events:
-        nominal_4j2b: 6.0
-        nominal_3j2b: 1.0
-        lowpt_4j2b: 3.0
-        lowpt_3j2b: 0.0
-        SvB_tail: 9.0
-        SvB_tail_lowpt: 9.0
+        nominal_4j2b: 24.0
+        lowpt_4j2b: 10.0
+        incl_3j2b: 8.0
+        combined_4j2b: 34.0
       weights:
-        nominal_4j2b: 6.0
-        nominal_3j2b: 1.0
-        lowpt_4j2b: 3.0
-        lowpt_3j2b: 0.0
-        SvB_tail: 9.0
-        SvB_tail_lowpt: 9.0
+        nominal_4j2b: 24.0
+        lowpt_4j2b: 10.0
+        incl_3j2b: 8.0
+        combined_4j2b: 34.0
     CR:
       events:
-        nominal_4j2b: 18.0
-        nominal_3j2b: 6.0
-        lowpt_4j2b: 7.0
-        lowpt_3j2b: 0.0
-        SvB_tail: 25.0
-        SvB_tail_lowpt: 25.0
+        nominal_4j2b: 124.0
+        lowpt_4j2b: 61.0
+        incl_3j2b: 60.0
+        combined_4j2b: 185.0
       weights:
-        nominal_4j2b: 18.0
-        nominal_3j2b: 6.0
-        lowpt_4j2b: 7.0
-        lowpt_3j2b: 0.0
-        SvB_tail: 25.0
-        SvB_tail_lowpt: 25.0
+        nominal_4j2b: 124.0
+        lowpt_4j2b: 61.0
+        incl_3j2b: 60.0
+        combined_4j2b: 185.0
 data__SingleMuon_2022_preEEC:
   n_events: 1001
   sum_genweights: 1001
@@ -119,11 +103,9 @@ data__SingleMuon_2022_preEEC:
         njets_ak8: 10.0
         mll_cut: 10.0
         nominal_4j2b: 4.0
-        nominal_3j2b: 4.0
         lowpt_4j2b: 4.0
-        lowpt_3j2b: 2.0
-        SvB_tail: 10.0
-        SvB_tail_lowpt: 10.0
+        incl_3j2b: 2.0
+        combined_4j2b: 8.0
       weights:
         lumimask: 47.0
         passNoiseFilter: 47.0
@@ -136,11 +118,9 @@ data__SingleMuon_2022_preEEC:
         njets_ak8: 10.0
         mll_cut: 10.0
         nominal_4j2b: 4.0
-        nominal_3j2b: 4.0
         lowpt_4j2b: 4.0
-        lowpt_3j2b: 2.0
-        SvB_tail: 10.0
-        SvB_tail_lowpt: 10.0
+        incl_3j2b: 2.0
+        combined_4j2b: 8.0
     mu_region:
       events:
         lumimask: 954.0
@@ -148,61 +128,49 @@ data__SingleMuon_2022_preEEC:
         trigger: 954.0
         jet_veto_mask: 894.0
         oneEorM: 894.0
-        oneBjet: 697.0
-        twoBjets: 373.0
-        tau_veto: 366.0
-        njets_ak8: 264.0
-        mll_cut: 263.0
+        oneBjet: 699.0
+        twoBjets: 375.0
+        tau_veto: 368.0
+        njets_ak8: 265.0
+        mll_cut: 264.0
         nominal_4j2b: 131.0
-        nominal_3j2b: 102.0
-        lowpt_4j2b: 57.0
-        lowpt_3j2b: 72.0
-        SvB_tail: 260.0
-        SvB_tail_lowpt: 260.0
+        lowpt_4j2b: 58.0
+        incl_3j2b: 72.0
+        combined_4j2b: 189.0
       weights:
         lumimask: 954.0
         passNoiseFilter: 954.0
         trigger: 954.0
         jet_veto_mask: 894.0
         oneEorM: 894.0
-        oneBjet: 697.0
-        twoBjets: 373.0
-        tau_veto: 366.0
-        njets_ak8: 264.0
-        mll_cut: 263.0
+        oneBjet: 699.0
+        twoBjets: 375.0
+        tau_veto: 368.0
+        njets_ak8: 265.0
+        mll_cut: 264.0
         nominal_4j2b: 131.0
-        nominal_3j2b: 102.0
-        lowpt_4j2b: 57.0
-        lowpt_3j2b: 72.0
-        SvB_tail: 260.0
-        SvB_tail_lowpt: 260.0
+        lowpt_4j2b: 58.0
+        incl_3j2b: 72.0
+        combined_4j2b: 189.0
     SR:
       events:
-        nominal_4j2b: 6.0
-        nominal_3j2b: 2.0
-        lowpt_4j2b: 3.0
-        lowpt_3j2b: 0.0
-        SvB_tail: 9.0
-        SvB_tail_lowpt: 9.0
+        nominal_4j2b: 14.0
+        lowpt_4j2b: 11.0
+        incl_3j2b: 6.0
+        combined_4j2b: 25.0
       weights:
-        nominal_4j2b: 6.0
-        nominal_3j2b: 2.0
-        lowpt_4j2b: 3.0
-        lowpt_3j2b: 0.0
-        SvB_tail: 9.0
-        SvB_tail_lowpt: 9.0
+        nominal_4j2b: 14.0
+        lowpt_4j2b: 11.0
+        incl_3j2b: 6.0
+        combined_4j2b: 25.0
     CR:
       events:
-        nominal_4j2b: 7.0
-        nominal_3j2b: 6.0
-        lowpt_4j2b: 8.0
-        lowpt_3j2b: 0.0
-        SvB_tail: 15.0
-        SvB_tail_lowpt: 15.0
+        nominal_4j2b: 121.0
+        lowpt_4j2b: 51.0
+        incl_3j2b: 68.0
+        combined_4j2b: 172.0
       weights:
-        nominal_4j2b: 7.0
-        nominal_3j2b: 6.0
-        lowpt_4j2b: 8.0
-        lowpt_3j2b: 0.0
-        SvB_tail: 15.0
-        SvB_tail_lowpt: 15.0
+        nominal_4j2b: 121.0
+        lowpt_4j2b: 51.0
+        incl_3j2b: 68.0
+        combined_4j2b: 172.0

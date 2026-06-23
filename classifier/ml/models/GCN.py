@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class HCRArch:
+class bbWWBaseArch:
     __skip_save = frozenset(("loss",))
 
     loss: Callable[[BatchType], Tensor] = None
@@ -79,12 +79,12 @@ class GBNSchedule(MilestoneStep):
 
 
 @dataclass
-class HCRBenchmarks:
+class bbWWBaseBenchmarks:
     rocs: Iterable[ROC]
     scalars: Iterable[Callable[[BatchType], dict[str, Tensor]]] = None
 
 
-def _HCRInput(batch: BatchType, device: tt.Device, selection: Tensor = None):
+def _bbWWBaseInput(batch: BatchType, device: tt.Device, selection: Tensor = None):
     for k, v in batch.items():
         batch[k] = v.to(device, non_blocking=True)
     inputs = [batch.pop(k) for k in (Input.bJetCand, Input.nonbJetCand, Input.leadingLep, Input.MET, Input.ancillary)]
@@ -94,7 +94,7 @@ def _HCRInput(batch: BatchType, device: tt.Device, selection: Tensor = None):
     return inputs
 
 
-class _HCRSkim(Skimmer):
+class _bbWWBaseSkim(Skimmer):
     def __init__(
         self,
         nn: GCN,
@@ -110,17 +110,17 @@ class _HCRSkim(Skimmer):
         selections = self._splitter.step(batch)
         if self._nn is not None and selections[SplitterKeys.training].sum() > 0:
             self._nn.updateMeanStd(
-                *_HCRInput(batch, self._device, selections[SplitterKeys.training])
+                *_bbWWBaseInput(batch, self._device, selections[SplitterKeys.training])
             )
         return super().train(batch)
 
 
-class HCRModel(Model):
+class bbWWBaseModel(Model):
     def __init__(
         self,
         device: tt.Device,
-        arch: HCRArch,
-        benchmarks: HCRBenchmarks,
+        arch: bbWWBaseArch,
+        benchmarks: bbWWBaseBenchmarks,
     ):
         self._loss = arch.loss
         self._device = device
@@ -160,7 +160,7 @@ class HCRModel(Model):
         return self._nn
 
     def train(self, batch: BatchType) -> Tensor:
-        hh, tt = self._nn(*_HCRInput(batch, self._device))
+        hh, tt = self._nn(*_bbWWBaseInput(batch, self._device))
         batch[Output.hh_raw] = hh
         batch[Output.tt_raw] = tt
         return self._loss(batch)
@@ -171,7 +171,7 @@ class HCRModel(Model):
         scalar_funcs = self._benchmarks.scalars
         rocs = [r.copy() for r in self._benchmarks.rocs]
         for batch in batches:
-            hh, tt = self._nn(*_HCRInput(batch, self._device))
+            hh, tt = self._nn(*_bbWWBaseInput(batch, self._device))
             batch |= {
                 Output.hh_raw: hh,
                 Output.tt_raw: tt,
@@ -199,15 +199,15 @@ class HCRModel(Model):
             self._nn.setGhostBatches(self.ghost_batch.get_bs(), False)
 
 
-class HCRTraining(MultiStageTraining):
+class bbWWBaseTraining(MultiStageTraining):
     def __init__(
         self,
-        arch: HCRArch,
+        arch: bbWWBaseArch,
         ghost_batch: GBNSchedule,
         cross_validation: Splitter,
         training_schedule: Schedule,
         finetuning_schedule: Schedule = None,
-        benchmarks: HCRBenchmarks = None,
+        benchmarks: bbWWBaseBenchmarks = None,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -216,54 +216,54 @@ class HCRTraining(MultiStageTraining):
         self._splitter = cross_validation
         self._training = training_schedule
         self._finetuning = finetuning_schedule
-        self._benchmarks = benchmarks or HCRBenchmarks()
-        self._HCR: HCRModel = None
+        self._benchmarks = benchmarks or bbWWBaseBenchmarks()
+        self._bbWWBase: bbWWBaseModel = None
 
     def stages(self):
-        self._HCR = HCRModel(
+        self._bbWWBase = bbWWBaseModel(
             device=self.device,
             arch=self._arch,
             benchmarks=self._benchmarks,
         )
-        self._HCR.ghost_batch = self._ghost_batch
-        self._HCR.to(self.device)
+        self._bbWWBase.ghost_batch = self._ghost_batch
+        self._bbWWBase.to(self.device)
         self._splitter.setup(self.dataset)
-        skim = _HCRSkim(self._HCR._nn, self.device, self._splitter)
+        skim = _bbWWBaseSkim(self._bbWWBase._nn, self.device, self._splitter)
         yield TrainingStage(
             name="Initialization",
             model=skim,
             schedule=SkimStep(),
             training=self.dataset,
         )
-        self._HCR.nn.initMeanStd()
+        self._bbWWBase.nn.initMeanStd()
         validation_sets = self._splitter.get()
         training_set = validation_sets[SplitterKeys.training]
         yield BenchmarkStage(
             name="Baseline",
-            model=self._HCR,
+            model=self._bbWWBase,
             validation=validation_sets,
         )
         yield TrainingStage(
             name="Training",
-            model=self._HCR,
+            model=self._bbWWBase,
             schedule=self._training,
             training=training_set,
             validation=validation_sets,
         )
-        self._HCR.ghost_batch = None
+        self._bbWWBase.ghost_batch = None
         if self._finetuning is not None:
-            layers = self._HCR._nn.layers
+            layers = self._bbWWBase._nn.layers
             layers.setLayerRequiresGrad(
-                requires_grad=False, index=self._HCR._nn.embedding_layers()
+                requires_grad=False, index=self._bbWWBase._nn.embedding_layers()
             )
             yield TrainingStage(
                 name="Finetuning",
-                model=self._HCR,
+                model=self._bbWWBase,
                 schedule=self._finetuning,
                 training=training_set,
                 validation=validation_sets,
             )
-            self._HCR.ghost_batch = self._ghost_batch
+            self._bbWWBase.ghost_batch = self._ghost_batch
             layers.setLayerRequiresGrad(requires_grad=True)
         output_stage = OutputStage(name="Final", path=f"{self.name}__{self.uuid}.pkl")
         output_path = output_stage.absolute_path
@@ -272,7 +272,7 @@ class HCRTraining(MultiStageTraining):
             with fsspec.open(output_path, "wb") as f:
                 torch.save(
                     {
-                        "model": self._HCR.nn.state_dict(),
+                        "model": self._bbWWBase.nn.state_dict(),
                         "metadata": self.metadata,
                         "uuid": self.uuid,
                         "label": MultiClass.trainable_labels,
@@ -293,7 +293,7 @@ class HCRTraining(MultiStageTraining):
             yield output_stage
 
 
-class HCRModelEval(Model):
+class bbWWBaseModelEval(Model):
     def __init__(
         self,
         device: tt.Device,
@@ -310,7 +310,7 @@ class HCRModelEval(Model):
                 raise ValueError(
                     f'Input features "{k}" mismatch: training={saved["input"][k]}, evaluation={getattr(InputBranch, k)}'
                 )
-        self._arch = HCRArch.load(saved["arch"])
+        self._arch = bbWWBaseArch.load(saved["arch"])
         self._nn = GCN(
             dijetFeatures=self._arch.n_features,
             ancillaryFeatures=InputBranch.feature_ancillary,
@@ -326,7 +326,7 @@ class HCRModelEval(Model):
     def evaluate(self, batch: BatchType) -> BatchType:
         selection = self._splitter.split(batch)[SplitterKeys.validation]
         selector = Selector(selection)
-        HH, TT = self._nn(*_HCRInput(batch, self._device, selection))
+        HH, TT = self._nn(*_bbWWBaseInput(batch, self._device, selection))
         HH_prob = F.softmax(HH, dim=1).cpu()
         TT_prob = F.softmax(TT, dim=1).cpu()
         #q_prob = F.softmax(q, dim=1).cpu()
@@ -341,7 +341,7 @@ class HCRModelEval(Model):
             output[f"p_TT_{label}"] = TT_prob[:, i]
         return selector.pad(map_batch(self._mapping, output))
 
-class HCREvaluation(Evaluation):
+class bbWWBaseEvaluation(Evaluation):
     def __init__(
         self,
         saved_model: PathLike,
@@ -360,16 +360,16 @@ class HCREvaluation(Evaluation):
             if self.device.type == "cpu":
                 load_kw["map_location"] = torch.device("cpu")
             saved = torch.load(f, **load_kw)
-        self._HCR = HCRModelEval(
+        self._bbWWBase = bbWWBaseModelEval(
             device=self.device,
             saved=saved,
             splitter=self._splitter,
             mapping=self._mapping,
         )
-        self._HCR.to(self.device)
+        self._bbWWBase.to(self.device)
         yield EvaluationStage(
             name="Evaluation",
-            model=self._HCR,
+            model=self._bbWWBase,
             dataset=self.dataset,
             dumper_kwargs={"name": self.name},
         )

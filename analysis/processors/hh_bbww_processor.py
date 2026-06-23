@@ -1,5 +1,6 @@
 import warnings
 import logging
+import uuid
 
 import numpy as np
 import awkward as ak
@@ -15,7 +16,7 @@ from src.physics.objects.jet_corrections import apply_jerc_corrections, apply_je
 from src.physics.event_weights import add_weights, add_btagweights
 from src.data_formats.root import Chunk
 
-from bbreww.analysis.helpers.common import update_events, add_lepton_sfs, dump_phh_to_pickle
+from bbreww.analysis.helpers.common import update_events, add_lepton_sfs, dump_phh_to_pickle, where_record_fieldwise
 from bbreww.analysis.helpers.chi_square import chi_sq, chi_sq_cut
 from bbreww.analysis.helpers.cutflow import cutflow_bbWW
 from bbreww.analysis.helpers.corrections import apply_met_corrections_after_jec, add_sf_top_pt
@@ -132,30 +133,33 @@ class analysis(processor.ProcessorABC):
 
         target = Chunk.from_coffea_events(events)
 
-        # for now, we load 2022 + 2023 corrections from local files and rest from cvmfs (22+23 have jetId fields)
-        print(events.Jet.pt)
-        jets = ak.where(
-            events.Jet.btagPNetB >= self.params[self.year].btagWP.M,
-            apply_jerc_corrections(
-                events,
-                corrections_metadata=self.params[self.year],
-                isMC=self.is_mc,
-                run_systematics=False,
-                dataset=self.dataset,
-                jet_corr_factor=events.Jet.PNetRegPtRawCorr * events.Jet.PNetRegPtRawCorrNeutrino,
-                jet_type="AK4PFPuppiPNetRegressionPlusNeutrino"
-            ),
-            apply_jerc_corrections(
-                events,
-                corrections_metadata=self.params[self.year],
-                isMC=self.is_mc,
-                run_systematics=False,
-                dataset=self.dataset,
-                jet_type="AK4PFPuppi.txt"
-            )
+        jets_pnet = apply_jerc_corrections_jsonpog(
+            events,
+            corrections_metadata=self.params[self.year],
+            isMC=self.is_mc,
+            run_systematics=False,
+            dataset=self.dataset,
+            jet_corr_factor=events.Jet.PNetRegPtRawCorr * events.Jet.PNetRegPtRawCorrNeutrino,
+            jet_type="AK4PFPuppiPNetRegressionPlusNeutrino",
         )
+        jets_puppi = apply_jerc_corrections_jsonpog(
+            events,
+            corrections_metadata=self.params[self.year],
+            isMC=self.is_mc,
+            run_systematics=False,
+            dataset=self.dataset,
+            jet_type="AK4PFPuppi",
+        )
+        jets = where_record_fieldwise(
+            events.Jet.btagPNetB >= self.params[self.year].btagWP.M,
+            jets_pnet,
+            jets_puppi,
+            with_name="Jet",
+            behavior=events.behavior,
+        )
+        del jets_pnet, jets_puppi
+
         met = apply_met_corrections_after_jec(events, jets)
-        print(jets.pt)
         shifts = [({"Jet": jets, "MET":met}, None)]
 
         '''if systematics:
@@ -175,12 +179,12 @@ class analysis(processor.ProcessorABC):
             for k in self.friends:
                 if k.startswith("SvB"):
                     events[k] = self.friends[k].arrays(target) # load svb score friendtrees
-                    
+
         if self.run_MET_regression:
             for k in self.friends:
                 if k.startswith("met_regressor"):
                     events[k] = self.friends[k].arrays(target) # load MET regression outputs
-            
+
         if self.apply_dvtt:
             for k in self.friends:
                 if k.startswith("DvTT"):
@@ -219,9 +223,13 @@ class analysis(processor.ProcessorABC):
         selection.add('mll_cut', events.pass_mll_cut)
         selection.add('njets_ak8', (events.n_ak8_jets == 0))
         selection.add('nom_njets4',  events.nom_njets4) # nominal pT region
-        selection.add('nom_njets3',  events.nom_njets3) # exact 3 jets region
+        selection.add('nom_njets3',  events.nom_njets3 & events.has_exactly_3_presel_jets) # exact 3 jets region
         selection.add('lowpt_njets4', ~selection.all('nom_njets4') & (events.has_4_presel_jets) )
         selection.add('lowpt_njets3', ~(selection.all('nom_njets4')) & (events.has_exactly_3_presel_jets) )
+        selection.add('incl_njets3',
+                      selection.all('nom_njets3')
+                      | selection.all('lowpt_njets3'))
+
         # veto events with jets affected by EE water leak (2022) and hole in Pixel L3/L4 (2023)
         jet_veto_maps = (ak.all(events.Jet.jet_veto_maps,axis=1) if '202' in self.year
                          else ak.ones_like(events.run,dtype=bool))
@@ -231,15 +239,14 @@ class analysis(processor.ProcessorABC):
             'preselection': ['lumimask', 'passNoiseFilter', 'trigger', 'njets','jet_veto_mask', 'oneEorM', 'tau_veto', 'mll_cut', 'twoBjets', 'njets_ak8'],
         }
         selection_list['nominal_4j2b'] = selection_list['preselection'] + ['nom_njets4']
-        selection_list['nominal_3j2b'] = selection_list['preselection'] + ['nom_njets3']
         selection_list['lowpt_4j2b'] = selection_list['preselection'] + ['lowpt_njets4']
-        selection_list['lowpt_3j2b'] = selection_list['preselection'] + ['lowpt_njets3']
-
+        selection_list['incl_3j2b'] = selection_list['preselection'] + ['incl_njets3']
+        
         events['preselection'] = selection.all(*selection_list['preselection'])
         events['nominal_4j2b'] = selection.all(*selection_list['nominal_4j2b'])
-        events['nominal_3j2b'] = selection.all(*selection_list['nominal_3j2b'])
         events['lowpt_4j2b'] = selection.all(*selection_list['lowpt_4j2b'])
-        events['lowpt_3j2b'] =  selection.all(*selection_list['lowpt_3j2b'])
+        events['incl_3j2b'] = selection.all(*selection_list['incl_3j2b'])
+        events['combined_4j2b'] = selection.all(*selection_list['nominal_4j2b']) | selection.all(*selection_list['lowpt_4j2b'])
 
         events['flavor'] = ak.zip({
             'e':  selection.all('oneE') & selection.all(*selection_list['preselection']),
@@ -284,59 +291,62 @@ class analysis(processor.ProcessorABC):
         selected_events = events[events.preselection]
         del events
 
+        # merge 3jet SvB scores so downstream code uses the right friend per event
+        if self.run_SvB and "SvB_3jet" in ak.fields(selected_events):
+            _svb_fields = ['ptt', 'phh', 'poth', 'tt_b1Whad', 'tt_b2Whad', 'hh_vs_tt', 'hh_vs_oth', 'tt_vs_oth']
+            selected_events["SvB"] = ak.zip({
+                _f: ak.where(selected_events.incl_3j2b, selected_events.SvB_3jet[_f], selected_events.SvB[_f])
+                for _f in _svb_fields
+            })
+
         selected_events = candidate_selection(selected_events, self.params, self.year, self.run_SvB,
                                               self.run_MET_regression, self.classifier_SvB) # select HH->bbWW candidates
-        selected_events = chi_sq(selected_events) # chi square selection and calculation
-        selected_events = chi_sq_cut(selected_events) # add chi square cuts booleans
+        # selected_events = chi_sq(selected_events) # chi square selection and calculation
+        # selected_events = chi_sq_cut(selected_events) # add chi square cuts booleans
 
-
-        #add regions separated by chi square calculation
+        #add W/W* regions based on gen info — guard against an EmptyArray
+        # met_regressor_3jet (samples processed without the 3jet friend tree).
+        if self.run_MET_regression:
+            _has_3jet = (
+                "met_regressor_3jet" in ak.fields(selected_events)
+                and len(ak.fields(selected_events.met_regressor_3jet)) > 0
+            )
+            if _has_3jet:
+                reg_p_onshell = ak.where(selected_events.incl_3j2b,
+                                         selected_events.met_regressor_3jet["p_onshell"],
+                                         selected_events.met_regressor["p_onshell"])
+            else:
+                reg_p_onshell = selected_events.met_regressor["p_onshell"]
+        else:
+            reg_p_onshell = None
         add_to_selection(
             'leptonic_W',
             #(ak.firsts(selected_events.sr_boolean) == 0), # using chi square
-            (ak.fill_none(ak.mask(selected_events.isLepW == 1, selected_events.isLepW >= 0),np.nan)) if self.is_mc else ak.ones_like(selected_events.event),
+            #(ak.fill_none(ak.mask(selected_events.isLepW == 1, selected_events.isLepW >= 0),np.nan)) if self.is_mc else ak.ones_like(selected_events.event),
+            ak.fill_none(reg_p_onshell > 0.55, False) if self.run_MET_regression else ak.ones_like(selected_events.event),
             selection,
             selection_list['preselection']
         )
-        
+
         # hadronic_W = ak.zeros_like(presel_mask,dtype=bool)
         add_to_selection(
             'hadronic_W',
             #ak.firsts(selected_events.sr_boolean) == 1, # using chi square
-            (ak.fill_none(ak.mask(selected_events.isLepW == 0, selected_events.isLepW >= 0), np.nan)) if self.is_mc else ak.ones_like(selected_events.event),
+            ak.fill_none(reg_p_onshell <= 0.55, False) if self.run_MET_regression else ak.ones_like(selected_events.event),
             selection,
             selection_list['preselection']
         )
-
-        # chi_sq = ak.zeros_like(presel_mask,dtype=bool)
-        add_to_selection(
-            'chi_sq',
-            selected_events.passChiSqTT & selected_events.passChiSqLepW,
-            selection,
-            selection_list['preselection']
-        )
-
-        # add chi square cuts selection in each analysis region
-        selected_events['chi_sq_nom_4j2b'] = selected_events.nominal_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
-        selected_events['chi_sq_nom_3j2b'] = selected_events.nominal_3j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
-        selected_events['chi_sq_lowpt_4j2b'] = selected_events.lowpt_4j2b & selection.all('chi_sq')[selection.all(*selection_list['preselection'])]
-
+        
         selected_events['channel'] = ak.zip({
         'hadronic_W': selection.all('hadronic_W')[selection.all(*selection_list['preselection'])],
         'leptonic_W': selection.all('leptonic_W')[selection.all(*selection_list['preselection'])]
         })
-
-        # tail of SvB distribution
-        selected_events['SvB_tail'] = ((selected_events.nominal_4j2b) & (selected_events.SvB.phh > 0.6)
-                                       if (self.run_SvB) else ak.ones_like(selected_events.MET.pt, dtype= bool))
-
-        selected_events['SvB_tail_lowpt'] = ((selected_events.lowpt_4j2b) & (selected_events.SvB.phh > 0.6)
-                                       if (self.run_SvB) else ak.ones_like(selected_events.MET.pt, dtype= bool))
         
         selected_events = gen_studies(selected_events, self.is_mc, run_MET_regression = self.run_MET_regression) # gen particle studies for MC
         
         # different selections to use for creating friendtrees
         nominal_selection = selection.all(*selection_list['nominal_4j2b']) & selection.all(*selection_list['preselection'])
+        incl_3j2b_selection = selection.all(*selection_list['incl_3j2b']) & selection.all(*selection_list['preselection']) # 3j2b selection
         lowpt_selection = selection.all(*selection_list['lowpt_4j2b']) & selection.all(*selection_list['preselection']) # lowpt selection
         full_selection = ((selection.all(*selection_list['lowpt_4j2b']) | selection.all(*selection_list['nominal_4j2b']))
                           & selection.all(*selection_list['preselection'])) # lowpt + nominal selection
@@ -347,11 +357,11 @@ class analysis(processor.ProcessorABC):
             from bbreww.analysis.helpers.friendtrees.dump_friendtrees import dump_input_friend_regressor, dump_input_friend_classifier
             friends["friends"] = ( friends["friends"]
                 | dump_input_friend_classifier(
-                    selected_events[selected_events.nominal_4j2b | selected_events.lowpt_4j2b], # selected_events[selected_events.nominal_4j2b]
+                    selected_events[selected_events.nominal_4j2b],
                     self.make_classifier_input,
-                    "classifier_input",
-                    full_selection, # nominal_selection
-                    nonbcand = "q_cands_soft",
+                    "classifier_input_nom",
+                    nominal_selection,
+                    nonbcand = "q_cands_nom",
                     weight = "weight",
                 )
             )
@@ -377,9 +387,11 @@ class analysis(processor.ProcessorABC):
         #######
 
         if not shift_name:
-             # Dump signal SvB.phh for quantile rebinning
-            if 'GluGlu' in self.dataset and self.dump_signal_phh and self.run_SvB:
-                output_path = f"root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/quantiles/phh_hist_{self.dataset}.pkl"
+             # Dump SvB.phh for quantile rebinning — per-chunk file to avoid
+             # collisions across chunks/eras. Merge at post-processing time.
+            if self.dump_signal_phh and self.run_SvB:
+                chunk_id = uuid.uuid4().hex[:8]
+                output_path = f"root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/quantiles/phh_hist_{self.dataset}__{self.year}_{chunk_id}.pkl"
                 dump_phh_to_pickle(selected_events, self.dataset, output_path)
       
             output['events_processed'] = {}
@@ -388,7 +400,7 @@ class analysis(processor.ProcessorABC):
                 'sum_genweights': np.sum(selected_events.genWeight) if self.is_mc else self.n_events,
             }
             # add cuts for different regions
-            cutflow_list = ['nominal_4j2b','nominal_3j2b', 'lowpt_4j2b', 'lowpt_3j2b', 'SvB_tail', 'SvB_tail_lowpt'] # 'chi_sq_nom_4j2b', 'chi_sq_nom_3j2b', 'chi_sq_lowpt_4j2b'
+            cutflow_list = ['nominal_4j2b', 'lowpt_4j2b', 'incl_3j2b', 'combined_4j2b']
             for cuts in cutflow_list:
                 cutflow.fill(selected_events,cuts, [], selected_events.weight, fill_region = True, fill_flavour = True)
             cutflow.add_output(output['events_processed'], self.dataset)
@@ -400,7 +412,7 @@ class analysis(processor.ProcessorABC):
                 year=self.year_label,
                 is_mc=self.is_mc,
                 histCuts=['preselection',
-                        'nominal_3j2b',    'lowpt_4j2b', 'lowpt_3j2b', 'SvB_tail_lowpt'
+                          'lowpt_4j2b', 'incl_3j2b', 'combined_4j2b',
                         ],
                 channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
@@ -408,13 +420,13 @@ class analysis(processor.ProcessorABC):
                 run_SvB = self.run_SvB,
                 run_MET_regression = self.run_MET_regression
             )
-            
+
             hists_4j2b = fill_histograms_nominal(
                 selected_events[selected_events.nominal_4j2b],
                 processName=self.processName,
                 year=self.year_label,
                 is_mc=self.is_mc,
-                histCuts=['nominal_4j2b', 'SvB_tail'],
+                histCuts=['nominal_4j2b'],
                 channel_list=['hadronic_W', 'leptonic_W'],
                 flavor_list=['e', 'mu'],
                 #region_list=['SR', 'CR'],

@@ -13,21 +13,20 @@ dataset:
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
       - --max-workers 4
       - --mc-processes GluGluToHHTo2B2VLNu2J ttbar
+      - --train-bsm # include kl = [0, 1, 2.45, 5] signal samples
       - --friends "" bbreww/metadata/regressor/input/regressor_friend_4nb.json@@regressor_input_4nb
-  #- module: bbWW.regressor.Eval
-  #  option:
-  #    - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
-  #    - --max-workers 4
-  #    - --mc-processes WplusJets tW
-  #    - --friends "" bbreww/metadata/regressor/input/minorbkg_friend_regressor.json@@classifier_input_regressor
-  #- module: bbWW.regressor.DataEval
-  #  option:
-  #    - --no-SR # remove SR
-  #    - --data-source detector # loads data
-  #    - --metadata bbreww/metadata/classifier/datasets/datasets_data_v5 # choose dataset
-  #    - --max-workers 4
-  #    - --friends "" bbreww/metadata/regressor/input/data_friend_regressor.json@@classifier_input_regressor # set input friend tree
-
+  - module: bbWW.regressor.Eval
+    option:
+      - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
+      - --max-workers 4
+      - --mc-processes WplusJets tW singleTop
+      - --friends "" bbreww/metadata/regressor/input/minorbkg_friend_regressor.json@@regressor_input_4nb
+  - module: bbWW.regressor.DataEval
+    option:
+      - --data-source detector # loads data
+      - --metadata bbreww/metadata/classifier/datasets/datasets_data_v5 # choose dataset
+      - --max-workers 4
+      - --friends "" bbreww/metadata/regressor/input/data_friend_regressor.json@@regressor_input_4nb
 
 model:
   - module: bbWW.METRegressor.baseline.Eval

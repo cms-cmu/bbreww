@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from src.classifier.config.state.label import MultiClass
 from src.classifier.task import ArgParser
 from bbreww.classifier.config.setting.bbWW import Input, MassRegion, Output
-from bbreww.classifier.config.model.bbWW.GCN._GCN import ROC_BIN, HCREval, HCRTrain
+from bbreww.classifier.config.model.bbWW.GCN._GCN import ROC_BIN, bbWWBaseEval, bbWWBaseTrain
 
 if TYPE_CHECKING:
     from src.classifier.ml import BatchType
@@ -27,7 +27,7 @@ def _roc_data_selection(batch: BatchType):
         return torch.isin(label, label.new_tensor(MultiClass.indices("ttbar", "data")))
 
 
-class Train(HCRTrain):
+class Train(bbWWBaseTrain):
     argparser = ArgParser(description="Train dvtt")
     model = "dvtt"
 
@@ -65,7 +65,7 @@ class Train(HCRTrain):
             )
         ]
 
-class Eval(HCREval):
+class Eval(bbWWBaseEval):
     model = "dvtt"
 
     @staticmethod

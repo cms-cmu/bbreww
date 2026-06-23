@@ -1,0 +1,51 @@
+# template:
+# - model: path to model
+# - FvT: path to friend tree
+#
+# 3-jet region inference. Run alongside the default 4-jet evaluate.yml;
+# outputs are routed to a separate friend-tree directory via MET_FRIEND_3JET
+# in run.sh to avoid overwriting the 4-jet outputs.
+
+main:
+  module: evaluate
+  option:
+    - --max-evaluators 3 # use 3 workers to evaluate
+
+dataset:
+  # inference on 3-jet events
+  - module: bbWW.regressor.Eval
+    option:
+      - --metadata bbreww/metadata/classifier/datasets/datasets_v5
+      - --max-workers 4
+      - --mc-processes GluGluToHHTo2B2VLNu2J ttbar
+      - --train-bsm # include kl = [0, 1, 2.45, 5] signal samples
+      - --friends "" bbreww/metadata/regressor/input/regressor_friend_1nb.json@@regressor_input_1nb
+  - module: bbWW.regressor.Eval
+    option:
+      - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
+      - --max-workers 4
+      - --mc-processes WplusJets tW singleTop
+      - --friends "" bbreww/metadata/regressor/input/regressor_friend_1nb.json@@regressor_input_1nb
+
+model:
+  - module: bbWW.METRegressor.baseline.Eval
+    option:
+      - --models
+      - Final # choose name of the model to evaluate, for now only Final is available
+      - "{model}/result.json" # setup the path to the training result
+
+analysis:
+  - module: kfold.Merge # merge different k-folds
+    option:
+      - --name met_regressor # set the name of friend tree
+      - --step 100000 # set the step to read ROOT files
+      - --workers 5
+      - --clean # remove the original files
+
+setting:
+  - module: IO
+    option:
+      - output: "{SvB}"
+  - module: ml.DataLoader
+    option:
+      - num_workers: 0

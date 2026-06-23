@@ -761,7 +761,7 @@ class METRegressor(nn.Module):
         dijetFeatures,
         ancillaryFeatures,
         device="cuda",
-        architecture="HCR",
+        architecture="bbWWBase",
     ):
         super(METRegressor, self).__init__()
         self.debug = False

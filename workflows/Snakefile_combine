@@ -1,0 +1,336 @@
+"""
+bbWW statistical analysis workflow — workspace → limits → summary.
+
+Usage (from barista root):
+    ./run_container snakemake --snakefile bbreww/workflows/Snakefile_combine \
+        --cores 1 --configfile bbreww/workflows/config_combine.yml
+
+Steps:
+    1. convert_coffea_to_json  — .coffea → .json (per category)
+    2. make_combine_inputs     — .json → shapes + per-year datacards
+    3. workspace + limits      — datacard.txt → AsymptoticLimits per category + combined
+    4. summary                 — print all three Brazil bands
+
+The convert and make_combine_inputs steps auto-delete stale JSONs/datacards
+to avoid Snakemake skipping them when their content (not their existence)
+changed (e.g. config edits).
+"""
+
+# ── config defaults (override via --configfile or --config) ──────────────────
+config.setdefault("coffea_wrapper",   "./run_container ")          # coffea container
+config.setdefault("combine_wrapper",  "./run_container combine ")  # combine container
+config.setdefault("output_path",   "output/combine")
+config.setdefault("input_coffea",  "output/full_run/output_merged.coffea")
+config.setdefault("channel",  "hadronic_W")   # channel axis value
+config.setdefault("flavor",   "mu")           # flavor axis value
+config.setdefault("rebin",    1)
+# Merge 2022+2023 into one template per (channel, flavor), halving the number
+# of combine bins. Stat-only only (year-specific shape systs can't apply to a
+# year-summed template). Override with --config merge_years=true
+config.setdefault("merge_years", False)
+
+# nominal 4j2b category
+config.setdefault("nominal_collection",   "hists_4j2b")
+config.setdefault("nominal_histos",       "SvB.phh_variable_nominal")
+config.setdefault("nominal_variable",     "SvB.phh_variable_nominal")
+config.setdefault("nominal_sum_axes",     "region")
+config.setdefault("nominal_select_axes",  "nominal_4j2b=True")
+
+# lowpt 4j2b category
+config.setdefault("lowpt_collection",     "hists")
+config.setdefault("lowpt_histos",         "SvB.phh_variable_lowpt")
+config.setdefault("lowpt_variable",       "SvB.phh_variable_lowpt")
+config.setdefault("lowpt_sum_axes",       "region")
+config.setdefault("lowpt_select_axes",    "lowpt_4j2b=True")
+
+# inclusive 3j2b category
+config.setdefault("incl3j2b_collection",   "hists")
+config.setdefault("incl3j2b_histos",       "SvB.phh_variable_3j2b")
+config.setdefault("incl3j2b_variable",     "SvB.phh_variable_3j2b")
+config.setdefault("incl3j2b_sum_axes",     "")
+config.setdefault("incl3j2b_select_axes",  "incl_3j2b=True region=SR")
+
+OUT    = config["output_path"]
+DCARDS = f"{OUT}/datacards/bbWW"
+
+# ── signal label ──────────────────────────────────────────────────────────────
+SIGNALLABEL = "ggHH_kl_1_kt_1_13p6TeV_hbbhww"
+
+def _sum_flag(key):
+    val = config.get(key) or ""
+    return f"--sum {val}" if val.strip() else ""
+
+def _select_flag(key):
+    val = config.get(key) or ""
+    return f"--select {val}" if val.strip() else ""
+
+# merge_years may arrive as a bool (default) or a string ("true"/"false") from
+# --config merge_years=...; normalise to the make_combine_inputs.py flag string.
+def _is_true(val):
+    return str(val).strip().lower() in ("true", "1", "yes")
+
+MERGE_YEARS_FLAG = "--merge_years" if _is_true(config.get("merge_years")) else ""
+
+# ── targets ───────────────────────────────────────────────────────────────────
+rule all:
+    input:
+        f"{OUT}/summary.txt",
+        f"{OUT}/plots/limit_plot.png",
+
+
+# ── Step 1a: coffea → JSON for nominal 4j2b  [coffea container] ──────────────
+rule convert_coffea_to_json_nominal:
+    input:
+        config["input_coffea"]
+    output:
+        f"{OUT}/histAll_nominal.json"
+    log:
+        f"{OUT}/logs/convert_coffea_to_json_nominal.log"
+    params:
+        sum_flag    = _sum_flag('nominal_sum_axes'),
+        select_flag = _select_flag('nominal_select_axes'),
+    shell:
+        """
+        mkdir -p $(dirname {log})
+        rm -f {output}
+        echo "[$(date)] Starting convert_coffea_to_json_nominal" > {log}
+        {config[coffea_wrapper]} python src/tools/convert_coffea_to_json.py \
+            -i {input} \
+            -o {output} \
+            --collection {config[nominal_collection]} \
+            --histos {config[nominal_histos]} \
+            {params.sum_flag} \
+            {params.select_flag} \
+            2>&1 | tee -a {log}
+        echo "[$(date)] Completed convert_coffea_to_json_nominal" >> {log}
+        """
+
+
+# ── Step 1b: coffea → JSON for lowpt 4j2b  [coffea container] ────────────────
+rule convert_coffea_to_json_lowpt:
+    input:
+        config["input_coffea"]
+    output:
+        f"{OUT}/histAll_lowpt.json"
+    log:
+        f"{OUT}/logs/convert_coffea_to_json_lowpt.log"
+    params:
+        sum_flag    = _sum_flag('lowpt_sum_axes'),
+        select_flag = _select_flag('lowpt_select_axes'),
+    shell:
+        """
+        mkdir -p $(dirname {log})
+        rm -f {output}
+        echo "[$(date)] Starting convert_coffea_to_json_lowpt" > {log}
+        {config[coffea_wrapper]} python src/tools/convert_coffea_to_json.py \
+            -i {input} \
+            -o {output} \
+            --collection {config[lowpt_collection]} \
+            --histos {config[lowpt_histos]} \
+            {params.sum_flag} \
+            {params.select_flag} \
+            2>&1 | tee -a {log}
+        echo "[$(date)] Completed convert_coffea_to_json_lowpt" >> {log}
+        """
+
+
+# ── Step 1c: coffea → JSON for inclusive 3j2b  [coffea container] ────────────
+rule convert_coffea_to_json_incl3j2b:
+    input:
+        config["input_coffea"]
+    output:
+        f"{OUT}/histAll_incl3j2b.json"
+    log:
+        f"{OUT}/logs/convert_coffea_to_json_incl3j2b.log"
+    params:
+        sum_flag    = _sum_flag('incl3j2b_sum_axes'),
+        select_flag = _select_flag('incl3j2b_select_axes'),
+    shell:
+        """
+        mkdir -p $(dirname {log})
+        rm -f {output}
+        echo "[$(date)] Starting convert_coffea_to_json_incl3j2b" > {log}
+        {config[coffea_wrapper]} python src/tools/convert_coffea_to_json.py \
+            -i {input} \
+            -o {output} \
+            --collection {config[incl3j2b_collection]} \
+            --histos {config[incl3j2b_histos]} \
+            {params.sum_flag} \
+            {params.select_flag} \
+            2>&1 | tee -a {log}
+        echo "[$(date)] Completed convert_coffea_to_json_incl3j2b" >> {log}
+        """
+
+
+# ── Step 2: JSON → ROOT shapes + per-year datacards  [combine container] ──────
+rule make_combine_inputs:
+    input:
+        nominal   = f"{OUT}/histAll_nominal.json",
+        lowpt     = f"{OUT}/histAll_lowpt.json",
+        incl3j2b  = f"{OUT}/histAll_incl3j2b.json",
+    output:
+        nominal_card  = f"{DCARDS}/datacard_nominal.txt",
+        lowpt_card    = f"{DCARDS}/datacard_lowpt.txt",
+        incl3j2b_card = f"{DCARDS}/datacard_incl3j2b.txt",
+        combined      = f"{DCARDS}/datacard_combined.txt",
+    log:
+        f"{OUT}/logs/make_combine_inputs.log"
+    shell:
+        """
+        mkdir -p $(dirname {log})
+        rm -rf {DCARDS}
+        echo "[$(date)] Starting make_combine_inputs (nominal)" > {log}
+        {config[combine_wrapper]} \
+            python3 bbreww/stats_analysis/make_combine_inputs.py \
+                --var {config[nominal_variable]} \
+                -f {input.nominal} \
+                -o {DCARDS}/nominal \
+                --rebin {config[rebin]} \
+                --metadata bbreww/stats_analysis/metadata/bbWW.yml \
+                --stat_only {MERGE_YEARS_FLAG} \
+            2>&1 | tee -a {log}
+
+        echo "[$(date)] Starting make_combine_inputs (lowpt)" >> {log}
+        {config[combine_wrapper]} \
+            python3 bbreww/stats_analysis/make_combine_inputs.py \
+                --var {config[lowpt_variable]} \
+                -f {input.lowpt} \
+                -o {DCARDS}/lowpt \
+                --rebin {config[rebin]} \
+                --metadata bbreww/stats_analysis/metadata/bbWW.yml \
+                --stat_only {MERGE_YEARS_FLAG} \
+            2>&1 | tee -a {log}
+
+        echo "[$(date)] Starting make_combine_inputs (incl3j2b)" >> {log}
+        {config[combine_wrapper]} \
+            python3 bbreww/stats_analysis/make_combine_inputs.py \
+                --var {config[incl3j2b_variable]} \
+                -f {input.incl3j2b} \
+                -o {DCARDS}/incl3j2b \
+                --rebin {config[rebin]} \
+                --metadata bbreww/stats_analysis/metadata/bbWW.yml \
+                --stat_only {MERGE_YEARS_FLAG} \
+            2>&1 | tee -a {log}
+
+        echo "[$(date)] Building per-category and combined datacards" >> {log}
+        {config[combine_wrapper]} "cd {DCARDS} && \
+            nominal_args=\\$(for f in nominal/datacard_*.txt; do \
+                bn=\\$(basename \\$f .txt | sed 's/^datacard_/nominal_/'); \
+                echo -n \\\"\\$bn=\\$f \\\"; done) && \
+            lowpt_args=\\$(for f in lowpt/datacard_*.txt; do \
+                bn=\\$(basename \\$f .txt | sed 's/^datacard_/lowpt_/'); \
+                echo -n \\\"\\$bn=\\$f \\\"; done) && \
+            incl3j2b_args=\\$(for f in incl3j2b/datacard_*.txt; do \
+                bn=\\$(basename \\$f .txt | sed 's/^datacard_/incl3j2b_/'); \
+                echo -n \\\"\\$bn=\\$f \\\"; done) && \
+            combineCards.py \\$nominal_args  > datacard_nominal.txt  && \
+            combineCards.py \\$lowpt_args    > datacard_lowpt.txt    && \
+            combineCards.py \\$incl3j2b_args > datacard_incl3j2b.txt && \
+            combineCards.py \\$nominal_args \\$lowpt_args \\$incl3j2b_args > datacard_combined.txt" \
+            2>&1 | tee -a {log}
+
+        echo "[$(date)] Completed make_combine_inputs" >> {log}
+        """
+
+
+# ── Step 3+4: workspace + AsymptoticLimits per category  [combine container] ──
+rule limits_per_category:
+    input:
+        f"{DCARDS}/datacard_{{cat}}.txt"
+    output:
+        ws       = f"{DCARDS}/datacard_{{cat}}.root",
+        txt      = f"{DCARDS}/limits_{{cat}}.txt",
+        hc_root  = f"{DCARDS}/higgsCombine_{{cat}}.AsymptoticLimits.mH120.root",
+    log:
+        f"{OUT}/logs/limits_{{cat}}.log"
+    shell:
+        """
+        mkdir -p $(dirname {log})
+        echo "[$(date)] Building workspace for {wildcards.cat}" > {log}
+        {config[combine_wrapper]} "cd {DCARDS} && \
+            text2workspace.py datacard_{wildcards.cat}.txt \
+            -o datacard_{wildcards.cat}.root" \
+            2>&1 | tee -a {log}
+
+        echo "[$(date)] Running AsymptoticLimits for {wildcards.cat}" >> {log}
+        {config[combine_wrapper]} "cd {DCARDS} && \
+            combine -M AsymptoticLimits datacard_{wildcards.cat}.root \
+            --run blind \
+            -n _{wildcards.cat}" \
+            > {output.txt} 2>&1
+        cat {output.txt} >> {log}
+        """
+
+
+# ── Step 5: collect each category's limit ROOT into JSON ─────────────────────
+# combineTool.py -M CollectLimits emits the {'120.0': {obs, exp0, exp±1, exp±2}}
+# structure that coffea4bees/plots/make_limit_plot.py expects.
+rule collect_limit_json:
+    input:
+        f"{DCARDS}/higgsCombine_{{cat}}.AsymptoticLimits.mH120.root"
+    output:
+        f"{DCARDS}/limits_{{cat}}.json"
+    log:
+        f"{OUT}/logs/collect_limit_json_{{cat}}.log"
+    shell:
+        """
+        mkdir -p $(dirname {log})
+        echo "[$(date)] CollectLimits for {wildcards.cat}" > {log}
+        {config[combine_wrapper]} "cd {DCARDS} && \
+            combineTool.py -M CollectLimits \
+                higgsCombine_{wildcards.cat}.AsymptoticLimits.mH120.root \
+                -o limits_{wildcards.cat}.json" \
+            2>&1 | tee -a {log}
+        """
+
+
+# ── Step 6: summary — extract Brazil bands and print side-by-side ─────────────
+rule summary:
+    input:
+        nominal  = f"{DCARDS}/limits_nominal.txt",
+        lowpt    = f"{DCARDS}/limits_lowpt.txt",
+        incl3j2b = f"{DCARDS}/limits_incl3j2b.txt",
+        combined = f"{DCARDS}/limits_combined.txt",
+    output:
+        f"{OUT}/summary.txt"
+    shell:
+        r"""
+        {{
+        echo "============================================================"
+        echo " bbWW expected 95% CL upper limits on r (signal strength) "
+        echo "============================================================"
+        for cat in nominal lowpt incl3j2b combined; do
+            echo
+            echo "--- $cat ---"
+            grep -E "Expected" {DCARDS}/limits_${{cat}}.txt || echo "  (no limits found)"
+        done
+        echo
+        echo "============================================================"
+        }} | tee {output}
+        """
+
+
+# ── Step 7: Brazil-band plot across all categories ──────────────────────────
+rule limit_plot:
+    input:
+        nominal  = f"{DCARDS}/limits_nominal.json",
+        lowpt    = f"{DCARDS}/limits_lowpt.json",
+        incl3j2b = f"{DCARDS}/limits_incl3j2b.json",
+        combined = f"{DCARDS}/limits_combined.json",
+    output:
+        f"{OUT}/plots/limit_plot.png"
+    log:
+        f"{OUT}/logs/limit_plot.log"
+    shell:
+        """
+        mkdir -p $(dirname {output}) $(dirname {log})
+        echo "[$(date)] Building limit plot" > {log}
+        # Labels are single tokens (no internal spaces) so they survive shell
+        # word-splitting regardless of how run_container wraps the call.
+        {config[coffea_wrapper]} python src/plotting/make_limit_plot.py \
+            -i {input.combined} {input.incl3j2b} {input.lowpt} {input.nominal} \
+            -l "combined" "incl_3j2b" "lowpt_4j2b" "nominal_4j2b" \
+            --stat-only \
+            -o {output} \
+            2>&1 | tee -a {log}
+        """

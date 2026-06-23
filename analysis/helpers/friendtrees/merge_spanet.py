@@ -174,9 +174,9 @@ if __name__ == "__main__":
     merge_spanet_h5(sys.argv[1], sys.argv[2])
 
     with h5py.File(sys.argv[2], "r+") as f:
-        # Signal = events where both higgs_bb and higgs_WW have valid assignments
-        
-        sig_mask = f["TARGETS/higgs_bb/MASK"][:].astype(bool) & f["TARGETS/higgs_WW/MASK"][:].astype(bool)
+        # Signal = HH events, identified by a valid H->bb assignment (b1 index >= 0)
+        # Background (ttbar) has b1 = -1 (set explicitly in dump_spanet.py)
+        sig_mask = f["TARGETS/higgs_bb/b1"][:] >= 0
         
         w = f["EVENT_WEIGHT"][:]
         
@@ -188,7 +188,9 @@ if __name__ == "__main__":
         w[~sig_mask] /= bkg_sum
         
         f["EVENT_WEIGHT"][:] = w
-        
+        f["TARGETS/higgs_bb/WEIGHT"][:] = w
+        f["TARGETS/higgs_WW/WEIGHT"][:] = w
+
         print(f"Signal events: {sig_mask.sum()}, weight sum before: {sig_sum:.2f}, after: {np.abs(w[sig_mask]).sum():.4f}")
         print(f"Background events: {(~sig_mask).sum()}, weight sum before: {bkg_sum:.2f}, after: {np.abs(w[~sig_mask]).sum():.4f}")
 

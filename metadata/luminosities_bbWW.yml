@@ -5,8 +5,8 @@ luminosities:
   UL18: 59.83
 
   # Run3 luminosities (in pb^-1)
-  2022_EE: 26.77e3
-  2022_preEE: 7.98e3
-  2023_BPix: 9.693e3
-  2023_preBPix: 18.063e3
-  '2024': 108.95
+  2022_EE: 26.68e3
+  2022_preEE: 7.99e3
+  2023_BPix: 9.68e3
+  2023_preBPix: 17.96e3
+  '2024': 109.95

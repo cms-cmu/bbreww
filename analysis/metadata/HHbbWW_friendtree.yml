@@ -1,13 +1,14 @@
 runner:
   max_workers: 400 
   skipbadfiles: False
-  workers: 6
-  friend_merge_step: 100000
-  worker_memory: 10GB
+  workers: 8
+  chunksize: 20000
+  friend_merge_step: 10000
+  worker_memory: 8GB
   data_tier: picoAOD
   condor_cores: 1
   friend_base: &friend_base root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/
-  #spanet_base: &spanet_base root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/spanet_output	
+  #spanet_base: &spanet_base root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/spanet_output
   #friend_base: &friend_base output/test/
   condor_transfer_input_files:
     - src/
@@ -31,6 +32,7 @@ config:
   make_classifier_input: *friend_base
   run_MET_regression: true
   friends:
-    met_regressor: "bbreww/metadata/regressor/output/result.json@@analysis.0.merged"
+    met_regressor: "bbreww/metadata/regressor/output/result_nom.json@@analysis.0.merged"
+    met_regressor_3jet: "bbreww/metadata/regressor/output/result_3jet.json@@analysis.0.merged"
   fill_hists: false     
   run_SvB: false

@@ -4,6 +4,8 @@ runner:
   worker_memory: 8GB
   data_tier: picoAOD
   condor_cores: 1
+  min_workers: 1
+  max_workers: 150
   condor_transfer_input_files:
     - src/
     - bbreww/analysis/
@@ -24,8 +26,10 @@ runner:
 # processor specific flags below
 config:
   dump_signal_phh: false
-  run_SvB: false
+  run_SvB: true
   run_MET_regression: true
   friends:
-    SvB: "bbreww/metadata/classifier/output/result_lowpt.json@@analysis.0.merged"
+    SvB: "bbreww/metadata/classifier/output/result.json@@analysis.0.merged"
+    #SvB_3jet: "bbreww/metadata/classifier/output/result_3jet.json@@analysis.0.merged"
     met_regressor: "bbreww/metadata/regressor/output/result.json@@analysis.0.merged"
+    met_regressor_3jet: "bbreww/metadata/regressor/output/result_3jet.json@@analysis.0.merged"

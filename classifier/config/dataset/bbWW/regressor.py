@@ -7,7 +7,7 @@ from src.classifier.config.dataset.HCR import _group
 from src.classifier.task import ArgParser, converter, parse
 from src.classifier.config.setting.df import Columns
 from src.classifier.config.setting.cms import CollisionData
-from bbreww.classifier.config.dataset.bbWW._common import CommonEval, CommonTrain
+from bbreww.classifier.config.dataset.bbWW._common import RegressorCommonTrain, RegressorCommonEval
 from bbreww.classifier.config.dataset.bbWW import _picoAOD
 from bbreww.classifier.config.setting.METRegressor import Input, InputBranch
 
@@ -15,7 +15,7 @@ from bbreww.classifier.config.setting.METRegressor import Input, InputBranch
 if TYPE_CHECKING:
     import pandas as pd
 
-class Train(CommonTrain):
+class Train(RegressorCommonTrain):
     """Training dataset configuration for MET pz regressor"""
 
     argparser = ArgParser()
@@ -144,12 +144,12 @@ class TrainBaseline(_picoAOD.Signal, Background, Train):
     ...
 
 
-class Eval(_picoAOD.Signal, _picoAOD.Background, CommonEval):
+class Eval(_picoAOD.Signal, _picoAOD.Background, RegressorCommonEval):
     """MC Evaluation for MET regressor"""
     ...
 
 
-class DataEval(_picoAOD.Data, CommonEval):
+class DataEval(_picoAOD.Data, RegressorCommonEval):
     """Data Evaluation for MET regressor"""
     ...
 

@@ -14,9 +14,8 @@ def dump_spanet_h5(
     bcand: str = "b_cands",
     nonbcand: str = "q_cands_soft",
     lepton: str = "leading_lep",
-    met: str = "MET",
     genNu: str = "genNu",
-    max_nonbjets: int = 3,
+    max_nonbjets: int = 4,
     weight: str = "weight",
 ):
     meta = events.metadata
@@ -66,6 +65,8 @@ def dump_spanet_h5(
     nonbjet_eta  = ak.to_numpy(ak.fill_none(nonbjets_padded.eta,  0)).astype(np.float32)
     nonbjet_phi  = ak.to_numpy(ak.fill_none(nonbjets_padded.phi,  0)).astype(np.float32)
     nonbjet_mass = ak.to_numpy(ak.fill_none(nonbjets_padded.mass, 0)).astype(np.float32)
+    nonbjet_btag = ak.to_numpy(ak.fill_none(nonbjets_padded.btagPNetB,    0)).astype(np.float32)
+    nonbjet_qvg  = ak.to_numpy(ak.fill_none(nonbjets_padded.btagPNetQvG,  0)).astype(np.float32)
 
     # --- lepton ---
     lep = events[lepton]
@@ -77,12 +78,11 @@ def dump_spanet_h5(
     lep_isM  = ak.to_numpy(events.flavor.mu).flatten().astype(np.float32)
     lep_mask = np.ones(n_events, dtype=bool)
 
-    # --- MET ---
-    met_obj = events[met]
-    _met_pt  = ak.to_numpy(met_obj.pt).astype(np.float32)
-    _met_phi = ak.to_numpy(met_obj.phi).astype(np.float32)
-    met_px   = _met_pt * np.cos(_met_phi)
-    met_py   = _met_pt * np.sin(_met_phi)
+    # --- regressed MET ---
+    reg_met = events.met_regressor
+    reg_met_px = ak.to_numpy(reg_met.nu_px).astype(np.float32)
+    reg_met_py = ak.to_numpy(reg_met.nu_py).astype(np.float32)
+    reg_met_pz = ak.to_numpy(reg_met.nu_pz).astype(np.float32)
 
     # --- event-level ---
     evt_njets     = ak.to_numpy(events.njets).astype(np.float32)
@@ -110,17 +110,18 @@ def dump_spanet_h5(
         hbb_b2 = np.full(n_events, -1, dtype=np.int64)
 
     # --- TARGETS: higgs_WW -> q1, q2 from nonb_jets, l always index 0 ---
-    try:
-        isQfromW = nonbjets.isQfromW
-        isQfromW_padded = ak.fill_none(ak.pad_none(isQfromW, max_nonbjets)[:, :max_nonbjets], False)
-        q_indices = ak.to_numpy(
+    isQfromW = nonbjets.isQfromW
+    isQfromW_padded = ak.fill_none(ak.pad_none(isQfromW, max_nonbjets)[:, :max_nonbjets], False)
+    local_idx_q = ak.local_index(isQfromW_padded, axis=1)
+    matched_q = local_idx_q[isQfromW_padded][:, :2]  # truncate to 2 (FSR can produce >2 matches)
+    q_indices = ak.to_numpy(
+        ak.to_regular(
             ak.fill_none(
-                ak.pad_none(ak.local_index(isQfromW_padded)[isQfromW_padded], 2),
+                ak.pad_none(matched_q, 2),
                 -1,
             )
-        )[:, :2].astype(np.int64)
-    except Exception:
-        q_indices = np.full((n_events, 2), -1, dtype=np.int64)
+        )
+    )[:, :2].astype(np.int64)
 
     hww_l = np.zeros(n_events, dtype=np.int64)  # lepton always index 0
 
@@ -153,6 +154,8 @@ def dump_spanet_h5(
         g_q.create_dataset("eta",  data=nonbjet_eta)
         g_q.create_dataset("phi",  data=nonbjet_phi)
         g_q.create_dataset("mass", data=nonbjet_mass)
+        g_q.create_dataset("btag", data=nonbjet_btag)
+        g_q.create_dataset("qvg",  data=nonbjet_qvg)
 
         g_l = inputs.create_group("lepton")
         g_l.create_dataset("MASK", data=lep_mask)
@@ -163,9 +166,10 @@ def dump_spanet_h5(
         g_l.create_dataset("isE",  data=lep_isE)
         g_l.create_dataset("isM",  data=lep_isM)
 
-        g_met = inputs.create_group("met")
-        g_met.create_dataset("px", data=met_px)
-        g_met.create_dataset("py", data=met_py)
+        g_rmet = inputs.create_group("regressed_met")
+        g_rmet.create_dataset("px", data=reg_met_px)
+        g_rmet.create_dataset("py", data=reg_met_py)
+        g_rmet.create_dataset("pz", data=reg_met_pz)
 
         g_evt = inputs.create_group("event")
         g_evt.create_dataset("njets",     data=evt_njets)
@@ -180,13 +184,13 @@ def dump_spanet_h5(
         g_hbb = targets.create_group("higgs_bb")
         g_hbb.create_dataset("b1", data=hbb_b1)
         g_hbb.create_dataset("b2", data=hbb_b2)
-        g_hbb.create_dataset("WEIGHT", data=evt_weight)
+        g_hbb.create_dataset("WEIGHT", data=np.ones(n_events, dtype=np.float32))
 
         g_hww = targets.create_group("higgs_WW")
         g_hww.create_dataset("q1", data=q_indices[:, 0])
         g_hww.create_dataset("q2", data=q_indices[:, 1])
         g_hww.create_dataset("l",  data=hww_l)
-        g_hww.create_dataset("WEIGHT", data=evt_weight)
+        g_hww.create_dataset("WEIGHT", data=np.ones(n_events, dtype=np.float32))
         f.create_dataset("EVENT_WEIGHT", data=evt_weight)
 
         # REGRESSIONS

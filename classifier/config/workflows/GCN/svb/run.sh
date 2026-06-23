@@ -27,7 +27,7 @@ fi
 # plot the AUC and ROC
 ./src/pyml.py analyze \
     --results ${MODEL}/result.json \
-    -analysis HCR.LossROC \ 
+    -analysis bbWWBase.LossROC \ 
     -setting IO "output: ${PLOT}" \
     -setting IO "report: FvT" \
     -setting Monitor "address: :${port}"

@@ -37,11 +37,6 @@ def _remove_sr(df: pd.DataFrame):
     """Remove signal region events"""
     return df[~df["SR"]]
 
-
-def _remove_sr(df: pd.DataFrame):
-    """Remove signal region events"""
-    return df
-
 def _norm(df: pd.DataFrame, norms: dict[int, float]):
     return df / (df.sum() / norms.get(df.name, 1.0))
 
@@ -120,8 +115,6 @@ class Train(CommonTrain):
                         name="minor background selection",
                     ),
                 )
-        _group.add_year(),
-
         # Optional SR removal
         if self.opts.no_SR:
             ps.append(

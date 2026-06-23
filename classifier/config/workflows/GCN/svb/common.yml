@@ -10,7 +10,7 @@ setting:
   #  option:
   #    eras:
   #      2022_preEE: [C, D]
-  - module: bbWWHCR.InputBranch
+  - module: bbWWBase.InputBranch
     option:
       - feature_ancillary: ["HT", "njets", "nsoftjets"]
       # remove the "year" from the input when the dataset only contains one year

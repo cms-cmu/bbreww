@@ -1,0 +1,36 @@
+# bbWW combine workflow configuration
+# Pass to snakemake with: --configfile bbreww/workflows/config_combine.yml
+
+coffea_wrapper:  "./run_container "          # coffea container (step 1)
+combine_wrapper: "./run_container combine "  # combine container (steps 2-5)
+output_path: "output/combine"
+
+# Input coffea file
+input_coffea: "output/full_run/output_merged.coffea"
+
+# Common settings
+rebin: 1
+
+# Per-category axis collapsing/selection at the convert step.
+# Use *_sum_axes to collapse axes (e.g. region) and *_select_axes to pick values.
+
+# ── nominal 4j2b category — SR only ───────────────────────────────────────────
+nominal_collection:  "hists_4j2b"
+nominal_histos:      "SvB.phh_variable_nominal"
+nominal_variable:    "SvB.phh_variable_nominal"
+nominal_sum_axes:    ""
+nominal_select_axes: "nominal_4j2b=True region=SR"
+
+# ── lowpt 4j2b category — SR only ─────────────────────────────────────────────
+lowpt_collection:    "hists"
+lowpt_histos:        "SvB.phh_variable_lowpt"
+lowpt_variable:      "SvB.phh_variable_lowpt"
+lowpt_sum_axes:      ""
+lowpt_select_axes:   "lowpt_4j2b=True region=SR"
+
+# ── inclusive 3j2b category — SR only ─────────────────────────────────────────
+incl3j2b_collection:    "hists"
+incl3j2b_histos:        "SvB.phh_variable_3j2b"
+incl3j2b_variable:      "SvB.phh_variable_3j2b"
+incl3j2b_sum_axes:      ""
+incl3j2b_select_axes:   "incl_3j2b=True region=SR"

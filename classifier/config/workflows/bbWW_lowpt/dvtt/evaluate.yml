@@ -13,7 +13,7 @@ dataset:
       - --metadata bbreww/metadata/classifier/datasets/datasets_v4
       - --max-workers 8 # use 8 workers to fetch metadatas for ROOT files
       - --mc-processes ttbar
-      - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input
+      - --friends "" bbreww/metadata/classifier/input/input_friend_4j2b.json@@classifier_input
 
 model:
   - module: bbWW.bbWW_lowpt.baseline_dvtt.Eval

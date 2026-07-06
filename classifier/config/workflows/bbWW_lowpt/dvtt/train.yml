@@ -24,7 +24,7 @@ dataset:
       - --metadata bbreww/metadata/classifier/datasets/datasets_v4
       - --mc-processes ttbar
       - --max-workers 8 # use 8 workers to load ROOT files
-      - --friends "" bbreww/metadata/classifier/input/output_friend.json@@classifier_input # set input friend tree
+      - --friends "" bbreww/metadata/classifier/input/input_friend_4j2b.json@@classifier_input # set input friend tree
   
   - module: bbWW.dvtt.TrainBaseline
     option:

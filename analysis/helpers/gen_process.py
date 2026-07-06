@@ -37,34 +37,44 @@ def add_gen_info(events, is_mc):
         is_b_from_had_top = ak.any(b_parent_top_idx == parent_top_index, axis=-1)
         gen_b_from_had_top = gen[is_genb][is_b_from_had_top]
 
-        try:
-            events['Jet', 'isQfromW']= ak.any(gen_qFromW.metric_table(events.Jet)< 0.2,axis=1)
-            events['Jet', 'isQfromPho']= ak.any(gen_qFromPho.metric_table(events.Jet)< 0.2,axis=1)
-            events['Jet', 'isGenFromW'] = ak.sum(events.Jet.isQfromW, axis=1) == 2
-            
-            ## flag which W is on shell (only for signal)
-            is_lep = ((events.GenPart[events.GenPart.genPartIdxMother].isW) &
-                ((abs(events.GenPart.pdgId) == 11) | (abs(events.GenPart.pdgId) == 13))) # electrons or muons
-            
-            lepWidx = gen[is_lep].genPartIdxMother
-            gen_lepW = gen[lepWidx]
-            events['gen_lepW_mass'] = ak.fill_none(
-                ak.firsts(ak.values_astype(gen_lepW.mass, np.float32)),
-                np.nan
-            )
+        # gen W truth is only computable for HH signal and semileptonic ttbar;
+        # everything else gets fill-in values directly.
+        dataset = events.metadata.get('dataset', '')
+        if ('HH' in dataset) or ('TTToSemiLeptonic' in dataset):
+            try:
+                events['Jet', 'isQfromW']= ak.any(gen_qFromW.metric_table(events.Jet)< 0.2,axis=1)
+                events['Jet', 'isGenFromW'] = ak.sum(events.Jet.isQfromW, axis=1) == 2
 
-            hadWidx = gen[~is_lep & (abs(gen.pdgId) <= 5)].genPartIdxMother
-            hadW = events.GenPart[hadWidx]
-            hadW = hadW[hadW.isW]
-            events['gen_hadW'] = hadW[:,0] # (pick 0 index because there are duplicate W's due to 2 quarks)
-            events['gen_hadW_mass'] = ak.fill_none(hadW[:,0].mass,np.nan)
-            
-            if 'HH' in events.metadata['dataset']:
-                events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
-                events['isLepW'] = ak.fill_none(events.gen_lepW_mass > events.gen_hadW.mass, -1)
-            else:
+                ## flag which W is on shell (only for signal)
+                is_lep = ((events.GenPart[events.GenPart.genPartIdxMother].isW) &
+                    ((abs(events.GenPart.pdgId) == 11) | (abs(events.GenPart.pdgId) == 13))) # electrons or muons
+
+                lepWidx = gen[is_lep].genPartIdxMother
+                gen_lepW = gen[lepWidx]
+                events['gen_lepW_mass'] = ak.fill_none(
+                    ak.firsts(ak.values_astype(gen_lepW.mass, np.float32)),
+                    np.nan
+                )
+
+                hadWidx = gen[~is_lep & (abs(gen.pdgId) <= 5)].genPartIdxMother
+                hadW = events.GenPart[hadWidx]
+                hadW = hadW[hadW.isW]
+                events['gen_hadW'] = hadW[:,0] # (pick 0 index because there are duplicate W's due to 2 quarks)
+                events['gen_hadW_mass'] = ak.fill_none(hadW[:,0].mass,np.nan)
+
+                if 'HH' in dataset:
+                    events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
+                    events['isLepW'] = ak.fill_none(events.gen_lepW_mass > events.gen_hadW.mass, -1)
+                else:
+                    events['isLepW'] = ak.full_like(events.event, -1, dtype=np.int64)
+            except (AttributeError, IndexError, KeyError) as e:
+                # only data-shaped failures fall back; code bugs (NameError etc.) raise loudly
+                logging.warning(f"gen W matching failed for {dataset}: {type(e).__name__}: {e}")
+                events['Jet', 'isQfromW'] = ak.zeros_like(events.Jet.pt, dtype=bool)
                 events['isLepW'] = ak.full_like(events.event, -1, dtype=np.int64)
-        except:
+                events['gen_lepW_mass'] = ak.full_like(events.event, np.nan, dtype=np.float32)
+                events['gen_hadW_mass'] = ak.full_like(events.event, np.nan, dtype=np.float32)
+        else:
             events['Jet', 'isQfromW'] = ak.zeros_like(events.Jet.pt, dtype=bool)
             events['isLepW'] = ak.full_like(events.event, -1, dtype=np.int64)
             events['gen_lepW_mass'] = ak.full_like(events.event, np.nan, dtype=np.float32)

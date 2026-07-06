@@ -136,7 +136,22 @@ class Background(RegressorBackground, Train):
 
 
 class Signal(_picoAOD.Signal, Train):
-    ...
+    argparser = ArgParser()
+    argparser.add_argument(
+        "--norm",
+        default=55.15,
+        type=converter.float_pos,
+        help="normalization factor (total signal weight)",
+    )
+
+    def __init__(self):
+        super().__init__()
+        self.postprocessors.insert(0, partial(self.normalize, norm=self.opts.norm))
+
+    @staticmethod
+    def normalize(df: pd.DataFrame, norm: float):
+        df.loc[:, "weight"] /= df["weight"].sum() / norm
+        return df
 
 
 class TrainBaseline(_picoAOD.Signal, Background, Train):

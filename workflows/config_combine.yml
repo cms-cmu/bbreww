@@ -18,8 +18,8 @@ rebin: 1
 nominal_collection:  "hists_4j2b"
 nominal_histos:      "SvB.phh_variable_nominal"
 nominal_variable:    "SvB.phh_variable_nominal"
-nominal_sum_axes:    ""
-nominal_select_axes: "nominal_4j2b=True region=SR"
+nominal_sum_axes:    "region"
+nominal_select_axes: "nominal_4j2b=True"
 
 # ── lowpt 4j2b category — SR only ─────────────────────────────────────────────
 lowpt_collection:    "hists"

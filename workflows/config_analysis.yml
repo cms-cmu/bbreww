@@ -1,0 +1,81 @@
+# =============================================================================
+# config_analysis.yml — configuration for Snakefile_analysis
+#
+# The full bbWW analysis as a native Snakemake DAG (no norm scan, no
+# optimization loop). Run once with whatever --norm is already set in
+# train.yml.
+#
+# Usage (from barista root; falcon SLURM profile is auto-injected by run_container):
+#   ./run_container snakemake \
+#       --snakefile bbreww/workflows/Snakefile_analysis \
+#       --configfile bbreww/workflows/config_analysis.yml
+#
+# MC-only: no data datasets are run in either pass.
+# =============================================================================
+
+# ── container wrapper ─────────────────────────────────────────────────────────
+# Every coffea/runner.py command is prefixed with this. The combine module
+# brings its own wrappers (see config_combine.yml).
+container_wrapper: "./run_container"
+
+# ── ML retraining toggle ──────────────────────────────────────────────────────
+# false : assume models / friend trees already exist (HHbbWW.yml's friend
+#         manifests are used as-is); the pipeline starts at the processor.
+# true  : run train -> evaluate first (SLURM GPU jobs) to produce fresh friend
+#         trees and refresh the result_test.json manifest, then proceed.
+retrain: false
+
+# ── output layout (matches Snakefile_full_pipeline / Snakefile_combine) ────────
+output_base: "output/full_analysis"
+# Snakefile_combine reads its input from this exact path by default; pass 2's
+# merged coffea is linked here so combine picks it up.
+combine_coffea: "output/full_run/output_merged.coffea"
+combine_out: "output/combine"
+
+# ── processor inputs (identical to submit_all_run3_falcon.sh) ──────────────────
+processor:     "bbreww/analysis/processors/hh_bbww_processor.py"
+metadata:      "bbreww/metadata/skims_v5"
+analysis_config: "bbreww/analysis/metadata/HHbbWW.yml"
+triggers:      "bbreww/metadata/triggers_bbWW.yml"
+luminosities:  "bbreww/metadata/luminosities_bbWW.yml"
+
+# ── hist_templates patching (pass 1 -> pass 2 rebinning) ───────────────────────
+hist_templates: "bbreww/analysis/helpers/hist_templates.py"
+eos_quantiles:  "root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/quantiles"
+
+# ── chunk table ────────────────────────────────────────────────────────────────
+# One processor job per chunk, mirroring submit_all_run3_falcon.sh exactly.
+# MC + signal only. Each pass runs this same set; the only difference is the
+# binning (pass 1 dumps signal phh with dump_signal_phh=true, pass 2 uses the
+# rebinned hist_templates.py).
+#
+# 'name'     -> coffea filename stem (output_<name>.coffea)
+# 'datasets' -> space-separated -d argument to runner.py
+# 'year'     -> -y argument (one era, or all four space-separated)
+all_eras: "2022_preEE 2022_EE 2023_preBPix 2023_BPix"
+
+chunks:
+  - name: "chunk1_2022_preEE"
+    datasets: "GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic"
+    year: "2022_preEE"
+  - name: "chunk1_2022_EE"
+    datasets: "GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic"
+    year: "2022_EE"
+  - name: "chunk1_2023_preBPix"
+    datasets: "GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic"
+    year: "2023_preBPix"
+  - name: "chunk1_2023_BPix"
+    datasets: "GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic"
+    year: "2023_BPix"
+  - name: "chunk2"
+    datasets: "TTToHadronic TTTo2L2Nu"
+    year: "2022_preEE 2022_EE 2023_preBPix 2023_BPix"
+  - name: "chunk3"
+    datasets: "WtoLNu-2Jets_0J WtoLNu-2Jets_1J WtoLNu-2Jets_2J"
+    year: "2022_preEE 2022_EE 2023_preBPix 2023_BPix"
+  - name: "chunk4"
+    datasets: "TbarWplustoLNu2Q TbarWplusto2L2Nu TWminustoLNu2Q TWminusto2L2Nu"
+    year: "2022_preEE 2022_EE 2023_preBPix 2023_BPix"
+  - name: "chunk5"
+    datasets: "TBbarQ TbarBQ TBbartoLplusNuBbar TbarBtoLminusNuB"
+    year: "2022_preEE 2022_EE 2023_preBPix 2023_BPix"

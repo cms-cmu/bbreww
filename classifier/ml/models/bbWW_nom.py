@@ -133,8 +133,7 @@ class bbWWNomModel(Model):
             nClasses=MultiClass.n_trainable(),
         )
         self._benchmarks = benchmarks
-        self._shap_results = None
-    
+
     @property
     def ghost_batch(self):
         return self._gbn
@@ -160,7 +159,7 @@ class bbWWNomModel(Model):
     def nn(self):
         return self._nn
 
-    def train(self, batch: BatchType, compute_shap: bool = False) -> Tensor:
+    def train(self, batch: BatchType) -> Tensor:
         hh, tt, ww = self._nn(*_bbWWNomInput(batch, self._device))
         batch[Output.hh_raw] = hh
         batch[Output.tt_raw] = tt
@@ -242,7 +241,6 @@ class bbWWNomModel(Model):
         return {"scalars": scalars,
                 "roc": [r.to_json() for r in rocs],
                 "asimov": asimov,
-                "shap": self._shap_results
                 }
 
     def step(self, epoch: int = None):

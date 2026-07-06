@@ -25,6 +25,9 @@ def _signal_selection(df: pd.DataFrame):
     """Signal selection for HH→bbWW analysis"""
     return df[_common_selection(df)]
 
+def _sr_or_cr(df: pd.DataFrame):
+    return df[df["SR"] | df["CR"]]
+
 def _select_sr(df: pd.DataFrame):
     """Select signal region events"""
     return df["SR"]
@@ -51,6 +54,13 @@ class Train(CommonTrain):
     )
 
     argparser.add_argument(
+        "--all-events",
+        action="store_true",
+        help="train on all events with no region cut (no SR/CR separation). "
+             "Overrides the default df['SR'] selection for every process.",
+    )
+
+    argparser.add_argument(
         "--norm-by-label",
         action="store_true",
         help="normalize weights so each label sums to 1",
@@ -70,12 +80,16 @@ class Train(CommonTrain):
     def preprocess_by_group(self):
         from src.classifier.df.tools import add_label_index, add_label_index_from_column, prescale
 
+        # --all-events: train on every event (no SR/CR cut). Otherwise apply the
+        # default signal-region selection (df['SR']) to every process.
+        selection = _sr_or_cr if self.opts.all_events else _signal_selection
+
         ps = []
         ps.append(
             _group.fullmatch(
                 ("label:signal",),
                 processors=[
-                    lambda: _signal_selection,
+                    lambda: selection,
                     lambda: add_label_index("signal"),
                 ],
                 name="HH signal selection",
@@ -83,7 +97,7 @@ class Train(CommonTrain):
         )
         if "ttbar" in self.mc_processes:
             ttbar_processors = [
-                lambda: _signal_selection,
+                lambda: selection,
                 lambda: add_label_index("ttbar"),
             ]
             # Add prescaling if requested
@@ -109,14 +123,14 @@ class Train(CommonTrain):
                     _group.fullmatch(
                         (f"label:{bkg}",),
                         processors=[
-                            lambda: _signal_selection,
+                            lambda: selection,
                             lambda: add_label_index("other"),
                         ],
                         name="minor background selection",
                     ),
                 )
-        # Optional SR removal
-        if self.opts.no_SR:
+        # Optional SR removal (ignored under --all-events, which keeps everything)
+        if self.opts.no_SR and not self.opts.all_events:
             ps.append(
                 _group.fullmatch(
                     (),

@@ -35,7 +35,7 @@ def _dict_dict():
 
 
 class _collect_loss_roc:
-    _target = {"scalars", "roc", "shap"}
+    _target = {"scalars", "roc"}
     # fmt: off
     _line = {
         "training": "solid",
@@ -84,13 +84,11 @@ class _collect_loss_roc:
         g_classifiers = defaultdict(list)
         g_data = defaultdict(dict)
         g_rocs = defaultdict(_dict_dict)
-        g_shap = defaultdict(dict)
         # initialize data
         for model in chain.from_iterable(map(lambda x: x[ResultKey.models], results)):
             name = model["name"].replace("__", ",").replace("_", ":")
             _data = defaultdict(list)
             _rocs = defaultdict(_dict_list)
-            _shap = defaultdict(dict) 
             _phases = []
             for benchmark, hyperparameter in _walk_benchmark_hyperparameter(
                 model["history"]
@@ -101,9 +99,6 @@ class _collect_loss_roc:
                     continue
                 datasets.update(benchmark)
                 for k, v in benchmark.items():
-                    #shap
-                    if 'shap' in v:
-                        _shap[k] = v['shap']
                     # roc
                     aucs = {f"AUC: {r['name']}": r["AUC"] for r in v["roc"]}
                     plot.update(aucs)
@@ -116,7 +111,6 @@ class _collect_loss_roc:
                                 }
                             )
                         )
-                    _data[k].append(v["shap"]) #add shap values
                     # scalars
                     scalars = v["scalars"]
                     plot.update(scalars)
@@ -139,7 +133,6 @@ class _collect_loss_roc:
                 g_phases.append(_phases)
             g_classifiers[group].append(name)
             g_data[group] |= {(name, k): pd.DataFrame(v) for k, v in _data.items()}
-            g_shap[group] |= {(name, k): v for k, v in _shap.items()}
             for k, v in _rocs.items():
                 g_rocs[group][k] |= {(name, kk): vv for kk, vv in v.items()}
 
@@ -180,7 +173,6 @@ class _collect_loss_roc:
                     **kwargs,
                 )
             )
-            jobs.append(_plot_shap(shap_data=g_shap, **kwargs))
 
         return jobs
 
@@ -239,60 +231,3 @@ class _plot_roc(_plot_loss_auc):
         from src.classifier.monitor.plot.basic import plot_multiphase_curve
 
         return plot_multiphase_curve
-
-### shap plot is work in progress
-class _plot_shap(_plot_loss_auc):
-    filename = "shap-{group}.html"
-    title = "SHAP Feature Importance - {group}"
-    
-    @property
-    def plot(self):
-        from bokeh.plotting import figure
-        from bokeh.models import ColumnDataSource
-        import numpy as np
-        
-        def make_shap_plot(shap_data, **kwargs):
-            # Extract and aggregate SHAP values
-            all_features = {}
-            
-            # shap_data is like: {group: {(classifier, dataset): shap_dict}}
-            for group_key, datasets in shap_data.items():
-                for (classifier, dataset), shap_dict in datasets.items():
-                    for feature, importance in shap_dict.items():
-                        if feature not in all_features:
-                            all_features[feature] = []
-                        all_features[feature].append(abs(importance))
-            
-            # Average across folds and sort
-            averaged = {f: np.mean(vals) for f, vals in all_features.items()}
-            sorted_features = sorted(averaged.items(), key=lambda x: x[1], reverse=True)
-
-            features = [f for f, _ in sorted_features]
-            importances = [v for _, v in sorted_features]
-            
-            source = ColumnDataSource(data=dict(
-                features=features,
-                importances=importances
-            ))
-            
-            p = figure(
-                y_range=features,  # Categorical axis
-                height=600,
-                width=900,
-                title="SHAP Feature Importance",
-                x_axis_label="Mean |SHAP Value|",
-                y_axis_label="Feature"
-            )
-            
-            p.hbar(
-                y='features',
-                right='importances',
-                height=0.7,
-                source=source,
-                color='steelblue',
-                alpha=0.8
-            )
-            
-            return p
-        
-        return make_shap_plot

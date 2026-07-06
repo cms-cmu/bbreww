@@ -20,13 +20,13 @@ dataset:
       - --max-workers 4 
       - --mc-processes WplusJets tW singleTop
       - --friends "" bbreww/metadata/classifier/input/input_friend_4j2b.json@@classifier_input
-  - module: bbWW.svb.DataEval
-    option:
-      - --no-SR # remove SR
-      - --data-source detector # loads data
-      - --metadata bbreww/metadata/classifier/datasets/datasets_data_v5 # choose dataset
-      - --max-workers 4
-      - --friends "" bbreww/metadata/classifier/input/input_friend_data_4j2b.json@@classifier_input
+  #- module: bbWW.svb.DataEval
+  #  option:
+  #    - --no-SR # remove SR
+  #    - --data-source detector # loads data
+  #    - --metadata bbreww/metadata/classifier/datasets/datasets_data_v5 # choose dataset
+  #    - --max-workers 4
+  #    - --friends "" bbreww/metadata/classifier/input/input_friend_data_4j2b.json@@classifier_input
 
 
 model:

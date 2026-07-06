@@ -188,12 +188,12 @@ class InputEmbed(nn.Module):
         ## to do section
         # embed inputs to dijetResNetBlock in target feature space
         self.bJetEmbed = GhostBatchNorm1d(
-            6,
+            5,
             features_out=self.dD,
             phase_symmetric=phase_symmetric,
             conv=True,
             name="jet embedder",
-        )  # phi is relative to dijet
+        )  # (pt, eta, phi, mass, btagScore)
 
         self.bJetConv = GhostBatchNorm1d(
             self.dD, 
@@ -438,9 +438,6 @@ class InputEmbed(nn.Module):
         bbPxPyPzE = bbPxPyPzE.unsqueeze(2)
 
         mask, bbMdR, qqMdR, bbnMdR, mask_bbMdR, mask_qqMdR, mask_bbn = None, None, None, None, None, None, None
-        b = torch.cat(
-            [b, 2 * torch.ones((n, 1, 2), dtype=torch.float, device=device)], 1
-        )  # label bJets with 2 (-1 for mask, 0 for not preselected, 1 for preselected jet)
         # Detect padded jets BEFORE appending label row (padded jets have pt == -1)
         mask = (nb[:, 0, :] < 0)  # (n, nj): True for padded jets
         nb = torch.cat(

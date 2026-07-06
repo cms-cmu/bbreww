@@ -22,6 +22,7 @@ dataset:
 
   - module: bbWW.regressor.Signal
     option:
+      - --norm 30
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
       - --friends "" bbreww/metadata/regressor/input/regressor_friend_4nb.json@@regressor_input_4nb # set input friend tree
       - --train-bsm # train on kl = [0, 2.45, 5] samples

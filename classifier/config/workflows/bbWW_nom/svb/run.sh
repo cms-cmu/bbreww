@@ -4,7 +4,7 @@ export CERNUSER="a/akhanal"
 export BASE="root://cmseos.fnal.gov//store/user/${LPCUSER}/HHbbWW_classifier_v1"
 export MODEL="${BASE}/classifier/bbWW_nom/SvB/"
 export FvT="${BASE}/friend/FvT/"
-export SvB="${BASE}/friend/SvB/"
+export SvB="${BASE}/friend/SvB_nom/"
 export PLOT="root://eosuser.cern.ch//eos/user/${CERNUSER}/HHbbWW_classifier_v1/"
 export CLASSIFIER_CONFIG_PATHS="bbreww"
 #####################

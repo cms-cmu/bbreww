@@ -34,6 +34,9 @@ def add_bbWW_common_hists(fill, hist, SvB: bool = False, MET_regression: bool = 
                      (30, 0, 150, ('mqq', r'$\Delta R$ between b-candidates')),
                      mqq= lambda events: ak.fill_none((events.sel_qq_l + events.sel_qq_sl).mass, np.nan)
                      )
+    fill += hist.add("pt_vs_jer",
+                    (50, 15, 120, ('q_cands_soft.pt', 'non-bjet cand pT [GeV]')),
+                    (50, 0, 0.5, ('q_cands_soft.jet_energy_resolution', 'jet energy resolution')))
 
     #
     # Wlnu Candidate and reconstructed neutrino pz

@@ -1,7 +1,9 @@
 GluGluToHHTo2B2VLNu2J:
   UL18:
     nanoAOD: bbreww/metadata/GluGluToHHTo2B2VLNu2J_files.txt
-  xs: 0.003384123
+  xs:
+    Run2: 0.003384123
+    Run3: 1
 GluGluToHHTo2B2VLNu2J_kl_0p00:
   2022_EE:
     nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-0p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv13-133X_mcRun3_2022_realistic_postEE_ForNanov13_v1-v1/NANOAODSIM
@@ -43,7 +45,9 @@ GluGluToHHTo2B2VLNu2J_kl_0p00:
       sumw: 17368.21018218994
       sumw2: 1292.6164749860764
       total_events: 265860
-  xs: 0.008356
+  xs:
+    Run2: 1
+    Run3: 0.008356
 GluGluToHHTo2B2VLNu2J_kl_1p00:
   2022_EE:
     nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-1p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v3/NANOAODSIM
@@ -85,7 +89,9 @@ GluGluToHHTo2B2VLNu2J_kl_1p00:
       sumw: 7876.369409561157
       sumw2: 291.89440980553627
       total_events: 265445
-  xs: 0.003759
+  xs:
+    Run2: 1
+    Run3: 0.003759
 GluGluToHHTo2B2VLNu2J_kl_2p45:
   2022_EE:
     nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-2p45_kt-1p00_c2-0p00_LHEweights_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v1/NANOAODSIM
@@ -127,7 +133,9 @@ GluGluToHHTo2B2VLNu2J_kl_2p45:
       sumw: 3838.1684771180153
       sumw2: 65.83650813344866
       total_events: 299199
-  xs: 0.001645
+  xs:
+    Run2: 1
+    Run3: 0.001645
 GluGluToHHTo2B2VLNu2J_kl_5p00:
   2022_EE:
     nanoAOD: /GluGlutoHHto2B2WtoLNu2Q_kl-5p00_kt-1p00_c2-0p00_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv13-133X_mcRun3_2022_realistic_postEE_ForNanov13_v1-v2/NANOAODSIM
@@ -169,4 +177,6 @@ GluGluToHHTo2B2VLNu2J_kl_5p00:
       sumw: 22340.750871658325
       sumw2: 1935.6526548862457
       total_events: 266232
-  xs: 0.01099
+  xs:
+    Run2: 1
+    Run3: 0.01099

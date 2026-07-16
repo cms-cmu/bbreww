@@ -10,7 +10,7 @@ usage() {
     echo "Options:"
     echo "  --output-base DIR         Base output directory (default: output/)"
     echo "  --processor PATH          Path to processor file (default: bbreww/analysis/processors/hh_bbww_processor.py)"
-    echo "  --metadata PATH           Path to metadata file (default: bbreww/metadata/datasets.yml)"
+    echo "  --metadata PATH           Path to metadata file (default: bbreww/metadata/datasets/)"
     echo "  --config PATH             Path to config file (default: bbreww/analysis/metadata/HHbbWW.yml)"
     echo "  --triggers PATH           Path to triggers file (default: bbreww/metadata/triggers_bbWW.yml)"
     echo "  --luminosities PATH       Path to luminosities file (default: bbreww/metadata/luminosities_bbWW.yml)"

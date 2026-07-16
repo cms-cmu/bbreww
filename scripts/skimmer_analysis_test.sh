@@ -16,12 +16,12 @@ OUTPUT_DIR="$OUTPUT_BASE_DIR/${JOB_NAME}"
 create_output_directory "$OUTPUT_DIR"
 
 display_section_header "Printing input yml file"
-cat $INPUT_DIR/datasets.yml
+cat $INPUT_DIR/datasets/*.yml
 
 display_section_header "Modifying dataset file with skimmer ci output"
 run_command python src/tools/merge_yaml_datasets.py \
-    -m $INPUT_DIR/datasets.yml \
-    -f $INPUT_DIR/datasets.yml \
+    -m $INPUT_DIR/datasets/ \
+    -f $INPUT_DIR/datasets/ \
     -o $OUTPUT_DIR/datasets.yml
 cat $OUTPUT_DIR/datasets.yml
 

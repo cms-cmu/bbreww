@@ -77,7 +77,7 @@ def dump_phh_to_pickle(selected_events, dataset, output_path):
     phh_data = {
         'dataset': dataset,
         'nominal_4j2b': {
-            'phh': ak.to_numpy(selected_events.SvB.phh[selected_events.nominal_4j2b & selected_events.region.SR]),
+            'phh':   ak.to_numpy(selected_events.SvB.phh[selected_events.nominal_4j2b & selected_events.region.SR]),
             'weight': ak.to_numpy(selected_events.weight[selected_events.nominal_4j2b & selected_events.region.SR]),
         },
         'lowpt_4j2b': {

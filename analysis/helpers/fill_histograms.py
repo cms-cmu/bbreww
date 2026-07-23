@@ -225,8 +225,6 @@ def fill_histograms(
     fill += hist.add("ml_lead_numer.pt", (20, 14.5, 30, ("q_ml_lead_numer", "pT[GeV]"))) # ML lead correct
     fill += hist.add("ml_sublead_denom.pt", (20, 14.5, 30, ("q_ml_sublead_denom", "pT[GeV]"))) # >= 2 true jets
     fill += hist.add("ml_sublead_numer.pt", (20, 14.5, 30, ("q_ml_sublead_numer", "pT[GeV]"))) # ML sublead correct
-    fill += hist.add("misclass_p_onshell", (10, 0, 1.1, ("misclass_p_onshell", "p(on-shell)"))) # misclassified & gen_lepW < 20
-    fill += hist.add("misclass_sigma_pz_on", (50, 0, 100, ("misclass_sigma_pz_on", "on-shell uncertainty"))) # misclassified & gen_lepW < 20
 
     # fill += Chi2Hists(("chi2_hadWs", "chi2 hadWs"), "chi2_hadWs",
     #                   skip=["tot_4j", "Hww_mass", "Wqq_mass",]

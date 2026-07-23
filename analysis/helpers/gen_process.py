@@ -263,19 +263,7 @@ def gen_studies(events, is_mc, run_MET_regression):
                 events['q_ml_sublead_denom'] = events.q_soft_true_sublead  # already requires == 2
                 events['q_ml_sublead_numer'] = ak.where(ml_sublead_correct & both_in_soft,
                                                         events.q_soft_true_sublead, np.nan)
-                
-                # p_onshell and sigma_pz_on for misclassified events with gen_lepW_mass < 20 GeV
-                misclass_low_genW = abs(events.reg_mW - 80.0) <= 5.0 
-                events['misclass_p_onshell'] = ak.where(misclass_low_genW, events.met_regressor.p_onshell , np.nan)
-                events['misclass_sigma_pz_on'] = ak.where(misclass_low_genW, events.met_regressor.sigma_pz_on, np.nan)
         except:
             logging.info("warning: skipping gen studies of true W jets due to error")
             pass #above sequence will fail for datasets that don't have jets in every event
-
-        ### study input parameters to chi square
-        events['bjets_genjets_mass'] = ak.fill_none((events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen).mass,np.nan)
-        events['bjets_genjets_dr'] = ak.fill_none(events.b_cands[:,0].matched_gen.delta_r(events.b_cands[:,1].matched_gen),np.nan)
-        #events['bcand_genjets_mass'] = (events.b_cands[:,0].matched_gen + events.b_cands[:,1].matched_gen)
-        events['gen_bb'] = ak.fill_none(gen_b[:,0] + gen_b[:,1], np.nan)
-
     return events

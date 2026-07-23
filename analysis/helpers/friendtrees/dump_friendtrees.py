@@ -188,7 +188,6 @@ def dump_input_friend_regressor(
                     {
                         "onShell": events["isLepW"],
                         "genLepWmass": events["gen_lepW_mass"],
-                        "genHadWmass": events["gen_hadW_mass"]
                     }
                 ),
                 selection,

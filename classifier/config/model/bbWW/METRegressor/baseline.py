@@ -189,14 +189,19 @@ class Train(METRegressorTrain):
         loss_offshell = _nll_and_reco(pred_off, cholesky_L_off, target, is_off, weight,
                                       lep_px, lep_py, lep_pz, lep_E, target_mW)
 
-        # ---- Loss 3: backbone (classifier only) ----
+        # ---- Loss 3: backbone (classifier only, per-head BCE) ----
         logit_onshell = batch["logit_onshell"][valid]
+        if logit_onshell.dim() == 1:
+            logit_onshell = logit_onshell.unsqueeze(1)
+        n_heads = logit_onshell.shape[1]
 
         if has_label.sum() > 0 and weight[has_label].sum() > 0:
+            clf_target = isLepW[has_label].clamp(0.0, 1.0).unsqueeze(1).expand(-1, n_heads)
+            clf_weight = weight[has_label].unsqueeze(1).expand(-1, n_heads)
             clf_loss = F.binary_cross_entropy_with_logits(
-                logit_onshell[has_label], isLepW[has_label].clamp(0.0, 1.0),
-                weight=weight[has_label], reduction="sum"
-            ) / weight[has_label].sum()
+                logit_onshell[has_label], clf_target,
+                weight=clf_weight, reduction="sum"
+            ) / clf_weight.sum()
         else:
             clf_loss = torch.tensor(0.0, device=pred_on.device, requires_grad=True)
 

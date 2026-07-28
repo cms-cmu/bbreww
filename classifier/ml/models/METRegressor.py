@@ -421,7 +421,13 @@ class RegressorModelEval(Model):
             ancillaryFeatures=InputBranch.feature_ancillary,
             device=device,
         )
-        self._nn.load_state_dict(saved["model"], strict=False)
+        load_result = self._nn.load_state_dict(saved["model"], strict=False)
+        clf_missing = [k for k in load_result.missing_keys if "onshell_classifier" in k]
+        if clf_missing:
+            raise ValueError(
+                f"checkpoint does not match the multi-head HypothesisClassifier "
+                f"(missing keys, e.g. {clf_missing[:2]}); retrain or evaluate with the matching code version"
+            )
 
     @property
     def nn(self):
@@ -432,7 +438,11 @@ class RegressorModelEval(Model):
         selector = Selector(selection)
 
         nu_pred_on, L_on, nu_pred_off, L_off, (logit_onshell, pz_hint_on) = self._nn(*_RegressorInput(batch, self._device, selection))
+        # (n, n_heads) logits from the in-network ensemble: average the head
+        # probabilities, not the logits, so no single head dominates.
         p_onshell = torch.sigmoid(logit_onshell)
+        if p_onshell.dim() > 1:
+            p_onshell = p_onshell.mean(dim=1)
 
         jet_weights = self._nn._jet_weights  # (n, 6): per-jet attention weights (2 heads × 3 jets)
 
@@ -442,10 +452,11 @@ class RegressorModelEval(Model):
         cov_off = torch.bmm(L_off, L_off.transpose(-1, -2))
         sigma_off = cov_off.diagonal(dim1=-2, dim2=-1).sqrt()
 
-        # Select neutrino using classifier p_onshell directly
-        use_on = (p_onshell > 0.55).unsqueeze(-1)  # (n, 1)
-        nu_sel = torch.where(use_on, nu_pred_on, nu_pred_off)
-        sigma_sel = torch.where(use_on, sigma_on, sigma_off)
+        # Smooth on/off-shell blend around the 0.55 threshold (w=0 for sentinel pz_on)
+        w_on = torch.sigmoid((p_onshell - 0.55) / 0.05).unsqueeze(-1)  # (n, 1)
+        w_on = torch.where((nu_pred_on[:, 2].abs() < 9000).unsqueeze(-1), w_on, torch.zeros_like(w_on))
+        nu_sel = w_on * nu_pred_on + (1 - w_on) * nu_pred_off
+        sigma_sel = w_on * sigma_on + (1 - w_on) * sigma_off
 
         output = {
             # Selected (best hypothesis) neutrino

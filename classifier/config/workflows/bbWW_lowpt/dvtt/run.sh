@@ -1,10 +1,10 @@
 # change these vars #
 export LPCUSER="akhanal"
 export CERNUSER="a/akhanal"
-export BASE="root://cmseos.fnal.gov//store/user/${LPCUSER}/HHbbWW_classifier_v1"
+export BASE="root://cmseos.fnal.gov//store/user/${LPCUSER}/HHbbWW_classifier_lowpt"
 export MODEL="${BASE}/classifier/bbWWBase/dvtt/"
-export DvTT="${BASE}/friend/DvTT/"
-export PLOT="root://eosuser.cern.ch//eos/user/${CERNUSER}/HHbbWW_classifier_v1/DvTT/"
+export DvTT="${BASE}/friend/dvtt/"
+export PLOT="root://eosuser.cern.ch//eos/user/${CERNUSER}/HHbbWW_classifier_v1/dvtt/"
 #####################
 
 export CLASSIFIER_CONFIG_PATHS="bbreww" 

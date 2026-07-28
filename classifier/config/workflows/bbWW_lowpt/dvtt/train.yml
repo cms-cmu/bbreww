@@ -15,22 +15,22 @@ dataset:
   - module: bbWW.dvtt.TrainData # use the baseline dataset for FvT training
     option:
       - --data-source detector # loads data
-      - --metadata bbreww/metadata/classifier/datasets/datasets_data_v4 # choose dataset
-      - --max-workers 8 # use 8 workers to load ROOT files
-      - --friends "" bbreww/metadata/classifier/input/data_friend.json@@classifier_input # set input friend tree
+      - --metadata bbreww/metadata/classifier/datasets/datasets_data_v5 # choose dataset
+      - --max-workers 4
+      - --friends "" bbreww/metadata/classifier/input/input_friend_4j2b.json@@classifier_input # set input friend tree
 
   - module: bbWW.dvtt.TrainBaseline # this module loads all backgrounds if mc_processes is not specified
     option:
-      - --metadata bbreww/metadata/classifier/datasets/datasets_v4
+      - --metadata bbreww/metadata/classifier/datasets/datasets_v5
       - --mc-processes ttbar
-      - --max-workers 8 # use 8 workers to load ROOT files
+      - --max-workers 4
       - --friends "" bbreww/metadata/classifier/input/input_friend_4j2b.json@@classifier_input # set input friend tree
   
   - module: bbWW.dvtt.TrainBaseline
     option:
       - --mc-processes WplusJets tW
-      - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v4
-      - --friends "" bbreww/metadata/classifier/input/minorbkg_friend.json@@classifier_input # set input friend tree
+      - --metadata bbreww/metadata/classifier/datasets/datasets_minor_bkgs_v5
+      - --friends "" bbreww/metadata/classifier/input/input_friend_4j2b.json@@classifier_input # set input friend tree
 
 model:
   - module: bbWW.bbWW_lowpt.baseline_dvtt.Train # use the baseline bbWW bbWWBase model

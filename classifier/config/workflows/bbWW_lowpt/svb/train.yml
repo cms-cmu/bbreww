@@ -39,6 +39,8 @@ dataset:
 model:
   - module: bbWW.bbWW_lowpt.baseline_svb.Train # use the baseline bbWW bbWWBase model
     option:
+      - --architecture # CAMPAIGN iter2_dD20 (default is n_features: 12)
+      - n_features: 20
       - --kfolds 3 # use 3-fold
       - --kfold-seed FvT random # setup base seed to be ("FvT", "random")
       - --kfold-seed-offsets 0 # use seed ("FvT", "random", 0)

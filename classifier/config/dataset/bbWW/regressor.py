@@ -52,7 +52,6 @@ class Train(RegressorCommonTrain):
             self.to_tensor
             .add(Input.genNu, "float32").columns(*InputBranch.feature_genNu)
             .add(Input.genLepW, "float32").columns(*InputBranch.feature_genLepW)
-            .add(Input.true_nbjet_flat, "float32").columns("true_nbjet_flat", target=4, pad_value=0)
         )
 
     def other_branches(self):

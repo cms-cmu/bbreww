@@ -41,8 +41,8 @@ class Train(bbWWBaseTrain):
         weight[weight < 0] = 0
 
         cross_entropy =  F.cross_entropy(
-        tt_score, batch[Input.label], reduction="none"
-    )
+            tt_score, batch[Input.label], reduction="none"
+        )
         loss = (cross_entropy * weight).sum() / weight.sum()
         return loss
         

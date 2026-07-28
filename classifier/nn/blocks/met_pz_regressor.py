@@ -202,7 +202,7 @@ class InputEmbed(nn.Module):
             name="jet convolution"
         )
         self.nonbJetEmbed = GhostBatchNorm1d(
-            5,
+            8,
             features_out=self.dD,
             phase_symmetric=phase_symmetric,
             conv=True,
@@ -729,28 +729,35 @@ class HypothesisClassifier(nn.Module):
     Shared-weight scorer evaluates each hypothesis independently, then subtracts.
     Positive logit → on-shell preferred.
 
+    n_heads independent scorers; eval averages sigmoid(logit) over heads.
+
     Per-branch input: shared_base (2*dD+5) + oss_corr (1) + nu_det (3) + mW (1) + sigma_pz (1) = 2*dD+11
     """
 
-    def __init__(self, dD):
+    def __init__(self, dD, n_heads=5):
         super().__init__()
-        # Shared scorer: processes each hypothesis branch independently
         dH = dD * 4
-        self.hypothesis_scorer = nn.Sequential(
-            GhostBatchNorm1d(2*dD + 12, features_out=dH, conv=True),
-            NonLUModule(),
-            GhostBatchNorm1d(dH, features_out=dH, conv=True),
-            NonLUModule(),
-            GhostBatchNorm1d(dH, features_out=dH, conv=True),
-            NonLUModule(),
-            GhostBatchNorm1d(dH, features_out=1, conv=True),
-        )
+
+        def make_scorer():
+            return nn.Sequential(
+                GhostBatchNorm1d(2*dD + 12, features_out=dH, conv=True),
+                NonLUModule(),
+                GhostBatchNorm1d(dH, features_out=dH, conv=True),
+                NonLUModule(),
+                GhostBatchNorm1d(dH, features_out=dH, conv=True),
+                NonLUModule(),
+                GhostBatchNorm1d(dH, features_out=1, conv=True),
+            )
+
+        self.hypothesis_scorer = nn.ModuleList([make_scorer() for _ in range(n_heads)])
 
     def forward(self, on_features, off_features):
         # on_features, off_features: (n, 2*dD+11, 1)
-        score_on = self.hypothesis_scorer(on_features).squeeze(-1).squeeze(-1)   # (n,)
-        score_off = self.hypothesis_scorer(off_features).squeeze(-1).squeeze(-1)  # (n,)
-        return score_on - score_off  # positive → on-shell
+        logits = [
+            scorer(on_features).squeeze(-1).squeeze(-1) - scorer(off_features).squeeze(-1).squeeze(-1)
+            for scorer in self.hypothesis_scorer
+        ]
+        return torch.stack(logits, dim=1)  # (n, n_heads), positive → on-shell
       
 class METRegressor(nn.Module):
     def __init__(
@@ -1016,7 +1023,8 @@ class METRegressor(nn.Module):
                              ("nu_regressor_offshell", self.nu_regressor_offshell),
                              ("nu_cholesky_onshell", self.nu_cholesky_onshell),
                              ("nu_cholesky_offshell", self.nu_cholesky_offshell),
-                             ("onshell_classifier.hypothesis_scorer", self.onshell_classifier.hypothesis_scorer)]:
+                             *[(f"onshell_classifier.hypothesis_scorer.{i}", head)
+                               for i, head in enumerate(self.onshell_classifier.hypothesis_scorer)]]:
             for layer in module:
                 if hasattr(layer, "setGhostBatches"):
                     layer.setGhostBatches(nGhostBatches)

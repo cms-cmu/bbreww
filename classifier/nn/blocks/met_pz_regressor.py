@@ -88,7 +88,7 @@ def _hadW_mass(raw_nb, ww_weights):
         (n, 1, 1) hadronic W candidate mass
     """
     n = raw_nb.shape[0]
-    nb = raw_nb.view(n, 4, -1)  # (n, 4, nj)
+    nb = raw_nb.view(n, 7, -1)  # (n, 7, nj)
     nj = nb.shape[2]
     if nj < 2:
         return torch.zeros(n, 1, 1, device=raw_nb.device)
@@ -122,7 +122,7 @@ def compute_mjj(raw_nb, nj):
         (n, 1, nj) per-jet m_jj (large value for padded jets)
     """
     n = raw_nb.shape[0]
-    nb = raw_nb.view(n, 4, -1)[:, :, :nj]  # (n, 4, nj)
+    nb = raw_nb.view(n, 7, -1)[:, :, :nj]  # (n, 7, nj)
     device = raw_nb.device
 
     # Build all C(nj,2) pair indices
@@ -395,8 +395,8 @@ class InputEmbed(nn.Module):
         # a = a.clone()
 
         n = b.shape[0]
-        b = b.view(n, 5, 2)
-        nb = nb.view(n, 4, -1)
+        b = b.view(n, 5, 2) # shape is (n_events, features, n_objects)
+        nb = nb.view(n, 7, -1)
         l = l.view(n, 6, 1)
         nu = nu.view(n, 2, 1)
         a = a.view(n, self.dA, 1)
@@ -1143,7 +1143,7 @@ class METRegressor(nn.Module):
         jet_mask = mask_bbn.view(n, self.wsl)  # (n, wsl) per-jet padding mask
 
         # Compute deltaR between lepton and individual jets from raw kinematics
-        nb_raw = raw_nb.view(n, 4, -1)[:, :, :self.wsl]  # (n, 4, wsl) original raw jets
+        nb_raw = raw_nb.view(n, 7, -1)[:, :, :self.wsl]  # (n, 4, wsl) original raw jets
         lep_raw = raw_lep.view(n, 6, 1)
         lepNBdR = calcDeltaR(lep_raw, nb_raw)      # (n, 1, wsl)
         jet_dR = self.jet_dR_embed(lepNBdR, jet_mask)  # (n, dD, wsl) embedded deltaR

@@ -5,7 +5,6 @@ import torch
 # Add parent directory to sys.path so bbreww can be imported
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 sys.path.append("/srv/")
-sys.path.append("/home/alejandro/work/HH4b/barista-classifier-decouple/")
 
 def test_models():
     print("Testing bbreww models...")

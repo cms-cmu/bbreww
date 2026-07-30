@@ -67,6 +67,7 @@ def _generate_dataset(seed: int, nevents: int, name: str, output: str):
     weight = typed_uniform(rng, 0.5, 1.5, n, np.float32)
 
     data = {
+        "event": np.arange(n, dtype=np.uint64),
         "HT": typed_uniform(rng, 100, 800, n, np.float32),
         "njets": rng.integers(4, 8, n).astype(np.int32),
         "nsoftjets": rng.integers(0, 4, n).astype(np.int32),

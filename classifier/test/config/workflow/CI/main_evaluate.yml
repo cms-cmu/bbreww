@@ -3,7 +3,6 @@ main:
   option:
     - --device cpu
     - --max-loaders 1
-    - --models Final output/main_train/result.json
 
 dataset:
   - module: bbWW.SimplifiedEval
@@ -15,6 +14,8 @@ dataset:
 
 model:
   - module: bbWW.SparseDenseEval
+    option:
+      - --models Final output/main_train/result.json
 
 analysis:
   - module: compare.VerifyOutput

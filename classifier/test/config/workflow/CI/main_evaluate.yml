@@ -3,7 +3,7 @@ main:
   option:
     - --device cpu
     - --max-loaders 1
-    - --models test-SvD output/main_train/model_test-SvD__*.pkl
+    - --models test-SvD output/main_train/result.json
 
 dataset:
   - module: bbWW.SimplifiedEval

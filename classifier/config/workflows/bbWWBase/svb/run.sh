@@ -18,14 +18,14 @@ else
 fi
 
 # train with train.yml and common.yml configs
-./src/pyml.py \
+python -m src.classifier.task.main \
     template "{model: ${MODEL}, FvT: ${FvT}}" $WFS/train.yml \
     -from $WFS/common.yml \
     -setting Monitor "address: :${port}" \
     -flag debug # use debug flag
 
 # plot the AUC and ROC (use bbWWBase.LossROC for plotting as bbWW.LossROC is still in progress)
-./src/pyml.py analyze \
+python -m src.classifier.task.main analyze \
     --results ${MODEL}/result.json \
     -analysis bbWWBase.LossROC \
     -setting IO "output: ${PLOT}" \
@@ -33,7 +33,7 @@ fi
     -setting Monitor "address: :${port}"
 
 # evaluate with evaluate.yml and common.yml configs
-./src/pyml.py \
+python -m src.classifier.task.main \
     template "{model: ${MODEL}, SvB: ${SvB}}" $WFS/evaluate.yml \
     -from $WFS/common.yml \
     -setting Monitor "address: :${port}"

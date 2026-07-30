@@ -44,11 +44,11 @@ class SimplifiedTrain(LoadGroupedRootForTest):
     @cache
     def from_root(self, groups: frozenset[str]):
         from src.classifier.df.io import FromRoot
-        from src.classifier.df.tools import add_columns
+        from src.classifier.df.tools import rename_columns
         
         # Add label_index column mapping
         pres = [
-            add_columns(lambda df: df["label"]).set(name=Columns.label_index)
+            rename_columns(label=Columns.label_index)
         ]
         pres.extend(self.preprocessors)
 

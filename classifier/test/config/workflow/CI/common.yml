@@ -25,8 +25,3 @@ setting:
   - module: ml.DataLoader
     option:
       - num_workers: 0
-
-  - module: Multiprocessing
-    option:
-      - context_method: spawn
-        torch_sharing_strategy: file_descriptor

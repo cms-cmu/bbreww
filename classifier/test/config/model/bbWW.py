@@ -32,7 +32,7 @@ class SparseDenseTrain(bbWWBaseTrain):
                 name="sparse vs dense",
                 selection=roc_nominal_selection,
                 bins=ROC_BIN,
-                pos=["hh"],
+                pos=["sparse"],
             )
         ]
 

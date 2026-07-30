@@ -19,4 +19,4 @@ setting:
       - output: output/dataset
   - module: Analysis
     option:
-      - max_workers: 2
+      - max_workers: 1

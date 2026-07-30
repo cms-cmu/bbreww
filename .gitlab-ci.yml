@@ -92,6 +92,7 @@ setup_bbreww:
     - cd barista_framework/
     - pwd && ls -la
     - ls -la bbreww/
+    - pip install awkward-pandas
   image: gitlab-registry.cern.ch/cms-cmu/barista:coffea2025
   tags:
     - k8s-cvmfs

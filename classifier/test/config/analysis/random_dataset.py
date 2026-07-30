@@ -76,19 +76,16 @@ def _generate_dataset(seed: int, nevents: int, name: str, output: str):
         "label": rng.integers(0, 2, n).astype(np.int32),
     }
 
-    # Flatten zip structures with proper naming
+    # Map zip structures as vectors/nested arrays with proper naming
     for field in ["pt", "eta", "phi", "mass", "btagScore"]:
-        for i in range(2):
-            data[f"bJetCand_{field}_{i}"] = bJetCand[field][:, i]
+        data[f"bJetCand_{field}"] = bJetCand[field]
     for field in ["pt", "eta", "phi", "mass", "attn_score"]:
-        for i in range(4):
-            data[f"nonbJetCand_{field}_{i}"] = nonbJetCand[field][:, i]
+        data[f"nonbJetCand_{field}"] = nonbJetCand[field]
     for field in ["pt", "eta", "phi", "mass", "isE", "isM"]:
         data[f"leadingLep_{field}"] = leadingLep[field]
     for field in ["px", "py", "pz", "E"]:
         data[f"regressed_nu_{field}"] = regressed_nu[field]
-    for field in ["0", "1", "2", "3"]:
-        data[f"true_nbjet_flat_{field}"] = true_nbjet_flat[field]
+    data["true_nbjet_flat"] = ak.concatenate([true_nbjet_flat[str(i)][:, np.newaxis] for i in range(4)], axis=1)
 
     # Convert output to Path object
     out_path = Path(output) / f"{name}.root"

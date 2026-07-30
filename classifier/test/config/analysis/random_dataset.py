@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 def _generate_dataset(seed: int, nevents: int, name: str, output: str):
     import awkward as ak
     import numpy as np
+    from pathlib import Path
     from src.data_formats.root import TreeWriter
     from bbreww.classifier.test.physics.random_object import typed_uniform
 
@@ -88,8 +89,10 @@ def _generate_dataset(seed: int, nevents: int, name: str, output: str):
     for field in ["0", "1", "2", "3"]:
         data[f"true_nbjet_flat_{field}"] = true_nbjet_flat[field]
 
-    writer = TreeWriter(output, name)
-    writer.write(data)
+    # Convert output to Path object
+    out_path = Path(output) / f"{name}.root"
+    with TreeWriter()(out_path) as writer:
+        writer.extend(data)
 
 
 class _Runner:
@@ -110,4 +113,4 @@ class JetsbbWW(Analysis):
     argparser.add_argument("--name", type=str, default="dataset")
 
     def analyze(self, results):
-        return [_Runner(self.opts.seed, self.opts.nevents, self.opts.name, IO.output)]
+        return [_Runner(self.opts.seed, self.opts.nevents, self.opts.name, str(IO.output))]

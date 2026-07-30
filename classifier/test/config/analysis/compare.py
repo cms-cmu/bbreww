@@ -4,7 +4,15 @@ def _verify_dataset(result: str, nevents: int):
     import uproot
     import os
     
+    import glob
+    
     print(f"Verifying result file: {result}")
+    parent = os.path.dirname(result)
+    if os.path.exists(parent):
+        print(f"Files in {parent}: {glob.glob(os.path.join(parent, '*'))}")
+    else:
+        print(f"Directory {parent} does not exist!")
+        
     if not os.path.exists(result):
         raise FileNotFoundError(f"Result file {result} does not exist!")
         

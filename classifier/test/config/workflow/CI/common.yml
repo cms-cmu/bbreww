@@ -28,5 +28,4 @@ setting:
 
   - module: Multiprocessing
     option:
-      - context_method: spawn
-        preload: []
+      - preload: []

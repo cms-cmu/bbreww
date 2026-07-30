@@ -665,7 +665,7 @@ class GhostBatchNorm1d(
     @torch.no_grad()
     def initMeanStd(self):
         self.m.copy_(self._mean_var.mean)
-        self.s.copy_(self._mean_var.variance_unbiased.sqrt())
+        self.s.copy_((self._mean_var.variance_unbiased + self.eps).sqrt())
         self.initialized = True
         self.runningStats = False
         self.print()

@@ -25,3 +25,7 @@ setting:
   - module: ml.DataLoader
     option:
       - num_workers: 0
+
+  - module: Multiprocessing
+    option:
+      - preload: []

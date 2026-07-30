@@ -2,7 +2,7 @@ main:
   module: compare_datasets
   option:
     - --max-workers 1
-    - --target-groups 0-2
+    - --target-groups 0-1
 
 dataset:
   - module: cache

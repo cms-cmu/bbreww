@@ -18,28 +18,28 @@ else
 fi
 
 # train with train.yml and common.yml configs
-#./src/pyml.py \
+#python -m src.classifier.task.main \
 #    template "{model: ${MODEL}}" $WFS/train.yml \
 #    -from $WFS/common.yml \
 #    -setting Monitor "address: :${port}" \
 #    -flag debug # use debug flag
 
 # TODO: add regression-specific analysis (loss curves, resolution plots)
-# ./src/pyml.py analyze \
+# python -m src.classifier.task.main analyze \
 #     --results ${MODEL}/result.json \
 #     -analysis ... \
 #     -setting IO "output: ${PLOT}" \
 #     -setting Monitor "address: :${port}"
 
 # evaluate 4-jet region (default) with evaluate.yml and common.yml configs
-#./src/pyml.py \
+#python -m src.classifier.task.main \
 #    template "{model: ${MODEL}, SvB: ${MET_FRIEND}}" $WFS/evaluate.yml \
 #    -from $WFS/common.yml \
 #    -setting Monitor "address: :${port}"
 
 # evaluate 3-jet region with evaluate_3jet.yml; outputs go to a separate
 # friend-tree directory (MET_FRIEND_3JET) to avoid overwriting 4-jet outputs
-./src/pyml.py \
+python -m src.classifier.task.main \
     template "{model: ${MODEL}, SvB: ${MET_FRIEND_3JET}}" $WFS/evaluate_3jet.yml \
     -from $WFS/common.yml \
     -setting Monitor "address: :${port}"

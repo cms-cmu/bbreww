@@ -1,16 +1,22 @@
 main:
-  module: expand
+  module: compare_datasets
   option:
-    - --preserve-order
-    - --analysis-paths bbreww.classifier.test.config
+    - --max-workers 1
+    - --target-groups 0-2
 
-analysis:
-  - module: analysis.compare.VerifyOutput
+dataset:
+  - module: cache
     option:
-      - --result output/main_cache/chunks/label_sparse_dense.root
-      - --nevents 16384
+      - --input output/main_cache/result.json
+
+  - module: bbWW.SimplifiedTrain
+    option:
+      - --max-workers 1
+      - --preserve-order
+      - --files label:sparse output/dataset/sparse.root
+      - --files label:dense output/dataset/dense.root
 
 setting:
   - module: IO
     option:
-      - output: output/main_cache_compare
+      - output: output/main_cache_compare/

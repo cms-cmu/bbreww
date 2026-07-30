@@ -19,9 +19,9 @@ model:
 analysis:
   - module: compare.VerifyOutput
     option:
-      - --result output/main_evaluate/chunks/label_sparse.root
+      - --result output/main_evaluate/chunks/test-SvD_sparse.root
       - --nevents 8192
-      - --result output/main_evaluate/chunks/label_dense.root
+      - --result output/main_evaluate/chunks/test-SvD_dense.root
       - --nevents 8192
 
 setting:

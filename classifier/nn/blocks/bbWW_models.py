@@ -1594,7 +1594,7 @@ class InputEmbed(nn.Module):
         b = b.view(n, 5, 2)
         nb = nb.view(n, 4, 2)
         l = l.view(n, 6, 1)
-        nu = nu.view(n, 2, 1)
+        nu = nu.view(n, -1, 1)[:, :2]
         a = a.view(n, self.dA, 1)
 
         a[:, 2, :] = torch.log(a[:, 2, :])  # log transform event HT
@@ -2418,7 +2418,7 @@ class GCN(nn.Module):
         b = b.view(n, 5, 2)
         nb = nb.view(n, 4, 2)
         l = l.view(n, 6, 1)
-        nu = nu.view(n, 2, 1)
+        nu = nu.view(n, -1, 1)[:, :2]
 
         all_particles = torch.cat([b[:,:4, :], nb[:, :4, :], l[:,:4,:]], dim=-1)
         

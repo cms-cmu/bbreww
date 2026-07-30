@@ -17,12 +17,12 @@ model:
   - module: bbWW.SparseDenseEval
 
 analysis:
-  - module: compare.VerifyOutput
+  - module: analysis.compare.VerifyOutput
     option:
       - --result output/main_evaluate/chunks/label_sparse.root
-        --nevents 8192
+      - --nevents 8192
       - --result output/main_evaluate/chunks/label_dense.root
-        --nevents 8192
+      - --nevents 8192
 
 setting:
   - module: IO

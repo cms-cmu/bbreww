@@ -8,7 +8,7 @@ analysis:
   - module: analysis.compare.VerifyOutput
     option:
       - --result output/main_cache/chunks/label_sparse_dense.root
-        --nevents 16384
+      - --nevents 16384
 
 setting:
   - module: IO

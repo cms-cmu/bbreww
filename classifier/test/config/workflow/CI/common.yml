@@ -7,6 +7,11 @@ setting:
     option:
       - years: ["2016", "2017", "2018"]
 
+  - module: bbWW.InputBranch
+    option:
+      - nnonbJetCand: 2
+        feature_nonbJetCand: ["pt", "eta", "phi", "mass"]
+
   - module: monitor.Log
     option:
       - forward_exception: false

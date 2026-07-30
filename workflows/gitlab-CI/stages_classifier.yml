@@ -73,7 +73,7 @@ evaluate_bbreww:
     - generate_dataset_bbreww
     - train_bbreww
   script:
-    - python -m src.classifier.task.main from ${CLASSIFIER_WFS}/main_evaluate.yml ${CLASSIFIER_WFS}/common.yml || (python -c "import os; [print(os.path.join(r, f)) for r, d, fs in os.walk('output') for f in fs]" && exit 1)
+    - python -m src.classifier.task.main from ${CLASSIFIER_WFS}/main_evaluate.yml ${CLASSIFIER_WFS}/common.yml || (cat output/main_train/result.json && python -c "import os; [print(os.path.join(r, f)) for r, d, fs in os.walk('output') for f in fs]" && exit 1)
   artifacts:
     paths:
       - barista_framework/output/main_evaluate/diagnostics/logs.html

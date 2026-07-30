@@ -73,7 +73,7 @@ evaluate_bbreww:
     - generate_dataset_bbreww
     - train_bbreww
   script:
-    - python -m src.classifier.task.main from ${CLASSIFIER_WFS}/main_evaluate.yml ${CLASSIFIER_WFS}/common.yml
+    - python -m src.classifier.task.main from ${CLASSIFIER_WFS}/main_evaluate.yml ${CLASSIFIER_WFS}/common.yml || (ls -la output/main_evaluate/chunks/ && exit 1)
   artifacts:
     paths:
       - barista_framework/output/main_evaluate/diagnostics/logs.html

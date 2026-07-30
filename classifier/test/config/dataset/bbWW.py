@@ -32,11 +32,11 @@ class SimplifiedTrain(LoadGroupedRootForTest):
         # Flatten all feature lists to get the full branch list
         branches = set().union(
             InputBranch.feature_ancillary,
-            [f"bJetCand_{f}_{i}" for f in InputBranch.feature_bJetCand for i in range(InputBranch.nbJetCand)],
-            [f"nonbJetCand_{f}_{i}" for f in InputBranch.feature_nonbJetCand for i in range(InputBranch.nnonbJetCand)],
-            [f"leadingLep_{f}" for f in InputBranch.feature_leadingLep],
-            [f"regressed_nu_{f}" for f in InputBranch.feature_regressed_nu],
-            [f"true_nbjet_flat_{f}" for f in InputBranch.feature_true_nbjet_flat],
+            [f"{f}_{i}" for f in InputBranch.feature_bJetCand for i in range(InputBranch.nbJetCand)],
+            [f"{f}_{i}" for f in InputBranch.feature_nonbJetCand for i in range(InputBranch.nnonbJetCand)],
+            InputBranch.feature_leadingLep,
+            InputBranch.feature_regressed_nu,
+            InputBranch.feature_true_nbjet_flat,
             [Columns.weight, Columns.event, "label"],
         )
         return branches

@@ -30,3 +30,7 @@ setting:
     option:
       - context_library: builtins
         preload: []
+
+  - module: Analysis
+    option:
+      - max_workers: 1

@@ -1,0 +1,16 @@
+main:
+  module: expand
+  option:
+    - --preserve-order
+    - --analysis-paths bbreww.classifier.test.config
+
+analysis:
+  - module: analysis.compare.VerifyOutput
+    option:
+      - --result output/main_cache/chunks/label_sparse_dense.root
+        --nevents 16384
+
+setting:
+  - module: IO
+    option:
+      - output: output/main_cache_compare

@@ -1,0 +1,34 @@
+main:
+  module: train
+  option:
+    - --device cpu
+    - --max-trainers 1
+    - --max-loaders 1
+
+dataset:
+  - module: bbWW.SimplifiedTrain
+    option:
+      - --max-workers 1
+      - --preserve-order
+      - --files label:sparse output/dataset/sparse.root
+      - --files label:dense output/dataset/dense.root
+
+model:
+  - module: bbWW.SparseDenseTrain
+    option:
+      - --kfolds 2
+      - --architecture
+        dijetFeatures: 16
+        ancillaryFeatures: ["HT", "njets", "nsoftjets", "year"]
+        device: "cpu"
+        architecture: "bbWWBase"
+      - --training FixedStep
+        epoch: 2
+        bs_init: 512
+        bs_kwargs:
+          seed: 0
+
+setting:
+  - module: IO
+    option:
+      - output: output/main_train

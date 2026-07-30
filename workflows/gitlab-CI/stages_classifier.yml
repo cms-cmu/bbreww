@@ -1,4 +1,7 @@
 # Stages classifier yml for bbreww
+variables:
+  CLASSIFIER_WFS: "bbreww/classifier/test/config/workflow/CI"
+
 code_classifier_dependencies_bbreww:
   stage: classifier
   extends: .base_analysis_bbreww
@@ -12,3 +15,66 @@ code_classifier_models_bbreww:
   extends: .base_analysis_bbreww
   script:
     - python bbreww/classifier/test_models.py
+
+generate_dataset_bbreww:
+  stage: classifier
+  extends: .base_analysis_bbreww
+  variables:
+    CLASSIFIER_CONFIG_PATHS: "bbreww"
+  needs:
+    - setup_bbreww
+  script:
+    - python -m src.classifier.task.main from ${CLASSIFIER_WFS}/generate_dataset.yml ${CLASSIFIER_WFS}/common.yml
+  artifacts:
+    paths:
+      - barista_framework/output/dataset/sparse.root
+      - barista_framework/output/dataset/dense.root
+
+cache_bbreww:
+  stage: classifier
+  extends: .base_analysis_bbreww
+  variables:
+    CLASSIFIER_CONFIG_PATHS: "bbreww"
+  needs:
+    - setup_bbreww
+    - generate_dataset_bbreww
+  script:
+    - python -m src.classifier.task.main from ${CLASSIFIER_WFS}/main_cache.yml ${CLASSIFIER_WFS}/common.yml
+    - python -m src.classifier.task.main from ${CLASSIFIER_WFS}/main_cache_compare.yml ${CLASSIFIER_WFS}/common.yml
+  artifacts:
+    paths:
+      - barista_framework/output/main_cache/diagnostics/logs.html
+
+train_bbreww:
+  stage: classifier
+  extends: .base_analysis_bbreww
+  variables:
+    CLASSIFIER_CONFIG_PATHS: "bbreww"
+  needs:
+    - setup_bbreww
+    - generate_dataset_bbreww
+  script:
+    - python -m src.classifier.task.main from ${CLASSIFIER_WFS}/main_train.yml ${CLASSIFIER_WFS}/common.yml
+  artifacts:
+    paths:
+      - barista_framework/output/main_train/result.json
+      - barista_framework/output/main_train/states.pkl
+      - barista_framework/output/main_train/model_test-SvD__*.pkl
+      - barista_framework/output/main_train/diagnostics/logs.html
+      - barista_framework/output/main_train/report/
+
+evaluate_bbreww:
+  stage: classifier
+  extends: .base_analysis_bbreww
+  variables:
+    CLASSIFIER_CONFIG_PATHS: "bbreww"
+  needs:
+    - setup_bbreww
+    - generate_dataset_bbreww
+    - train_bbreww
+  script:
+    - python -m src.classifier.task.main from ${CLASSIFIER_WFS}/main_evaluate.yml ${CLASSIFIER_WFS}/common.yml
+  artifacts:
+    paths:
+      - barista_framework/output/main_evaluate/diagnostics/logs.html
+      - barista_framework/output/main_evaluate/chunks/*.root

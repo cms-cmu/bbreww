@@ -1,0 +1,22 @@
+main:
+  module: analyze
+
+analysis:
+  - module: random_dataset.JetsbbWW
+    option:
+      - --seed 0
+      - --nevents 8192
+      - --name sparse
+  - module: random_dataset.JetsbbWW
+    option:
+      - --seed 1
+      - --nevents 8192
+      - --name dense
+
+setting:
+  - module: IO
+    option:
+      - output: output/dataset
+  - module: Analysis
+    option:
+      - max_workers: 2

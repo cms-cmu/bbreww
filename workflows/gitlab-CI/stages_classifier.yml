@@ -1,0 +1,14 @@
+# Stages classifier yml for bbreww
+code_classifier_dependencies_bbreww:
+  stage: classifier
+  extends: .base_analysis_bbreww
+  variables:
+    CLASSIFIER_CONFIG_PATHS: "bbreww"
+  script:
+    - python -m src.classifier.test.check_configs
+
+code_classifier_models_bbreww:
+  stage: classifier
+  extends: .base_analysis_bbreww
+  script:
+    - python bbreww/classifier/test_models.py

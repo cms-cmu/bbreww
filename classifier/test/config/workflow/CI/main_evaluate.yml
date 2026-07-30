@@ -17,7 +17,7 @@ model:
   - module: bbWW.SparseDenseEval
 
 analysis:
-  - module: analysis.compare.VerifyOutput
+  - module: compare.VerifyOutput
     option:
       - --result output/main_evaluate/chunks/label_sparse.root
       - --nevents 8192

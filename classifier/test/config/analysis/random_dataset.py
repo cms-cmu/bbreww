@@ -92,7 +92,7 @@ def _generate_dataset(seed: int, nevents: int, name: str, output: str):
     # Convert output to Path object
     out_path = Path(output) / f"{name}.root"
     with TreeWriter()(out_path) as writer:
-        writer.extend(data)
+        writer.extend(ak.Array(data))
 
 
 class _Runner:

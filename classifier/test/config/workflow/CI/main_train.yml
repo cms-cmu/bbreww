@@ -18,10 +18,8 @@ model:
     option:
       - --kfolds 2
       - --architecture
-      - dijetFeatures: 16
-        ancillaryFeatures: ["HT", "njets", "nsoftjets", "year"]
-        device: "cpu"
-        architecture: "bbWWBase"
+      - n_features: 8
+        attention: true
       - --training FixedStep
       - epoch: 2
         bs_init: 512

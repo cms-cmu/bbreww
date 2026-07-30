@@ -1595,6 +1595,13 @@ class InputEmbed(nn.Module):
         nb = nb.view(n, 4, 2)
         l = l.view(n, 6, 1)
         nu = nu.view(n, -1, 1)[:, :2]
+        from bbreww.classifier.config.setting.bbWW import InputBranch
+        if len(InputBranch.feature_regressed_nu) >= 2 and InputBranch.feature_regressed_nu[0].endswith("px"):
+            px = nu[:, 0:1]
+            py = nu[:, 1:2]
+            pt = torch.sqrt(px**2 + py**2 + 1e-8)
+            phi = torch.atan2(py, px)
+            nu = torch.cat([pt, phi], dim=1)
         a = a.view(n, self.dA, 1)
 
         a[:, 2, :] = torch.log(a[:, 2, :])  # log transform event HT
@@ -2419,6 +2426,13 @@ class GCN(nn.Module):
         nb = nb.view(n, 4, 2)
         l = l.view(n, 6, 1)
         nu = nu.view(n, -1, 1)[:, :2]
+        from bbreww.classifier.config.setting.bbWW import InputBranch
+        if len(InputBranch.feature_regressed_nu) >= 2 and InputBranch.feature_regressed_nu[0].endswith("px"):
+            px = nu[:, 0:1]
+            py = nu[:, 1:2]
+            pt = torch.sqrt(px**2 + py**2 + 1e-8)
+            phi = torch.atan2(py, px)
+            nu = torch.cat([pt, phi], dim=1)
 
         all_particles = torch.cat([b[:,:4, :], nb[:, :4, :], l[:,:4,:]], dim=-1)
         

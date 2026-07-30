@@ -44,6 +44,11 @@ class SimplifiedTrain(LoadGroupedRootForTest):
     def from_root(self, groups: frozenset[str]):
         from src.classifier.df.io import FromRoot
         from src.classifier.df.tools import rename_columns
+        from src.classifier.config.state.label import MultiClass
+        
+        for g in groups:
+            if g.startswith("label:"):
+                MultiClass.add(g.removeprefix("label:"))
         
         # Add label_index column mapping
         pres = [

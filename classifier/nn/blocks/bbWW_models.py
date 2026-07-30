@@ -575,7 +575,7 @@ class GhostBatchNorm1d(
         stride=1,
         eta=0.9,
         bias=True,
-        device="cuda",
+        device="cuda" if torch.cuda.is_available() else "cpu",
         name="",
         conv=False,
         features_out=None,
@@ -1076,7 +1076,7 @@ class ResNetBlock(nn.Module):
         self,
         nFeatures,
         phase_symmetric=True,
-        device="cuda",
+        device="cuda" if torch.cuda.is_available() else "cpu",
         layers=None,
         inputLayers=None,
         prefix="",
@@ -1160,7 +1160,7 @@ class MinimalAttention(
         # iterations=2,
         phase_symmetric=True,
         do_qv=True,
-        device="cuda",
+        device="cuda" if torch.cuda.is_available() else "cpu",
         scalar_dim = 0,
         qv_dim = 6
     ):
@@ -1383,7 +1383,7 @@ class InputEmbed(nn.Module):
         dijetFeatures,
         ancillaryFeatures=[],
         layers=None,
-        device="cuda",
+        device="cuda" if torch.cuda.is_available() else "cpu",
         phase_symmetric=False,
         store=None,
         storeData=None,
@@ -1878,7 +1878,7 @@ class bbWWBase(nn.Module):
         self,
         dijetFeatures,
         ancillaryFeatures,
-        device="cuda",
+        device="cuda" if torch.cuda.is_available() else "cpu",
         nClasses=1,
         architecture="bbWWBase",
     ):
@@ -2203,7 +2203,7 @@ class GCN(nn.Module):
         self,
         dijetFeatures,
         ancillaryFeatures,
-        device="cuda",
+        device="cuda" if torch.cuda.is_available() else "cpu",
         nClasses=1,
         architecture="bbWWBase",
     ):

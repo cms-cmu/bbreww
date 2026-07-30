@@ -216,7 +216,7 @@ class bbWWBaseModel(Model):
             [f"bJet_{f}" for f in InputBranch.feature_bJetCand] +
             [f"nonbJet_{f}" for f in InputBranch.feature_nonbJetCand] +
             [f"lep_{f}" for f in InputBranch.feature_leadingLep] +
-            [f"MET_{f}" for f in InputBranch.feature_MET] +
+            [f"regressed_nu_{f}" for f in InputBranch.feature_regressed_nu] +
             list(InputBranch.feature_ancillary)
         )
         
@@ -343,7 +343,7 @@ class bbWWBaseTraining(MultiStageTraining):
                             "feature_bJetCand",      
                             "feature_nonbJetCand",   
                             "feature_leadingLep",   
-                            "feature_MET",   
+                            "feature_regressed_nu",   
                             )
                         },
                     },

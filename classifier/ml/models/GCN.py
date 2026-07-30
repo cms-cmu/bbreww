@@ -284,7 +284,7 @@ class bbWWBaseTraining(MultiStageTraining):
                             "feature_bJetCand",      
                             "feature_nonbJetCand",   
                             "feature_leadingLep",   
-                            "feature_MET",   
+                            "feature_regressed_nu",   
                             )
                         },
                     },

@@ -22,7 +22,6 @@ analysis:
     option:
       - --name test-SvD
       - --naming "{name}_{path0}"
-      - --clean
   - module: compare.VerifyOutput
     option:
       - --result output/main_evaluate/chunks/test-SvD_sparse.root

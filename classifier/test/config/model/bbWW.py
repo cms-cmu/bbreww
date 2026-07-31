@@ -44,6 +44,6 @@ class SparseDenseEval(bbWWBaseEval):
         output = {
             "hh_prob": batch["p_sparse"],
             "tt_prob": batch["p_dense"],
-            "ww_prob": batch["WW_score"].squeeze(),
+            "ww_prob": batch["WW_score"].mean(dim=list(range(1, batch["WW_score"].dim()))),
         }
         return output

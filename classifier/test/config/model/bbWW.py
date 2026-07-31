@@ -42,8 +42,8 @@ class SparseDenseEval(bbWWBaseEval):
     @staticmethod
     def output_definition(batch: BatchType):
         output = {
-            "hh_prob": batch[Output.hh_prob],
-            "tt_prob": batch[Output.tt_prob],
-            "ww_prob": batch[Output.ww_prob],
+            "hh_prob": batch["p_sparse"],
+            "tt_prob": batch["p_dense"],
+            "ww_prob": batch["WW_score"].squeeze(),
         }
         return output

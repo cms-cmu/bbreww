@@ -24,9 +24,8 @@ generate_dataset_bbreww:
   needs:
     - setup_bbreww
   script:
-    - cd $CI_PROJECT_DIR
-    - ln -s . bbreww || true
-    - PYTHONPATH=barista_framework python -m src.classifier.task.main from ${CLASSIFIER_WFS}/generate_dataset.yml ${CLASSIFIER_WFS}/common.yml
+    - if [ "$(basename $(pwd))" = "barista_framework" ]; then mkdir -p ../output && ln -s ../output output || true; fi
+    - python -m src.classifier.task.main from ${CLASSIFIER_WFS}/generate_dataset.yml ${CLASSIFIER_WFS}/common.yml
   artifacts:
     paths:
       - output/dataset/sparse.root
@@ -41,10 +40,9 @@ cache_bbreww:
     - setup_bbreww
     - generate_dataset_bbreww
   script:
-    - cd $CI_PROJECT_DIR
-    - ln -s . bbreww || true
-    - PYTHONPATH=barista_framework python -m src.classifier.task.main from ${CLASSIFIER_WFS}/main_cache.yml ${CLASSIFIER_WFS}/common.yml
-    - PYTHONPATH=barista_framework python -m src.classifier.task.main from ${CLASSIFIER_WFS}/main_cache_compare.yml ${CLASSIFIER_WFS}/common.yml
+    - if [ "$(basename $(pwd))" = "barista_framework" ]; then mkdir -p ../output && ln -s ../output output || true; fi
+    - python -m src.classifier.task.main from ${CLASSIFIER_WFS}/main_cache.yml ${CLASSIFIER_WFS}/common.yml
+    - python -m src.classifier.task.main from ${CLASSIFIER_WFS}/main_cache_compare.yml ${CLASSIFIER_WFS}/common.yml
   artifacts:
     paths:
       - output/main_cache/diagnostics/logs.html
@@ -58,9 +56,8 @@ train_bbreww:
     - setup_bbreww
     - generate_dataset_bbreww
   script:
-    - cd $CI_PROJECT_DIR
-    - ln -s . bbreww || true
-    - PYTHONPATH=barista_framework python -m src.classifier.task.main from ${CLASSIFIER_WFS}/main_train.yml ${CLASSIFIER_WFS}/common.yml
+    - if [ "$(basename $(pwd))" = "barista_framework" ]; then mkdir -p ../output && ln -s ../output output || true; fi
+    - python -m src.classifier.task.main from ${CLASSIFIER_WFS}/main_train.yml ${CLASSIFIER_WFS}/common.yml
   artifacts:
     paths:
       - output/main_train/result.json
@@ -79,9 +76,8 @@ evaluate_bbreww:
     - generate_dataset_bbreww
     - train_bbreww
   script:
-    - cd $CI_PROJECT_DIR
-    - ln -s . bbreww || true
-    - PYTHONPATH=barista_framework python -m src.classifier.task.main from ${CLASSIFIER_WFS}/main_evaluate.yml ${CLASSIFIER_WFS}/common.yml || (cat output/main_train/result.json && python -c "import os; [print(os.path.join(r, f)) for r, d, fs in os.walk('output') for f in fs]" && python -c "import uproot, glob; [print(f, len(uproot.open(f)['Events'])) for f in glob.glob('output/main_evaluate/chunks/*.root')]" && python -c "import uproot; t = uproot.open('output/main_evaluate/chunks/test-SvD_dense.root')['Events']; print(t.keys()); [print(k, t[k].array()) for k in t.keys()]" && exit 1)
+    - if [ "$(basename $(pwd))" = "barista_framework" ]; then mkdir -p ../output && ln -s ../output output || true; fi
+    - python -m src.classifier.task.main from ${CLASSIFIER_WFS}/main_evaluate.yml ${CLASSIFIER_WFS}/common.yml || (cat output/main_train/result.json && python -c "import os; [print(os.path.join(r, f)) for r, d, fs in os.walk('output') for f in fs]" && python -c "import uproot, glob; [print(f, len(uproot.open(f)['Events'])) for f in glob.glob('output/main_evaluate/chunks/*.root')]" && python -c "import uproot; t = uproot.open('output/main_evaluate/chunks/test-SvD_dense.root')['Events']; print(t.keys()); [print(k, t[k].array()) for k in t.keys()]" && exit 1)
   artifacts:
     paths:
       - output/main_evaluate/diagnostics/logs.html

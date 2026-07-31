@@ -21,6 +21,7 @@ analysis:
   - module: kfold.Merge
     option:
       - --name test-SvD
+      - --naming "{name}_{path0}"
       - --clean
   - module: compare.VerifyOutput
     option:

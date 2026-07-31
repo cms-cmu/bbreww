@@ -18,6 +18,10 @@ model:
       - --models Final output/main_train/result.json
 
 analysis:
+  - module: kfold.Merge
+    option:
+      - --name test-SvD
+      - --clean
   - module: compare.VerifyOutput
     option:
       - --result output/main_evaluate/chunks/test-SvD_sparse.root

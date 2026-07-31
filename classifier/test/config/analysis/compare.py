@@ -19,7 +19,7 @@ def _verify_dataset(result: str, nevents: int):
         
     with uproot.open(result) as f:
         tree = f["Events"]
-        n = len(tree)
+        n = tree.num_entries
         print(f"Found {n} events in tree.")
         if n != nevents:
             raise ValueError(f"Expected {nevents} events, but found {n}!")

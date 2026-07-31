@@ -394,13 +394,21 @@ class bbWWBaseModelEval(Model):
         HH = F.softmax(HH, dim=1).cpu()
         TT_cands = F.softmax(TT_cands, dim=-1).cpu()
         
+        print(f"DEBUG_PRINT: evaluate: HH shape={HH.shape}, TT_cands shape={TT_cands.shape}, WW_score shape={WW_score.shape}")
+        
         output = {}
         output["tt_b1Whad"] = TT_cands[:, 0]
         output["tt_b2Whad"] = TT_cands[:, 1]
         output["WW_score"] = WW_score
         for i, label in enumerate(self._classes):   
             output[f"p_{label}"] = HH[:, i]
-        return selector.pad(map_batch(self._mapping, output))
+            
+        mapped = map_batch(self._mapping, output)
+        print(f"DEBUG_PRINT: evaluate: mapped keys={list(mapped.keys())}, shapes={[v.shape for v in mapped.values()]}")
+        
+        padded = selector.pad(mapped)
+        print(f"DEBUG_PRINT: evaluate: padded keys={list(padded.keys())}, shapes={[v.shape for v in padded.values()]}")
+        return padded
 
 class bbWWBaseEvaluation(Evaluation):
     def __init__(

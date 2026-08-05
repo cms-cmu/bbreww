@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from bbreww.classifier.config.model.bbWW.bbWWBase._bbWWBase import ROC_BIN, bbWWBaseEval, bbWWBaseTrain
+from bbreww.classifier.config.model.bbWW.bbWW_lowpt._bbWWBase import ROC_BIN, bbWWBaseEval, bbWWBaseTrain
 from bbreww.classifier.config.setting.bbWW import Input, Output
 
 if TYPE_CHECKING:
@@ -25,7 +25,7 @@ class SparseDenseTrain(bbWWBaseTrain):
     @property
     def rocs(self):
         from src.classifier.ml.benchmarks.multiclass import ROC
-        from bbreww.classifier.config.model.bbWW.bbWWBase._bbWWBase import roc_nominal_selection
+        from bbreww.classifier.config.model.bbWW.bbWW_lowpt._bbWWBase import roc_nominal_selection
         
         return [
             ROC(

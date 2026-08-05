@@ -9,7 +9,7 @@ setting:
 
   - module: bbWW.InputBranch
     option:
-      - nnonbJetCand: 2
+      - nnonbJetCand: 4
         feature_nonbJetCand: ["pt", "eta", "phi", "mass", "attn_score"]
         feature_ancillary: ["njets", "nsoftjets", "HT", "year"]
 

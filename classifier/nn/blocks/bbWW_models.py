@@ -575,7 +575,7 @@ class GhostBatchNorm1d(
         stride=1,
         eta=0.9,
         bias=True,
-        device="cuda",
+        device="cuda" if torch.cuda.is_available() else "cpu",
         name="",
         conv=False,
         features_out=None,
@@ -665,7 +665,7 @@ class GhostBatchNorm1d(
     @torch.no_grad()
     def initMeanStd(self):
         self.m.copy_(self._mean_var.mean)
-        self.s.copy_(self._mean_var.variance_unbiased.sqrt())
+        self.s.copy_((self._mean_var.variance_unbiased + self.eps).sqrt())
         self.initialized = True
         self.runningStats = False
         self.print()
@@ -1076,7 +1076,7 @@ class ResNetBlock(nn.Module):
         self,
         nFeatures,
         phase_symmetric=True,
-        device="cuda",
+        device="cuda" if torch.cuda.is_available() else "cpu",
         layers=None,
         inputLayers=None,
         prefix="",
@@ -1160,7 +1160,7 @@ class MinimalAttention(
         # iterations=2,
         phase_symmetric=True,
         do_qv=True,
-        device="cuda",
+        device="cuda" if torch.cuda.is_available() else "cpu",
         scalar_dim = 0,
         qv_dim = 6
     ):
@@ -1383,7 +1383,7 @@ class InputEmbed(nn.Module):
         dijetFeatures,
         ancillaryFeatures=[],
         layers=None,
-        device="cuda",
+        device="cuda" if torch.cuda.is_available() else "cpu",
         phase_symmetric=False,
         store=None,
         storeData=None,
@@ -1594,7 +1594,14 @@ class InputEmbed(nn.Module):
         b = b.view(n, 5, 2)
         nb = nb.view(n, 4, 2)
         l = l.view(n, 6, 1)
-        nu = nu.view(n, 2, 1)
+        nu = nu.view(n, -1, 1)[:, :2]
+        from bbreww.classifier.config.setting.bbWW import InputBranch
+        if len(InputBranch.feature_regressed_nu) >= 2 and InputBranch.feature_regressed_nu[0].endswith("px"):
+            px = nu[:, 0:1]
+            py = nu[:, 1:2]
+            pt = torch.sqrt(px**2 + py**2 + 1e-8)
+            phi = torch.atan2(py, px)
+            nu = torch.cat([pt, phi], dim=1)
         a = a.view(n, self.dA, 1)
 
         a[:, 2, :] = torch.log(a[:, 2, :])  # log transform event HT
@@ -1878,7 +1885,7 @@ class bbWWBase(nn.Module):
         self,
         dijetFeatures,
         ancillaryFeatures,
-        device="cuda",
+        device="cuda" if torch.cuda.is_available() else "cpu",
         nClasses=1,
         architecture="bbWWBase",
     ):
@@ -2203,7 +2210,7 @@ class GCN(nn.Module):
         self,
         dijetFeatures,
         ancillaryFeatures,
-        device="cuda",
+        device="cuda" if torch.cuda.is_available() else "cpu",
         nClasses=1,
         architecture="bbWWBase",
     ):
@@ -2418,7 +2425,14 @@ class GCN(nn.Module):
         b = b.view(n, 5, 2)
         nb = nb.view(n, 4, 2)
         l = l.view(n, 6, 1)
-        nu = nu.view(n, 2, 1)
+        nu = nu.view(n, -1, 1)[:, :2]
+        from bbreww.classifier.config.setting.bbWW import InputBranch
+        if len(InputBranch.feature_regressed_nu) >= 2 and InputBranch.feature_regressed_nu[0].endswith("px"):
+            px = nu[:, 0:1]
+            py = nu[:, 1:2]
+            pt = torch.sqrt(px**2 + py**2 + 1e-8)
+            phi = torch.atan2(py, px)
+            nu = torch.cat([pt, phi], dim=1)
 
         all_particles = torch.cat([b[:,:4, :], nb[:, :4, :], l[:,:4,:]], dim=-1)
         

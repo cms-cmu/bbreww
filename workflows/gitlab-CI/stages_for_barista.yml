@@ -3,3 +3,4 @@ include:
   - local: 'workflows/gitlab-CI/analysis.yml'
   - local: 'workflows/gitlab-CI/plot.yml'
   - local: 'workflows/gitlab-CI/cutflows.yml'
+  - local: 'workflows/gitlab-CI/stages_classifier.yml'

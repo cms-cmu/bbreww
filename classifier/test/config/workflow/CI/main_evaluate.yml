@@ -1,0 +1,35 @@
+main:
+  module: evaluate
+  option:
+    - --device cpu
+    - --max-loaders 1
+
+dataset:
+  - module: bbWW.SimplifiedEval
+    option:
+      - --max-workers 1
+      - --preserve-order
+      - --files label:sparse output/dataset/sparse.root
+      - --files label:dense output/dataset/dense.root
+
+model:
+  - module: bbWW.SparseDenseEval
+    option:
+      - --models Final output/main_train/result.json
+
+analysis:
+  - module: kfold.Merge
+    option:
+      - --name test-SvD
+      - --naming "{name}_{path0}"
+  - module: compare.VerifyOutput
+    option:
+      - --result output/main_evaluate/chunks/test-SvD_sparse.root
+      - --nevents 8192
+      - --result output/main_evaluate/chunks/test-SvD_dense.root
+      - --nevents 8192
+
+setting:
+  - module: IO
+    option:
+      - output: output/main_evaluate

@@ -87,7 +87,7 @@ class bbWWBaseBenchmarks:
 def _bbWWBaseInput(batch: BatchType, device: tt.Device, selection: Tensor = None):
     for k, v in batch.items():
         batch[k] = v.to(device, non_blocking=True)
-    inputs = [batch.pop(k) for k in (Input.bJetCand, Input.nonbJetCand, Input.leadingLep, Input.MET, Input.ancillary)]
+    inputs = [batch.pop(k) for k in (Input.bJetCand, Input.nonbJetCand, Input.leadingLep, Input.regressed_nu, Input.ancillary)]
     if selection is not None:
         selection = selection.to(device, non_blocking=True)
         inputs = [i[selection] for i in inputs]
@@ -284,7 +284,7 @@ class bbWWBaseTraining(MultiStageTraining):
                             "feature_bJetCand",      
                             "feature_nonbJetCand",   
                             "feature_leadingLep",   
-                            "feature_MET",   
+                            "feature_regressed_nu",   
                             )
                         },
                     },

@@ -87,7 +87,7 @@ class bbWWBaseBenchmarks:
 def _bbWWBaseInput(batch: BatchType, device: tt.Device, selection: Tensor = None):
     for k, v in batch.items():
         batch[k] = v.to(device, non_blocking=True)
-    inputs = [batch.pop(k) for k in (Input.bJetCand, Input.nonbJetCand, Input.leadingLep, Input.MET, Input.ancillary)]
+    inputs = [batch.pop(k) for k in (Input.bJetCand, Input.nonbJetCand, Input.leadingLep, Input.regressed_nu, Input.ancillary)]
     if selection is not None:
         selection = selection.to(device, non_blocking=True)
         inputs = [i[selection] for i in inputs]
@@ -216,7 +216,7 @@ class bbWWBaseModel(Model):
             [f"bJet_{f}" for f in InputBranch.feature_bJetCand] +
             [f"nonbJet_{f}" for f in InputBranch.feature_nonbJetCand] +
             [f"lep_{f}" for f in InputBranch.feature_leadingLep] +
-            [f"MET_{f}" for f in InputBranch.feature_MET] +
+            [f"regressed_nu_{f}" for f in InputBranch.feature_regressed_nu] +
             list(InputBranch.feature_ancillary)
         )
         
@@ -343,7 +343,7 @@ class bbWWBaseTraining(MultiStageTraining):
                             "feature_bJetCand",      
                             "feature_nonbJetCand",   
                             "feature_leadingLep",   
-                            "feature_MET",   
+                            "feature_regressed_nu",   
                             )
                         },
                     },
@@ -394,13 +394,21 @@ class bbWWBaseModelEval(Model):
         HH = F.softmax(HH, dim=1).cpu()
         TT_cands = F.softmax(TT_cands, dim=-1).cpu()
         
+        print(f"DEBUG_PRINT: evaluate: HH shape={HH.shape}, TT_cands shape={TT_cands.shape}, WW_score shape={WW_score.shape}")
+        
         output = {}
         output["tt_b1Whad"] = TT_cands[:, 0]
         output["tt_b2Whad"] = TT_cands[:, 1]
         output["WW_score"] = WW_score
         for i, label in enumerate(self._classes):   
             output[f"p_{label}"] = HH[:, i]
-        return selector.pad(map_batch(self._mapping, output))
+            
+        mapped = map_batch(self._mapping, output)
+        print(f"DEBUG_PRINT: evaluate: mapped keys={list(mapped.keys())}, shapes={[v.shape for v in mapped.values()]}")
+        
+        padded = selector.pad(mapped)
+        print(f"DEBUG_PRINT: evaluate: padded keys={list(padded.keys())}, shapes={[v.shape for v in padded.values()]}")
+        return padded
 
 class bbWWBaseEvaluation(Evaluation):
     def __init__(

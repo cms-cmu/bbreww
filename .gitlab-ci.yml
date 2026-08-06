@@ -33,6 +33,7 @@ include:
   - local: workflows/gitlab-CI/cutflows.yml
   - local: workflows/gitlab-CI/plot.yml
   - local: workflows/gitlab-CI/skimmer.yml
+  - local: workflows/gitlab-CI/stages_classifier.yml
   - project: 'cms-cmu/barista'
     ref: master
     file: 'src/workflows/gitlab-CI/stages_proxy.yml'
@@ -40,6 +41,7 @@ include:
 stages:  
   - setup
   - skimmer
+  - classifier
   - analysis
   - plot
   - cutflow
@@ -90,6 +92,7 @@ setup_bbreww:
     - cd barista_framework/
     - pwd && ls -la
     - ls -la bbreww/
+    - pip install awkward-pandas
   image: gitlab-registry.cern.ch/cms-cmu/barista:coffea2025
   tags:
     - k8s-cvmfs

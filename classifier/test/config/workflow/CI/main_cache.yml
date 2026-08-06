@@ -1,0 +1,15 @@
+main:
+  module: cache
+
+dataset:
+  - module: bbWW.SimplifiedTrain
+    option:
+      - --max-workers 1
+      - --preserve-order
+      - --files label:sparse output/dataset/sparse.root
+      - --files label:dense output/dataset/dense.root
+
+setting:
+  - module: IO
+    option:
+      - output: output/main_cache

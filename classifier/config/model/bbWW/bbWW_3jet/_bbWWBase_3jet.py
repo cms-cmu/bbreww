@@ -7,7 +7,7 @@ from src.classifier.task import ArgParser, parse
 
 from src.classifier.config.model._kfold import KFoldEval, KFoldTrain
 
-_SCHEDULER = "classifier.config.scheduler"
+_SCHEDULER = ["bbreww.classifier.config.scheduler", "src.classifier.config.scheduler"]
 
 
 if TYPE_CHECKING:

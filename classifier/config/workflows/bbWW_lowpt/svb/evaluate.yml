@@ -12,7 +12,7 @@ dataset:
     option:
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
       - --max-workers 4 
-      - --mc-processes GluGluToHHTo2B2VLNu2J ttbar 
+      - --mc-processes GluGluToHHTo2B2VLNu2J ttbar GluGlutoHHto2B2Tau GluGlutoHHto2B2Zto2L2Q
       - --friends "" bbreww/metadata/classifier/input/input_friend_4j2b.json@@classifier_input
   - module: bbWW.svb.Eval
     option:

@@ -144,7 +144,24 @@ class _signal(_MCDataset):
                     lookup_path = f"{metadata}.{process}.{year}.picoAOD.files"
                     
                     filelists.append([label, lookup_path])
-                
+
+        return filelists
+
+
+class _signal_other(_MCDataset):
+    processes = ("GluGlutoHHto2B2Tau", "GluGlutoHHto2B2Zto2L2Q")
+
+    def __new__(cls, self: MC, metadata: str):
+        filelists = []
+        for process_name in cls.processes:
+            if process_name in self.mc_processes:
+                for year in CollisionData.eras:
+                    filelists.append(
+                        [
+                            f"label:{process_name},year:{year},kl:1p00",
+                            f"{metadata}.{process_name}_kl_1p00.{year}.picoAOD.files",
+                        ]
+                    )
         return filelists
 
 

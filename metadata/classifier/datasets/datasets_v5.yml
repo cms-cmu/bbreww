@@ -639,3 +639,47 @@ datasets:
 
     xs: 422.0852
 
+
+  GluGlutoHHto2B2Tau_kl_1p00:
+    2022_preEE:
+      picoAOD:
+        count: 78701
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/GluGlutoHHto2B2Tau_kl_1p00_2022_preEE/picoAOD.root
+    2022_EE:
+      picoAOD:
+        count: 260543
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/GluGlutoHHto2B2Tau_kl_1p00_2022_EE/picoAOD.root
+    2023_preBPix:
+      picoAOD:
+        count: 230622
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/GluGlutoHHto2B2Tau_kl_1p00_2023_preBPix/picoAOD.root
+    2023_BPix:
+      picoAOD:
+        count: 113413
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/GluGlutoHHto2B2Tau_kl_1p00_2023_BPix/picoAOD.root
+
+  GluGlutoHHto2B2Zto2L2Q_kl_1p00:
+    2022_preEE:
+      picoAOD:
+        count: 15094
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/GluGlutoHHto2B2Zto2L2Q_kl_1p00_2022_preEE/picoAOD.root
+    2022_EE:
+      picoAOD:
+        count: 49093
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/GluGlutoHHto2B2Zto2L2Q_kl_1p00_2022_EE/picoAOD.root
+    2023_preBPix:
+      picoAOD:
+        count: 43935
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/GluGlutoHHto2B2Zto2L2Q_kl_1p00_2023_preBPix/picoAOD.root
+    2023_BPix:
+      picoAOD:
+        count: 21729
+        files:
+        - root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/2025_v5/GluGlutoHHto2B2Zto2L2Q_kl_1p00_2023_BPix/picoAOD.root

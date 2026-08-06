@@ -219,9 +219,9 @@ class TrainBaseline(_picoAOD.Signal, _picoAOD.Background, Train):
     """Baseline training with signal and background processes"""
     ...
 
-class Eval(_picoAOD.Signal, _picoAOD.Background, CommonEval): 
+class Eval(_picoAOD.Signal, _picoAOD.Background, CommonEval):
     """MC Evaluation for HH→bbWW classifier"""
-    ...
+    pico_filelists = (_picoAOD._signal_other,)
 
 class DataEval(_picoAOD.Data, CommonEval):
     """Data Evaluation for HH→bbWW classifier"""

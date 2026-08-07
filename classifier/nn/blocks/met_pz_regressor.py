@@ -1017,6 +1017,7 @@ class METRegressor(nn.Module):
         self.jet_dR_embed.setGhostBatches(nGhostBatches)
         self.jet_mjj_embed.setGhostBatches(nGhostBatches)
         self.qv_combine.setGhostBatches(nGhostBatches)
+        
         # Output heads: iterate GBN layers in sequential modules and classifier
         for name, module in [("nu_regressor_onshell", self.nu_regressor_onshell),
                              ("pz_solution_scorer", self.pz_solution_scorer),

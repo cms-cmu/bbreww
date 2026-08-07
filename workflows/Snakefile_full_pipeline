@@ -301,7 +301,7 @@ rule make_analysis_plots:
         for region, (category, phh_var) in PLOT_REGIONS.items():
             shell(
                 "{params.container_wrapper} python -m bbreww.plots.makePlots "
-                "-i {input.coffea} "
+                "{input.coffea} "
                 "-m {params.plots_meta} "
                 "--modifiers {params.plots_modifiers} "
                 "-o {params.plots_out}/" + region + " "

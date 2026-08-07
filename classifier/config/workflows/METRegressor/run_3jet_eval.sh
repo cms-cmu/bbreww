@@ -1,7 +1,8 @@
-# change these vars #
+
+1;10;0c# change these vars #
 export LPCUSER="akhanal"
 export CERNUSER="a/akhanal"
-export BASE="root://cmseos.fnal.gov//store/user/${LPCUSER}/HHbbWW_MET_regressor"
+export BASE="root://cmseos.fnal.gov//store/user/${LPCUSER}/HHbbWW_MET_regressor_test"
 export MODEL="${BASE}/classifier/Regressor"
 export MET_FRIEND="${BASE}/friend/met_regressor/"
 export MET_FRIEND_3JET="${BASE}/friend/met_regressor_3jet/"
@@ -9,7 +10,6 @@ export PLOT="root://eosuser.cern.ch//eos/user/${CERNUSER}/HHbbWW_MET_regressor/"
 export CLASSIFIER_CONFIG_PATHS="bbreww"
 #####################
 export WFS="bbreww/classifier/config/workflows/METRegressor"
-
 # the first argument can be a port
 if [ -z "$1" ]; then
     port=10200

@@ -12,7 +12,7 @@ dataset:
     option:
       - --metadata bbreww/metadata/classifier/datasets/datasets_v5
       - --max-workers 4
-      - --mc-processes GluGluToHHTo2B2VLNu2J ttbar
+      - --mc-processes GluGluToHHTo2B2VLNu2J ttbar GluGlutoHHto2B2Tau GluGlutoHHto2B2Zto2L2Q
       - --friends "" bbreww/metadata/classifier/input/input_friend_3j2b.json@@classifier_input_3j2b
   - module: bbWW.svb.Eval
     option:
@@ -20,13 +20,13 @@ dataset:
       - --max-workers 4
       - --mc-processes WplusJets tW singleTop
       - --friends "" bbreww/metadata/classifier/input/input_friend_3j2b.json@@classifier_input_3j2b
-  # - module: bbWW.svb.DataEval
-  #   option:
-  #     - --no-SR
-  #     - --data-source detector
-  #     - --metadata bbreww/metadata/classifier/datasets/datasets_data_v5
-  #     - --max-workers 4
-  #     - --friends "" bbreww/metadata/classifier/input/input_friend_data_3j2b.json@@classifier_input_3j2b
+  - module: bbWW.svb.DataEval
+     option:
+       - --no-SR
+       - --data-source detector
+       - --metadata bbreww/metadata/classifier/datasets/datasets_data_v5
+       - --max-workers 4
+       - --friends "" bbreww/metadata/classifier/input/input_friend_3j2b.json@@classifier_input_3j2b
 
 model:
   - module: bbWW.bbWW_3jet.baseline_svb_3jet.Eval

@@ -8,8 +8,8 @@
 main:
   module: train # run training task
   option:
-    - --max-loaders 2
-    - --max-trainers 3
+    - --max-loaders 1
+    - --max-trainers 1
 
 dataset:
   - module: bbWW.regressor.Background
@@ -35,7 +35,7 @@ model:
       - --kfold-seed-offsets 0 # use seed ("FvT", "random", 0)
       - --training FixedStep # setup training schedule
       - epoch: 50
-        bs_init: 10240
+        bs_init: 10240 # ghost batch setup requires this number to be multiple of 64
         lr_init: 1.4e-2 # dummy
 
 setting:

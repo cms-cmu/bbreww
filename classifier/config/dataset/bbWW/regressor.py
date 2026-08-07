@@ -160,7 +160,7 @@ class TrainBaseline(_picoAOD.Signal, Background, Train):
 
 class Eval(_picoAOD.Signal, _picoAOD.Background, RegressorCommonEval):
     """MC Evaluation for MET regressor"""
-    ...
+    pico_filelists = (_picoAOD._signal_other,)
 
 
 class DataEval(_picoAOD.Data, RegressorCommonEval):

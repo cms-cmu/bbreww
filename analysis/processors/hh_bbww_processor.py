@@ -276,7 +276,9 @@ class analysis(processor.ProcessorABC):
                                                              corrections_metadata=self.params[self.year],
                                                              jet_field='b_cands')
             events['btag_sf'] = weights.partial_weight(include=['CMS_btag'])
-
+        else:
+            events['SvB', 'phh'] = ak.ones_like(events.SvB.phh) # blind SR data events
+            
         events['weight'] = weights.weight()
         
         #study sequential cutflow (get weights and events after each cut)

@@ -126,12 +126,12 @@ def ak8_jet_selection(events,params):
 def apply_mll_cut(events):
     # electrons
     loose_e = events.Electron[events.Electron.isloose]
-    loose_e = ak.mask(loose_e, events.e_nloose > 1) # only keep events with two leptons of same flavour
+    loose_e = ak.mask(loose_e, events.e_nloose > 1) # only apply on events with two leptons of same flavour
     e_pairs = ak.argcombinations(loose_e, 2, replacement = False, fields=["e1","e2"])
     e_pairs_mass = (loose_e[e_pairs.e1] + loose_e[e_pairs.e2]).mass
 
     is_same_charge_e = (loose_e[e_pairs.e1].charge == loose_e[e_pairs.e2].charge) # pairs with same charge
-    passes_mass_cut_e = (abs(e_pairs_mass - 91.19) > 10) # & (e_pairs_mass > 12.0)
+    passes_mass_cut_e = (abs(e_pairs_mass - 91.19) > 10)  & (e_pairs_mass > 20.0)
     is_good_pair_e = is_same_charge_e | passes_mass_cut_e # either same charge electrons or pass m_ll cuts
     pass_cut_e = ak.fill_none(ak.all(is_good_pair_e,axis=1), True) # pass cut for None values
 
@@ -142,7 +142,7 @@ def apply_mll_cut(events):
     mu_pairs_mass = (loose_mu[mu_pairs.mu1] + loose_mu[mu_pairs.mu2]).mass
 
     is_same_charge_mu = (loose_mu[mu_pairs.mu1].charge == loose_mu[mu_pairs.mu2].charge)  # pairs with same charge
-    passes_mass_cut_mu = (abs(mu_pairs_mass - 91.19) > 10)# &  mu_pairs_mass > 12.0)
+    passes_mass_cut_mu = (abs(mu_pairs_mass - 91.19) > 10) &  (mu_pairs_mass > 20.0)
     is_good_pair_mu = is_same_charge_mu | passes_mass_cut_mu # either same charge muons or pass m_ll cuts
     pass_cut_mu = ak.fill_none(ak.all(is_good_pair_mu,axis=1), True) # pass cut for None values
 

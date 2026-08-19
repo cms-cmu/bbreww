@@ -21,6 +21,7 @@ Pipeline:
   PASS 1: processor per chunk -> merge    (full MC + signal; dumps signal phh)
   quantile_regression -> bin_edges_*.txt
   rebin_hist_templates -> patch hist_templates.py
+  modify_config_pass2 (dump_signal_phh=false)
   PASS 2: processor per chunk -> merge    (same chunks, optimized binning)
   combine (module Snakefile_combine): json -> datacards -> limits -> plot
 
@@ -67,6 +68,7 @@ CHUNK_BY_NAME = {c["name"]: c for c in CHUNKS}
 CHUNK_NAMES   = [c["name"] for c in CHUNKS]
 
 PASS1_CONFIG = f"{OUT_BASE}/HHbbWW_pass1.yml"
+PASS2_CONFIG = f"{OUT_BASE}/HHbbWW_pass2.yml"
 
 # retrain may arrive as bool (configfile) or string ("true"/"false") from --config
 def _is_true(v):
@@ -116,15 +118,21 @@ PLOTS_OUT       = f"{OUT_BASE}/analysis_plots"
 PLOT_REGIONS = {
     "nominal_4j2b": ("nominal", "SvB.phh_variable_nominal"),
     "lowpt_4j2b":   ("lowpt",   "SvB.phh_variable_lowpt"),
-    "incl_3j2b":    ("lowpt",   "SvB.phh_variable_3j2b"),
+    "incl_3j2b":    ("3j2b",    "SvB.phh_variable_3j2b"),
 }
 
 
 # ── final target ────────────────────────────────────────────────────────────────
+# Keep in sync with CATEGORIES in Snakefile_combine (module variables are not
+# importable): its rule all is excluded below, so the prefit/postfit dirs must
+# be requested here for the full pipeline to produce them.
+COMBINE_CATEGORIES = ["nominal", "lowpt", "incl3j2b", "combined"]
+
 rule all:
     input:
         f"{COMBINE_OUT}/summary.txt",
         f"{COMBINE_OUT}/plots/limit_plot.png",
+        expand(f"{COMBINE_OUT}/plots/prefit_postfit_{{cat}}", cat=COMBINE_CATEGORIES),
         f"{PLOTS_OUT}/analysis_plots.done",
 
 
@@ -207,11 +215,27 @@ use rule quantile_regression from optimize with:
 use rule rebin_hist_templates from optimize
 
 
-# ── PASS 2: same chunks, committed config + rebinned hist_templates ─────────────
-# Depends on the rebin snapshot (so the new binning is in place) and the pass-2
-# cleanup. Uses the committed analysis_config (dump_signal_phh=false).
+# ── PASS 2: same chunks, rebinned hist_templates, dump_signal_phh forced off ────
+# Depends on the rebin snapshot (so the new binning is in place). Pass 2 must
+# NOT dump phh pickles: the quantile regression already ran on the pass-1
+# dumps, and pass-2 dumps would pollute the EOS quantiles dir for any later
+# rerun. A derived config forces dump_signal_phh: false regardless of what the
+# committed analysis_config says.
+rule modify_config_pass2:
+    input:
+        config["analysis_config"]
+    output:
+        PASS2_CONFIG
+    localrule: True
+    shell:
+        r"""
+        mkdir -p $(dirname {output})
+        sed -e 's|dump_signal_phh:.*|dump_signal_phh: false|' {input} > {output}
+        """
+
 use rule analysis_processor from processor as pass2_processor with:
     input:
+        cfg      = PASS2_CONFIG,
         snapshot = optimize.HIST_SNAPSHOT,
         friends  = _friend_dep,
     output:
@@ -221,7 +245,7 @@ use rule analysis_processor from processor as pass2_processor with:
     params:
         datasets         = lambda wc: CHUNK_BY_NAME[wc.chunk]["datasets"],
         year             = lambda wc: CHUNK_BY_NAME[wc.chunk]["year"],
-        config           = config["analysis_config"],
+        config           = PASS2_CONFIG,
         processor        = config["processor"],
         metadata         = config["metadata"],
         triggers         = config["triggers"],
@@ -300,5 +324,5 @@ use rule * from combine exclude all
 # on the login node, and runner.py submits its own Dask SLURMCluster worker
 # fleet. Making them sbatch jobs would nest sbatch-inside-sbatch. The merge
 # rules stay as normal (sbatch) jobs.
-localrules: all, modify_config_pass1, cleanup_pre_pass1, link_combine_input,
-            pass1_processor, pass2_processor
+localrules: all, modify_config_pass1, modify_config_pass2, cleanup_pre_pass1,
+            link_combine_input, pass1_processor, pass2_processor

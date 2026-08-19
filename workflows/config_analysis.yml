@@ -79,3 +79,6 @@ chunks:
   - name: "chunk5"
     datasets: "TBbarQ TbarBQ TBbartoLplusNuBbar TbarBtoLminusNuB"
     year: "2022_preEE 2022_EE 2023_preBPix 2023_BPix"
+  - name: "chunk6"
+    datasets: "GluGlutoHHto2B2Tau_kl_1p00 GluGlutoHHto2B2Zto2L2Q_kl_1p00"
+    year: "2022_preEE 2022_EE 2023_preBPix 2023_BPix"

@@ -12,12 +12,29 @@ import numpy as np
 
 sys.path.insert(0, os.getcwd())
 from bbreww.plots.plots import load_config_bbWW
-from src.plotting.plots import makePlot, make2DPlot, load_hists, read_axes_and_cuts, parse_args
+from src.plotting.plots import makePlot, make2DPlot, load_hists, read_axes_and_cuts, init_arg_parser
 from src.plotting.iPlot_config import plot_config
 
 cfg = plot_config()
 
 np.seterr(divide='ignore', invalid='ignore')
+
+# --category selects the hist collection and the cut in one place.
+CATEGORIES = {
+    "nominal": ("hists_4j2b", "nominal_4j2b"),
+    "lowpt":   ("hists",      "lowpt_4j2b"),
+    "3j2b":    ("hists",      "incl_3j2b"),
+}
+
+
+def _cut_for(hist_key):
+    if args.cut:
+        return args.cut
+    if args.category in CATEGORIES:
+        return CATEGORIES[args.category][1]
+    # No category given: historical per-collection defaults.
+    return "incl_3j2b" if hist_key == "hists" else "nominal_4j2b"
+
 
 def doPlots(varList, debug=False):
 
@@ -33,7 +50,10 @@ def doPlots(varList, debug=False):
             if y is not None and y not in years:
                 years.append(y)
     if not years:
-        years = ["2022", "2023", "Run3"]
+        years = ["2022", "2023"]
+    # Combined category: "Run3" sums over the year axis (see _normalize_year).
+    if "Run3" not in years:
+        years.append("Run3")
 
     for year in years:
         if debug: print(f"=== plotting year {year} ===")
@@ -45,10 +65,7 @@ def doPlots(varList, debug=False):
             if debug: print(f"plotting 1D ...{v} from {hist_key}")
             cfg.set_hist_key(hist_key)
 
-            if hist_key == "hists":
-                cut = "lowpt_4j2b"
-            elif hist_key == "hists_4j2b":
-                cut = "nominal_4j2b"
+            cut = _cut_for(hist_key)
 
 
             vDict = cfg.plotModifiers.get(v, {})
@@ -91,6 +108,7 @@ def doPlots(varList, debug=False):
         for v, hist_key in varList:
             if debug: print(v)
             cfg.set_hist_key(hist_key)
+            cut = _cut_for(hist_key)
 
             vDict = cfg.plotModifiers.get(v, {})
 
@@ -196,7 +214,11 @@ def doPlots(varList, debug=False):
 
 if __name__ == '__main__':
 
-    args = parse_args()
+    parser = init_arg_parser()
+    parser.add_argument('--cut', default=None,
+                        help='Cut category to plot (e.g. nominal_4j2b, lowpt_4j2b, incl_3j2b). '
+                             'Default None keeps the per-collection defaults.')
+    args = parser.parse_args()
 
     cfg.plotConfig = load_config_bbWW(args.metadata)
     cfg.outputFolder = args.outputFolder
@@ -211,24 +233,25 @@ if __name__ == '__main__':
     cfg.fileLabels = args.fileLabels
     cfg.axisLabelsDict, cfg.cutListDict = read_axes_and_cuts(cfg.hists, cfg.plotConfig, hist_keys=['hists','hists_4j2b'])
 
-    # --category routes a hist name to the right hist_key:
+    # --category routes hists to the right collection and cut (see CATEGORIES):
     #   nominal -> hists_4j2b (cut: nominal_4j2b)
     #   lowpt   -> hists      (cut: lowpt_4j2b)
-    if args.category == 'lowpt':
-        only_hist_key = 'hists'
-    else:
-        only_hist_key = 'hists_4j2b'
+    #   3j2b    -> hists      (cut: incl_3j2b)
+    if args.category is not None and args.category not in CATEGORIES:
+        parser.error(f"--category must be one of {sorted(CATEGORIES)} (got '{args.category}')")
+
+    only_hist_key = CATEGORIES[args.category][0] if args.category else 'hists_4j2b'
 
     if args.list_of_hists:
         varList = [(v, only_hist_key) for v in args.list_of_hists]
     else:
         varList = []
-        if args.category in (None, 'lowpt'):
+        if args.category is None or CATEGORIES[args.category][0] == 'hists':
             for h in cfg.hists[0]['hists'].keys():
                 if not any(skip in h for skip in args.skip_hists):
                     varList.append((h, 'hists'))
 
-        if args.category in (None, 'nominal'):
+        if args.category is None or CATEGORIES[args.category][0] == 'hists_4j2b':
             for h in cfg.hists[0].get('hists_4j2b', {}).keys():
                 if not any(skip in h for skip in args.skip_hists):
                     varList.append((h, 'hists_4j2b'))

@@ -3,6 +3,12 @@ processes:
     GluGluToHHTo2B2VLNu2J_kl_1p00:
       label: ggHH_kl_1_kt_1_13p6TeV_hbbhww
       process: 0
+    GluGlutoHHto2B2Tau_kl_1p00:
+      label: ggHH_kl_1_kt_1_13p6TeV_hbbhtt
+      process: -1
+    GluGlutoHHto2B2Zto2L2Q_kl_1p00:
+      label: ggHH_kl_1_kt_1_13p6TeV_hbbhzz
+      process: -2
   background:
     tt:
       label: 'tt'

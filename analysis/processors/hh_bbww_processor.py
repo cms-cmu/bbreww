@@ -1,6 +1,7 @@
 import warnings
 import logging
 import uuid
+import hashlib
 
 import numpy as np
 import awkward as ak
@@ -122,6 +123,13 @@ class analysis(processor.ProcessorABC):
         self.year = events.metadata['year']
         self.year_label = self.params[self.year].year_label
         self.processName = events.metadata['processName']
+        try:
+            _md = events.metadata
+            self.chunk_id = hashlib.md5(
+                f"{_md['filename']}:{_md['entrystart']}:{_md['entrystop']}".encode()
+            ).hexdigest()[:8]
+        except KeyError:
+            self.chunk_id = uuid.uuid4().hex[:8]
         self.is_mc = hasattr(events, "genWeight")
         self.n_events = len(events)
 
@@ -392,8 +400,7 @@ class analysis(processor.ProcessorABC):
              # Dump SvB.phh for quantile rebinning — per-chunk file to avoid
              # collisions across chunks/eras. Merge at post-processing time.
             if self.dump_signal_phh and self.run_SvB:
-                chunk_id = uuid.uuid4().hex[:8]
-                output_path = f"root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/quantiles/phh_hist_{self.dataset}__{self.year}_{chunk_id}.pkl"
+                output_path = f"root://cmseos.fnal.gov//store/user/akhanal/HHbbWW/quantiles/phh_hist_{self.dataset}__{self.year}_{self.chunk_id}.pkl"
                 dump_phh_to_pickle(selected_events, self.dataset, output_path)
       
             output['events_processed'] = {}

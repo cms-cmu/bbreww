@@ -53,7 +53,7 @@ SESSION="bbww_friendtree"
 MODE=""
 
 ALL_ERAS="2022_preEE 2022_EE 2023_preBPix 2023_BPix"
-CHUNK1_DS="GluGluToHHTo2B2VLNu2J_kl_0p00 GluGluToHHTo2B2VLNu2J_kl_1p00 GluGluToHHTo2B2VLNu2J_kl_2p45 GluGluToHHTo2B2VLNu2J_kl_5p00 TTToSemiLeptonic"
+CHUNK1_DS="GluGluToHHTo2B2VLNu2J_kl_0p00 GluGluToHHTo2B2VLNu2J_kl_1p00 GluGluToHHTo2B2VLNu2J_kl_2p45 GluGluToHHTo2B2VLNu2J_kl_5p00 GluGlutoHHto2B2Zto2L2Q_kl_1p00 GluGlutoHHto2B2Tau_kl_1p00 TTToSemiLeptonic"
 CHUNK2_DS="TTToHadronic TTTo2L2Nu"
 CHUNK3_DS="WtoLNu-2Jets_0J WtoLNu-2Jets_1J WtoLNu-2Jets_2J"
 CHUNK4_DS="TbarWplustoLNu2Q TbarWplusto2L2Nu TWminustoLNu2Q TWminusto2L2Nu"

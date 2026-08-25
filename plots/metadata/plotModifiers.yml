@@ -14,8 +14,9 @@ SvB.poth : {"yscale": 'log'}
 SvB.hh_vs_oth :  {"yscale": 'log'}
 SvB.hh_vs_tt : {"yscale": 'log'}
 SvB.tt_vs_oth :  {"yscale": 'log'}
-SvB.phh_variable_nominal: {"uniform_bins" : True}
-SvB.phh_variable_lowpt: {"ylim": [0.5,], "uniform_bins" : True}
+SvB.phh_variable_nominal: {"ylim": [0.02,], "uniform_bins" : True}
+SvB.phh_variable_lowpt: {"ylim": [0.02,], "uniform_bins" : True}
+SvB.phh_variable_3j2b: {"ylim": [0.02,], "uniform_bins" : True}
 SvB.phh: {"ylim": [0.5,]}
 
 mbb_vs_bb_dr : {"2d":True}

@@ -7,9 +7,9 @@ hists:
 #                fillcolor: k            
 
         HHbbWW:
-                process: GluGluToHHTo2B2VLNu2J_kl_1p00
+                process: [GluGluToHHTo2B2VLNu2J_kl_1p00, GluGlutoHHto2B2Tau_kl_1p00, GluGlutoHHto2B2Zto2L2Q_kl_1p00] 
                 tag: signal
-                label: HHbbWW (x100)
+                label: ggF HH (x100)
                 edgecolor: "#e42536"
                 fillcolor: "#e42536"            
                 histtype: step

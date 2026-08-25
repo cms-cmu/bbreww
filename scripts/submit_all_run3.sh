@@ -151,7 +151,7 @@ COMMON="python runner.py \
     --condor"
 
 ALL_ERAS="2022_preEE 2022_EE 2023_preBPix 2023_BPix"
-CHUNK1_DS="GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic"
+CHUNK1_DS="GluGluToHHTo2B2VLNu2J_kl_1p00 TTToSemiLeptonic GluGlutoHHto2B2Zto2L2Q_kl_1p00 GluGlutoHHto2B2Tau_kl_1p00"
 DATA_EG_DS="data__EGamma"
 DATA_MU_DS="data__SingleMuon"
 

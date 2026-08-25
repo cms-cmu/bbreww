@@ -40,7 +40,7 @@ def add_gen_info(events, is_mc):
         # gen W truth is only computable for HH signal and semileptonic ttbar;
         # everything else gets fill-in values directly.
         dataset = events.metadata.get('dataset', '')
-        if ('HH' in dataset) or ('TTToSemiLeptonic' in dataset):
+        if ('2B2VLNu2J' in dataset) or ('TTToSemiLeptonic' in dataset):
             try:
                 events['Jet', 'isQfromW']= ak.any(gen_qFromW.metric_table(events.Jet)< 0.2,axis=1)
                 events['Jet', 'isGenFromW'] = ak.sum(events.Jet.isQfromW, axis=1) == 2
@@ -62,7 +62,7 @@ def add_gen_info(events, is_mc):
                 events['gen_hadW'] = hadW[:,0] # (pick 0 index because there are duplicate W's due to 2 quarks)
                 events['gen_hadW_mass'] = ak.fill_none(hadW[:,0].mass,np.nan)
 
-                if 'HH' in dataset:
+                if '2B2VLNu2J' in dataset:
                     events['Jet', 'isbFromH'] = ak.any(events.gen_bFromH.metric_table(events.Jet)< 0.2,axis=1)
                     events['isLepW'] = ak.fill_none(events.gen_lepW_mass > events.gen_hadW.mass, -1)
                 else:

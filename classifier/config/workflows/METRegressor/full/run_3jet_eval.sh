@@ -9,7 +9,7 @@ export MET_FRIEND_3JET="${BASE}/friend/met_regressor_3jet/"
 export PLOT="root://eosuser.cern.ch//eos/user/${CERNUSER}/HHbbWW_MET_regressor/"
 export CLASSIFIER_CONFIG_PATHS="bbreww"
 #####################
-export WFS="bbreww/classifier/config/workflows/METRegressor"
+export WFS="bbreww/classifier/config/workflows/METRegressor/full"
 # the first argument can be a port
 if [ -z "$1" ]; then
     port=10200

@@ -1,0 +1,44 @@
+# template:
+# - model: path to model
+
+# when run with
+#   template/-template "model: path/to/model" path/to/this/file.yml
+# the {model} will be replaced by path/to/model
+
+main:
+  module: train # run training task
+  option:
+    - --max-loaders 2
+    - --max-trainers 3
+
+dataset:
+  - module: bbWW.regressor.Background
+    option:
+      - --mc-processes ttbar
+      - --metadata bbreww/metadata/classifier/datasets/datasets_v5
+      - --norm 0.5 #set TTbar weight (signal is 1)
+      # - --ttbar-prescale 10 # this option is to only train on a fraction of events
+      - --friends "" bbreww/metadata/regressor/input/regressor_friend_nom.json@@regressor_input_nom # set input friend tree
+
+  - module: bbWW.regressor.Signal
+    option:
+      - --norm 30
+      - --metadata bbreww/metadata/classifier/datasets/datasets_v5
+      - --friends "" bbreww/metadata/regressor/input/regressor_friend_nom.json@@regressor_input_nom # set input friend tree
+      - --train-bsm # train on kl = [0, 2.45, 5] samples
+
+model:
+  - module: bbWW.METRegressor.baseline.Train
+    option:
+      - --kfolds 3 # use 3-fold
+      - --kfold-seed FvT random # setup base seed to be ("FvT", "random")
+      - --kfold-seed-offsets 0 # use seed ("FvT", "random", 0)
+      - --training FixedStep # setup training schedule
+      - epoch: 50
+        bs_init: 10240 # ghost batch setup requires this number to be multiple of 64
+        lr_init: 1.4e-2 # dummy
+
+setting:
+  - module: IO # setup output directory
+    option:
+      - output: "{model}" # will be replaced by the template
